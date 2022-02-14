@@ -11,7 +11,7 @@ import SwiftUI
 struct IgStoriesSwiftUIApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            StoryIcon()
         }
     }
 }

@@ -11,7 +11,7 @@ struct Arc: Shape {
     let startAngle: Double
     var endAngle: Double
     let clockwise: Bool
-    let traceEndAngle: TraceEndAngle
+    let traceEndAngle: TracingEndAngle
     
     var animatableData: Double {
         get { endAngle }
@@ -21,7 +21,7 @@ struct Arc: Shape {
         }
     }
     
-    init(startAngle: Double, endAngle: Double, clockwise: Bool, traceEndAngle: TraceEndAngle) {
+    init(startAngle: Double, endAngle: Double, clockwise: Bool, traceEndAngle: TracingEndAngle) {
         self.startAngle = startAngle
         self.endAngle = endAngle
         self.clockwise = clockwise
@@ -42,7 +42,7 @@ struct Arc: Shape {
     }
 }
 
-final class TraceEndAngle: ObservableObject {
+final class TracingEndAngle: ObservableObject {
     @Published private(set) var currentEndAngle: Double
     
     init(currentEndAngle: Double) {
@@ -57,21 +57,36 @@ final class TraceEndAngle: ObservableObject {
 }
 
 struct StoryIcon: View {
-    @State var endAngle: Double
-    @ObservedObject var traceEndAngle: TraceEndAngle
-    @State var isAnimationPaused = true
-    @State var animationDuration = 8.0
+    @State var endAngle: Double = 0.0
+    @ObservedObject var tracingEndAngle = TracingEndAngle(currentEndAngle: 0.0)
+    
+    let animationDuration: Double = 1.0
+    @State private var currentAnimationDuration: Double = 0.0
+    
+    enum AnimationStatus {
+        case pending, play, pause
+    }
+    @State private(set) var animationStatus: AnimationStatus = .pending {
+        didSet {
+            switch animationStatus {
+            case .pending, .pause:
+                currentAnimationDuration = 0.0
+            case .play:
+                if endAngle == 360.0 { endAngle = 0.0 }
+                if oldValue == .pending {
+                    currentAnimationDuration = animationDuration
+                } else {
+                    currentAnimationDuration = animationDuration * (1 - tracingEndAngle.currentEndAngle / 360.0)
+                }
+            }
+        }
+    }
     
     let animatedStrokeWidth = 10.0
     
-    init(endAngle: Double) {
-        self.endAngle = endAngle
-        self.traceEndAngle = TraceEndAngle(currentEndAngle: endAngle)
-    }
-    
     var body: some View {
         ZStack {
-            Arc(startAngle: 0, endAngle: endAngle, clockwise: true, traceEndAngle: traceEndAngle)
+            Arc(startAngle: 0, endAngle: endAngle, clockwise: true, traceEndAngle: tracingEndAngle)
                 .stroke(
                     .linearGradient(
                         colors: [.orange, .red],
@@ -88,24 +103,49 @@ struct StoryIcon: View {
                 .clipShape(Circle())
                 .overlay(Circle().strokeBorder(.white, lineWidth: 6))
                 .padding(animatedStrokeWidth)
+            
+            Image("add")
+                .resizable()
+                .scaledToFit()
+                .background(Circle().fill(.white).scaleEffect(1.1))
+                .aspectRatio(0.3, contentMode: .fit)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                .padding(.bottom, 20)
+                .padding(.trailing, 10)
         }
+        .scaledToFit()
         .onTapGesture {
-            isAnimationPaused.toggle()
-            withAnimation(isAnimationPaused ? .linear(duration: 0) : .linear(duration: animationDuration)) {
-                if isAnimationPaused {
-                    let currentEndAngle = traceEndAngle.currentEndAngle
-                    print("currentEndAngle: \(currentEndAngle)")
-                    endAngle = currentEndAngle
-                } else {
+            changeAnimationStatus()
+            withAnimation(.linear(duration: currentAnimationDuration)) {
+                switch animationStatus {
+                case .pending:
+                    break
+                case .play:
                     endAngle = 360.0
+                case .pause:
+                    endAngle = tracingEndAngle.currentEndAngle
                 }
             }
+        }.onAnimationCompleted(for: endAngle) {
+            if endAngle == 360.0 { animationStatus = .pending }
         }
     }
+    
+    func changeAnimationStatus() {
+        switch animationStatus {
+        case .pending:
+            animationStatus = .play
+        case .play:
+            animationStatus = .pause
+        case .pause:
+            animationStatus = .play
+        }
+    }
+    
 }
 
 struct StoryIcon_Previews: PreviewProvider {
     static var previews: some View {
-        StoryIcon(endAngle: .zero)
+        StoryIcon()
     }
 }
