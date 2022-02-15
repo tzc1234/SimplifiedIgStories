@@ -50,7 +50,7 @@ struct Arc: InsettableShape {
 }
 
 final class TracingEndAngle: ObservableObject {
-    @Published private(set) var currentEndAngle: Double
+    @Published var currentEndAngle: Double
     
     init(currentEndAngle: Double) {
         self.currentEndAngle = currentEndAngle
@@ -64,43 +64,17 @@ final class TracingEndAngle: ObservableObject {
 }
 
 struct StoryIcon: View {
-    @State var endAngle = 0.0
+    @State var endAngle = 360.0
     @ObservedObject var tracingEndAngle = TracingEndAngle(currentEndAngle: 0.0)
     
     let animationDuration = 1.0
     @State private var currentAnimationDuration = 0.0
-    
-    enum AnimationStatus {
-        case pending, play, pause, end
-    }
-    @State private var animationStatus: AnimationStatus {
-        didSet {
-            switch animationStatus {
-            case .pending:
-                currentAnimationDuration = 0
-                endAngle = 0
-            case .play:
-                if oldValue == .pending {
-                    currentAnimationDuration = animationDuration
-                } else {
-                    currentAnimationDuration = animationDuration * (1 - tracingEndAngle.currentEndAngle / 360.0)
-                }
-                endAngle = 360
-            case .pause:
-                currentAnimationDuration = 0
-                endAngle = tracingEndAngle.currentEndAngle
-            case .end:
-                currentAnimationDuration = 0
-                endAngle = 360
-            }
-        }
-    }
+    @State var isAnimating = false
     
     var title: String?
     var isShownAddIcon: Bool
     
     init(title: String? = nil, isShownAddIcon: Bool = false) {
-        self.animationStatus = .end
         self.title = title
         self.isShownAddIcon = isShownAddIcon
     }
@@ -117,7 +91,6 @@ struct StoryIcon: View {
                         ),
                         lineWidth: 10.0, antialiased: true
                     )
-                    .animation(.linear(duration: currentAnimationDuration), value: animationStatus)
                 
                 Image("avatar")
                     .resizable()
@@ -138,10 +111,20 @@ struct StoryIcon: View {
             }
             .scaledToFit()
             .onTapGesture {
-                Task { await changeAnimationStatus() }
+                // reset endAngle to 0 after finishing animation
+                if endAngle == 360 { endAngle = 0 }
+                
+                isAnimating.toggle()
+
+                let animationDuration = isAnimating ? animationDuration * (1 - tracingEndAngle.currentEndAngle / 360.0) : 0
+                withAnimation(.linear(duration: animationDuration)) {
+                    endAngle = isAnimating ? 360 : tracingEndAngle.currentEndAngle
+                }
             }.onChange(of: tracingEndAngle.currentEndAngle) { newValue in
-                if newValue == 360 {
-                    animationStatus = .end
+                if newValue == 360.0 {
+                    // reset currentEndAngle to 0 after finishing animation
+                    tracingEndAngle.currentEndAngle = 0
+                    isAnimating = false
                 }
             }
             
@@ -152,26 +135,6 @@ struct StoryIcon: View {
                     .padding(.horizontal, 4)
             }
 
-        }
-    }
-    
-    func changeAnimationStatus() async {
-        switch animationStatus {
-        case .pending:
-            animationStatus = .play
-        case .play:
-            if tracingEndAngle.currentEndAngle == 360 {
-                animationStatus = .end
-            } else {
-                animationStatus = .pause
-            }
-        case .pause:
-            animationStatus = .play
-        case .end:
-            animationStatus = .pending
-            // give a moment let Arc reset
-            try? await Task.sleep(nanoseconds: 2_000_000_000)
-            animationStatus = .play
         }
     }
     
