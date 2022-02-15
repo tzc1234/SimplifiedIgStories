@@ -7,11 +7,12 @@
 
 import SwiftUI
 
-struct Arc: Shape {
+struct Arc: InsettableShape {
     let startAngle: Double
     var endAngle: Double
     let clockwise: Bool
     let traceEndAngle: TracingEndAngle
+    var insetAmount = 0.0
     
     var animatableData: Double {
         get { endAngle }
@@ -33,12 +34,18 @@ struct Arc: Shape {
         var path = Path()
         path.addArc(
             center: CGPoint(x: rect.midX, y: rect.midY),
-            radius: rect.width / 2,
+            radius: rect.width / 2 - insetAmount,
             startAngle: .degrees(startAngle) - rotationAdjustment,
             endAngle: .degrees(endAngle) - rotationAdjustment,
             clockwise: !clockwise
         )
         return path
+    }
+    
+    func inset(by amount: CGFloat) -> some InsettableShape {
+        var arc = self
+        arc.insetAmount = amount
+        return arc
     }
 }
 
@@ -60,7 +67,6 @@ struct StoryIcon: View {
     @State var endAngle = 0.0
     @ObservedObject var tracingEndAngle = TracingEndAngle(currentEndAngle: 0.0)
     
-    let animatedStrokeWidth = 10.0
     let animationDuration = 1.0
     @State private var currentAnimationDuration = 0.0
     
@@ -90,47 +96,56 @@ struct StoryIcon: View {
         }
     }
     
+    var title: String? = "Title"
+    
     init() {
         animationStatus = .pending
     }
     
     var body: some View {
-        ZStack {
-            Arc(startAngle: 0, endAngle: endAngle, clockwise: true, traceEndAngle: tracingEndAngle)
-                .stroke(
-                    .linearGradient(
-                        colors: [.orange, .red],
-                        startPoint: .topTrailing,
-                        endPoint: .bottomLeading
-                    ),
-                    lineWidth: animatedStrokeWidth
-                )
-                .animation(.linear(duration: currentAnimationDuration), value: animationStatus)
-                .padding(animatedStrokeWidth)
+        VStack {
+            ZStack {
+                Arc(startAngle: 0, endAngle: endAngle, clockwise: true, traceEndAngle: tracingEndAngle)
+                    .strokeBorder(
+                        .linearGradient(
+                            colors: [.orange, .red],
+                            startPoint: .topTrailing,
+                            endPoint: .bottomLeading
+                        ),
+                        lineWidth: 10.0
+                    )
+                    .animation(.linear(duration: currentAnimationDuration), value: animationStatus)
                 
-            Image("avatar")
-                .resizable()
-                .scaledToFit()
-                .clipShape(Circle())
-                .overlay(Circle().strokeBorder(.white, lineWidth: 6))
-                .padding(animatedStrokeWidth)
-            
-            Image("add")
-                .resizable()
-                .scaledToFit()
-                .background(Circle().fill(.background).scaleEffect(1.1))
-                .aspectRatio(0.3, contentMode: .fit)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-                .padding(.bottom, 20)
-                .padding(.trailing, 10)
-        }
-        .scaledToFit()
-        .onTapGesture {
-            Task { await changeAnimationStatus() }
-        }.onChange(of: tracingEndAngle.currentEndAngle) { newValue in
-            if newValue == 360 {
-                animationStatus = .end
+                Image("avatar")
+                    .resizable()
+                    .scaledToFit()
+                    .scaleEffect(0.9)
+                    .clipShape(Circle())
+                    .background(Circle().fill(.background).scaleEffect(0.95))
+                
+                Image("add")
+                    .resizable()
+                    .scaledToFit()
+                    .background(Circle().fill(.background).scaleEffect(1.1))
+                    .aspectRatio(0.3, contentMode: .fit)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                    .padding(.bottom)
+                    .padding(.trailing, 10)
             }
+            .scaledToFit()
+            .padding(EdgeInsets(top: -5, leading: -5, bottom: -5, trailing: -5))
+            .onTapGesture {
+                Task { await changeAnimationStatus() }
+            }.onChange(of: tracingEndAngle.currentEndAngle) { newValue in
+                if newValue == 360 {
+                    animationStatus = .end
+                }
+            }
+            
+            if let title = title {
+                Text(title).font(.headline)
+            }
+
         }
     }
     
@@ -159,6 +174,5 @@ struct StoryIcon: View {
 struct StoryIcon_Previews: PreviewProvider {
     static var previews: some View {
         StoryIcon()
-            .preferredColorScheme(.dark)
     }
 }
