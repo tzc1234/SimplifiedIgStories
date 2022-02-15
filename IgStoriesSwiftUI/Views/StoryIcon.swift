@@ -96,14 +96,17 @@ struct StoryIcon: View {
         }
     }
     
-    var title: String? = "Title"
+    var title: String?
+    var isShownAddIcon: Bool
     
-    init() {
-        animationStatus = .pending
+    init(title: String? = nil, isShownAddIcon: Bool = false) {
+        self.animationStatus = .end
+        self.title = title
+        self.isShownAddIcon = isShownAddIcon
     }
     
     var body: some View {
-        VStack {
+        VStack(alignment: .center, spacing: 4) {
             ZStack {
                 Arc(startAngle: 0, endAngle: endAngle, clockwise: true, traceEndAngle: tracingEndAngle)
                     .strokeBorder(
@@ -112,28 +115,28 @@ struct StoryIcon: View {
                             startPoint: .topTrailing,
                             endPoint: .bottomLeading
                         ),
-                        lineWidth: 10.0
+                        lineWidth: 10.0, antialiased: true
                     )
                     .animation(.linear(duration: currentAnimationDuration), value: animationStatus)
                 
                 Image("avatar")
                     .resizable()
                     .scaledToFit()
-                    .scaleEffect(0.9)
+                    .scaleEffect(0.85)
                     .clipShape(Circle())
-                    .background(Circle().fill(.background).scaleEffect(0.95))
+                    .background(Circle().fill(.background).scaleEffect(0.9))
                 
-                Image("add")
-                    .resizable()
-                    .scaledToFit()
-                    .background(Circle().fill(.background).scaleEffect(1.1))
-                    .aspectRatio(0.3, contentMode: .fit)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-                    .padding(.bottom)
-                    .padding(.trailing, 10)
+                if isShownAddIcon {
+                    Image("add")
+                        .resizable()
+                        .scaledToFit()
+                        .background(Circle().fill(.background).scaleEffect(1.1))
+                        .aspectRatio(0.3, contentMode: .fit)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                        .padding([.bottom, .trailing], 4)
+                }
             }
             .scaledToFit()
-            .padding(EdgeInsets(top: -5, leading: -5, bottom: -5, trailing: -5))
             .onTapGesture {
                 Task { await changeAnimationStatus() }
             }.onChange(of: tracingEndAngle.currentEndAngle) { newValue in
@@ -143,7 +146,10 @@ struct StoryIcon: View {
             }
             
             if let title = title {
-                Text(title).font(.headline)
+                Text(title)
+                    .font(.caption)
+                    .lineLimit(1)
+                    .padding(.horizontal, 4)
             }
 
         }

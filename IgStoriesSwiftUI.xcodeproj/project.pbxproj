@@ -12,6 +12,8 @@
 		BE090B5F27B9562D00B6F906 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE090B5E27B9562D00B6F906 /* Preview Assets.xcassets */; };
 		BE090B6727B9568700B6F906 /* StoryIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE090B6627B9568700B6F906 /* StoryIcon.swift */; };
 		BE889DE227BA774A006B0836 /* AnimatableModifier+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE889DE127BA774A006B0836 /* AnimatableModifier+Utils.swift */; };
+		BE8A758127BC107000E9F745 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8A758027BC106F00E9F745 /* HomeView.swift */; };
+		BED0F60D27BBF64B00D93F15 /* StoryIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +23,8 @@
 		BE090B5E27B9562D00B6F906 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		BE090B6627B9568700B6F906 /* StoryIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIcon.swift; sourceTree = "<group>"; };
 		BE889DE127BA774A006B0836 /* AnimatableModifier+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnimatableModifier+Utils.swift"; sourceTree = "<group>"; };
+		BE8A758027BC106F00E9F745 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIconsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,7 +77,9 @@
 		BE090B6527B9566D00B6F906 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				BE8A758027BC106F00E9F745 /* HomeView.swift */,
 				BE090B6627B9568700B6F906 /* StoryIcon.swift */,
+				BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -159,6 +165,8 @@
 				BE889DE227BA774A006B0836 /* AnimatableModifier+Utils.swift in Sources */,
 				BE090B6727B9568700B6F906 /* StoryIcon.swift in Sources */,
 				BE090B5827B9562B00B6F906 /* IgStoriesSwiftUIApp.swift in Sources */,
+				BE8A758127BC107000E9F745 /* HomeView.swift in Sources */,
+				BED0F60D27BBF64B00D93F15 /* StoryIconsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
