@@ -57,32 +57,42 @@ final class TracingEndAngle: ObservableObject {
 }
 
 struct StoryIcon: View {
-    @State var endAngle: Double = 0.0
+    @State var endAngle = 0.0
     @ObservedObject var tracingEndAngle = TracingEndAngle(currentEndAngle: 0.0)
     
-    let animationDuration: Double = 1.0
-    @State private var currentAnimationDuration: Double = 0.0
+    let animatedStrokeWidth = 10.0
+    let animationDuration = 1.0
+    @State private var currentAnimationDuration = 0.0
     
     enum AnimationStatus {
-        case pending, play, pause
+        case pending, play, pause, end
     }
-    @State private(set) var animationStatus: AnimationStatus = .pending {
+    @State private var animationStatus: AnimationStatus {
         didSet {
             switch animationStatus {
-            case .pending, .pause:
-                currentAnimationDuration = 0.0
+            case .pending:
+                currentAnimationDuration = 0
+                endAngle = 0
             case .play:
-                if endAngle == 360.0 { endAngle = 0.0 }
                 if oldValue == .pending {
                     currentAnimationDuration = animationDuration
                 } else {
                     currentAnimationDuration = animationDuration * (1 - tracingEndAngle.currentEndAngle / 360.0)
                 }
+                endAngle = 360
+            case .pause:
+                currentAnimationDuration = 0
+                endAngle = tracingEndAngle.currentEndAngle
+            case .end:
+                currentAnimationDuration = 0
+                endAngle = 360
             }
         }
     }
     
-    let animatedStrokeWidth = 10.0
+    init() {
+        animationStatus = .pending
+    }
     
     var body: some View {
         ZStack {
@@ -95,6 +105,7 @@ struct StoryIcon: View {
                     ),
                     lineWidth: animatedStrokeWidth
                 )
+                .animation(.linear(duration: currentAnimationDuration), value: animationStatus)
                 .padding(animatedStrokeWidth)
                 
             Image("avatar")
@@ -107,7 +118,7 @@ struct StoryIcon: View {
             Image("add")
                 .resizable()
                 .scaledToFit()
-                .background(Circle().fill(.white).scaleEffect(1.1))
+                .background(Circle().fill(.background).scaleEffect(1.1))
                 .aspectRatio(0.3, contentMode: .fit)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
                 .padding(.bottom, 20)
@@ -115,29 +126,30 @@ struct StoryIcon: View {
         }
         .scaledToFit()
         .onTapGesture {
-            changeAnimationStatus()
-            withAnimation(.linear(duration: currentAnimationDuration)) {
-                switch animationStatus {
-                case .pending:
-                    break
-                case .play:
-                    endAngle = 360.0
-                case .pause:
-                    endAngle = tracingEndAngle.currentEndAngle
-                }
+            Task { await changeAnimationStatus() }
+        }.onChange(of: tracingEndAngle.currentEndAngle) { newValue in
+            if newValue == 360 {
+                animationStatus = .end
             }
-        }.onAnimationCompleted(for: endAngle) {
-            if endAngle == 360.0 { animationStatus = .pending }
         }
     }
     
-    func changeAnimationStatus() {
+    func changeAnimationStatus() async {
         switch animationStatus {
         case .pending:
             animationStatus = .play
         case .play:
-            animationStatus = .pause
+            if tracingEndAngle.currentEndAngle == 360 {
+                animationStatus = .end
+            } else {
+                animationStatus = .pause
+            }
         case .pause:
+            animationStatus = .play
+        case .end:
+            animationStatus = .pending
+            // give a moment let Arc reset
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
             animationStatus = .play
         }
     }
@@ -147,5 +159,6 @@ struct StoryIcon: View {
 struct StoryIcon_Previews: PreviewProvider {
     static var previews: some View {
         StoryIcon()
+            .preferredColorScheme(.dark)
     }
 }
