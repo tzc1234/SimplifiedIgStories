@@ -72,11 +72,11 @@ struct StoryIcon: View {
     @State var isAnimating = false
     
     var title: String?
-    var isShownAddIcon: Bool
+    var isPlusIconShown: Bool
     
     init(title: String? = nil, isShownAddIcon: Bool = false) {
         self.title = title
-        self.isShownAddIcon = isShownAddIcon
+        self.isPlusIconShown = isShownAddIcon
     }
     
     var body: some View {
@@ -96,13 +96,13 @@ struct StoryIcon: View {
                     .resizable()
                     .scaledToFit()
                     .scaleEffect(0.85)
-                    .clipShape(Circle())
                     .background(Circle().fill(.background).scaleEffect(0.9))
                 
-                if isShownAddIcon {
-                    Image("add")
+                if isPlusIconShown {
+                    Image(systemName: "plus.circle.fill")
                         .resizable()
                         .scaledToFit()
+                        .foregroundColor(.blue)
                         .background(Circle().fill(.background).scaleEffect(1.1))
                         .aspectRatio(0.3, contentMode: .fit)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
@@ -117,7 +117,7 @@ struct StoryIcon: View {
                 isAnimating.toggle()
 
                 let animationDuration = isAnimating ? animationDuration * (1 - tracingEndAngle.currentEndAngle / 360.0) : 0
-                withAnimation(.linear(duration: animationDuration)) {
+                withAnimation(.easeInOut(duration: animationDuration)) {
                     endAngle = isAnimating ? 360 : tracingEndAngle.currentEndAngle
                 }
             }.onChange(of: tracingEndAngle.currentEndAngle) { newValue in

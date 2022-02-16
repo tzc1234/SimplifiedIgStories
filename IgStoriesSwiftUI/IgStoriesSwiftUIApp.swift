@@ -11,7 +11,8 @@ import SwiftUI
 struct IgStoriesSwiftUIApp: App {
     var body: some Scene {
         WindowGroup {
-            HomeView()
+//            HomeView()
+            ProgressBar()
         }
     }
 }
