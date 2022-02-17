@@ -47,10 +47,16 @@ final class TracingEndX: ObservableObject {
 
 struct ProgressBarSegment: View {
     @State private var endX = 0.0
-    @ObservedObject private var tracingEndX = TracingEndX(currentEndX: 0.0)
-    @State private var isAnimating = false
+    // ProgressBarSegment will frequently be recreate,
+    // TracingEndX must be a @StateObject to keep unchange.
+    @StateObject private var tracingEndX = TracingEndX(currentEndX: 0.0)
     
     let duration = 1.0
+    
+    enum AnimationStatus {
+        case pending, playing, pausing, finished
+    }
+    @State var animationStatus: AnimationStatus
     
     let index: Int
     @ObservedObject private var tracingSegmentAnimation: TracingSegmentAnimation
@@ -58,6 +64,7 @@ struct ProgressBarSegment: View {
     init(index: Int, tracingSegmentAnimation: TracingSegmentAnimation) {
         self.index = index
         self.tracingSegmentAnimation = tracingSegmentAnimation
+        self.animationStatus = .pending
     }
     
     var body: some View {
@@ -67,34 +74,70 @@ struct ProgressBarSegment: View {
                 .background(Color(.lightGray).opacity(0.5))
                 .cornerRadius(6)
                 .onChange(of: tracingEndX.currentEndX) { currentEndX in
+                    // Finishing, reset.
                     if currentEndX == geo.size.width {
                         tracingEndX.updateCurrentEndX(0.0)
-                        isAnimating = false
+                        animationStatus = .finished
                         tracingSegmentAnimation.isSegmentAnimationFinishedDict[index] = true
                     }
                 }
                 .onChange(of: tracingSegmentAnimation.currentSegmentIndex) { currentSegmentIndex in
+                    // Start playing
                     if currentSegmentIndex == index {
-                        startOrPauseAnimation(geo: geo)
-                    }
-                }.onChange(of: tracingSegmentAnimation.shouldAnimationPause) { _ in
-                    if tracingSegmentAnimation.currentSegmentIndex == index {
-                        startOrPauseAnimation(geo: geo)
+                        animationStatus = .playing
                     }
                 }
+                .onChange(of: tracingSegmentAnimation.shouldAnimationPause) { shouldAnimationPause in
+                    if tracingSegmentAnimation.currentSegmentIndex == index {
+                        if shouldAnimationPause { // pause
+                            animationStatus = .pausing
+                        } else { // resume
+                            animationStatus = .playing
+                        }
+                    }
+                }
+                .onChange(of: animationStatus) { animationStatus in
+                    let duration = animationStatus == .playing ? duration * (1 - tracingEndX.currentEndX / geo.size.width) : 0
+                    withAnimation(.linear(duration: duration)) {
+                        switch animationStatus {
+                        case .pending:
+                            endX = 0
+                        case .playing:
+                            endX = geo.size.width
+                        case .pausing:
+                            endX = tracingEndX.currentEndX
+                        case .finished:
+                            endX = geo.size.width
+                        }
+                    }
+                }
+                
         }
     }
     
-    func startOrPauseAnimation(geo: GeometryProxy) {
-        if endX == geo.size.width { endX = 0 }
-        isAnimating.toggle()
-        
-        let duration = isAnimating ? duration * (1 - tracingEndX.currentEndX / geo.size.width) : 0
-        
-        withAnimation(.linear(duration: duration)) {
-            endX = isAnimating ? geo.size.width : tracingEndX.currentEndX
-        }
-    }
+//    func startOrPauseAnimation(geo: GeometryProxy) {
+//        if endX == geo.size.width { endX = 0 }
+//        isAnimating.toggle()
+//
+//        let duration = isAnimating ? duration * (1 - tracingEndX.currentEndX / geo.size.width) : 0
+//
+//        withAnimation(.linear(duration: duration)) {
+//            endX = isAnimating ? geo.size.width : tracingEndX.currentEndX
+//        }
+//    }
+    
+//    func changeAnimationStatus(geo: GeometryProxy) {
+//        switch animationStatus {
+//        case .pending:
+//            animationStatus = .playing
+//        case .playing:
+//            animationStatus = .pausing
+//        case .pausing:
+//            animationStatus = .playing
+//        case .finished:
+//            break
+//        }
+//    }
     
 }
 

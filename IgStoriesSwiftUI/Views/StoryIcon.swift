@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Arc: InsettableShape {
+struct TraceableArc: InsettableShape {
     let startAngle: Double
     var endAngle: Double
     let clockwise: Bool
@@ -64,12 +64,15 @@ final class TracingEndAngle: ObservableObject {
 }
 
 struct StoryIcon: View {
-    @State var endAngle = 360.0
-    @ObservedObject var tracingEndAngle = TracingEndAngle(currentEndAngle: 0.0)
+    @Environment(\.scenePhase) var scenePhase
     
-    let animationDuration = 1.0
+    @State var endAngle = 360.0
+    @ObservedObject private var tracingEndAngle = TracingEndAngle(currentEndAngle: 0.0)
+    
+    let animationDuration = 10.0
     @State private var currentAnimationDuration = 0.0
-    @State var isAnimating = false
+    @State private(set) var isAnimating = false
+    @State private var isInital = true
     
     var title: String?
     var isPlusIconShown: Bool
@@ -82,7 +85,7 @@ struct StoryIcon: View {
     var body: some View {
         VStack(alignment: .center, spacing: 4) {
             ZStack {
-                Arc(startAngle: 0, endAngle: endAngle, clockwise: true, traceEndAngle: tracingEndAngle)
+                TraceableArc(startAngle: 0, endAngle: endAngle, clockwise: true, traceEndAngle: tracingEndAngle)
                     .strokeBorder(
                         .linearGradient(
                             colors: [.orange, .red],
@@ -111,20 +114,21 @@ struct StoryIcon: View {
             }
             .scaledToFit()
             .onTapGesture {
-                // reset endAngle to 0 after finishing animation
-                if endAngle == 360 { endAngle = 0 }
-                
-                isAnimating.toggle()
-
-                let animationDuration = isAnimating ? animationDuration * (1 - tracingEndAngle.currentEndAngle / 360.0) : 0
-                withAnimation(.easeInOut(duration: animationDuration)) {
-                    endAngle = isAnimating ? 360 : tracingEndAngle.currentEndAngle
-                }
-            }.onChange(of: tracingEndAngle.currentEndAngle) { newValue in
+                isInital = false
+                startStrokeAnimation()
+            }
+            .onChange(of: tracingEndAngle.currentEndAngle) { newValue in
                 if newValue == 360.0 {
-                    // reset currentEndAngle to 0 after finishing animation
-                    tracingEndAngle.currentEndAngle = 0
-                    isAnimating = false
+                    resetStrokeAnimationAfterCompletion()
+                }
+            }
+            .onChange(of: scenePhase) { newPhase in
+                if !isInital {
+                    if newPhase == .active {
+                        startStrokeAnimation()
+                    } else if newPhase == .inactive {
+                        pauseStrokeAnimation()
+                    }
                 }
             }
             
@@ -134,7 +138,6 @@ struct StoryIcon: View {
                     .lineLimit(1)
                     .padding(.horizontal, 4)
             }
-
         }
     }
     
@@ -143,5 +146,37 @@ struct StoryIcon: View {
 struct StoryIcon_Previews: PreviewProvider {
     static var previews: some View {
         StoryIcon()
+    }
+}
+
+// MARK: functions
+extension StoryIcon {
+    func startStrokeAnimation() {
+        if !isAnimating {
+            isAnimating.toggle()
+            
+            // reset endAngle to 0 if the animation is finished
+            if endAngle == 360 { endAngle = 0 }
+            
+            let animationDuration = animationDuration * (1 - tracingEndAngle.currentEndAngle / 360.0)
+            withAnimation(.easeInOut(duration: animationDuration)) {
+                endAngle = 360
+            }
+        }
+    }
+    
+    func pauseStrokeAnimation() {
+        if isAnimating {
+            isAnimating.toggle()
+            withAnimation(.easeInOut(duration: 0)) {
+                endAngle = tracingEndAngle.currentEndAngle
+            }
+        }
+    }
+    
+    func resetStrokeAnimationAfterCompletion() {
+        // reset currentEndAngle to 0 after finishing animation
+        tracingEndAngle.currentEndAngle = 0
+        isAnimating = false
     }
 }
