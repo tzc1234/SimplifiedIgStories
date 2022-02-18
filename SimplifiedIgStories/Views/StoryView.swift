@@ -8,49 +8,27 @@
 import SwiftUI
 
 struct StoryView: View {
-    
-    private let avatarSize = 45.0
-    
     var body: some View {
         ZStack {
             StoryPhotoView()
+
+            DetectableTapGesturePositionView { point in
+                print("x: \(point.x), y: \(point.y)")
+            }
+            .ignoresSafeArea()
             
             VStack(alignment: .leading) {
                 ProgressBar()
                     .frame(height: 3, alignment: .center)
-                
-                GeometryReader { geo in
-                    HStack {
-                        Image("avatar")
-                            .resizable()
-                            .frame(width: avatarSize, height: avatarSize)
-                            .overlay(Circle().strokeBorder(.white, lineWidth: 1))
-                        
-                        Text("Person0")
-                            .foregroundColor(.white)
-                            .font(.headline)
-                            .fontWeight(.bold)
-                            .lineLimit(2)
-                            
-                        Text("15h")
-                            .foregroundColor(.white)
-                            .font(.subheadline)
-                        
-                        Spacer()
-                        
-                        Button {
-                            print("Tapped!")
-                        } label: {
-                            Image(systemName: "xmark")
-                                .resizable()
-                                .foregroundColor(.white)
-                                .frame(width: 35, height: 35)
-                        }
 
-                        
-                    }.padding(.horizontal, 18)
-                }
-                
+                HStack {
+                    avatarIcon
+                    nameText
+                    dateText
+                    Spacer()
+                    closeButton
+                }.padding(.horizontal, 18)
+
                 Spacer()
             }
         }
@@ -60,5 +38,40 @@ struct StoryView: View {
 struct StoryView_Previews: PreviewProvider {
     static var previews: some View {
         StoryView()
+    }
+}
+
+// MARK: components
+extension StoryView {
+    var avatarIcon: some View {
+        Image("avatar")
+            .resizable()
+            .frame(width: 45, height: 45)
+            .overlay(Circle().strokeBorder(.white, lineWidth: 1))
+    }
+    
+    var nameText: some View {
+        Text("Person0")
+            .foregroundColor(.white)
+            .font(.headline)
+            .fontWeight(.bold)
+            .lineLimit(2)
+    }
+    
+    var dateText: some View {
+        Text("15h")
+            .foregroundColor(.white)
+            .font(.subheadline)
+    }
+    
+    var closeButton: some View {
+        Button {
+            print("Close tapped.")
+        } label: {
+            Image(systemName: "xmark")
+                .resizable()
+                .foregroundColor(.white)
+                .frame(width: 35, height: 35)
+        }
     }
 }
