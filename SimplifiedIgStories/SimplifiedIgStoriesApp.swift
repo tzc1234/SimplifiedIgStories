@@ -13,7 +13,8 @@ struct SimplifiedIgStoriesApp: App {
         WindowGroup {
 //            StoryIcon()
 //            HomeView()
-            ProgressBar()
+//            ProgressBar()
+            StoryView()
         }
     }
 }

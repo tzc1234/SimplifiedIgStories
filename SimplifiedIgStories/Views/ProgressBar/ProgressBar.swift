@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// TODO: any better name for this observable object?
 final class TracingSegmentAnimation: ObservableObject {
     @Published var currentSegmentIndex: Int = -1
     @Published var isSegmentAnimationFinishedDict: [Int: Bool] = [:]
@@ -25,7 +26,6 @@ struct ProgressBar: View {
                 Spacer(minLength: 2)
             }
         }
-        .frame(height: 10)
         .padding(.horizontal, 10)
         .onTapGesture {
             // start animation
