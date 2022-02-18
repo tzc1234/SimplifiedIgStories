@@ -46,6 +46,9 @@ final class TracingEndX: ObservableObject {
 }
 
 struct ProgressBarSegment: View {
+    @Environment(\.scenePhase) var scenePhase
+    @State private var isInital = true
+    
     @State private var endX = 0.0
     // ProgressBarSegment will frequently be recreate,
     // TracingEndX must be a @StateObject to keep it unchange.
@@ -56,7 +59,7 @@ struct ProgressBarSegment: View {
     enum AnimationStatus {
         case pending, playing, pausing, finished
     }
-    @State var animationStatus: AnimationStatus
+    @State var animationStatus: AnimationStatus = .pending
     
     let index: Int
     @ObservedObject private var tracingSegmentAnimation: TracingSegmentAnimation
@@ -64,7 +67,6 @@ struct ProgressBarSegment: View {
     init(index: Int, tracingSegmentAnimation: TracingSegmentAnimation) {
         self.index = index
         self.tracingSegmentAnimation = tracingSegmentAnimation
-        self.animationStatus = .pending
     }
     
     var body: some View {
@@ -84,16 +86,8 @@ struct ProgressBarSegment: View {
                 .onChange(of: tracingSegmentAnimation.currentSegmentIndex) { currentSegmentIndex in
                     // Start playing
                     if currentSegmentIndex == index {
+                        isInital = false
                         animationStatus = .playing
-                    }
-                }
-                .onChange(of: tracingSegmentAnimation.shouldAnimationPause) { shouldAnimationPause in
-                    if tracingSegmentAnimation.currentSegmentIndex == index {
-                        if shouldAnimationPause { // pause
-                            animationStatus = .pausing
-                        } else { // resume
-                            animationStatus = .playing
-                        }
                     }
                 }
                 .onChange(of: animationStatus) { animationStatus in
@@ -111,33 +105,18 @@ struct ProgressBarSegment: View {
                         }
                     }
                 }
+                .onChange(of: scenePhase) { newPhase in
+                    if !isInital {
+                        if newPhase == .active {
+                            animationStatus = .playing
+                        } else if newPhase == .inactive {
+                            animationStatus = .pausing
+                        }
+                    }
+                }
                 
         }
     }
-    
-//    func startOrPauseAnimation(geo: GeometryProxy) {
-//        if endX == geo.size.width { endX = 0 }
-//        isAnimating.toggle()
-//
-//        let duration = isAnimating ? duration * (1 - tracingEndX.currentEndX / geo.size.width) : 0
-//
-//        withAnimation(.linear(duration: duration)) {
-//            endX = isAnimating ? geo.size.width : tracingEndX.currentEndX
-//        }
-//    }
-    
-//    func changeAnimationStatus(geo: GeometryProxy) {
-//        switch animationStatus {
-//        case .pending:
-//            animationStatus = .playing
-//        case .playing:
-//            animationStatus = .pausing
-//        case .pausing:
-//            animationStatus = .playing
-//        case .finished:
-//            break
-//        }
-//    }
     
 }
 

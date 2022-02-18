@@ -10,7 +10,6 @@ import SwiftUI
 final class TracingSegmentAnimation: ObservableObject {
     @Published var currentSegmentIndex: Int = -1
     @Published var isSegmentAnimationFinishedDict: [Int: Bool] = [:]
-    @Published var shouldAnimationPause: Bool = false
 }
 
 struct ProgressBar: View {
@@ -29,18 +28,18 @@ struct ProgressBar: View {
         .frame(height: 10)
         .padding(.horizontal, 10)
         .onTapGesture {
+            // start animation
             if tracingSegmentAnimation.currentSegmentIndex == -1 {
                 tracingSegmentAnimation.currentSegmentIndex = 0
-            } else {
-                tracingSegmentAnimation.shouldAnimationPause.toggle()
             }
         }
+        // for trigger next bar segment animation
         .onChange(of: tracingSegmentAnimation.isSegmentAnimationFinishedDict[tracingSegmentAnimation.currentSegmentIndex], perform: { newValue in
             if newValue == true {
                 tracingSegmentAnimation.currentSegmentIndex += 1
             }
         })
-            
+        
     }
 }
 
