@@ -1,6 +1,6 @@
 //
 //  HomeView.swift
-//  IgStoriesSwiftUI
+//  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 15/2/2022.
 //

@@ -1,6 +1,6 @@
 //
 //  ProgressBar.swift
-//  IgStoriesSwiftUI
+//  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 16/2/2022.
 //

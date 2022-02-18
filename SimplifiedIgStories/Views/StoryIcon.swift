@@ -1,6 +1,6 @@
 //
 //  StoryIcon.swift
-//  IgStoriesSwiftUI
+//  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 13/2/2022.
 //
@@ -69,7 +69,7 @@ struct StoryIcon: View {
     @State var endAngle = 360.0
     @ObservedObject private var tracingEndAngle = TracingEndAngle(currentEndAngle: 0.0)
     
-    let animationDuration = 10.0
+    let animationDuration = 1.0
     @State private var currentAnimationDuration = 0.0
     @State private(set) var isAnimating = false
     @State private var isInital = true

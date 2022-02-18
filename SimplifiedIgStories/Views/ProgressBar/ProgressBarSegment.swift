@@ -1,6 +1,6 @@
 //
 //  ProgressBarSegment.swift
-//  IgStoriesSwiftUI
+//  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 15/2/2022.
 //
@@ -48,7 +48,7 @@ final class TracingEndX: ObservableObject {
 struct ProgressBarSegment: View {
     @State private var endX = 0.0
     // ProgressBarSegment will frequently be recreate,
-    // TracingEndX must be a @StateObject to keep unchange.
+    // TracingEndX must be a @StateObject to keep it unchange.
     @StateObject private var tracingEndX = TracingEndX(currentEndX: 0.0)
     
     let duration = 1.0
