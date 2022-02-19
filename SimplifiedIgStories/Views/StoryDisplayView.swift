@@ -7,8 +7,9 @@
 
 import SwiftUI
 
-struct StoryPhotoView: View {
-    let photoName: String = "sea1"
+struct StoryDisplayView: View {
+    @State var index = 0
+    let photoName: String
     
     var body: some View {
         ZStack {
@@ -25,12 +26,17 @@ struct StoryPhotoView: View {
                 .resizable()
                 .scaledToFit()
         }
-        
     }
+    
+    func onSetIndex(_ index: Int) -> some View {
+        self.index = index
+        return self
+    }
+    
 }
 
 struct StoryPhotoView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryPhotoView()
+        StoryDisplayView(photoName: "sea1")
     }
 }

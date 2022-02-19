@@ -54,7 +54,7 @@ struct ProgressBarSegment: View {
     // TracingEndX must be a @StateObject to keep it unchange.
     @StateObject private var tracingEndX = TracingEndX(currentEndX: 0.0)
     
-    let duration = 1.0
+    let duration = 6.0
     
     enum AnimationStatus {
         case pending, playing, pausing, finished
@@ -76,22 +76,39 @@ struct ProgressBarSegment: View {
                 .background(Color(.lightGray).opacity(0.5))
                 .cornerRadius(6)
                 .onChange(of: tracingEndX.currentEndX) { currentEndX in
-                    // Finishing, reset.
-                    if currentEndX == geo.size.width {
-                        tracingEndX.updateCurrentEndX(0.0)
+                    // Finish
+                    if currentEndX >= geo.size.width {
                         animationStatus = .finished
-                        tracingSegmentAnimation.isSegmentAnimationFinishedDict[index] = true
                     }
                 }
-                .onChange(of: tracingSegmentAnimation.currentSegmentIndex) { currentSegmentIndex in
-                    // Start playing
-                    if currentSegmentIndex == index {
-                        isInital = false
+                .onChange(of: tracingSegmentAnimation.currentSegmentIndex) { newValue in
+                    let currentSegmentIndex = newValue < 0 ? 0 : newValue
+                    if currentSegmentIndex == index { // Play animation
+//                        isInital = false
                         animationStatus = .playing
+                    } else {
+                        if index < currentSegmentIndex { // For Previous segments:
+                            animationStatus = .finished
+                        } else { // For following segents:
+                            animationStatus = .pending
+                        }
                     }
                 }
                 .onChange(of: animationStatus) { animationStatus in
-                    let duration = animationStatus == .playing ? duration * (1 - tracingEndX.currentEndX / geo.size.width) : 0
+                    let duration: Double
+                    if animationStatus == .playing {
+                        if tracingSegmentAnimation.transitionDirection == .backward {
+                            endX = 0
+                            duration = self.duration
+                        } else {
+                            duration = self.duration * (1 - tracingEndX.currentEndX / geo.size.width)
+                        }
+                        
+                        tracingSegmentAnimation.transitionDirection = .forward
+                    } else {
+                        duration = 0
+                    }
+                    
                     withAnimation(.linear(duration: duration)) {
                         switch animationStatus {
                         case .pending:
@@ -101,20 +118,26 @@ struct ProgressBarSegment: View {
                         case .pausing:
                             endX = tracingEndX.currentEndX
                         case .finished:
-                            endX = geo.size.width
+                            endX = geo.size.width + 0.1 // trick to stop animation!
+                            tracingEndX.updateCurrentEndX(0)
+
+                            if index == tracingSegmentAnimation.currentSegmentIndex {
+                                tracingSegmentAnimation.currentSegmentIndex = index + 1
+                            }
                         }
                     }
                 }
-                .onChange(of: scenePhase) { newPhase in
-                    if !isInital {
-                        if newPhase == .active {
-                            animationStatus = .playing
-                        } else if newPhase == .inactive {
-                            animationStatus = .pausing
-                        }
-                    }
-                }
-                
+                // Pause animation when scenePhase inactive
+//                .onChange(of: scenePhase) { newPhase in
+//                    if !isInital {
+//                        if newPhase == .active {
+//                            animationStatus = .playing
+//                        } else if newPhase == .inactive {
+//                            animationStatus = .pausing
+//                        }
+//                    }
+//                }
+            
         }
     }
     
@@ -126,7 +149,6 @@ struct ProgressBarSegment_Previews: PreviewProvider {
             index: 0,
             tracingSegmentAnimation: TracingSegmentAnimation()
         )
-        .preferredColorScheme(.dark)
         .frame(width: 300, height: 30)
     }
 }

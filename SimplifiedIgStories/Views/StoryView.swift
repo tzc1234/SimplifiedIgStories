@@ -7,18 +7,44 @@
 
 import SwiftUI
 
+// TODO: any better name for this observable object?
+final class TracingSegmentAnimation: ObservableObject {
+    @Published var currentSegmentIndex: Int = -1
+    var transitionDirection: AnimationTransitionDirection = .forward
+    
+    enum AnimationTransitionDirection {
+        case forward, backward
+    }
+}
+
 struct StoryView: View {
+    @ObservedObject var tracingSegmentAnimation = TracingSegmentAnimation()
+    
+    @State var storyDisplays: [StoryDisplayView] = [
+        StoryDisplayView(photoName: "sea1"),
+        StoryDisplayView(photoName: "sea2"),
+        StoryDisplayView(photoName: "sea3")
+    ]
+    
     var body: some View {
         ZStack {
-            StoryPhotoView()
+            storyDisplayViews
 
-            DetectableTapGesturePositionView { point in
-                print("x: \(point.x), y: \(point.y)")
+            GeometryReader { geo in
+                DetectableTapGesturePositionView { point in
+                    if point.x <= geo.size.width / 2 { // go previous
+                        tracingSegmentAnimation.transitionDirection = .backward
+                        tracingSegmentAnimation.currentSegmentIndex -= 1
+                    } else { // go next
+                        tracingSegmentAnimation.transitionDirection = .forward
+                        tracingSegmentAnimation.currentSegmentIndex += 1
+                    }
+                }
+                .ignoresSafeArea()
             }
-            .ignoresSafeArea()
             
             VStack(alignment: .leading) {
-                ProgressBar()
+                ProgressBar(tracingSegmentAnimation: tracingSegmentAnimation, numOfSegments: storyDisplays.count)
                     .frame(height: 3, alignment: .center)
 
                 HStack {
@@ -32,6 +58,26 @@ struct StoryView: View {
                 Spacer()
             }
         }
+        .onAppear { // start animation
+            if tracingSegmentAnimation.currentSegmentIndex == -1 {
+                tracingSegmentAnimation.transitionDirection = .forward
+                tracingSegmentAnimation.currentSegmentIndex = 0
+            }
+        }
+        
+    }
+    
+    func storyDisplayOpacity(index: Int) -> Double {
+        let currentIndex: Int
+        if tracingSegmentAnimation.currentSegmentIndex < 0 {
+            currentIndex = 0
+        } else if tracingSegmentAnimation.currentSegmentIndex > storyDisplays.count - 1 {
+            currentIndex = storyDisplays.count - 1
+        } else {
+            currentIndex = tracingSegmentAnimation.currentSegmentIndex
+        }
+        
+        return currentIndex == index ? 1.0 : 0.0
     }
 }
 
@@ -43,6 +89,16 @@ struct StoryView_Previews: PreviewProvider {
 
 // MARK: components
 extension StoryView {
+    var storyDisplayViews: some View {
+        ZStack {
+            ForEach(storyDisplays.indices) { index in
+                storyDisplays[index]
+                    .onSetIndex(index)
+                    .opacity(storyDisplayOpacity(index: index))
+            }
+        }
+    }
+    
     var avatarIcon: some View {
         Image("avatar")
             .resizable()
