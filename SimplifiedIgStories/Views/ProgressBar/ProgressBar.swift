@@ -7,9 +7,27 @@
 
 import SwiftUI
 
+final class TracingSegmentAnimation: ObservableObject {
+    @Published var currentSegmentIndex = -1
+    var isTransitionForward = true
+}
+
 struct ProgressBar: View {
-    var tracingSegmentAnimation: TracingSegmentAnimation
     let numOfSegments: Int
+    @Binding private var transitionDirectionFromParent: StoryView.AnimationTransitionDirection
+    @Binding private var currentStoryDisplayIndex: Int
+    
+    @StateObject private var tracingSegmentAnimation: TracingSegmentAnimation = TracingSegmentAnimation()
+    
+    init(
+        numOfSegments: Int,
+        transitionDirection: Binding<StoryView.AnimationTransitionDirection>,
+        currentStoryDisplayIndex: Binding<Int>
+    ) {
+        self.numOfSegments = numOfSegments
+        self._transitionDirectionFromParent = transitionDirection
+        self._currentStoryDisplayIndex = currentStoryDisplayIndex
+    }
     
     var body: some View {
         HStack {
@@ -21,12 +39,37 @@ struct ProgressBar: View {
             }
         }
         .padding(.horizontal, 10)
+        .onChange(of: transitionDirectionFromParent) { newValue in
+            switch newValue {
+            case .none:
+                break
+            case .forward:
+                let nextIndex = tracingSegmentAnimation.currentSegmentIndex + 1
+                tracingSegmentAnimation.currentSegmentIndex = nextIndex < 0 ? 1 : nextIndex
+                tracingSegmentAnimation.isTransitionForward = true
+                transitionDirectionFromParent = .none // reset
+            case .backward:
+                tracingSegmentAnimation.currentSegmentIndex -= 1
+                tracingSegmentAnimation.isTransitionForward = false
+                transitionDirectionFromParent = .none // reset
+            }
+        }
+        .onChange(of: tracingSegmentAnimation.currentSegmentIndex) { newValue in
+            if newValue < 0 {
+                currentStoryDisplayIndex = 0
+            } else if newValue > numOfSegments - 1 {
+                currentStoryDisplayIndex = numOfSegments - 1
+            } else {
+                currentStoryDisplayIndex = newValue
+            }
+        }
         
     }
+    
 }
 
 struct ProgressBar_Previews: PreviewProvider {
     static var previews: some View {
-        ProgressBar(tracingSegmentAnimation: TracingSegmentAnimation(), numOfSegments: 10)
+        ProgressBar(numOfSegments: 10, transitionDirection: .constant(.forward), currentStoryDisplayIndex: .constant(0))
     }
 }

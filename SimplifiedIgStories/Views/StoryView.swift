@@ -7,20 +7,14 @@
 
 import SwiftUI
 
-// TODO: any better name for this observable object?
-final class TracingSegmentAnimation: ObservableObject {
-    @Published var currentSegmentIndex: Int = -1
-    var transitionDirection: AnimationTransitionDirection = .forward
-    
-    enum AnimationTransitionDirection {
-        case forward, backward
-    }
-}
-
 struct StoryView: View {
-    @ObservedObject var tracingSegmentAnimation = TracingSegmentAnimation()
+    enum AnimationTransitionDirection {
+        case none, forward, backward
+    }
     
-    @State var storyDisplays: [StoryDisplayView] = [
+    @State private var transitionDirection: AnimationTransitionDirection = .none
+    @State private var currentStoryDisplayIndex = 0
+    @State private var storyDisplays: [StoryDisplayView] = [
         StoryDisplayView(photoName: "sea1"),
         StoryDisplayView(photoName: "sea2"),
         StoryDisplayView(photoName: "sea3")
@@ -33,19 +27,19 @@ struct StoryView: View {
             GeometryReader { geo in
                 DetectableTapGesturePositionView { point in
                     if point.x <= geo.size.width / 2 { // go previous
-                        tracingSegmentAnimation.transitionDirection = .backward
-                        tracingSegmentAnimation.currentSegmentIndex -= 1
+                        transitionDirection = .backward
                     } else { // go next
-                        tracingSegmentAnimation.transitionDirection = .forward
-                        tracingSegmentAnimation.currentSegmentIndex += 1
+                        transitionDirection = .forward
                     }
                 }
                 .ignoresSafeArea()
             }
             
             VStack(alignment: .leading) {
-                ProgressBar(tracingSegmentAnimation: tracingSegmentAnimation, numOfSegments: storyDisplays.count)
-                    .frame(height: 3, alignment: .center)
+                ProgressBar(numOfSegments: storyDisplays.count, transitionDirection: $transitionDirection, currentStoryDisplayIndex: $currentStoryDisplayIndex)
+                    .frame(height: 2, alignment: .center)
+                    .padding(.top, 8)
+                    .statusBar(hidden: true)
 
                 HStack {
                     avatarIcon
@@ -53,32 +47,18 @@ struct StoryView: View {
                     dateText
                     Spacer()
                     closeButton
-                }.padding(.horizontal, 18)
+                }.padding(.horizontal, 20)
 
                 Spacer()
             }
         }
-        .onAppear { // start animation
-            if tracingSegmentAnimation.currentSegmentIndex == -1 {
-                tracingSegmentAnimation.transitionDirection = .forward
-                tracingSegmentAnimation.currentSegmentIndex = 0
+        .onAppear { // init animation
+            if transitionDirection == .none {
+                transitionDirection = .forward
             }
         }
-        
     }
     
-    func storyDisplayOpacity(index: Int) -> Double {
-        let currentIndex: Int
-        if tracingSegmentAnimation.currentSegmentIndex < 0 {
-            currentIndex = 0
-        } else if tracingSegmentAnimation.currentSegmentIndex > storyDisplays.count - 1 {
-            currentIndex = storyDisplays.count - 1
-        } else {
-            currentIndex = tracingSegmentAnimation.currentSegmentIndex
-        }
-        
-        return currentIndex == index ? 1.0 : 0.0
-    }
 }
 
 struct StoryView_Previews: PreviewProvider {
@@ -94,7 +74,7 @@ extension StoryView {
             ForEach(storyDisplays.indices) { index in
                 storyDisplays[index]
                     .onSetIndex(index)
-                    .opacity(storyDisplayOpacity(index: index))
+                    .opacity(currentStoryDisplayIndex == index ? 1.0 : 0.0)
             }
         }
     }
@@ -102,7 +82,7 @@ extension StoryView {
     var avatarIcon: some View {
         Image("avatar")
             .resizable()
-            .frame(width: 45, height: 45)
+            .frame(width: 40, height: 40)
             .overlay(Circle().strokeBorder(.white, lineWidth: 1))
     }
     
@@ -127,7 +107,7 @@ extension StoryView {
             Image(systemName: "xmark")
                 .resizable()
                 .foregroundColor(.white)
-                .frame(width: 35, height: 35)
+                .frame(width: 25, height: 25)
         }
     }
 }
