@@ -17,7 +17,7 @@ struct StoryIconsView: View {
                 
                 ForEach(modelData.stories) { story in
                     NavigationLink {
-                        StoryView()
+                        StoryView(story: story)
                     } label: {
                         StoryIcon(avatar: story.user.avatar, title: story.user.name)
                             .frame(width: 90, height: 100)

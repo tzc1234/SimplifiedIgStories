@@ -65,6 +65,7 @@ final class TracingEndAngle: ObservableObject {
 
 struct StoryIcon: View {
     @Environment(\.scenePhase) var scenePhase
+    @Environment(\.colorScheme) var colorScheme
     
     @State var endAngle = 360.0
     @ObservedObject private var tracingEndAngle = TracingEndAngle(currentEndAngle: 0.0)
@@ -142,6 +143,7 @@ struct StoryIcon: View {
                 Text(title)
                     .font(.caption)
                     .lineLimit(1)
+                    .foregroundColor(colorScheme == .light ? .black : .white)
                     .padding(.horizontal, 4)
             }
         }

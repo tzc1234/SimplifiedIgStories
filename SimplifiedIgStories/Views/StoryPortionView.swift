@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct StoryDisplayView: View {
-    @State var index = 0
+struct StoryPortionView: View {
+    let index: Int
     let photoName: String
     
     var body: some View {
@@ -27,16 +27,10 @@ struct StoryDisplayView: View {
                 .scaledToFit()
         }
     }
-    
-    func onSetIndex(_ index: Int) -> some View {
-        self.index = index
-        return self
-    }
-    
 }
 
 struct StoryPhotoView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryDisplayView(photoName: "sea1")
+        StoryPortionView(index: 0, photoName: "sea1")
     }
 }

@@ -15,18 +15,18 @@ final class TracingSegmentAnimation: ObservableObject {
 struct ProgressBar: View {
     let numOfSegments: Int
     @Binding private var transitionDirectionFromParent: StoryView.AnimationTransitionDirection
-    @Binding private var currentStoryDisplayIndex: Int
+    @Binding private var currentStoryPortionIndex: Int
     
     @StateObject private var tracingSegmentAnimation: TracingSegmentAnimation = TracingSegmentAnimation()
     
     init(
         numOfSegments: Int,
         transitionDirection: Binding<StoryView.AnimationTransitionDirection>,
-        currentStoryDisplayIndex: Binding<Int>
+        currentStoryPortionIndex: Binding<Int>
     ) {
         self.numOfSegments = numOfSegments
         self._transitionDirectionFromParent = transitionDirection
-        self._currentStoryDisplayIndex = currentStoryDisplayIndex
+        self._currentStoryPortionIndex = currentStoryPortionIndex
     }
     
     var body: some View {
@@ -56,11 +56,11 @@ struct ProgressBar: View {
         }
         .onChange(of: tracingSegmentAnimation.currentSegmentIndex) { newValue in
             if newValue < 0 {
-                currentStoryDisplayIndex = 0
+                currentStoryPortionIndex = 0
             } else if newValue > numOfSegments - 1 {
-                currentStoryDisplayIndex = numOfSegments - 1
+                currentStoryPortionIndex = numOfSegments - 1
             } else {
-                currentStoryDisplayIndex = newValue
+                currentStoryPortionIndex = newValue
             }
         }
         
@@ -70,6 +70,6 @@ struct ProgressBar: View {
 
 struct ProgressBar_Previews: PreviewProvider {
     static var previews: some View {
-        ProgressBar(numOfSegments: 10, transitionDirection: .constant(.forward), currentStoryDisplayIndex: .constant(0))
+        ProgressBar(numOfSegments: 10, transitionDirection: .constant(.forward), currentStoryPortionIndex: .constant(0))
     }
 }

@@ -10,11 +10,10 @@ import Foundation
 struct Story: Hashable, Codable, Identifiable {
     var id: Int
     var lastUpdate: Int
-    var portionCount: Int
     var portions: [Portion]
     var user: User
     
-    var dateAgo: Date {
+    var lastUpdateDate: Date {
         Date(timeIntervalSince1970: TimeInterval(lastUpdate))
     }
 }

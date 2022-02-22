@@ -12,6 +12,18 @@ extension Date {
         let toDate = Date()
         let calendar = Calendar.current
         
+        if let interval = calendar.dateComponents([.year], from: self, to: toDate).year, interval > 0 {
+          return "\(interval)y"
+        }
+        
+        if let interval = calendar.dateComponents([.month], from: self, to: toDate).month, interval > 0 {
+          return "\(interval)m"
+        }
+        
+        if let interval = calendar.dateComponents([.weekOfYear], from: self, to: toDate).weekOfYear, interval > 0 {
+          return "\(interval)w"
+        }
+        
         if let interval = calendar.dateComponents([.day], from: self, to: toDate).day, interval > 0 {
           return "\(interval)d"
         }
