@@ -9,12 +9,14 @@ import SwiftUI
 
 @main
 struct SimplifiedIgStoriesApp: App {
+    @StateObject private var modelData = ModelData()
+    
     var body: some Scene {
         WindowGroup {
 //            StoryIcon()
-//            HomeView()
+            HomeView().environmentObject(modelData)
 //            ProgressBar()
-            StoryView()
+//            StoryView()
         }
     }
 }

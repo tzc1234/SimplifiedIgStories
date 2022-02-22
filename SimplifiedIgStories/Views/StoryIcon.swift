@@ -72,12 +72,15 @@ struct StoryIcon: View {
     let animationDuration = 1.0
     @State private var currentAnimationDuration = 0.0
     @State private(set) var isAnimating = false
-    @State private var isInital = true
+    
+    @State private var isAnimationPaused = false
     
     var title: String?
+    var avatar: String
     var isPlusIconShown: Bool
     
-    init(title: String? = nil, isShownAddIcon: Bool = false) {
+    init(avatar: String, title: String? = nil, isShownAddIcon: Bool = false) {
+        self.avatar = avatar
         self.title = title
         self.isPlusIconShown = isShownAddIcon
     }
@@ -88,18 +91,22 @@ struct StoryIcon: View {
                 TraceableArc(startAngle: 0, endAngle: endAngle, clockwise: true, traceEndAngle: tracingEndAngle)
                     .strokeBorder(
                         .linearGradient(
-                            colors: [.orange, .red],
+                            colors: [.red, .orange],
                             startPoint: .topTrailing,
                             endPoint: .bottomLeading
                         ),
                         lineWidth: 10.0, antialiased: true
                     )
                 
-                Image("avatar")
-                    .resizable()
-                    .scaledToFit()
-                    .scaleEffect(0.85)
-                    .background(Circle().fill(.background).scaleEffect(0.9))
+                GeometryReader { geo in
+                    Image(avatar)
+                        .resizable()
+                        .scaledToFill()
+                        .clipShape(Circle())
+                        .frame(width: geo.size.width, height: geo.size.width, alignment: .center)
+                        .scaleEffect(0.9)
+                        .background(Circle().fill(.background).scaleEffect(0.95))
+                }
                 
                 if isPlusIconShown {
                     Image(systemName: "plus.circle.fill")
@@ -113,22 +120,21 @@ struct StoryIcon: View {
                 }
             }
             .scaledToFit()
-            .onTapGesture {
-                isInital = false
-                startStrokeAnimation()
-            }
+//            .onTapGesture {
+//                startStrokeAnimation()
+//            }
             .onChange(of: tracingEndAngle.currentEndAngle) { newValue in
                 if newValue == 360.0 {
                     resetStrokeAnimationAfterCompletion()
                 }
             }
             .onChange(of: scenePhase) { newPhase in
-                if !isInital {
-                    if newPhase == .active {
-                        startStrokeAnimation()
-                    } else if newPhase == .inactive {
-                        pauseStrokeAnimation()
-                    }
+                if newPhase == .active && isAnimationPaused {
+                    startStrokeAnimation()
+                    isAnimationPaused = false
+                } else if newPhase == .inactive && !isAnimationPaused {
+                    pauseStrokeAnimation()
+                    isAnimationPaused = true
                 }
             }
             
@@ -145,7 +151,7 @@ struct StoryIcon: View {
 
 struct StoryIcon_Previews: PreviewProvider {
     static var previews: some View {
-        StoryIcon()
+        StoryIcon(avatar: "avatar")
     }
 }
 

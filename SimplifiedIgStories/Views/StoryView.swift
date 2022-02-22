@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct StoryView: View {
+    @Environment(\.dismiss) var dismiss
+    
     enum AnimationTransitionDirection {
         case none, forward, backward
     }
@@ -52,6 +54,7 @@ struct StoryView: View {
                 Spacer()
             }
         }
+        .navigationBarHidden(true)
         .onAppear { // init animation
             if transitionDirection == .none {
                 transitionDirection = .forward
@@ -95,14 +98,14 @@ extension StoryView {
     }
     
     var dateText: some View {
-        Text("15h")
+        Text((Date() - 5).timeAgoDisplay())
             .foregroundColor(.white)
             .font(.subheadline)
     }
     
     var closeButton: some View {
         Button {
-            print("Close tapped.")
+            dismiss()
         } label: {
             Image(systemName: "xmark")
                 .resizable()
