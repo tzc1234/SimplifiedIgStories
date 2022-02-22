@@ -66,6 +66,7 @@ final class TracingEndAngle: ObservableObject {
 struct StoryIcon: View {
     @Environment(\.scenePhase) var scenePhase
     @Environment(\.colorScheme) var colorScheme
+    @EnvironmentObject private var globalObj: GlobalObject
     
     @State var endAngle = 360.0
     @ObservedObject private var tracingEndAngle = TracingEndAngle(currentEndAngle: 0.0)
@@ -73,87 +74,105 @@ struct StoryIcon: View {
     let animationDuration = 1.0
     @State private var currentAnimationDuration = 0.0
     @State private(set) var isAnimating = false
+    @State private var isOnTap = false
     
-    @State private var isAnimationPaused = false
+    let index: Int
+    let avatar: String
+    let title: String?
+    let isPlusIconShown: Bool
     
-    var title: String?
-    var avatar: String
-    var isPlusIconShown: Bool
-    
-    init(avatar: String, title: String? = nil, isShownAddIcon: Bool = false) {
+    init(index: Int, avatar: String, title: String? = nil, isShownAddIcon: Bool = false) {
+        self.index = index
         self.avatar = avatar
         self.title = title
         self.isPlusIconShown = isShownAddIcon
     }
     
     var body: some View {
-        VStack(alignment: .center, spacing: 4) {
-            ZStack {
-                TraceableArc(startAngle: 0, endAngle: endAngle, clockwise: true, traceEndAngle: tracingEndAngle)
-                    .strokeBorder(
-                        .linearGradient(
-                            colors: [.red, .orange],
-                            startPoint: .topTrailing,
-                            endPoint: .bottomLeading
-                        ),
-                        lineWidth: 10.0, antialiased: true
-                    )
-                
-                GeometryReader { geo in
-                    Image(avatar)
-                        .resizable()
-                        .scaledToFill()
-                        .clipShape(Circle())
-                        .frame(width: geo.size.width, height: geo.size.width, alignment: .center)
-                        .scaleEffect(0.9)
-                        .background(Circle().fill(.background).scaleEffect(0.95))
+        GeometryReader { geo in
+            VStack(alignment: .center, spacing: 4) {
+                ZStack {
+                    arcForAnimation
+                    avatarImage
+                    
+                    if isPlusIconShown {
+                        plusIcon
+                    }
+                }
+                .scaledToFit()
+                .onTapGesture {
+                    withAnimation(.spring()) {
+                        isOnTap.toggle()
+                    }
+                    
+                    globalObj.currentStoryIconFrame = geo.frame(in: .global)
+                    globalObj.currentStoryIconIndex = index
+                    isOnTap.toggle()
+                }
+                .onChange(of: tracingEndAngle.currentEndAngle) { newValue in
+                    if newValue == 360.0 {
+                        resetStrokeAnimationAfterCompletion()
+                    }
                 }
                 
-                if isPlusIconShown {
-                    Image(systemName: "plus.circle.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(.blue)
-                        .background(Circle().fill(.background).scaleEffect(1.1))
-                        .aspectRatio(0.3, contentMode: .fit)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-                        .padding([.bottom, .trailing], 4)
+                if title != nil {
+                    titleText
                 }
             }
-            .scaledToFit()
-//            .onTapGesture {
-//                startStrokeAnimation()
-//            }
-            .onChange(of: tracingEndAngle.currentEndAngle) { newValue in
-                if newValue == 360.0 {
-                    resetStrokeAnimationAfterCompletion()
-                }
-            }
-            .onChange(of: scenePhase) { newPhase in
-                if newPhase == .active && isAnimationPaused {
-                    startStrokeAnimation()
-                    isAnimationPaused = false
-                } else if newPhase == .inactive && !isAnimationPaused {
-                    pauseStrokeAnimation()
-                    isAnimationPaused = true
-                }
-            }
-            
-            if let title = title {
-                Text(title)
-                    .font(.caption)
-                    .lineLimit(1)
-                    .foregroundColor(colorScheme == .light ? .black : .white)
-                    .padding(.horizontal, 4)
-            }
+            .scaleEffect(isOnTap ? 1.2 : 1.0)
         }
     }
-    
 }
 
 struct StoryIcon_Previews: PreviewProvider {
     static var previews: some View {
-        StoryIcon(avatar: "avatar")
+        StoryIcon(index: 0, avatar: "avatar")
+    }
+}
+
+// MARK: components
+extension StoryIcon {
+    var arcForAnimation: some View {
+        TraceableArc(startAngle: 0, endAngle: endAngle, clockwise: true, traceEndAngle: tracingEndAngle)
+            .strokeBorder(
+                .linearGradient(
+                    colors: [.red, .orange],
+                    startPoint: .topTrailing,
+                    endPoint: .bottomLeading
+                ),
+                lineWidth: 10.0, antialiased: true
+            )
+    }
+    
+    var avatarImage: some View {
+        GeometryReader { geo in
+            Image(avatar)
+                .resizable()
+                .scaledToFill()
+                .clipShape(Circle())
+                .frame(width: geo.size.width, height: geo.size.width, alignment: .center)
+                .scaleEffect(0.9)
+                .background(Circle().fill(.background).scaleEffect(0.95))
+        }
+    }
+    
+    var plusIcon: some View {
+        Image(systemName: "plus.circle.fill")
+            .resizable()
+            .scaledToFit()
+            .foregroundColor(.blue)
+            .background(Circle().fill(.background).scaleEffect(1.1))
+            .aspectRatio(0.3, contentMode: .fit)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+            .padding([.bottom, .trailing], 4)
+    }
+    
+    var titleText: some View {
+        Text(title ?? "")
+            .font(.caption)
+            .lineLimit(1)
+            .foregroundColor(colorScheme == .light ? .black : .white)
+            .padding(.horizontal, 4)
     }
 }
 

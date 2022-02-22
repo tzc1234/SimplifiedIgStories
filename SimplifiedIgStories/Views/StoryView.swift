@@ -106,6 +106,7 @@ extension StoryView {
             dismiss()
         } label: {
             ZStack {
+                // Increase close button tap area.
                 Color.clear.frame(width: 45, height: 45)
                 Image(systemName: "xmark")
                     .resizable()
