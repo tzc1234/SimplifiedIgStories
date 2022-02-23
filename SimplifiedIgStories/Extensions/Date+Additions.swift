@@ -8,7 +8,7 @@
 import Foundation
 
 extension Date {
-    // Reference from: https://stackoverflow.com/a/51682991
+    // Reference: https://stackoverflow.com/a/51682991
     func timeAgoDisplay() -> String {
         let toDate = Date()
         let calendar = Calendar.current

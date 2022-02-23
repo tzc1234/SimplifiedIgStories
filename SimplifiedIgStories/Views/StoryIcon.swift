@@ -65,68 +65,65 @@ final class TracingEndAngle: ObservableObject {
 
 struct StoryIcon: View {
     @Environment(\.scenePhase) var scenePhase
-    @Environment(\.colorScheme) var colorScheme
-    @EnvironmentObject private var globalObj: GlobalObject
+    @EnvironmentObject private var globalObject: GlobalObject
     
-    @State var endAngle = 360.0
+    @State private var endAngle = 360.0
     @ObservedObject private var tracingEndAngle = TracingEndAngle(currentEndAngle: 0.0)
     
-    let animationDuration = 1.0
-    @State private var currentAnimationDuration = 0.0
-    @State private(set) var isAnimating = false
+    @State private var isAnimating = false
     @State private var isOnTap = false
     
+    let animationDuration = 1.0
     let index: Int
     let avatar: String
-    let title: String?
     let isPlusIconShown: Bool
     
-    init(index: Int, avatar: String, title: String? = nil, isShownAddIcon: Bool = false) {
+    init(index: Int, avatar: String, isShownAddIcon: Bool) {
         self.index = index
         self.avatar = avatar
-        self.title = title
         self.isPlusIconShown = isShownAddIcon
     }
     
     var body: some View {
         GeometryReader { geo in
-            VStack(alignment: .center, spacing: 4) {
-                ZStack {
-                    arcForAnimation
-                    avatarImage
-                    
-                    if isPlusIconShown {
-                        plusIcon
-                    }
-                }
-                .scaledToFit()
-                .onTapGesture {
-                    withAnimation(.spring()) {
-                        isOnTap.toggle()
-                    }
-                    
-                    globalObj.currentStoryIconFrame = geo.frame(in: .global)
-                    globalObj.currentStoryIconIndex = index
-                    isOnTap.toggle()
-                }
-                .onChange(of: tracingEndAngle.currentEndAngle) { newValue in
-                    if newValue == 360.0 {
-                        resetStrokeAnimationAfterCompletion()
-                    }
-                }
+            ZStack {
+                arcForAnimation
+                avatarImage
                 
-                if title != nil {
-                    titleText
+                if isPlusIconShown {
+                    plusIcon
                 }
             }
+            .scaledToFit()
             .scaleEffect(isOnTap ? 1.2 : 1.0)
+            .onTapGesture {
+                withAnimation(.spring()) {
+                    isOnTap.toggle()
+                }
+                
+                globalObject.currentStoryIconFrame = geo.frame(in: .named(HomeView.coordinateSpaceName))
+                globalObject.currentStoryIconIndex = index
+                isOnTap.toggle()
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    withAnimation(.easeInOut) {
+                        globalObject.showContainer.toggle()
+                    }
+                }
+            }
+            .onChange(of: tracingEndAngle.currentEndAngle) { newValue in
+                if newValue == 360.0 {
+                    resetStrokeAnimationAfterCompletion()
+                }
+            }
         }
     }
+    
 }
 
 struct StoryIcon_Previews: PreviewProvider {
     static var previews: some View {
-        StoryIcon(index: 0, avatar: "avatar")
+        StoryIcon(index: 0, avatar: "avatar", isShownAddIcon: false)
     }
 }
 
@@ -165,14 +162,6 @@ extension StoryIcon {
             .aspectRatio(0.3, contentMode: .fit)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
             .padding([.bottom, .trailing], 4)
-    }
-    
-    var titleText: some View {
-        Text(title ?? "")
-            .font(.caption)
-            .lineLimit(1)
-            .foregroundColor(colorScheme == .light ? .black : .white)
-            .padding(.horizontal, 4)
     }
 }
 

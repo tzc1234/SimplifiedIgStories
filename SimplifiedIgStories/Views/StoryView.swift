@@ -8,14 +8,13 @@
 import SwiftUI
 
 struct StoryView: View {
-    @Environment(\.dismiss) var dismiss
-    
     enum AnimationTransitionDirection {
         case none, forward, backward
     }
     
     @State private var transitionDirection: AnimationTransitionDirection = .none
     @State private var currentStoryPortionIndex = 0
+    @EnvironmentObject private var globalObject: GlobalObject
     
     let story: Story
     
@@ -31,14 +30,12 @@ struct StoryView: View {
                         transitionDirection = .forward
                     }
                 }
-                .ignoresSafeArea()
             }
             
             VStack(alignment: .leading) {
                 ProgressBar(numOfSegments: story.portions.count, transitionDirection: $transitionDirection, currentStoryPortionIndex: $currentStoryPortionIndex)
                     .frame(height: 2, alignment: .center)
                     .padding(.top, 8)
-                    .statusBar(hidden: true)
 
                 HStack {
                     avatarIcon
@@ -51,7 +48,7 @@ struct StoryView: View {
                 Spacer()
             }
         }
-        .navigationBarHidden(true)
+        .statusBar(hidden: true)
         .onAppear { // init animation
             if transitionDirection == .none {
                 transitionDirection = .forward
@@ -70,10 +67,10 @@ struct StoryView_Previews: PreviewProvider {
 // MARK: components
 extension StoryView {
     var storyPortionViews: some View {
-        ZStack {
-            ForEach(story.portions.indices) { index in
-                let portion = story.portions[index]
-                StoryPortionView(index: index, photoName: portion.imageName)
+        ZStack(alignment: .top) {
+            let portions = story.portions
+            ForEach(portions.indices) { index in
+                StoryPortionView(index: index, photoName: portions[index].imageName)
                     .opacity(currentStoryPortionIndex == index ? 1.0 : 0.0)
             }
         }
@@ -103,7 +100,9 @@ extension StoryView {
     
     var closeButton: some View {
         Button {
-            dismiss()
+            withAnimation(.spring()) {
+                globalObject.showContainer.toggle()
+            }
         } label: {
             ZStack {
                 // Increase close button tap area.

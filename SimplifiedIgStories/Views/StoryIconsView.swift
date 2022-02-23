@@ -8,20 +8,22 @@
 import SwiftUI
 
 struct StoryIconsView: View {
+    static let spacing: Double = 8.0
+    
     @EnvironmentObject private var modelData: ModelData
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(alignment: .center, spacing: 0) {
-                Spacer(minLength: 8)
+                Spacer(minLength: Self.spacing)
                 
-                ForEach(modelData.stories.indices) { index in
-                    let story = modelData.stories[index]
-                    StoryIcon(index: index, avatar: story.user.avatar, title: story.user.name)
+                let stories = modelData.stories
+                ForEach(stories.indices) { index in
+                    StoryIconTitleView(index: index, avatar: stories[index].user.avatar, title: stories[index].user.name)
                         .frame(width: 90, height: 100)
                         .padding(.vertical, 6)
 
-                    Spacer(minLength: 8)
+                    Spacer(minLength: Self.spacing)
                 }
             }
         }

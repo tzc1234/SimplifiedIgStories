@@ -8,37 +8,68 @@
 import SwiftUI
 
 struct HomeView: View {
-    @StateObject var globalObj = GlobalObject()
+    static let coordinateSpaceName = "Home"
+    
+    @StateObject var globalObject = GlobalObject()
+    @EnvironmentObject var modelData: ModelData
+    @State private var titleHeight = 44.0
     
     var body: some View {
-        NavigationView {
-            VStack {
-                StoryIconsView()
-                Spacer()
+        GeometryReader { geo in
+            NavigationView {
+                ZStack {
+                    if globalObject.showContainer {
+                        let spacing = geo.safeAreaInsets.top == 0 ? 0 : titleHeight / 2 + geo.safeAreaInsets.top / 2
+                        StoryContainer(story: modelData.stories[globalObject.currentStoryIconIndex], topSpacing: geo.safeAreaInsets.top)
+                            .zIndex(1.0)
+                            .transition(
+                                AnyTransition.scale(scale: 0.08)
+                                    .combined(
+                                        with:
+                                            AnyTransition.offset(
+                                                x: -(geo.size.width / 2 - globalObject.currentStoryIconFrame.midX + StoryIconsView.spacing / 2),
+                                                y: -(geo.size.height / 2 - globalObject.currentStoryIconFrame.midY + spacing)
+                                            )
+                                    )
+                            )
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 0) {
+                        Color.clear.frame(height: geo.safeAreaInsets.top)
+                        
+                        Text("IG Stories")
+                            .font(.title)
+                            .bold()
+                            .frame(height: titleHeight, alignment: .leading)
+                            .padding(.horizontal, 16)
+                        
+                        StoryIconsView()
+                        Spacer()
+                    }
+                    .navigationBarHidden(true)
+                }
+                .coordinateSpace(name: Self.coordinateSpaceName)
+                .ignoresSafeArea()
+                
             }
-            .navigationTitle("IG Stories")
-            .navigationBarTitleDisplayMode(.inline)
-        }
-        .navigationViewStyle(.stack)
-        .environmentObject(globalObj)
-        .onChange(of: globalObj.currentStoryIconIndex) { newValue in
-            if newValue > -1 {
-                print("StoryIcon frame: \(globalObj.currentStoryIconFrame)")
-                globalObj.currentStoryIconIndex = -1
-            }
+            .environmentObject(globalObject)
+//            .onChange(of: globalObject.currentStoryIconIndex) { newValue in
+//                if newValue > -1 {
+//                    withAnimation(.spring()) {
+//                        showContainer.toggle()
+//                    }
+//                }
+//                globalObject.currentStoryIconIndex = -1
+//            }
+            
         }
         
     }
 }
 
 struct HomeView_Previews: PreviewProvider {
+    @StateObject static var modelData = ModelData()
     static var previews: some View {
-        HomeView()
-    }
-}
-
-struct StoryContainer: View {
-    var body: some View {
-        Color.red
+        HomeView().environmentObject(modelData)
     }
 }
