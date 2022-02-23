@@ -82,6 +82,7 @@ extension StoryView {
     var avatarIcon: some View {
         Image(story.user.avatar)
             .resizable()
+            .scaledToFill()
             .frame(width: 40, height: 40)
             .clipShape(Circle())
             .overlay(Circle().strokeBorder(.white, lineWidth: 1))
