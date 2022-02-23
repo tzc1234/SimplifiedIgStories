@@ -13,18 +13,22 @@ final class TracingSegmentAnimation: ObservableObject {
 }
 
 struct ProgressBar: View {
-    let numOfSegments: Int
     @Binding private var transitionDirectionFromParent: StoryView.AnimationTransitionDirection
     @Binding private var currentStoryPortionIndex: Int
     
+    @EnvironmentObject private var modelData: ModelData
+    @EnvironmentObject private var globalObject: GlobalObject
+    
     @StateObject private var tracingSegmentAnimation: TracingSegmentAnimation = TracingSegmentAnimation()
     
+    var numOfSegments: Int {
+        modelData.stories[globalObject.currentStoryIconIndex].portions.count
+    }
+    
     init(
-        numOfSegments: Int,
         transitionDirection: Binding<StoryView.AnimationTransitionDirection>,
         currentStoryPortionIndex: Binding<Int>
     ) {
-        self.numOfSegments = numOfSegments
         self._transitionDirectionFromParent = transitionDirection
         self._currentStoryPortionIndex = currentStoryPortionIndex
     }
@@ -33,7 +37,7 @@ struct ProgressBar: View {
         HStack {
             Spacer(minLength: 2)
             
-            ForEach(0..<numOfSegments) { index in
+            ForEach(0..<numOfSegments, id: \.self) { index in
                 ProgressBarSegment(index: index, tracingSegmentAnimation: tracingSegmentAnimation)
                 Spacer(minLength: 2)
             }
@@ -63,13 +67,12 @@ struct ProgressBar: View {
                 currentStoryPortionIndex = newValue
             }
         }
-        
     }
     
 }
 
 struct ProgressBar_Previews: PreviewProvider {
     static var previews: some View {
-        ProgressBar(numOfSegments: 10, transitionDirection: .constant(.forward), currentStoryPortionIndex: .constant(0))
+        ProgressBar(transitionDirection: .constant(.forward), currentStoryPortionIndex: .constant(0))
     }
 }

@@ -14,9 +14,13 @@ struct StoryView: View {
     
     @State private var transitionDirection: AnimationTransitionDirection = .none
     @State private var currentStoryPortionIndex = 0
+    
+    @EnvironmentObject private var modelDate: ModelData
     @EnvironmentObject private var globalObject: GlobalObject
     
-    let story: Story
+    var story: Story {
+        modelDate.stories[globalObject.currentStoryIconIndex]
+    }
     
     var body: some View {
         ZStack {
@@ -33,7 +37,7 @@ struct StoryView: View {
             }
             
             VStack(alignment: .leading) {
-                ProgressBar(numOfSegments: story.portions.count, transitionDirection: $transitionDirection, currentStoryPortionIndex: $currentStoryPortionIndex)
+                ProgressBar(transitionDirection: $transitionDirection, currentStoryPortionIndex: $currentStoryPortionIndex)
                     .frame(height: 2, alignment: .center)
                     .padding(.top, 8)
 
@@ -60,7 +64,7 @@ struct StoryView: View {
 
 struct StoryView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryView(story: ModelData().stories[0])
+        StoryView()
     }
 }
 
@@ -68,9 +72,8 @@ struct StoryView_Previews: PreviewProvider {
 extension StoryView {
     var storyPortionViews: some View {
         ZStack(alignment: .top) {
-            let portions = story.portions
-            ForEach(portions.indices) { index in
-                StoryPortionView(index: index, photoName: portions[index].imageName)
+            ForEach(Array(zip(story.portions.indices, story.portions)), id: \.1.id) { index, portion in
+                StoryPortionView(index: index, photoName: portion.imageName)
                     .opacity(currentStoryPortionIndex == index ? 1.0 : 0.0)
             }
         }
@@ -100,7 +103,9 @@ extension StoryView {
     
     var closeButton: some View {
         Button {
-            withAnimation(.spring()) {
+            // Don't use .spring(). If you switch the StoryContainer fast from one, close then open another,
+            // there will be a weird behaviour. The StoryView can not be updated completely and broken.
+            withAnimation(.easeInOut) {
                 globalObject.showContainer.toggle()
             }
         } label: {

@@ -10,8 +10,7 @@ import SwiftUI
 struct HomeView: View {
     static let coordinateSpaceName = "Home"
     
-    @StateObject var globalObject = GlobalObject()
-    @EnvironmentObject var modelData: ModelData
+    @StateObject private var globalObject = GlobalObject()
     @State private var titleHeight = 44.0
     
     var body: some View {
@@ -20,17 +19,18 @@ struct HomeView: View {
                 ZStack {
                     if globalObject.showContainer {
                         let spacing = geo.safeAreaInsets.top == 0 ? 0 : titleHeight / 2 + geo.safeAreaInsets.top / 2
-                        StoryContainer(story: modelData.stories[globalObject.currentStoryIconIndex], topSpacing: geo.safeAreaInsets.top)
-                            .zIndex(1.0)
+                        StoryContainer(topSpacing: geo.safeAreaInsets.top)
+                            .zIndex(1)
                             .transition(
-                                AnyTransition.scale(scale: 0.08)
+                                .scale(scale: 0.08)
                                     .combined(
                                         with:
-                                            AnyTransition.offset(
+                                            .offset(
                                                 x: -(geo.size.width / 2 - globalObject.currentStoryIconFrame.midX + StoryIconsView.spacing / 2),
                                                 y: -(geo.size.height / 2 - globalObject.currentStoryIconFrame.midY + spacing)
                                             )
                                     )
+                                    .combined(with: .opacity)
                             )
                     }
                     
@@ -46,30 +46,22 @@ struct HomeView: View {
                         StoryIconsView()
                         Spacer()
                     }
+                    // In order to have a soomth animation, I don't use the navigationBar.
                     .navigationBarHidden(true)
+
                 }
                 .coordinateSpace(name: Self.coordinateSpaceName)
                 .ignoresSafeArea()
                 
             }
             .environmentObject(globalObject)
-//            .onChange(of: globalObject.currentStoryIconIndex) { newValue in
-//                if newValue > -1 {
-//                    withAnimation(.spring()) {
-//                        showContainer.toggle()
-//                    }
-//                }
-//                globalObject.currentStoryIconIndex = -1
-//            }
-            
         }
         
     }
 }
 
 struct HomeView_Previews: PreviewProvider {
-    @StateObject static var modelData = ModelData()
     static var previews: some View {
-        HomeView().environmentObject(modelData)
+        HomeView()
     }
 }

@@ -13,10 +13,7 @@ struct SimplifiedIgStoriesApp: App {
     
     var body: some Scene {
         WindowGroup {
-//            StoryIcon()
             HomeView().environmentObject(modelData)
-//            ProgressBar()
-//            StoryView()
         }
     }
 }

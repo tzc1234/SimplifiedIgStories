@@ -10,7 +10,7 @@ import UIKit
 import SwiftUI
 
 final class GlobalObject: ObservableObject {
-    var currentStoryIconIndex = 0
+    @Published var currentStoryIconIndex = 0
     @Published var currentStoryIconFrame: CGRect = .zero
     @Published var showContainer = false
 }
