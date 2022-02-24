@@ -18,7 +18,7 @@ extension Date {
         }
         
         if let interval = calendar.dateComponents([.month], from: self, to: toDate).month, interval > 0 {
-          return "\(interval)m"
+          return "\(interval)M"
         }
         
         if let interval = calendar.dateComponents([.weekOfYear], from: self, to: toDate).weekOfYear, interval > 0 {

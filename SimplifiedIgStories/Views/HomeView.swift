@@ -17,23 +17,6 @@ struct HomeView: View {
         GeometryReader { geo in
             NavigationView {
                 ZStack {
-                    if globalObject.showContainer {
-                        let spacing = geo.safeAreaInsets.top == 0 ? 0 : titleHeight / 2 + geo.safeAreaInsets.top / 2
-                        StoryContainer(topSpacing: geo.safeAreaInsets.top)
-                            .zIndex(1)
-                            .transition(
-                                .scale(scale: 0.08)
-                                    .combined(
-                                        with:
-                                            .offset(
-                                                x: -(geo.size.width / 2 - globalObject.currentStoryIconFrame.midX + StoryIconsView.spacing / 2),
-                                                y: -(geo.size.height / 2 - globalObject.currentStoryIconFrame.midY + spacing)
-                                            )
-                                    )
-                                    .combined(with: .opacity)
-                            )
-                    }
-                    
                     VStack(alignment: .leading, spacing: 0) {
                         Color.clear.frame(height: geo.safeAreaInsets.top)
                         
@@ -49,6 +32,16 @@ struct HomeView: View {
                     // In order to have a soomth animation, I don't use the navigationBar.
                     .navigationBarHidden(true)
 
+                    if globalObject.showContainer {
+                        let topSpacing = geo.safeAreaInsets.top == 0 ? 0 : titleHeight / 2 + geo.safeAreaInsets.top / 2
+                        let offset = CGSize(
+                            width: -(geo.size.width / 2 - globalObject.currentStoryIconFrame.midX + StoryIconsView.spacing / 2),
+                            height: -(geo.size.height / 2 - globalObject.currentStoryIconFrame.midY + topSpacing)
+                        )
+                        StoryContainer(topSpacing: geo.safeAreaInsets.top)
+                            .zIndex(1)
+                            .transition(.iOSNativeOpenAppTransition(offest: offset))
+                    }
                 }
                 .coordinateSpace(name: Self.coordinateSpaceName)
                 .ignoresSafeArea()
@@ -62,6 +55,6 @@ struct HomeView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        HomeView().environmentObject(ModelData())
     }
 }
