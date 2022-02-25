@@ -38,7 +38,7 @@ struct HomeView: View {
                             width: -(geo.size.width / 2 - globalObject.currentStoryIconFrame.midX + StoryIconsView.spacing / 2),
                             height: -(geo.size.height / 2 - globalObject.currentStoryIconFrame.midY + topSpacing)
                         )
-                        StoryContainer(topSpacing: geo.safeAreaInsets.top)
+                        StoryContainer()
                             .zIndex(1)
                             .transition(.iOSNativeOpenAppTransition(offest: offset))
                     }
@@ -48,6 +48,9 @@ struct HomeView: View {
                 
             }
             .environmentObject(globalObject)
+            .onAppear {
+                globalObject.topSpacing = geo.safeAreaInsets.top > 20.0 ? geo.safeAreaInsets.top : 0.0
+            }
         }
         
     }

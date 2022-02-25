@@ -7,44 +7,6 @@
 
 import SwiftUI
 
-struct TraceableRectangle: Shape {
-    let startX: Double
-    var endX: Double
-    let tracingEndX: TracingEndX
-    
-    var animatableData: Double {
-        get { endX }
-        set {
-            endX = newValue
-            tracingEndX.updateCurrentEndX(newValue)
-        }
-    }
-    
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: startX, y: rect.minY))
-        path.addLine(to: CGPoint(x: endX, y: rect.minY))
-        path.addLine(to: CGPoint(x: endX, y: rect.maxY))
-        path.addLine(to: CGPoint(x: startX, y: rect.maxY))
-        
-        return path
-    }
-}
-
-final class TracingEndX: ObservableObject {
-    @Published var currentEndX: Double
-    
-    init(currentEndX: Double) {
-        self.currentEndX = currentEndX
-    }
-    
-    func updateCurrentEndX(_ endX: Double) {
-        DispatchQueue.main.async { [weak self] in
-            self?.currentEndX = endX
-        }
-    }
-}
-
 struct ProgressBarSegment: View {
     @Environment(\.scenePhase) var scenePhase
     @State private var isAnimationPaused = false

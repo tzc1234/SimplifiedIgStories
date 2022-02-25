@@ -20,6 +20,7 @@ struct StoryPortionView: View {
                     .ignoresSafeArea()
                     .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
                     .overlay(.ultraThinMaterial)
+                    .clipShape(Rectangle())
             }
             
             Image(photoName)
