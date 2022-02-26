@@ -10,7 +10,7 @@ import SwiftUI
 struct HomeView: View {
     static let coordinateSpaceName = "Home"
     
-    @StateObject private var globalObject = GlobalObject()
+    @StateObject private var storyGlobal = StoryGlobalObject()
     @State private var titleHeight = 44.0
     
     var body: some View {
@@ -32,11 +32,11 @@ struct HomeView: View {
                     // In order to have a soomth animation, I don't use the navigationBar.
                     .navigationBarHidden(true)
 
-                    if globalObject.showContainer {
+                    if storyGlobal.showContainer {
                         let topSpacing = geo.safeAreaInsets.top == 0 ? 0 : titleHeight / 2 + geo.safeAreaInsets.top / 2
                         let offset = CGSize(
-                            width: -(geo.size.width / 2 - globalObject.currentStoryIconFrame.midX + StoryIconsView.spacing / 2),
-                            height: -(geo.size.height / 2 - globalObject.currentStoryIconFrame.midY + topSpacing)
+                            width: -(geo.size.width / 2 - storyGlobal.currentStoryIconFrame.midX + StoryIconsView.spacing / 2),
+                            height: -(geo.size.height / 2 - storyGlobal.currentStoryIconFrame.midY + topSpacing)
                         )
                         StoryContainer()
                             .zIndex(1)
@@ -47,9 +47,9 @@ struct HomeView: View {
                 .ignoresSafeArea()
                 
             }
-            .environmentObject(globalObject)
+            .environmentObject(storyGlobal)
             .onAppear {
-                globalObject.topSpacing = geo.safeAreaInsets.top > 20.0 ? geo.safeAreaInsets.top : 0.0
+                storyGlobal.topSpacing = geo.safeAreaInsets.top > 20.0 ? geo.safeAreaInsets.top : 0.0
             }
         }
         

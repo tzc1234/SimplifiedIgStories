@@ -9,8 +9,8 @@ import Foundation
 import UIKit
 import SwiftUI
 
-final class GlobalObject: ObservableObject {
-    @Published var currentStoryIconIndex = 0
+final class StoryGlobalObject: ObservableObject {
+    @Published var currentStoryIndex = 0
     @Published var currentStoryIconFrame: CGRect = .zero
     @Published var showContainer = false
     @Published var shouldRotate = false

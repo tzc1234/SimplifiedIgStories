@@ -9,7 +9,8 @@ import SwiftUI
 
 struct StoryContainer: View {
     @EnvironmentObject private var modelDate: ModelData
-    @EnvironmentObject private var globalObject: GlobalObject
+    @EnvironmentObject private var storyGlobal: StoryGlobalObject
+    
     @GestureState private var translation: CGFloat = 0
     
     private let width = UIScreen.main.bounds.width
@@ -20,14 +21,14 @@ struct StoryContainer: View {
     }
     
     var body: some View {
-        LazyHStack(alignment: .top, spacing: 0) {
+        HStack(alignment: .top, spacing: 0) {
             ForEach(modelDate.stories.indices) { index in
                 GeometryReader { geo in
                     let frame = geo.frame(in: .global)
-                    StoryView(index: index)
+                    StoryView(storyIndex: index)
                     // Cubic transition reference: https://www.youtube.com/watch?v=NTun83toSQQ&ab_channel=Kavsoft
                         .rotation3DEffect(
-                            globalObject.shouldRotate ? .degrees(getRotationDegree(offsetX: frame.minX)) : .degrees(0),
+                            storyGlobal.shouldRotate ? .degrees(getRotationDegree(offsetX: frame.minX)) : .degrees(0),
                             axis: (x: 0.0, y: 1.0, z: 0.0),
                             anchor: frame.minX > 0 ? .leading : .trailing,
                             perspective: 2.5
@@ -35,13 +36,13 @@ struct StoryContainer: View {
                 }
                 .frame(width: width, height: height)
                 .ignoresSafeArea()
-                
             }
+            
         }
         .frame(width: width, alignment: .leading)
-        .offset(x: -CGFloat(globalObject.currentStoryIconIndex) * width)
+        .offset(x: -CGFloat(storyGlobal.currentStoryIndex) * width)
         .offset(x: translation)
-        .animation(.interactiveSpring(), value: globalObject.currentStoryIconIndex)
+        .animation(.interactiveSpring(), value: storyGlobal.currentStoryIndex)
         .animation(.interactiveSpring(), value: translation)
         .gesture(
             DragGesture()
@@ -50,8 +51,8 @@ struct StoryContainer: View {
                 }
                 .onEnded { value in
                     let offset = value.translation.width / width
-                    let newIndex = Int((CGFloat(globalObject.currentStoryIconIndex) - offset).rounded())
-                    globalObject.currentStoryIconIndex = min(max(newIndex, 0), storyCount - 1)
+                    let newIndex = Int((CGFloat(storyGlobal.currentStoryIndex) - offset).rounded())
+                    storyGlobal.currentStoryIndex = min(max(newIndex, 0), storyCount - 1)
                 }
         )
         .statusBar(hidden: true)

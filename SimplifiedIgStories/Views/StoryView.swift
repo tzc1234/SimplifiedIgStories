@@ -7,20 +7,21 @@
 
 import SwiftUI
 
+enum StoryPortionTransitionDirection {
+    case none, forward, backward
+}
+
 struct StoryView: View {
-    enum AnimationTransitionDirection {
-        case none, forward, backward
-    }
-    
-    @State private var transitionDirection: AnimationTransitionDirection = .none
-    @State private var currentStoryPortionIndex = 0
+    @State var storyPortionTransitionDirection: StoryPortionTransitionDirection = .none
+    @State var currentStoryPortionIndex: Int = 0
     
     @EnvironmentObject private var modelDate: ModelData
-    @EnvironmentObject private var globalObject: GlobalObject
-    let index: Int
+    @EnvironmentObject private var storyGlobal: StoryGlobalObject
+    
+    let storyIndex: Int
     
     var story: Story {
-        modelDate.stories[index]
+        modelDate.stories[storyIndex]
     }
     
     var body: some View {
@@ -30,16 +31,20 @@ struct StoryView: View {
             DetectableTapGesturePositionView { point in
                 let screenWidth = UIScreen.main.bounds.width
                 if point.x <= screenWidth / 2 { // go previous
-                    transitionDirection = .backward
+                    storyPortionTransitionDirection = .backward
                 } else { // go next
-                    transitionDirection = .forward
+                    storyPortionTransitionDirection = .forward
                 }
             }
             
             VStack(alignment: .leading) {
-                Color.clear.frame(height: globalObject.topSpacing)
+                Color.clear.frame(height: storyGlobal.topSpacing)
                 
-                ProgressBar(transitionDirection: $transitionDirection, currentStoryPortionIndex: $currentStoryPortionIndex)
+                ProgressBar(
+                    storyIndex: storyIndex,
+                    storyPortionTransitionDirection: $storyPortionTransitionDirection,
+                    currentStoryPortionIndex: $currentStoryPortionIndex
+                )
                     .frame(height: 2, alignment: .center)
                     .padding(.top, 8)
                 
@@ -57,12 +62,11 @@ struct StoryView: View {
         }
         .clipShape(Rectangle())
         .onAppear { // init animation
-            print("StoryView \(index) appeared!")
-            
-            globalObject.shouldRotate = true
-            if transitionDirection == .none {
-                transitionDirection = .forward
-            }
+            storyGlobal.shouldRotate = true
+            initAnimation()
+        }
+        .onChange(of: storyGlobal.currentStoryIndex) { _ in
+            initAnimation()
         }
         
     }
@@ -71,7 +75,7 @@ struct StoryView: View {
 
 struct StoryView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryView(index: 0)
+        StoryView(storyIndex: 0)
     }
 }
 
@@ -112,7 +116,7 @@ extension StoryView {
     
     var closeButton: some View {
         Button {
-            globalObject.closeStoryContainer()
+            storyGlobal.closeStoryContainer()
         } label: {
             ZStack {
                 // Increase close button tap area.
@@ -124,6 +128,16 @@ extension StoryView {
             }
             .padding(.trailing, 10)
             .contentShape(Rectangle())
+        }
+    }
+}
+
+// MARK: functions
+extension StoryView {
+    func initAnimation() {
+        if storyPortionTransitionDirection == .none && storyGlobal.currentStoryIndex == storyIndex {
+            print("StoryView\(storyIndex) start animation.")
+            storyPortionTransitionDirection = .forward
         }
     }
 }

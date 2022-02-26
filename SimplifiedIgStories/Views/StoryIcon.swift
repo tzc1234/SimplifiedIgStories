@@ -9,7 +9,7 @@ import SwiftUI
 
 struct StoryIcon: View {
     @Environment(\.scenePhase) var scenePhase
-    @EnvironmentObject private var globalObject: GlobalObject
+    @EnvironmentObject private var storyGlobal: StoryGlobalObject
     
     @State private var endAngle = 360.0
     @ObservedObject private var tracingEndAngle = TracingEndAngle(currentEndAngle: 0.0)
@@ -45,13 +45,13 @@ struct StoryIcon: View {
                     isOnTap.toggle()
                 }
                 
-                globalObject.currentStoryIconFrame = geo.frame(in: .named(HomeView.coordinateSpaceName))
-                globalObject.currentStoryIconIndex = index
+                storyGlobal.currentStoryIconFrame = geo.frame(in: .named(HomeView.coordinateSpaceName))
+                storyGlobal.currentStoryIndex = index
                 isOnTap.toggle()
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     withAnimation(.easeInOut(duration: 0.3)) {
-                        globalObject.showContainer.toggle()
+                        storyGlobal.showContainer.toggle()
                     }
                 }
             }

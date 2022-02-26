@@ -13,23 +13,22 @@ final class TracingSegmentAnimation: ObservableObject {
 }
 
 struct ProgressBar: View {
-    @Binding private var transitionDirectionFromParent: StoryView.AnimationTransitionDirection
-    @Binding private var currentStoryPortionIndex: Int
-    
     @EnvironmentObject private var modelData: ModelData
-    @EnvironmentObject private var globalObject: GlobalObject
+    @EnvironmentObject private var storyGlobal: StoryGlobalObject
     
+    let storyIndex: Int
+    
+    @Binding var storyPortionTransitionDirection: StoryPortionTransitionDirection
+    @Binding var currentStoryPortionIndex: Int
     @StateObject private var tracingSegmentAnimation: TracingSegmentAnimation = TracingSegmentAnimation()
     
     var numOfSegments: Int {
-        modelData.stories[globalObject.currentStoryIconIndex].portions.count
+        modelData.stories[storyGlobal.currentStoryIndex].portions.count
     }
     
-    init(
-        transitionDirection: Binding<StoryView.AnimationTransitionDirection>,
-        currentStoryPortionIndex: Binding<Int>
-    ) {
-        self._transitionDirectionFromParent = transitionDirection
+    init(storyIndex: Int, storyPortionTransitionDirection: Binding<StoryPortionTransitionDirection>, currentStoryPortionIndex: Binding<Int>) {
+        self.storyIndex = storyIndex
+        self._storyPortionTransitionDirection = storyPortionTransitionDirection
         self._currentStoryPortionIndex = currentStoryPortionIndex
     }
     
@@ -38,27 +37,27 @@ struct ProgressBar: View {
             Spacer(minLength: 2)
             
             ForEach(0..<numOfSegments, id: \.self) { index in
-                ProgressBarSegment(index: index, tracingSegmentAnimation: tracingSegmentAnimation)
+                ProgressBarSegment(segmentIndex: index, storyIndex: storyIndex, tracingSegmentAnimation: tracingSegmentAnimation)
                 Spacer(minLength: 2)
             }
         }
         .padding(.horizontal, 10)
-        .onChange(of: transitionDirectionFromParent) { newValue in
+        .onChange(of: storyPortionTransitionDirection) { newValue in
             switch newValue {
             case .none:
                 break
             case .forward:
-                let nextIndex = tracingSegmentAnimation.currentSegmentIndex + 1
-                tracingSegmentAnimation.currentSegmentIndex = nextIndex < 0 ? 1 : nextIndex
+                tracingSegmentAnimation.currentSegmentIndex = max(tracingSegmentAnimation.currentSegmentIndex + 1 , 0)
                 tracingSegmentAnimation.isTransitionForward = true
-                transitionDirectionFromParent = .none // reset
+                storyPortionTransitionDirection = .none // reset
             case .backward:
                 tracingSegmentAnimation.currentSegmentIndex -= 1
                 tracingSegmentAnimation.isTransitionForward = false
-                transitionDirectionFromParent = .none // reset
+                storyPortionTransitionDirection = .none // reset
             }
         }
         .onChange(of: tracingSegmentAnimation.currentSegmentIndex) { newValue in
+            // The usage of telling the StoryVIew to show which portion.
             if newValue < 0 {
                 currentStoryPortionIndex = 0
             } else if newValue > numOfSegments - 1 {
@@ -73,6 +72,10 @@ struct ProgressBar: View {
 
 struct ProgressBar_Previews: PreviewProvider {
     static var previews: some View {
-        ProgressBar(transitionDirection: .constant(.forward), currentStoryPortionIndex: .constant(0))
+        ProgressBar(
+            storyIndex: 0,
+            storyPortionTransitionDirection: .constant(.none),
+            currentStoryPortionIndex: .constant(0)
+        )
     }
 }

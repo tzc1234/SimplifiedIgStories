@@ -13,7 +13,7 @@
 		BE090B6727B9568700B6F906 /* StoryIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE090B6627B9568700B6F906 /* StoryIcon.swift */; };
 		BE2C557227BFFE9D0087EE7F /* StoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557127BFFE9D0087EE7F /* StoryView.swift */; };
 		BE2C557427C0197B0087EE7F /* DetectableTapGesturePositionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */; };
-		BE5E506B27C53736007E6A73 /* GlobalObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5E506A27C53736007E6A73 /* GlobalObject.swift */; };
+		BE5E506B27C53736007E6A73 /* StoryGlobalObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5E506A27C53736007E6A73 /* StoryGlobalObject.swift */; };
 		BE720F7C27BD111800E862A5 /* ProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE720F7B27BD111800E862A5 /* ProgressBar.swift */; };
 		BE84C2CA27C78E5400C42165 /* AnyTransition+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE84C2C927C78E5400C42165 /* AnyTransition+Additions.swift */; };
 		BE8A758127BC107000E9F745 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8A758027BC106F00E9F745 /* HomeView.swift */; };
@@ -39,7 +39,7 @@
 		BE090B6627B9568700B6F906 /* StoryIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIcon.swift; sourceTree = "<group>"; };
 		BE2C557127BFFE9D0087EE7F /* StoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryView.swift; sourceTree = "<group>"; };
 		BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetectableTapGesturePositionView.swift; sourceTree = "<group>"; };
-		BE5E506A27C53736007E6A73 /* GlobalObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalObject.swift; sourceTree = "<group>"; };
+		BE5E506A27C53736007E6A73 /* StoryGlobalObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGlobalObject.swift; sourceTree = "<group>"; };
 		BE720F7B27BD111800E862A5 /* ProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBar.swift; sourceTree = "<group>"; };
 		BE84C2C927C78E5400C42165 /* AnyTransition+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnyTransition+Additions.swift"; sourceTree = "<group>"; };
 		BE8A758027BC106F00E9F745 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -155,7 +155,7 @@
 				BEA1D95D27C3DA7100D0A67A /* User.swift */,
 				BE8D954427C44CA200D9D6DB /* Story.swift */,
 				BEA1D95F27C3DB1200D0A67A /* ModelData.swift */,
-				BE5E506A27C53736007E6A73 /* GlobalObject.swift */,
+				BE5E506A27C53736007E6A73 /* StoryGlobalObject.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -247,7 +247,7 @@
 				BE8A758127BC107000E9F745 /* HomeView.swift in Sources */,
 				BE8C498F27C674FD000541E0 /* StoryContainer.swift in Sources */,
 				BE91AA5427BFD96800BB9846 /* StoryPortionView.swift in Sources */,
-				BE5E506B27C53736007E6A73 /* GlobalObject.swift in Sources */,
+				BE5E506B27C53736007E6A73 /* StoryGlobalObject.swift in Sources */,
 				BE2C557427C0197B0087EE7F /* DetectableTapGesturePositionView.swift in Sources */,
 				BEA1D96027C3DB1200D0A67A /* ModelData.swift in Sources */,
 				BEA901D427BC716E00E3362D /* ProgressBarSegment.swift in Sources */,

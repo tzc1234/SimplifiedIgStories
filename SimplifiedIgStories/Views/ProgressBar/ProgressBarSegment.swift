@@ -9,6 +9,9 @@ import SwiftUI
 
 struct ProgressBarSegment: View {
     @Environment(\.scenePhase) var scenePhase
+    @EnvironmentObject private var storyGlobal: StoryGlobalObject
+    
+    // For pause animation.
     @State private var isAnimationPaused = false
     
     // For animation purpose.
@@ -20,11 +23,13 @@ struct ProgressBarSegment: View {
     
     let duration = 3.0
     
-    let index: Int
+    let segmentIndex: Int
+    let storyIndex: Int
     @ObservedObject private var tracingSegmentAnimation: TracingSegmentAnimation
     
-    init(index: Int, tracingSegmentAnimation: TracingSegmentAnimation) {
-        self.index = index
+    init(segmentIndex: Int, storyIndex: Int, tracingSegmentAnimation: TracingSegmentAnimation) {
+        self.segmentIndex = segmentIndex
+        self.storyIndex = storyIndex
         self.tracingSegmentAnimation = tracingSegmentAnimation
     }
     
@@ -35,18 +40,16 @@ struct ProgressBarSegment: View {
                 .background(Color(.lightGray).opacity(0.5))
                 .cornerRadius(6)
                 .onChange(of: tracingEndX.currentEndX) { currentEndX in
-                    // Finish
-                    if currentEndX >= geo.size.width {
+                    if currentEndX >= geo.size.width { // Finished
                         endAnimation(maxWidth: geo.size.width)
                     }
                 }
                 .onChange(of: tracingSegmentAnimation.currentSegmentIndex) { currentSegmentIndex in
 //                    print("currentSegmentIndex: \(currentSegmentIndex), index: \(index)")
-                    
                     let newIndex = currentSegmentIndex < 0 ? 0 : currentSegmentIndex
-                    if index == newIndex {
+                    if segmentIndex == newIndex {
                         startAnimation(maxWidth: geo.size.width)
-                    } else if index < newIndex { // For Previous segments:
+                    } else if segmentIndex < newIndex { // For Previous segments:
                         endAnimation(maxWidth: geo.size.width)
                     } else { // For following segents:
                         initializeAnimation()
@@ -55,7 +58,7 @@ struct ProgressBarSegment: View {
                 // Pause animation when scenePhase inactive
                 .onChange(of: scenePhase) { newPhase in
                     let newIndex = tracingSegmentAnimation.currentSegmentIndex < 0 ? 0 : tracingSegmentAnimation.currentSegmentIndex
-                    if index == newIndex {
+                    if segmentIndex == newIndex {
                         if newPhase == .active && isAnimationPaused {
                             startAnimation(maxWidth: geo.size.width)
                             isAnimationPaused = false
@@ -63,6 +66,16 @@ struct ProgressBarSegment: View {
                             pauseAnimation()
                             isAnimationPaused = true
                         }
+                    }
+                }
+                .onChange(of: storyGlobal.currentStoryIndex) { currentStoryIndex in
+                    if currentStoryIndex == storyIndex {
+                        if isAnimationPaused {
+                            startAnimation(maxWidth: geo.size.width)
+                            isAnimationPaused = false
+                        }
+                    } else { // Not in displaying.
+                        pauseAnimation()
                     }
                 }
             
@@ -73,7 +86,8 @@ struct ProgressBarSegment: View {
 struct ProgressBarSegment_Previews: PreviewProvider {
     static var previews: some View {
         ProgressBarSegment(
-            index: 0,
+            segmentIndex: 0,
+            storyIndex: 0,
             tracingSegmentAnimation: TracingSegmentAnimation()
         )
     }
@@ -120,8 +134,8 @@ extension ProgressBarSegment {
             tracingEndX.updateCurrentEndX(0)
             
             let newIndex = tracingSegmentAnimation.currentSegmentIndex < 0 ? 0 : tracingSegmentAnimation.currentSegmentIndex
-            if index == newIndex {
-                tracingSegmentAnimation.currentSegmentIndex = index + 1
+            if segmentIndex == newIndex {
+                tracingSegmentAnimation.currentSegmentIndex = segmentIndex + 1
             }
         }
     }
