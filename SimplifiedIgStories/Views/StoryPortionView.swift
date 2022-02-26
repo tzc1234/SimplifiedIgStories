@@ -18,7 +18,6 @@ struct StoryPortionView: View {
                     .resizable()
                     .scaledToFill()
                     .ignoresSafeArea()
-                    .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
                     .overlay(.ultraThinMaterial)
                     .clipShape(Rectangle())
             }

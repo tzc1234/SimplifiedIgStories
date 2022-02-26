@@ -41,7 +41,7 @@ struct ProgressBarSegment: View {
                     }
                 }
                 .onChange(of: tracingSegmentAnimation.currentSegmentIndex) { currentSegmentIndex in
-                    print("currentSegmentIndex: \(currentSegmentIndex), index: \(index)")
+//                    print("currentSegmentIndex: \(currentSegmentIndex), index: \(index)")
                     
                     let newIndex = currentSegmentIndex < 0 ? 0 : currentSegmentIndex
                     if index == newIndex {
@@ -82,14 +82,14 @@ struct ProgressBarSegment_Previews: PreviewProvider {
 // MARK: functions
 extension ProgressBarSegment {
     func initializeAnimation() {
-        print("initializeAnimation, index: \(index)")
+//        print("initializeAnimation, index: \(index)")
         withAnimation(.linear(duration: 0)) {
             endX = 0
         }
     }
     
     func startAnimation(maxWidth: Double) {
-        print("startAnimation, index: \(index)")
+//        print("startAnimation, index: \(index)")
         
         let duration: Double
         if isAnimationPaused {
@@ -107,14 +107,14 @@ extension ProgressBarSegment {
     }
     
     func pauseAnimation() {
-        print("pauseAnimation, index: \(index)")
+//        print("pauseAnimation, index: \(index)")
         withAnimation(.linear(duration: 0)) {
             endX = tracingEndX.currentEndX
         }
     }
     
     func endAnimation(maxWidth: Double) {
-        print("endAnimation, index: \(index)")
+//        print("endAnimation, index: \(index)")
         withAnimation(.linear(duration: 0)) {
             endX = maxWidth + 0.1 // trick to stop animation!
             tracingEndX.updateCurrentEndX(0)

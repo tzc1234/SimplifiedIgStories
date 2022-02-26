@@ -1,5 +1,5 @@
 //
-//  Animation+Additions.swift
+//  AnyTransition+Additions.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 24/2/2022.

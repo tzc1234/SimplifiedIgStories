@@ -27,36 +27,38 @@ struct StoryView: View {
         ZStack {
             storyPortionViews
             
-            GeometryReader { geo in
-                DetectableTapGesturePositionView { point in
-                    if point.x <= geo.size.width / 2 { // go previous
-                        transitionDirection = .backward
-                    } else { // go next
-                        transitionDirection = .forward
-                    }
+            DetectableTapGesturePositionView { point in
+                let screenWidth = UIScreen.main.bounds.width
+                if point.x <= screenWidth / 2 { // go previous
+                    transitionDirection = .backward
+                } else { // go next
+                    transitionDirection = .forward
                 }
-                
-                VStack(alignment: .leading) {
-                    Color.clear.frame(height: globalObject.topSpacing)
-                    
-                    ProgressBar(transitionDirection: $transitionDirection, currentStoryPortionIndex: $currentStoryPortionIndex)
-                        .frame(height: 2, alignment: .center)
-                        .padding(.top, 8)
-                    
-                    HStack {
-                        avatarIcon
-                        nameText
-                        dateText
-                        Spacer()
-                        closeButton
-                    }.padding(.leading, 20)
-                    
-                    Spacer()
-                }
-                
             }
+            
+            VStack(alignment: .leading) {
+                Color.clear.frame(height: globalObject.topSpacing)
+                
+                ProgressBar(transitionDirection: $transitionDirection, currentStoryPortionIndex: $currentStoryPortionIndex)
+                    .frame(height: 2, alignment: .center)
+                    .padding(.top, 8)
+                
+                HStack {
+                    avatarIcon
+                    nameText
+                    dateText
+                    Spacer()
+                    closeButton
+                }.padding(.leading, 20)
+                
+                Spacer()
+            }
+            
         }
+        .clipShape(Rectangle())
         .onAppear { // init animation
+            print("StoryView \(index) appeared!")
+            
             globalObject.shouldRotate = true
             if transitionDirection == .none {
                 transitionDirection = .forward
