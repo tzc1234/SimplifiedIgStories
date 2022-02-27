@@ -8,15 +8,10 @@
 import SwiftUI
 
 struct ProgressBarSegment: View {
-    @Environment(\.scenePhase) var scenePhase
-    @EnvironmentObject private var storyGlobal: StoryGlobalObject
-    
-    // For pause animation.
-    @State private var isAnimationPaused = false
+//    @Environment(\.scenePhase) var scenePhase
     
     // For animation purpose.
     @State private var endX = 0.0
-    
     // ProgressBarSegment will frequently be recreate,
     // TracingEndX must be a @StateObject to keep it unchange.
     @StateObject private var tracingEndX = TracingEndX(currentEndX: 0.0)
@@ -24,13 +19,11 @@ struct ProgressBarSegment: View {
     let duration = 3.0
     
     let segmentIndex: Int
-    let storyIndex: Int
-    @ObservedObject private var tracingSegmentAnimation: TracingSegmentAnimation
+    @ObservedObject private var segmentAnimationCoordinator: SegmentAnimationCoordinator
     
-    init(segmentIndex: Int, storyIndex: Int, tracingSegmentAnimation: TracingSegmentAnimation) {
+    init(segmentIndex: Int, segmentAnimationCoordinator: SegmentAnimationCoordinator) {
         self.segmentIndex = segmentIndex
-        self.storyIndex = storyIndex
-        self.tracingSegmentAnimation = tracingSegmentAnimation
+        self.segmentAnimationCoordinator = segmentAnimationCoordinator
     }
     
     var body: some View {
@@ -40,45 +33,65 @@ struct ProgressBarSegment: View {
                 .background(Color(.lightGray).opacity(0.5))
                 .cornerRadius(6)
                 .onChange(of: tracingEndX.currentEndX) { currentEndX in
-                    if currentEndX >= geo.size.width { // Finished
-                        endAnimation(maxWidth: geo.size.width)
+                    // Finished
+                    if currentEndX >= geo.size.width {
+                        tracingEndX.updateCurrentEndX(0)
+                        segmentAnimationCoordinator.segemntAnimationStatuses[segmentIndex] = .finish
                     }
                 }
-                .onChange(of: tracingSegmentAnimation.currentSegmentIndex) { currentSegmentIndex in
-//                    print("currentSegmentIndex: \(currentSegmentIndex), index: \(index)")
-                    let newIndex = currentSegmentIndex < 0 ? 0 : currentSegmentIndex
-                    if segmentIndex == newIndex {
-                        startAnimation(maxWidth: geo.size.width)
-                    } else if segmentIndex < newIndex { // For Previous segments:
-                        endAnimation(maxWidth: geo.size.width)
-                    } else { // For following segents:
-                        initializeAnimation()
-                    }
-                }
-                // Pause animation when scenePhase inactive
-                .onChange(of: scenePhase) { newPhase in
-                    let newIndex = tracingSegmentAnimation.currentSegmentIndex < 0 ? 0 : tracingSegmentAnimation.currentSegmentIndex
-                    if segmentIndex == newIndex {
-                        if newPhase == .active && isAnimationPaused {
+                .onChange(of: segmentAnimationCoordinator.segemntAnimationStatuses[segmentIndex]) { newValue in
+                    if let segemntAnimationStatus = newValue {
+                        switch segemntAnimationStatus {
+                        case .inital:
+                            initializeAnimation()
+                        case .start:
                             startAnimation(maxWidth: geo.size.width)
-                            isAnimationPaused = false
-                        } else if newPhase == .inactive && !isAnimationPaused {
+                        case .pause:
                             pauseAnimation()
-                            isAnimationPaused = true
+                        case .resume:
+                            resumeAnimation(maxWidth: geo.size.width)
+                        case .finish:
+                            finishAnimation(maxWidth: geo.size.width)
                         }
-                    }
-                }
-                .onChange(of: storyGlobal.currentStoryIndex) { currentStoryIndex in
-                    if currentStoryIndex == storyIndex {
-                        if isAnimationPaused {
-                            startAnimation(maxWidth: geo.size.width)
-                            isAnimationPaused = false
-                        }
-                    } else { // Not in displaying.
-                        pauseAnimation()
                     }
                 }
             
+//                .onChange(of: segmentAnimationCoordinator.currentSegmentIndex) { currentSegmentIndex in
+//                    let newIndex = currentSegmentIndex < 0 ? 0 : currentSegmentIndex
+//                    if segmentIndex == newIndex {
+//                        playAnimation(maxWidth: geo.size.width)
+//                    } else if segmentIndex < newIndex { // For Previous segments:
+//                        finishAnimation(maxWidth: geo.size.width)
+//                    } else { // For following segents:
+//                        initializeAnimation()
+//                    }
+//                }
+            
+                // Pause animation when scenePhase inactive
+//                .onChange(of: scenePhase) { newPhase in
+//                    let newIndex = segmentAnimationCoordinator.currentSegmentIndex < 0 ? 0 : segmentAnimationCoordinator.currentSegmentIndex
+//
+//                    if segmentIndex == newIndex {
+//                        if newPhase == .active && isAnimationPaused {
+//                            playAnimation(maxWidth: geo.size.width)
+//                            isAnimationPaused = false
+//                        } else if newPhase == .inactive && !isAnimationPaused {
+//                            pauseAnimation()
+//                            isAnimationPaused = true
+//                        }
+//                    }
+//                }
+            
+//                .onChange(of: storyGlobal.currentStoryIndex) { currentStoryIndex in
+//                    if currentStoryIndex == storyIndex {
+//                        if isAnimationPaused {
+//                            playAnimation(maxWidth: geo.size.width)
+//                            isAnimationPaused = false
+//                        }
+//                    } else { // Not in displaying.
+//                        pauseAnimation()
+//                    }
+//                }
         }
     }
 }
@@ -87,8 +100,7 @@ struct ProgressBarSegment_Previews: PreviewProvider {
     static var previews: some View {
         ProgressBarSegment(
             segmentIndex: 0,
-            storyIndex: 0,
-            tracingSegmentAnimation: TracingSegmentAnimation()
+            segmentAnimationCoordinator: SegmentAnimationCoordinator()
         )
     }
 }
@@ -96,47 +108,39 @@ struct ProgressBarSegment_Previews: PreviewProvider {
 // MARK: functions
 extension ProgressBarSegment {
     func initializeAnimation() {
-//        print("initializeAnimation, index: \(index)")
+        print("Segment\(segmentIndex) initial.")
         withAnimation(.linear(duration: 0)) {
             endX = 0
         }
     }
     
     func startAnimation(maxWidth: Double) {
-//        print("startAnimation, index: \(index)")
-        
-        let duration: Double
-        if isAnimationPaused {
-            duration = self.duration * (1 - tracingEndX.currentEndX / maxWidth)
-        } else if !tracingSegmentAnimation.isTransitionForward {
-            endX = 0
-            duration = self.duration
-        } else {
-            duration = self.duration
-        }
-        
+        print("Segment\(segmentIndex) start.")
+        endX = 0
         withAnimation(.linear(duration: duration)) {
             endX = maxWidth
         }
     }
     
     func pauseAnimation() {
-//        print("pauseAnimation, index: \(index)")
+        print("Segment\(segmentIndex) pause.")
         withAnimation(.linear(duration: 0)) {
             endX = tracingEndX.currentEndX
         }
     }
     
-    func endAnimation(maxWidth: Double) {
-//        print("endAnimation, index: \(index)")
+    func resumeAnimation(maxWidth: Double) {
+        print("Segment\(segmentIndex) resume.")
+        withAnimation(.linear(duration: duration * (1 - tracingEndX.currentEndX / maxWidth))) {
+            endX = maxWidth
+        }
+    }
+    
+    func finishAnimation(maxWidth: Double) {
+        print("Segment\(segmentIndex) finish.")
         withAnimation(.linear(duration: 0)) {
-            endX = maxWidth + 0.1 // trick to stop animation!
+            endX = maxWidth + 0.1 // trick to finish animation!
             tracingEndX.updateCurrentEndX(0)
-            
-            let newIndex = tracingSegmentAnimation.currentSegmentIndex < 0 ? 0 : tracingSegmentAnimation.currentSegmentIndex
-            if segmentIndex == newIndex {
-                tracingSegmentAnimation.currentSegmentIndex = segmentIndex + 1
-            }
         }
     }
 }

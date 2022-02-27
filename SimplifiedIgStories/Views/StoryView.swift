@@ -8,7 +8,7 @@
 import SwiftUI
 
 enum StoryPortionTransitionDirection {
-    case none, forward, backward
+    case none, start, forward, backward
 }
 
 struct StoryView: View {
@@ -43,7 +43,7 @@ struct StoryView: View {
                 ProgressBar(
                     storyIndex: storyIndex,
                     storyPortionTransitionDirection: $storyPortionTransitionDirection,
-                    currentStoryPortionIndex: $currentStoryPortionIndex
+                    currentSegmentIndex: $currentStoryPortionIndex
                 )
                     .frame(height: 2, alignment: .center)
                     .padding(.top, 8)
@@ -136,8 +136,8 @@ extension StoryView {
 extension StoryView {
     func initAnimation() {
         if storyPortionTransitionDirection == .none && storyGlobal.currentStoryIndex == storyIndex {
-            print("StoryView\(storyIndex) start animation.")
-            storyPortionTransitionDirection = .forward
+            print("StoryView \(storyIndex) animation start!")
+            storyPortionTransitionDirection = .start
         }
     }
 }

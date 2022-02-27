@@ -26,7 +26,7 @@ struct StoryContainer: View {
                 GeometryReader { geo in
                     let frame = geo.frame(in: .global)
                     StoryView(storyIndex: index)
-                    // Cubic transition reference: https://www.youtube.com/watch?v=NTun83toSQQ&ab_channel=Kavsoft
+                        // Cubic transition reference: https://www.youtube.com/watch?v=NTun83toSQQ&ab_channel=Kavsoft
                         .rotation3DEffect(
                             storyGlobal.shouldRotate ? .degrees(getRotationDegree(offsetX: frame.minX)) : .degrees(0),
                             axis: (x: 0.0, y: 1.0, z: 0.0),
@@ -51,8 +51,17 @@ struct StoryContainer: View {
                 }
                 .onEnded { value in
                     let offset = value.translation.width / width
-                    let newIndex = Int((CGFloat(storyGlobal.currentStoryIndex) - offset).rounded())
-                    storyGlobal.currentStoryIndex = min(max(newIndex, 0), storyCount - 1)
+                    
+                    // Imitate the close behaviour of IG story when dragging right in the first story,
+                    // or dragging left in the last story.
+                    if storyGlobal.currentStoryIndex == 0 && offset > 0.2 {
+                        storyGlobal.closeStoryContainer()
+                    } else if storyGlobal.currentStoryIndex == storyCount - 1 && offset < -0.2 {
+                        storyGlobal.closeStoryContainer()
+                    } else {
+                        let nextIndex = Int((CGFloat(storyGlobal.currentStoryIndex) - offset).rounded())
+                        storyGlobal.currentStoryIndex = min(nextIndex, storyCount - 1)
+                    }
                 }
         )
         .statusBar(hidden: true)
