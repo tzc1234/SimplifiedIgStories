@@ -26,6 +26,7 @@ struct TraceableRectangle: Shape {
         path.addLine(to: CGPoint(x: endX, y: rect.minY))
         path.addLine(to: CGPoint(x: endX, y: rect.maxY))
         path.addLine(to: CGPoint(x: startX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: startX, y: rect.minY))
         
         return path
     }

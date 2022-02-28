@@ -13,8 +13,11 @@ final class StoryGlobalObject: ObservableObject {
     @Published var currentStoryIndex = 0
     @Published var currentStoryIconFrame: CGRect = .zero
     @Published var showContainer = false
-    @Published var shouldRotate = false
+    @Published var shouldAnimateCubicRotation = false
     var topSpacing = 0.0
+    
+    @Published var isDragging = false
+    var storyIndexBeforeDragged = 0
     
     func closeStoryContainer() {
         // Don't use .spring(). If you switch the StoryContainer fast from one, close then open another,
@@ -22,6 +25,6 @@ final class StoryGlobalObject: ObservableObject {
         withAnimation(.easeInOut(duration: 0.3)) {
             showContainer.toggle()
         }
-        shouldRotate = false
+        shouldAnimateCubicRotation = false
     }
 }

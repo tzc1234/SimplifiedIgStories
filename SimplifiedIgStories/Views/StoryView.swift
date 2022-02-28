@@ -20,10 +20,6 @@ struct StoryView: View {
     
     let storyIndex: Int
     
-    var story: Story {
-        modelDate.stories[storyIndex]
-    }
-    
     var body: some View {
         ZStack {
             storyPortionViews
@@ -43,7 +39,7 @@ struct StoryView: View {
                 ProgressBar(
                     storyIndex: storyIndex,
                     storyPortionTransitionDirection: $storyPortionTransitionDirection,
-                    currentSegmentIndex: $currentStoryPortionIndex
+                    currentStoryPortionIndex: $currentStoryPortionIndex
                 )
                     .frame(height: 2, alignment: .center)
                     .padding(.top, 8)
@@ -62,11 +58,11 @@ struct StoryView: View {
         }
         .clipShape(Rectangle())
         .onAppear { // init animation
-            storyGlobal.shouldRotate = true
+            storyGlobal.shouldAnimateCubicRotation = true
             initAnimation()
         }
-        .onChange(of: storyGlobal.currentStoryIndex) { _ in
-            initAnimation()
+        .onDisappear {
+            print("StoryView\(storyIndex) disappered.")
         }
         
     }
@@ -83,10 +79,10 @@ struct StoryView_Previews: PreviewProvider {
 extension StoryView {
     var storyPortionViews: some View {
         ZStack(alignment: .top) {
-            ForEach(Array(zip(story.portions.indices, story.portions)), id: \.1.id) { index, portion in
+            ForEach(portions.indices) { index in
                 if currentStoryPortionIndex == index {
-                    StoryPortionView(index: index, photoName: portion.imageName)
-                } 
+                    StoryPortionView(index: index, photoName: portions[index].imageName)
+                }
             }
         }
     }
@@ -129,6 +125,17 @@ extension StoryView {
             .padding(.trailing, 10)
             .contentShape(Rectangle())
         }
+    }
+}
+
+// MARK: computed variables
+extension StoryView {
+    var story: Story {
+        modelDate.stories[storyIndex]
+    }
+    
+    var portions: [Portion] {
+        story.portions
     }
 }
 
