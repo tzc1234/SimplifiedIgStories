@@ -52,29 +52,27 @@ struct ProgressBar: View {
                 setCurrentSegemntAnimationStatusTo(.finish)
                 // will trigger the onChange of currentSegemntAnimationStatus below.
             case .backward:
-                setCurrentSegemntAnimationStatusTo(.inital)
+                let previousStatus = currentSegemntAnimationStatus
                 
                 // At the first segment and
                 if currentStoryPortionIndex == 0 {
                     // at the first story,
                     if storyIndex == 0 {
-                        // just restart animation.
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            setCurrentSegemntAnimationStatusTo(.start)
-                            storyPortionTransitionDirection = .none
-                        }
+                        // just start animation.
+                        setCurrentSegemntAnimationStatusTo(previousStatus == .start ? .restart : .start)
                     } else { // Not the first story,
                         // go to previous story.
+                        setCurrentSegemntAnimationStatusTo(.inital)
                         storyGlobal.currentStoryIndex -= 1
                     }
                 } else {
                     // Go back to previous segment normally.
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        currentStoryPortionIndex -= 1
-                        setCurrentSegemntAnimationStatusTo(.start)
-                        storyPortionTransitionDirection = .none
-                    }
+                    setCurrentSegemntAnimationStatusTo(.inital)
+                    currentStoryPortionIndex -= 1
+                    setCurrentSegemntAnimationStatusTo(.start)
                 }
+                
+                storyPortionTransitionDirection = .none // reset
             }
         }
         .onChange(of: currentSegemntAnimationStatus) { newValue in
@@ -85,25 +83,24 @@ struct ProgressBar: View {
                     // close StoryContainer, if it's the last story now.
                     if storyGlobal.currentStoryIndex + 1 > storyCount - 1 {
                         storyGlobal.closeStoryContainer()
-                    } else { // go to next story.
+                    } else { // Go to next story normally.
                         storyGlobal.currentStoryIndex += 1
                     }
-                } else { // go to next segment.
+                } else { // Not the last segment, go to next segment.
                     currentStoryPortionIndex += 1
                     setCurrentSegemntAnimationStatusTo(.start)
                 }
                 
-                storyPortionTransitionDirection = .none
+                storyPortionTransitionDirection = .none // reset
             }
         }
         .onChange(of: storyGlobal.isDragging) { isDragging in
-//            print("story: \(storyIndex), segemntAnimationStatuses: \(segemntAnimationStatuses)")
             if isCurrentStory {
                 if isDragging {
                     if isCurrentSegmentAnimating {
                         setCurrentSegemntAnimationStatusTo(.pause)
                     }
-                } else { // end dragged
+                } else { // Dragged.
                     if !isCurrentSegmentAnimating && !isSameStoryAfterDragged {
                         setCurrentSegemntAnimationStatusTo(.start)
                     } else if isCurrentSegmentIdling && isLastPortion && isSameStoryAfterDragged {
@@ -116,13 +113,12 @@ struct ProgressBar: View {
         }
         .onChange(of: storyGlobal.currentStoryIndex) { _ in
             if isCurrentStory {
-                // After go to next story, start its animation.
+                // After go to the next story, start its animation.
                 if !isCurrentSegmentAnimating {
                     setCurrentSegemntAnimationStatusTo(.start)
                 }
             }
         }
-        
     }
     
 }
@@ -160,7 +156,9 @@ extension ProgressBar {
     }
     
     var isCurrentSegmentAnimating: Bool {
-        currentSegemntAnimationStatus == .start || currentSegemntAnimationStatus == .resume
+        currentSegemntAnimationStatus == .start ||
+        currentSegemntAnimationStatus == .restart ||
+        currentSegemntAnimationStatus == .resume
     }
     
     var isCurrentSegmentIdling: Bool {

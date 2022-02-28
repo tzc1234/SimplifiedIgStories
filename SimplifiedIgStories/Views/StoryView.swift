@@ -26,9 +26,9 @@ struct StoryView: View {
             
             DetectableTapGesturePositionView { point in
                 let screenWidth = UIScreen.main.bounds.width
-                if point.x <= screenWidth / 2 { // go previous
+                if point.x <= screenWidth / 2 {
                     storyPortionTransitionDirection = .backward
-                } else { // go next
+                } else {
                     storyPortionTransitionDirection = .forward
                 }
             }
@@ -57,7 +57,7 @@ struct StoryView: View {
             
         }
         .clipShape(Rectangle())
-        .onAppear { // init animation
+        .onAppear {
             storyGlobal.shouldAnimateCubicRotation = true
             initAnimation()
         }

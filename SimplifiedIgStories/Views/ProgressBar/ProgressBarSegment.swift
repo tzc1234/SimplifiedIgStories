@@ -8,10 +8,12 @@
 import SwiftUI
 
 enum ProgressBarSegemntAnimationStatus {
-    case inital, start, pause, resume, finish
+    case inital, start, restart, pause, resume, finish
 }
 
 struct ProgressBarSegment: View {
+    @Environment(\.scenePhase) private var scenePhase
+    
     // For animation purpose.
     @State private var endX = 0.0
     // ProgressBarSegment will frequently be recreate,
@@ -19,16 +21,13 @@ struct ProgressBarSegment: View {
     @StateObject private var tracingEndX = TracingEndX(currentEndX: 0.0)
     
     let duration = 5.0
+    @State private var traceableRectangleId = 0
+    @State private var isAnimationPaused = false
     
     let segmentIndex: Int
     @Binding var segemntAnimationStatuses: [Int: ProgressBarSegemntAnimationStatus]
-    let storyIndex: Int
+    let storyIndex: Int // TODO: remove storyIndex
     
-    var currentStatus: ProgressBarSegemntAnimationStatus? {
-        segemntAnimationStatuses[segmentIndex]
-    }
-    
-    // TODO: rmove storyIndex
     init(segmentIndex: Int, segemntAnimationStatuses: Binding<[Int: ProgressBarSegemntAnimationStatus]>, storyIndex: Int) {
         self.segmentIndex = segmentIndex
         self._segemntAnimationStatuses = segemntAnimationStatuses
@@ -41,6 +40,7 @@ struct ProgressBarSegment: View {
                 .fill(.white)
                 .background(Color(.lightGray).opacity(0.5))
                 .cornerRadius(6)
+                .id(traceableRectangleId) // For reset animation!
                 .onChange(of: tracingEndX.currentEndX) { currentEndX in
                     // Finished
                     if currentEndX >= geo.size.width {
@@ -48,13 +48,15 @@ struct ProgressBarSegment: View {
                         segemntAnimationStatuses[segmentIndex] = .finish
                     }
                 }
-                .onChange(of: segemntAnimationStatuses[segmentIndex]) { newValue in
+                .onChange(of: currentAnimationStatus) { newValue in
                     if let segemntAnimationStatus = newValue {
                         switch segemntAnimationStatus {
                         case .inital:
                             initializeAnimation()
                         case .start:
                             startAnimation(maxWidth: geo.size.width)
+                        case .restart:
+                            restartAnimation(maxWidth: geo.size.width)
                         case .pause:
                             pauseAnimation()
                         case .resume:
@@ -64,21 +66,18 @@ struct ProgressBarSegment: View {
                         }
                     }
                 }
-            
-                // Pause animation when scenePhase inactive
-//                .onChange(of: scenePhase) { newPhase in
-//                    let newIndex = segmentAnimationCoordinator.currentSegmentIndex < 0 ? 0 : segmentAnimationCoordinator.currentSegmentIndex
-//
-//                    if segmentIndex == newIndex {
-//                        if newPhase == .active && isAnimationPaused {
-//                            playAnimation(maxWidth: geo.size.width)
-//                            isAnimationPaused = false
-//                        } else if newPhase == .inactive && !isAnimationPaused {
-//                            pauseAnimation()
-//                            isAnimationPaused = true
-//                        }
-//                    }
-//                }
+                // Pause animation when inactive.
+                .onChange(of: scenePhase) { newPhase in
+                    if isAnimating {
+                        if newPhase == .active && isAnimationPaused {
+                            resumeAnimation(maxWidth: geo.size.width)
+                            isAnimationPaused = false
+                        } else if newPhase == .inactive && !isAnimationPaused {
+                            pauseAnimation()
+                            isAnimationPaused = true
+                        }
+                    }
+                }
             
         }
     }
@@ -94,18 +93,43 @@ struct ProgressBarSegment_Previews: PreviewProvider {
     }
 }
 
+// MARK: computed varibles
+extension ProgressBarSegment {
+    var currentAnimationStatus: ProgressBarSegemntAnimationStatus? {
+        segemntAnimationStatuses[segmentIndex]
+    }
+    
+    var isAnimating: Bool {
+        currentAnimationStatus == .start ||
+        currentAnimationStatus == .restart ||
+        currentAnimationStatus == .resume
+    }
+}
+
 // MARK: functions
 extension ProgressBarSegment {
+    func resetTraceableRectangle(toLength endX: Double = 0.0) {
+        self.endX = endX
+        traceableRectangleId = traceableRectangleId == 0 ? 1 : 0
+    }
+    
     func initializeAnimation() {
         print("storyIndex\(storyIndex), Segment\(segmentIndex) initial.")
-        withAnimation(.linear(duration: 0.0)) {
-            endX = 0.0
-        }
+        resetTraceableRectangle()
     }
     
     func startAnimation(maxWidth: Double) {
         print("storyIndex\(storyIndex), Segment\(segmentIndex) start.")
-        endX = 0.0
+        resetTraceableRectangle()
+        withAnimation(.linear(duration: duration)) {
+            endX = maxWidth
+        }
+    }
+    
+    // TODO: combine restartAnimation and startAnimation
+    func restartAnimation(maxWidth: Double) {
+        print("storyIndex\(storyIndex), Segment\(segmentIndex) restart.")
+        resetTraceableRectangle()
         withAnimation(.linear(duration: duration)) {
             endX = maxWidth
         }
@@ -113,9 +137,7 @@ extension ProgressBarSegment {
     
     func pauseAnimation() {
         print("storyIndex\(storyIndex), Segment\(segmentIndex) pause.")
-        withAnimation(.linear(duration: 0.0)) {
-            endX = tracingEndX.currentEndX
-        }
+        resetTraceableRectangle(toLength: tracingEndX.currentEndX)
     }
     
     func resumeAnimation(maxWidth: Double) {
@@ -127,8 +149,6 @@ extension ProgressBarSegment {
     
     func finishAnimation(maxWidth: Double) {
         print("storyIndex\(storyIndex), Segment\(segmentIndex) finish.")
-        withAnimation(.linear(duration: 0.0)) {
-            endX = maxWidth + 0.1 // trick to finish animation!
-        }
+        resetTraceableRectangle(toLength: maxWidth)
     }
 }
