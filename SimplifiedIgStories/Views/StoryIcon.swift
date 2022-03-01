@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct StoryIcon: View {
-    @Environment(\.scenePhase) var scenePhase
     @EnvironmentObject private var storyGlobal: StoryGlobalObject
     
     @State private var endAngle = 360.0
@@ -18,6 +17,7 @@ struct StoryIcon: View {
     @State private var isOnTap = false
     
     let animationDuration = 1.0
+    
     let index: Int
     let avatar: String
     let isPlusIconShown: Bool
@@ -40,19 +40,25 @@ struct StoryIcon: View {
             }
             .scaledToFit()
             .scaleEffect(isOnTap ? 1.2 : 1.0)
+            .frame(maxWidth: .infinity)
+            .preference(key: FramePreferenceKey.self, value: geo.frame(in: .named(HomeView.coordinateSpaceName)))
             .onTapGesture {
                 withAnimation(.spring()) {
                     isOnTap.toggle()
                 }
                 
-                storyGlobal.currentStoryIconFrame = geo.frame(in: .named(HomeView.coordinateSpaceName))
                 storyGlobal.currentStoryIndex = index
                 isOnTap.toggle()
                 
+                let animationDuration = 0.3
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    withAnimation(.easeInOut(duration: 0.3)) {
+                    withAnimation(.easeInOut(duration: animationDuration)) {
                         storyGlobal.showContainer.toggle()
                     }
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration + 0.1) {
+                    storyGlobal.shouldAnimateCubicRotation = true
                 }
             }
             .onChange(of: tracingEndAngle.currentEndAngle) { newValue in
@@ -60,6 +66,10 @@ struct StoryIcon: View {
                     resetStrokeAnimationAfterCompletion()
                 }
             }
+            .onPreferenceChange(FramePreferenceKey.self) { frame in
+                storyGlobal.storyIconFrames[index] = frame
+            }
+            
         }
     }
     
@@ -68,6 +78,14 @@ struct StoryIcon: View {
 struct StoryIcon_Previews: PreviewProvider {
     static var previews: some View {
         StoryIcon(index: 0, avatar: "avatar", isShownAddIcon: false)
+    }
+}
+
+struct FramePreferenceKey: PreferenceKey {
+    static var defaultValue: CGRect = .zero
+    
+    static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
+        value = nextValue()
     }
 }
 

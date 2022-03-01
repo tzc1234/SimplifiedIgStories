@@ -58,7 +58,6 @@ struct StoryView: View {
         }
         .clipShape(Rectangle())
         .onAppear {
-            storyGlobal.shouldAnimateCubicRotation = true
             initAnimation()
         }
         .onDisappear {

@@ -26,7 +26,7 @@ struct ProgressBarSegment: View {
     
     let segmentIndex: Int
     @Binding var segemntAnimationStatuses: [Int: ProgressBarSegemntAnimationStatus]
-    let storyIndex: Int // TODO: remove storyIndex
+    let storyIndex: Int // This storyIndex is for development / debug purpose.
     
     init(segmentIndex: Int, segemntAnimationStatuses: Binding<[Int: ProgressBarSegemntAnimationStatus]>, storyIndex: Int) {
         self.segmentIndex = segmentIndex
