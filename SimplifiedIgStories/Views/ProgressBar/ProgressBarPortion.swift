@@ -1,5 +1,5 @@
 //
-//  ProgressBarSegment.swift
+//  ProgressBarPortion.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 15/2/2022.
@@ -7,16 +7,16 @@
 
 import SwiftUI
 
-enum ProgressBarSegemntAnimationStatus {
+enum ProgressBarPortionAnimationStatus {
     case inital, start, restart, pause, resume, finish
 }
 
-struct ProgressBarSegment: View {
+struct ProgressBarPortion: View {
     @Environment(\.scenePhase) private var scenePhase
     
     // For animation purpose.
     @State private var endX = 0.0
-    // ProgressBarSegment will frequently be recreate,
+    // ProgressBarPortion will frequently be recreate,
     // TracingEndX must be a @StateObject to keep it unchange.
     @StateObject private var tracingEndX = TracingEndX(currentEndX: 0.0)
     
@@ -24,13 +24,13 @@ struct ProgressBarSegment: View {
     @State private var traceableRectangleId = 0
     @State private var isAnimationPaused = false
     
-    let segmentIndex: Int
-    @Binding var segemntAnimationStatuses: [Int: ProgressBarSegemntAnimationStatus]
-    let storyIndex: Int // This storyIndex is for development / debug purpose.
+    let portionIndex: Int
+    @Binding var portionAnimationStatuses: [Int: ProgressBarPortionAnimationStatus]
+    let storyIndex: Int // This storyIndex is for debug msg.
     
-    init(segmentIndex: Int, segemntAnimationStatuses: Binding<[Int: ProgressBarSegemntAnimationStatus]>, storyIndex: Int) {
-        self.segmentIndex = segmentIndex
-        self._segemntAnimationStatuses = segemntAnimationStatuses
+    init(portionIndex: Int, portionAnimationStatuses: Binding<[Int: ProgressBarPortionAnimationStatus]>, storyIndex: Int) {
+        self.portionIndex = portionIndex
+        self._portionAnimationStatuses = portionAnimationStatuses
         self.storyIndex = storyIndex
     }
     
@@ -45,12 +45,12 @@ struct ProgressBarSegment: View {
                     // Finished
                     if currentEndX >= geo.size.width {
                         tracingEndX.updateCurrentEndX(0)
-                        segemntAnimationStatuses[segmentIndex] = .finish
+                        portionAnimationStatuses[portionIndex] = .finish
                     }
                 }
                 .onChange(of: currentAnimationStatus) { newValue in
-                    if let segemntAnimationStatus = newValue {
-                        switch segemntAnimationStatus {
+                    if let portionAnimationStatus = newValue {
+                        switch portionAnimationStatus {
                         case .inital:
                             initializeAnimation()
                         case .start:
@@ -83,20 +83,20 @@ struct ProgressBarSegment: View {
     }
 }
 
-struct ProgressBarSegment_Previews: PreviewProvider {
+struct ProgressBarPortion_Previews: PreviewProvider {
     static var previews: some View {
-        ProgressBarSegment(
-            segmentIndex: 0,
-            segemntAnimationStatuses: .constant([:]),
+        ProgressBarPortion(
+            portionIndex: 0,
+            portionAnimationStatuses: .constant([:]),
             storyIndex: 0
         )
     }
 }
 
 // MARK: computed varibles
-extension ProgressBarSegment {
-    var currentAnimationStatus: ProgressBarSegemntAnimationStatus? {
-        segemntAnimationStatuses[segmentIndex]
+extension ProgressBarPortion {
+    var currentAnimationStatus: ProgressBarPortionAnimationStatus? {
+        portionAnimationStatuses[portionIndex]
     }
     
     var isAnimating: Bool {
@@ -107,19 +107,19 @@ extension ProgressBarSegment {
 }
 
 // MARK: functions
-extension ProgressBarSegment {
+extension ProgressBarPortion {
     func resetTraceableRectangle(toLength endX: Double = 0.0) {
         self.endX = endX
         traceableRectangleId = traceableRectangleId == 0 ? 1 : 0
     }
     
     func initializeAnimation() {
-        print("storyIndex\(storyIndex), Segment\(segmentIndex) initial.")
+        print("storyIndex\(storyIndex), portion\(portionIndex) initial.")
         resetTraceableRectangle()
     }
     
     func startAnimation(maxWidth: Double) {
-        print("storyIndex\(storyIndex), Segment\(segmentIndex) start.")
+        print("storyIndex\(storyIndex), portion\(portionIndex) start.")
         resetTraceableRectangle()
         withAnimation(.linear(duration: duration)) {
             endX = maxWidth
@@ -128,7 +128,7 @@ extension ProgressBarSegment {
     
     // TODO: combine restartAnimation and startAnimation
     func restartAnimation(maxWidth: Double) {
-        print("storyIndex\(storyIndex), Segment\(segmentIndex) restart.")
+        print("storyIndex\(storyIndex), portion\(portionIndex) restart.")
         resetTraceableRectangle()
         withAnimation(.linear(duration: duration)) {
             endX = maxWidth
@@ -136,19 +136,19 @@ extension ProgressBarSegment {
     }
     
     func pauseAnimation() {
-        print("storyIndex\(storyIndex), Segment\(segmentIndex) pause.")
+        print("storyIndex\(storyIndex), portion\(portionIndex) pause.")
         resetTraceableRectangle(toLength: tracingEndX.currentEndX)
     }
     
     func resumeAnimation(maxWidth: Double) {
-        print("storyIndex\(storyIndex), Segment\(segmentIndex) resume.")
+        print("storyIndex\(storyIndex), portion\(portionIndex) resume.")
         withAnimation(.linear(duration: duration * (1 - tracingEndX.currentEndX / maxWidth))) {
             endX = maxWidth
         }
     }
     
     func finishAnimation(maxWidth: Double) {
-        print("storyIndex\(storyIndex), Segment\(segmentIndex) finish.")
+        print("storyIndex\(storyIndex), portion\(portionIndex) finish.")
         resetTraceableRectangle(toLength: maxWidth)
     }
 }

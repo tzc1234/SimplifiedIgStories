@@ -17,7 +17,7 @@ struct ProgressBar: View {
     @Binding private var storyPortionTransitionDirection: StoryPortionTransitionDirection
     @Binding private var currentStoryPortionIndex: Int
     
-    @State private var segemntAnimationStatuses: [Int: ProgressBarSegemntAnimationStatus] = [:]
+    @State private var portionAnimationStatuses: [Int: ProgressBarPortionAnimationStatus] = [:]
     
     init(
         storyIndex: Int,
@@ -33,8 +33,8 @@ struct ProgressBar: View {
         HStack {
             Spacer(minLength: 2)
             
-            ForEach(0..<numOfSegments) { index in
-                ProgressBarSegment(segmentIndex: index, segemntAnimationStatuses: $segemntAnimationStatuses, storyIndex: storyIndex)
+            ForEach(0..<portionCount) { index in
+                ProgressBarPortion(portionIndex: index, portionAnimationStatuses: $portionAnimationStatuses, storyIndex: storyIndex)
                 
                 Spacer(minLength: 2)
             }
@@ -45,50 +45,50 @@ struct ProgressBar: View {
             case .none: // For continue tap forward/backward to trigger onChange.
                 break
             case .start:
-                setCurrentSegemntAnimationStatusTo(.inital)
+                setCurrentPortionAnimationStatusTo(.inital)
                 currentStoryPortionIndex = 0
-                setCurrentSegemntAnimationStatusTo(.start)
+                setCurrentPortionAnimationStatusTo(.start)
             case .forward:
-                setCurrentSegemntAnimationStatusTo(.finish)
-                // will trigger the onChange of currentSegemntAnimationStatus below.
+                setCurrentPortionAnimationStatusTo(.finish)
+                // will trigger the onChange of currentPortionAnimationStatus below.
             case .backward:
-                let previousStatus = currentSegemntAnimationStatus
+                let previousStatus = currentPortionAnimationStatus
                 
-                // At the first segment and
+                // At the first portion and
                 if currentStoryPortionIndex == 0 {
                     // at the first story,
                     if storyIndex == 0 {
                         // just start animation.
-                        setCurrentSegemntAnimationStatusTo(previousStatus == .start ? .restart : .start)
+                        setCurrentPortionAnimationStatusTo(previousStatus == .start ? .restart : .start)
                     } else { // Not the first story,
                         // go to previous story.
-                        setCurrentSegemntAnimationStatusTo(.inital)
+                        setCurrentPortionAnimationStatusTo(.inital)
                         storyGlobal.currentStoryIndex -= 1
                     }
                 } else {
-                    // Go back to previous segment normally.
-                    setCurrentSegemntAnimationStatusTo(.inital)
+                    // Go back to previous portion normally.
+                    setCurrentPortionAnimationStatusTo(.inital)
                     currentStoryPortionIndex -= 1
-                    setCurrentSegemntAnimationStatusTo(.start)
+                    setCurrentPortionAnimationStatusTo(.start)
                 }
                 
                 storyPortionTransitionDirection = .none // reset
             }
         }
-        .onChange(of: currentSegemntAnimationStatus) { newValue in
-            // Start next segment's animation.
+        .onChange(of: currentPortionAnimationStatus) { newValue in
+            // Start next portion's animation.
             if newValue == .finish {
-                // At last segment now,
-                if currentStoryPortionIndex + 1 > numOfSegments - 1 {
+                // At last portion now,
+                if currentStoryPortionIndex + 1 > portionCount - 1 {
                     // close StoryContainer, if it's the last story now.
                     if storyGlobal.currentStoryIndex + 1 > storyCount - 1 {
                         storyGlobal.closeStoryContainer()
-                    } else { // Go to next story normally.
+                    } else { // Not the last stroy, go to next story normally.
                         storyGlobal.currentStoryIndex += 1
                     }
-                } else { // Not the last segment, go to next segment.
+                } else { // Not the last portion, go to next portion.
                     currentStoryPortionIndex += 1
-                    setCurrentSegemntAnimationStatusTo(.start)
+                    setCurrentPortionAnimationStatusTo(.start)
                 }
                 
                 storyPortionTransitionDirection = .none // reset
@@ -97,16 +97,15 @@ struct ProgressBar: View {
         .onChange(of: storyGlobal.isDragging) { isDragging in
             if isCurrentStory {
                 if isDragging {
-                    if isCurrentSegmentAnimating {
-                        setCurrentSegemntAnimationStatusTo(.pause)
+                    // Pause the animation when dragging.
+                    if isCurrentPortionAnimating {
+                        setCurrentPortionAnimationStatusTo(.pause)
                     }
                 } else { // Dragged.
-                    if !isCurrentSegmentAnimating && !isSameStoryAfterDragged {
-                        setCurrentSegemntAnimationStatusTo(.start)
-                    } else if isCurrentSegmentIdling && isLastPortion && isSameStoryAfterDragged {
-                        setCurrentSegemntAnimationStatusTo(.start)
-                    } else if currentSegemntAnimationStatus == .pause {
-                        setCurrentSegemntAnimationStatusTo(.resume)
+                    if !isCurrentPortionAnimating && !isSameStoryAfterDragged {
+                        setCurrentPortionAnimationStatusTo(.start)
+                    } else if currentPortionAnimationStatus == .pause {
+                        setCurrentPortionAnimationStatusTo(.resume)
                     }
                 }
             }
@@ -114,8 +113,8 @@ struct ProgressBar: View {
         .onChange(of: storyGlobal.currentStoryIndex) { _ in
             if isCurrentStory {
                 // After go to the next story, start its animation.
-                if !isCurrentSegmentAnimating {
-                    setCurrentSegemntAnimationStatusTo(.start)
+                if !isCurrentPortionAnimating {
+                    setCurrentPortionAnimationStatusTo(.start)
                 }
             }
         }
@@ -143,7 +142,7 @@ extension ProgressBar {
         modelData.stories[storyIndex].portions
     }
     
-    var numOfSegments: Int {
+    var portionCount: Int {
         portions.count
     }
     
@@ -151,32 +150,24 @@ extension ProgressBar {
         storyGlobal.currentStoryIndex == storyIndex
     }
     
-    var currentSegemntAnimationStatus: ProgressBarSegemntAnimationStatus? {
-        segemntAnimationStatuses[currentStoryPortionIndex]
+    var currentPortionAnimationStatus: ProgressBarPortionAnimationStatus? {
+        portionAnimationStatuses[currentStoryPortionIndex]
     }
     
-    var isCurrentSegmentAnimating: Bool {
-        currentSegemntAnimationStatus == .start ||
-        currentSegemntAnimationStatus == .restart ||
-        currentSegemntAnimationStatus == .resume
-    }
-    
-    var isCurrentSegmentIdling: Bool {
-        currentSegemntAnimationStatus == nil || currentSegemntAnimationStatus == .inital
+    var isCurrentPortionAnimating: Bool {
+        currentPortionAnimationStatus == .start ||
+        currentPortionAnimationStatus == .restart ||
+        currentPortionAnimationStatus == .resume
     }
     
     var isSameStoryAfterDragged: Bool {
         storyGlobal.currentStoryIndex == storyGlobal.storyIndexBeforeDragged
     }
-    
-    var isLastPortion: Bool {
-        currentStoryPortionIndex == numOfSegments - 1
-    }
 }
 
 // MARK: functions
 extension ProgressBar {
-    func setCurrentSegemntAnimationStatusTo(_ status: ProgressBarSegemntAnimationStatus) {
-        segemntAnimationStatuses[currentStoryPortionIndex] = status
+    func setCurrentPortionAnimationStatusTo(_ status: ProgressBarPortionAnimationStatus) {
+        portionAnimationStatuses[currentStoryPortionIndex] = status
     }
 }
