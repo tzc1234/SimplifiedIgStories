@@ -60,9 +60,6 @@ struct StoryView: View {
         .onAppear {
             initAnimation()
         }
-        .onDisappear {
-            print("StoryView\(storyIndex) disappered.")
-        }
         
     }
     
@@ -71,6 +68,8 @@ struct StoryView: View {
 struct StoryView_Previews: PreviewProvider {
     static var previews: some View {
         StoryView(storyIndex: 0)
+            .environmentObject(ModelData())
+            .environmentObject(StoryGlobalObject())
     }
 }
 
@@ -121,9 +120,9 @@ extension StoryView {
                     .foregroundColor(.white)
                     .frame(width: 25, height: 25)
             }
-            .padding(.trailing, 10)
             .contentShape(Rectangle())
         }
+        .padding(.trailing, 10)
     }
 }
 

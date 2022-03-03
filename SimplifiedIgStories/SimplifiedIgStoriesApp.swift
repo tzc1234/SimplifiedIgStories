@@ -13,7 +13,9 @@ struct SimplifiedIgStoriesApp: App {
     
     var body: some Scene {
         WindowGroup {
-            HomeView().environmentObject(modelData)
+//            HomeView().environmentObject(modelData)
+//            VideoRecordButton()
+            StoryCamView()
         }
     }
 }
