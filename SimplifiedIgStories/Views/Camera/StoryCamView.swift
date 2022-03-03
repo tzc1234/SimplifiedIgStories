@@ -6,19 +6,20 @@
 //
 
 import SwiftUI
+import AVKit
 
 final class StoryCamGlobal: ObservableObject {
     @Published var cameraSelection: SwiftyCamViewController.CameraSelection = .rear
     @Published var enableVideoRecordBtn = false
-    @Published var flashMode: StoryCamView.FlashMode = .off
-    @Published var shouldPhotoTake = false
+    @Published var flashMode: FlashMode = .off
     
+    @Published var shouldPhotoTake = false
     var lastTakenImage: UIImage?
     @Published var photoDidTake = false
-}
-
-struct StoryCamView: View {
-    @StateObject private var storyCamGlobal = StoryCamGlobal()
+    
+    @Published var videoRecordingStatus: VideoRecordingStatus = .none
+    var lastVideoUrl: URL?
+    @Published var videoDidRecord = false
     
     enum FlashMode {
         case on, off, auto
@@ -40,11 +41,18 @@ struct StoryCamView: View {
         }
     }
     
+    enum VideoRecordingStatus {
+        case none, start, stop
+    }
+}
+
+struct StoryCamView: View {
+    @StateObject private var storyCamGlobal = StoryCamGlobal()
+    
     var body: some View {
         GeometryReader { geo in
             ZStack {
                 StorySwiftyCamControllerRepresentable(storyCamGlobal: storyCamGlobal)
-//                Color.green
                 
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(alignment: .top, spacing: 0) {
@@ -82,6 +90,11 @@ struct StoryCamView: View {
                         .scaledToFill()
                 }
             }
+            .sheet(isPresented: $storyCamGlobal.videoDidRecord) {
+                if let url = storyCamGlobal.lastVideoUrl {
+                    VideoPlayer(player: AVPlayer(url: url))
+                }
+            }
             
         }
         
@@ -110,6 +123,7 @@ extension StoryCamView {
             }
             .contentShape(Rectangle())
         }
+        .opacity(storyCamGlobal.videoRecordingStatus == .start ? 0 : 1)
     }
     
     var flashButton: some View {
@@ -125,6 +139,7 @@ extension StoryCamView {
                     .frame(width: 30, height: 30)
             }
         }
+        .opacity(storyCamGlobal.videoRecordingStatus == .start ? 0 : 1)
     }
     
     var videoRecordButton: some View {
@@ -133,6 +148,8 @@ extension StoryCamView {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 storyCamGlobal.shouldPhotoTake = false
             }
+        } longPressingAction: { isPressing in
+            storyCamGlobal.videoRecordingStatus = isPressing ? .start : .stop
         }
         .allowsHitTesting(storyCamGlobal.enableVideoRecordBtn)
     }
@@ -147,6 +164,7 @@ extension StoryCamView {
                 .foregroundColor(.white)
                 .frame(width: 40, height: 40)
         }
+        .opacity(storyCamGlobal.videoRecordingStatus == .start ? 0 : 1)
     }
 }
 

@@ -35,6 +35,15 @@ struct StorySwiftyCamControllerRepresentable: UIViewControllerRepresentable {
         if storyCamGlobal.shouldPhotoTake {
             uiViewController.takePhoto()
         }
+        
+        switch storyCamGlobal.videoRecordingStatus {
+        case .none:
+            break
+        case .start:
+            uiViewController.startVideoRecording()
+        case .stop:
+            uiViewController.stopVideoRecording()
+        }
     }
 
     func makeCoordinator() -> Coordinator {
@@ -62,6 +71,21 @@ struct StorySwiftyCamControllerRepresentable: UIViewControllerRepresentable {
         func swiftyCam(_ swiftyCam: SwiftyCamViewController, didTake photo: UIImage) {
             parent.storyCamGlobal.lastTakenImage = photo
             parent.storyCamGlobal.photoDidTake = true
+        }
+        
+        func swiftyCam(_ swiftyCam: SwiftyCamViewController, didBeginRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
+            print("Did Begin Recording Viedo")
+        }
+        
+        func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
+            print("Did finish Recording Video")
+            parent.storyCamGlobal.videoRecordingStatus = .none
+        }
+        
+        func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishProcessVideoAt url: URL) {
+            print("VideoUrl: \(url)")
+            parent.storyCamGlobal.lastVideoUrl = url
+            parent.storyCamGlobal.videoDidRecord = true
         }
     }
 }

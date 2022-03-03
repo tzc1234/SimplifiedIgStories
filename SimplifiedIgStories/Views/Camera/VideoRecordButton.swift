@@ -15,6 +15,7 @@ struct VideoRecordButton: View {
     @State private var animationCircleId = 0
     
     @State var tapAction: (() -> Void)
+    @State var longPressingAction: ((_ isPressing: Bool) -> Void)
     
     let buttonSize = 80.0
     let duration = StorySwiftyCamViewController.maximumVideoDuration
@@ -64,9 +65,7 @@ struct VideoRecordButton: View {
                 }
         )
         .onChange(of: isLongPressing) { newValue in
-            
-            print("long press.")
-            
+            longPressingAction(newValue)
             if newValue {
                 startStrokeAnimation()
             } else {
@@ -79,7 +78,7 @@ struct VideoRecordButton: View {
 
 struct VideoRecordButton_Previews: PreviewProvider {
     static var previews: some View {
-        VideoRecordButton(tapAction: {})
+        VideoRecordButton(tapAction: {}, longPressingAction: {_ in })
             .preferredColorScheme(.dark)
     }
 }
