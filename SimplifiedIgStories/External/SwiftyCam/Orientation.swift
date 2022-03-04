@@ -75,7 +75,7 @@ class Orientation  {
                 return AVCaptureVideoOrientation.portrait
             }
         } else {
-            fatalError("[SwiftyCam]: windowScene not found.")
+            return AVCaptureVideoOrientation.portrait
         }
     }
     

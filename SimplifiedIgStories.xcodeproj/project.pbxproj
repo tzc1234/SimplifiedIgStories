@@ -30,6 +30,12 @@
 		BE90CE0227D00719001EA0CA /* StorySwiftyCamViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE90CE0127D00719001EA0CA /* StorySwiftyCamViewController.swift */; };
 		BE90CE0427D00A0E001EA0CA /* StoryCamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE90CE0327D00A0E001EA0CA /* StoryCamView.swift */; };
 		BE91AA5427BFD96800BB9846 /* StoryPortionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE91AA5327BFD96700BB9846 /* StoryPortionView.swift */; };
+		BE9336C227D21811009E5370 /* AVPlayerControllerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9336C127D21811009E5370 /* AVPlayerControllerRepresentable.swift */; };
+		BE9336C427D22162009E5370 /* StoryPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9336C327D22162009E5370 /* StoryPreview.swift */; };
+		BE9336C727D22628009E5370 /* Color+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9336C627D22628009E5370 /* Color+Additions.swift */; };
+		BE9336CA27D24491009E5370 /* ImageSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9336C927D24491009E5370 /* ImageSaver.swift */; };
+		BE9336CC27D24CC1009E5370 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9336CB27D24CC1009E5370 /* LoadingView.swift */; };
+		BE9336CE27D2690E009E5370 /* VideoSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9336CD27D2690E009E5370 /* VideoSaver.swift */; };
 		BE93B8C127C8D96900B97C40 /* TraceableRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE93B8C027C8D96900B97C40 /* TraceableRectangle.swift */; };
 		BEA1D95827C3C74D00D0A67A /* Date+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA1D95727C3C74D00D0A67A /* Date+Additions.swift */; };
 		BEA1D95E27C3DA7100D0A67A /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA1D95D27C3DA7100D0A67A /* User.swift */; };
@@ -65,6 +71,12 @@
 		BE90CE0127D00719001EA0CA /* StorySwiftyCamViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorySwiftyCamViewController.swift; sourceTree = "<group>"; };
 		BE90CE0327D00A0E001EA0CA /* StoryCamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCamView.swift; sourceTree = "<group>"; };
 		BE91AA5327BFD96700BB9846 /* StoryPortionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPortionView.swift; sourceTree = "<group>"; };
+		BE9336C127D21811009E5370 /* AVPlayerControllerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPlayerControllerRepresentable.swift; sourceTree = "<group>"; };
+		BE9336C327D22162009E5370 /* StoryPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPreview.swift; sourceTree = "<group>"; };
+		BE9336C627D22628009E5370 /* Color+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Additions.swift"; sourceTree = "<group>"; };
+		BE9336C927D24491009E5370 /* ImageSaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSaver.swift; sourceTree = "<group>"; };
+		BE9336CB27D24CC1009E5370 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
+		BE9336CD27D2690E009E5370 /* VideoSaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoSaver.swift; sourceTree = "<group>"; };
 		BE93B8C027C8D96900B97C40 /* TraceableRectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TraceableRectangle.swift; sourceTree = "<group>"; };
 		BEA1D95727C3C74D00D0A67A /* Date+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Additions.swift"; sourceTree = "<group>"; };
 		BEA1D95D27C3DA7100D0A67A /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -107,6 +119,7 @@
 			children = (
 				BE090B5727B9562B00B6F906 /* SimplifiedIgStoriesApp.swift */,
 				BE90CDF427D001F4001EA0CA /* External */,
+				BE9336C827D24468009E5370 /* Helpers */,
 				BE090B6527B9566D00B6F906 /* Views */,
 				BEA1D95C27C3DA3000D0A67A /* Models */,
 				BEA1D95627C3C71B00D0A67A /* Extensions */,
@@ -129,6 +142,7 @@
 			isa = PBXGroup;
 			children = (
 				BEA7D9FD27C6DFE500DA81E6 /* Shapes */,
+				BE9336CB27D24CC1009E5370 /* LoadingView.swift */,
 				BE8A758027BC106F00E9F745 /* HomeView.swift */,
 				BE090B6627B9568700B6F906 /* StoryIcon.swift */,
 				BE8C498C27C62B3C000541E0 /* StoryIconTitleView.swift */,
@@ -139,6 +153,8 @@
 				BE91AA5327BFD96700BB9846 /* StoryPortionView.swift */,
 				BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */,
 				BE90CE0527D00BCD001EA0CA /* Camera */,
+				BE9336C127D21811009E5370 /* AVPlayerControllerRepresentable.swift */,
+				BE9336C327D22162009E5370 /* StoryPreview.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -183,10 +199,20 @@
 			path = Camera;
 			sourceTree = "<group>";
 		};
+		BE9336C827D24468009E5370 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				BE9336C927D24491009E5370 /* ImageSaver.swift */,
+				BE9336CD27D2690E009E5370 /* VideoSaver.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 		BEA1D95627C3C71B00D0A67A /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
 				BEA1D95727C3C74D00D0A67A /* Date+Additions.swift */,
+				BE9336C627D22628009E5370 /* Color+Additions.swift */,
 				BE84C2C927C78E5400C42165 /* AnyTransition+Additions.swift */,
 			);
 			path = Extensions;
@@ -292,18 +318,23 @@
 			buildActionMask = 2147483647;
 			files = (
 				BEA8E50F27D0CFD200640B19 /* VideoRecordButton.swift in Sources */,
+				BE9336CE27D2690E009E5370 /* VideoSaver.swift in Sources */,
 				BEA7D9FF27C6DFFC00DA81E6 /* TraceableArc.swift in Sources */,
 				BE90CDFD27D0020B001EA0CA /* PreviewView.swift in Sources */,
 				BE93B8C127C8D96900B97C40 /* TraceableRectangle.swift in Sources */,
 				BE90CDFE27D0020B001EA0CA /* SwiftyCamButton.swift in Sources */,
 				BE90CDFA27D0020B001EA0CA /* SwiftyCamViewController.swift in Sources */,
+				BE9336C427D22162009E5370 /* StoryPreview.swift in Sources */,
 				BE90CE0427D00A0E001EA0CA /* StoryCamView.swift in Sources */,
 				BE090B6727B9568700B6F906 /* StoryIcon.swift in Sources */,
 				BE090B5827B9562B00B6F906 /* SimplifiedIgStoriesApp.swift in Sources */,
 				BE8A758127BC107000E9F745 /* HomeView.swift in Sources */,
+				BE9336C227D21811009E5370 /* AVPlayerControllerRepresentable.swift in Sources */,
 				BE8C498F27C674FD000541E0 /* StoryContainer.swift in Sources */,
 				BE91AA5427BFD96800BB9846 /* StoryPortionView.swift in Sources */,
+				BE9336CC27D24CC1009E5370 /* LoadingView.swift in Sources */,
 				BE5E506B27C53736007E6A73 /* StoryGlobalObject.swift in Sources */,
+				BE9336CA27D24491009E5370 /* ImageSaver.swift in Sources */,
 				BE2C557427C0197B0087EE7F /* DetectableTapGesturePositionView.swift in Sources */,
 				BEA1D96027C3DB1200D0A67A /* ModelData.swift in Sources */,
 				BEA901D427BC716E00E3362D /* ProgressBarPortion.swift in Sources */,
@@ -315,6 +346,7 @@
 				BE2C557227BFFE9D0087EE7F /* StoryView.swift in Sources */,
 				BE720F7C27BD111800E862A5 /* ProgressBar.swift in Sources */,
 				BE90CE0027D0060D001EA0CA /* StorySwiftyCamControllerRepresentable.swift in Sources */,
+				BE9336C727D22628009E5370 /* Color+Additions.swift in Sources */,
 				BEA1D95827C3C74D00D0A67A /* Date+Additions.swift in Sources */,
 				BE90CDFB27D0020B001EA0CA /* SwiftyCamViewControllerDelegate.swift in Sources */,
 				BE90CDFC27D0020B001EA0CA /* Orientation.swift in Sources */,
@@ -454,6 +486,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "To Take Photos and Video";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "To Record Audio With Video";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "To Save Photos And Video";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -486,6 +519,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "To Take Photos and Video";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "To Record Audio With Video";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "To Save Photos And Video";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

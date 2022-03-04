@@ -5,7 +5,6 @@
 //  Created by Tsz-Lung on 2/3/2022.
 //
 
-import Foundation
 import UIKit
 
 class StorySwiftyCamViewController: SwiftyCamViewController {

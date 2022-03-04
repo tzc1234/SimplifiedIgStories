@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import AVKit
 
 final class StoryCamGlobal: ObservableObject {
     @Published var cameraSelection: SwiftyCamViewController.CameraSelection = .rear
@@ -80,21 +79,21 @@ struct StoryCamView: View {
                     
                 }
                 .padding(.vertical, 20)
+               
+                if storyCamGlobal.photoDidTake, let uiImage = storyCamGlobal.lastTakenImage {
+                    StoryPreview(uiImage: uiImage) {
+                        storyCamGlobal.photoDidTake = false
+                    }
+                }
+                
+                if storyCamGlobal.videoDidRecord, let url = storyCamGlobal.lastVideoUrl {
+                    StoryPreview(videoUrl: url) {
+                        storyCamGlobal.videoDidRecord = false
+                    }
+                }
                 
             }
             .statusBar(hidden: true)
-            .sheet(isPresented: $storyCamGlobal.photoDidTake) {
-                if let uiImage = storyCamGlobal.lastTakenImage {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .scaledToFill()
-                }
-            }
-            .sheet(isPresented: $storyCamGlobal.videoDidRecord) {
-                if let url = storyCamGlobal.lastVideoUrl {
-                    VideoPlayer(player: AVPlayer(url: url))
-                }
-            }
             
         }
         

@@ -18,7 +18,7 @@ struct VideoRecordButton: View {
     @State var longPressingAction: ((_ isPressing: Bool) -> Void)
     
     let buttonSize = 80.0
-    let duration = StorySwiftyCamViewController.maximumVideoDuration
+    let duration = StorySwiftyCamViewController.maximumVideoDuration + 1
     
     var body: some View {
         ZStack {
@@ -86,7 +86,7 @@ struct VideoRecordButton_Previews: PreviewProvider {
 // MARK: functions
 extension VideoRecordButton {
     func startStrokeAnimation() {
-        withAnimation(.linear(duration: duration - 0.9)) {
+        withAnimation(.linear(duration: duration - 1)) {
             fill = 1.0
         }
     }
