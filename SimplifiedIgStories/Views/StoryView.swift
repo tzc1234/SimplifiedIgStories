@@ -67,7 +67,7 @@ struct StoryView: View {
 
 struct StoryView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryView(storyIndex: 0)
+        StoryView(storyIndex: 1)
             .environmentObject(ModelData())
             .environmentObject(StoryGlobalObject())
     }
@@ -95,7 +95,7 @@ extension StoryView {
     }
     
     var nameText: some View {
-        Text(story.user.name)
+        Text(story.user.title)
             .foregroundColor(.white)
             .font(.headline)
             .fontWeight(.bold)
@@ -103,7 +103,7 @@ extension StoryView {
     }
     
     var dateText: some View {
-        Text(story.lastUpdateDate.timeAgoDisplay())
+        Text(story.lastUpdateDate?.timeAgoDisplay() ?? "")
             .foregroundColor(.white)
             .font(.subheadline)
     }

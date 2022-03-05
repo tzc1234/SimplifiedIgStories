@@ -13,11 +13,12 @@ struct StoryIconTitleView: View {
     let index: Int
     let avatar: String
     let title: String?
-    let isPlusIconShown: Bool = false
+    let showPlusIcon: Bool
+    let onTapAction: ((Int) -> Void)
     
     var body: some View {
         VStack(alignment: .center, spacing: 4) {
-            StoryIcon(index: index, avatar: avatar, isShownAddIcon: isPlusIconShown)
+            StoryIcon(index: index, avatar: avatar, showPlusIcon: showPlusIcon, onTapAction: onTapAction)
         
             if title != nil {
                 titleText
@@ -37,6 +38,6 @@ struct StoryIconTitleView: View {
 
 struct StoryIconTitleView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryIconTitleView(index: 0, avatar: "avatar", title: "Person0")
+        StoryIconTitleView(index: 0, avatar: "avatar", title: "Person0", showPlusIcon: false, onTapAction: {_ in})
     }
 }

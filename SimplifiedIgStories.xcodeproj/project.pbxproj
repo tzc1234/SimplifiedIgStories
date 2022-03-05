@@ -43,6 +43,7 @@
 		BEA7D9FF27C6DFFC00DA81E6 /* TraceableArc.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA7D9FE27C6DFFC00DA81E6 /* TraceableArc.swift */; };
 		BEA8E50F27D0CFD200640B19 /* VideoRecordButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA8E50E27D0CFD200640B19 /* VideoRecordButton.swift */; };
 		BEA901D427BC716E00E3362D /* ProgressBarPortion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA901D327BC716E00E3362D /* ProgressBarPortion.swift */; };
+		BEAED9E427D36F7D00A98F3A /* FramePreferenceKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEAED9E327D36F7D00A98F3A /* FramePreferenceKey.swift */; };
 		BED0F60D27BBF64B00D93F15 /* StoryIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */; };
 /* End PBXBuildFile section */
 
@@ -84,6 +85,7 @@
 		BEA7D9FE27C6DFFC00DA81E6 /* TraceableArc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TraceableArc.swift; sourceTree = "<group>"; };
 		BEA8E50E27D0CFD200640B19 /* VideoRecordButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRecordButton.swift; sourceTree = "<group>"; };
 		BEA901D327BC716E00E3362D /* ProgressBarPortion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarPortion.swift; sourceTree = "<group>"; };
+		BEAED9E327D36F7D00A98F3A /* FramePreferenceKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FramePreferenceKey.swift; sourceTree = "<group>"; };
 		BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIconsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -141,12 +143,13 @@
 		BE090B6527B9566D00B6F906 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				BEAED9E227D36F5A00A98F3A /* PreferenceKeys */,
 				BEA7D9FD27C6DFE500DA81E6 /* Shapes */,
 				BE9336CB27D24CC1009E5370 /* LoadingView.swift */,
 				BE8A758027BC106F00E9F745 /* HomeView.swift */,
-				BE090B6627B9568700B6F906 /* StoryIcon.swift */,
-				BE8C498C27C62B3C000541E0 /* StoryIconTitleView.swift */,
 				BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */,
+				BE8C498C27C62B3C000541E0 /* StoryIconTitleView.swift */,
+				BE090B6627B9568700B6F906 /* StoryIcon.swift */,
 				BE8C498E27C674FD000541E0 /* StoryContainer.swift */,
 				BE2C557127BFFE9D0087EE7F /* StoryView.swift */,
 				BE720F7A27BD10E800E862A5 /* ProgressBar */,
@@ -246,6 +249,14 @@
 			path = Shapes;
 			sourceTree = "<group>";
 		};
+		BEAED9E227D36F5A00A98F3A /* PreferenceKeys */ = {
+			isa = PBXGroup;
+			children = (
+				BEAED9E327D36F7D00A98F3A /* FramePreferenceKey.swift */,
+			);
+			path = PreferenceKeys;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -336,6 +347,7 @@
 				BE5E506B27C53736007E6A73 /* StoryGlobalObject.swift in Sources */,
 				BE9336CA27D24491009E5370 /* ImageSaver.swift in Sources */,
 				BE2C557427C0197B0087EE7F /* DetectableTapGesturePositionView.swift in Sources */,
+				BEAED9E427D36F7D00A98F3A /* FramePreferenceKey.swift in Sources */,
 				BEA1D96027C3DB1200D0A67A /* ModelData.swift in Sources */,
 				BEA901D427BC716E00E3362D /* ProgressBarPortion.swift in Sources */,
 				BE90CE0227D00719001EA0CA /* StorySwiftyCamViewController.swift in Sources */,

@@ -48,6 +48,8 @@ final class StoryCamGlobal: ObservableObject {
 struct StoryCamView: View {
     @StateObject private var storyCamGlobal = StoryCamGlobal()
     
+    let onCloseAction: (() -> Void)
+    
     var body: some View {
         GeometryReader { geo in
             ZStack {
@@ -102,7 +104,7 @@ struct StoryCamView: View {
 
 struct StoryCamView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryCamView().background(.green)
+        StoryCamView(onCloseAction: {}).background(.green)
     }
 }
 
@@ -110,7 +112,7 @@ struct StoryCamView_Previews: PreviewProvider {
 extension StoryCamView {
     var closeButton: some View {
         Button{
-            print("close.")
+            onCloseAction()
         } label: {
             ZStack {
                 Color.clear.frame(width: 45, height: 45)

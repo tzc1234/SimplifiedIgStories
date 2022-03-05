@@ -1,4 +1,15 @@
 [
+    {
+        "id": 0,
+        "lastUpdate": null,
+        "portions": [],
+        "user": {
+            "id": 4,
+            "name": "Jame",
+            "avatar": "avatar",
+            "isCurrentUser": true
+        }
+    },
 	{
 		"id": 0,
 		"lastUpdate": 1645401600,
@@ -19,7 +30,8 @@
 		"user": {
 			"id": 0,
         	"name": "Sea",
-        	"avatar": "sea1"
+        	"avatar": "sea1",
+            "isCurrentUser": false
 		}
 	},
 	{
@@ -46,7 +58,8 @@
 		"user": {
 			"id": 1,
 			"name": "Einstein",
-			"avatar": "Einstein4"
+			"avatar": "Einstein4",
+            "isCurrentUser": false
 		}
 	},
     {
@@ -65,7 +78,8 @@
         "user": {
             "id": 2,
             "name": "Newton",
-            "avatar": "Newton"
+            "avatar": "Newton",
+            "isCurrentUser": false
         }
     },
     {
@@ -96,7 +110,8 @@
         "user": {
             "id": 3,
             "name": "Forest",
-            "avatar": "forest4"
+            "avatar": "forest4",
+            "isCurrentUser": false
         }
     }
 ]

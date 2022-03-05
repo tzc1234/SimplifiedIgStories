@@ -10,6 +10,7 @@ import SwiftUI
 struct StoryPreview: View {
     @State private var isLoading = false
     @State private var showSaved = false
+    @State private var showAlert = false
     
     let uiImage: UIImage?
     let videoUrl: URL?
@@ -74,7 +75,7 @@ struct StoryPreview_Previews: PreviewProvider {
 extension StoryPreview {
     var backBtn: some View {
         Button {
-            backBtnAction()
+            showAlert.toggle()
         } label: {
             Image(systemName: "chevron.backward")
                 .resizable()
@@ -86,6 +87,14 @@ extension StoryPreview {
                         .frame(width: 45, height: 45)
                 )
                 .frame(width: 45, height: 45)
+        }
+        .alert("Discard media?", isPresented: $showAlert) {
+            Button("Discard", role: .destructive) {
+                backBtnAction()
+            }
+            Button("Cancel", role: .cancel, action: {})
+        } message: {
+            Text("If you go back now, you will lose it.")
         }
     }
     

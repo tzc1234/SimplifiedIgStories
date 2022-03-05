@@ -7,9 +7,7 @@
 
 import SwiftUI
 
-struct StoryIcon: View {
-    @EnvironmentObject private var storyGlobal: StoryGlobalObject
-    
+struct StoryIcon: View {    
     @State private var endAngle = 360.0
     @ObservedObject private var tracingEndAngle = TracingEndAngle(currentEndAngle: 0.0)
     
@@ -20,55 +18,66 @@ struct StoryIcon: View {
     
     let index: Int
     let avatar: String
-    let isPlusIconShown: Bool
+    let showPlusIcon: Bool
+    let onTapAction: ((Int) -> Void)
     
-    init(index: Int, avatar: String, isShownAddIcon: Bool) {
+    init(index: Int, avatar: String, showPlusIcon: Bool, onTapAction: @escaping ((Int) -> Void)) {
         self.index = index
         self.avatar = avatar
-        self.isPlusIconShown = isShownAddIcon
+        self.showPlusIcon = showPlusIcon
+        self.onTapAction = onTapAction
     }
     
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                arcForAnimation
+                arc
                 avatarImage
                 
-                if isPlusIconShown {
+                if showPlusIcon {
                     plusIcon
                 }
             }
             .scaledToFit()
-            .scaleEffect(isOnTap ? 1.2 : 1.0)
+            .scaleEffect(isOnTap ? 1.1 : 1.0)
             .frame(maxWidth: .infinity)
             .preference(key: FramePreferenceKey.self, value: geo.frame(in: .named(HomeView.coordinateSpaceName)))
-            .onTapGesture {
-                withAnimation(.spring()) {
-                    isOnTap.toggle()
-                }
-                
-                storyGlobal.currentStoryIndex = index
-                isOnTap.toggle()
-                
-                let animationDuration = 0.3
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    withAnimation(.easeInOut(duration: animationDuration)) {
-                        storyGlobal.showContainer.toggle()
-                    }
-                }
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration + 0.1) {
-                    storyGlobal.shouldAnimateCubicRotation = true
-                }
-            }
             .onChange(of: tracingEndAngle.currentEndAngle) { newValue in
                 if newValue == 360.0 {
                     resetStrokeAnimationAfterCompletion()
                 }
             }
-            .onPreferenceChange(FramePreferenceKey.self) { frame in
-                storyGlobal.storyIconFrames[index] = frame
+            .onTapGesture {
+                withAnimation(.spring()) {
+                    isOnTap.toggle()
+                }
+                
+                onTapAction(index)
+                isOnTap.toggle()
             }
+//            .onTapGesture {
+//                withAnimation(.spring()) {
+//                    isOnTap.toggle()
+//                }
+//
+//                storyGlobal.currentStoryIndex = index
+//                isOnTap.toggle()
+//
+//                let animationDuration = 0.3
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+//                    withAnimation(.easeInOut(duration: animationDuration)) {
+//                        storyGlobal.showContainer.toggle()
+//                    }
+//                }
+//
+//                DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration + 0.1) {
+//                    storyGlobal.shouldAnimateCubicRotation = true
+//                }
+//            }
+            
+//            .onPreferenceChange(FramePreferenceKey.self) { frame in
+//                storyGlobal.storyIconFrames[index] = frame
+//            }
             
         }
     }
@@ -77,21 +86,13 @@ struct StoryIcon: View {
 
 struct StoryIcon_Previews: PreviewProvider {
     static var previews: some View {
-        StoryIcon(index: 0, avatar: "avatar", isShownAddIcon: false)
-    }
-}
-
-struct FramePreferenceKey: PreferenceKey {
-    static var defaultValue: CGRect = .zero
-    
-    static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
-        value = nextValue()
+        StoryIcon(index: 0, avatar: "avatar", showPlusIcon: false, onTapAction: {_ in})
     }
 }
 
 // MARK: components
 extension StoryIcon {
-    var arcForAnimation: some View {
+    var arc: some View {
         TraceableArc(startAngle: 0, endAngle: endAngle, clockwise: true, traceEndAngle: tracingEndAngle)
             .strokeBorder(
                 .linearGradient(
