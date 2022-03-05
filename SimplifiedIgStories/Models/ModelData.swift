@@ -9,6 +9,12 @@ import Foundation
 
 final class ModelData: ObservableObject {
     @Published var stories: [Story] = load("storiesData.json")
+    
+    var firstStoryIndex: Int {
+        // Story 0 is current user story, may have no portions.
+        guard stories[0].hasPortion else { return 1 }
+        return 0
+    }
 }
 
 func load<T: Decodable>(_ filename: String) -> T {

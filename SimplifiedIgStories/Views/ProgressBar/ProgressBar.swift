@@ -13,7 +13,6 @@ struct ProgressBar: View {
     @EnvironmentObject private var storyGlobal: StoryGlobalObject
     
     let storyIndex: Int
-    
     @Binding private var storyPortionTransitionDirection: StoryPortionTransitionDirection
     @Binding private var currentStoryPortionIndex: Int
     
@@ -33,8 +32,12 @@ struct ProgressBar: View {
         HStack {
             Spacer(minLength: 2)
             
-            ForEach(0..<portionCount) { index in
-                ProgressBarPortion(portionIndex: index, portionAnimationStatuses: $portionAnimationStatuses, storyIndex: storyIndex)
+            ForEach(portions.indices) { index in
+                ProgressBarPortion(
+                    portionIndex: index,
+                    portionAnimationStatuses: $portionAnimationStatuses,
+                    storyIndex: storyIndex
+                )
                 
                 Spacer(minLength: 2)
             }
@@ -57,7 +60,7 @@ struct ProgressBar: View {
                 // At the first portion and
                 if currentStoryPortionIndex == 0 {
                     // at the first story,
-                    if storyIndex == 0 {
+                    if storyIndex == firstStoryIndex {
                         // just start animation.
                         setCurrentPortionAnimationStatusTo(previousStatus == .start ? .restart : .start)
                     } else { // Not the first story,
@@ -112,7 +115,7 @@ struct ProgressBar: View {
         }
         .onChange(of: storyGlobal.currentStoryIndex) { _ in
             if isCurrentStory {
-                // After go to the next story, start its animation.
+                // After went to the next story, start its animation.
                 if !isCurrentPortionAnimating {
                     setCurrentPortionAnimationStatusTo(.start)
                 }
@@ -136,6 +139,10 @@ struct ProgressBar_Previews: PreviewProvider {
 extension ProgressBar {
     var storyCount: Int {
         modelData.stories.count
+    }
+    
+    var firstStoryIndex: Int {
+        modelData.firstStoryIndex
     }
     
     var portions: [Portion] {

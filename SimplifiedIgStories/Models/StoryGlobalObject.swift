@@ -11,11 +11,7 @@ import SwiftUI
 
 final class StoryGlobalObject: ObservableObject {
     @Published var currentStoryIndex = 0
-    @Published var storyIconFrames: [Int: CGRect] = [:]
-    var currentStoryIconFrame: CGRect {
-        storyIconFrames[currentStoryIndex] ?? .zero
-    }
-    
+
     @Published var showContainer = false
     @Published var shouldAnimateCubicRotation = false
     var topSpacing = 0.0

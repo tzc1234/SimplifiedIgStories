@@ -33,15 +33,15 @@ struct StoryIcon: View {
             ZStack {
                 arc
                 avatarImage
-                
-                if showPlusIcon {
-                    plusIcon
-                }
+                if showPlusIcon { plusIcon }
             }
             .scaledToFit()
             .scaleEffect(isOnTap ? 1.1 : 1.0)
             .frame(maxWidth: .infinity)
-            .preference(key: FramePreferenceKey.self, value: geo.frame(in: .named(HomeView.coordinateSpaceName)))
+            .preference(
+                key: IndexFramePreferenceKey.self,
+                value: [index: geo.frame(in: .named(HomeView.coordinateSpaceName))]
+            )
             .onChange(of: tracingEndAngle.currentEndAngle) { newValue in
                 if newValue == 360.0 {
                     resetStrokeAnimationAfterCompletion()
@@ -55,30 +55,6 @@ struct StoryIcon: View {
                 onTapAction(index)
                 isOnTap.toggle()
             }
-//            .onTapGesture {
-//                withAnimation(.spring()) {
-//                    isOnTap.toggle()
-//                }
-//
-//                storyGlobal.currentStoryIndex = index
-//                isOnTap.toggle()
-//
-//                let animationDuration = 0.3
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-//                    withAnimation(.easeInOut(duration: animationDuration)) {
-//                        storyGlobal.showContainer.toggle()
-//                    }
-//                }
-//
-//                DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration + 0.1) {
-//                    storyGlobal.shouldAnimateCubicRotation = true
-//                }
-//            }
-            
-//            .onPreferenceChange(FramePreferenceKey.self) { frame in
-//                storyGlobal.storyIconFrames[index] = frame
-//            }
-            
         }
     }
     
@@ -86,7 +62,7 @@ struct StoryIcon: View {
 
 struct StoryIcon_Previews: PreviewProvider {
     static var previews: some View {
-        StoryIcon(index: 0, avatar: "avatar", showPlusIcon: false, onTapAction: {_ in})
+        StoryIcon(index: 0, avatar: "avatar", showPlusIcon: true, onTapAction: {_ in})
     }
 }
 
@@ -121,7 +97,7 @@ extension StoryIcon {
             .resizable()
             .scaledToFit()
             .foregroundColor(.blue)
-            .background(Circle().fill(.background).scaleEffect(1.1))
+            .background(Circle().fill(.background).scaleEffect(1.3))
             .aspectRatio(0.3, contentMode: .fit)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
             .padding([.bottom, .trailing], 4)

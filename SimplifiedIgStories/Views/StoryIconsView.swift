@@ -23,7 +23,7 @@ struct StoryIconsView: View {
                         index: index,
                         avatar: stories[index].user.avatar,
                         title: stories[index].user.title,
-                        showPlusIcon: stories[index].user.isCurrentUser,
+                        showPlusIcon: stories[index].user.isCurrentUser && stories[index].portions.count == 0,
                         onTapAction: onTapAction
                     )
                     .frame(width: 90, height: 100)
