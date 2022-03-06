@@ -63,6 +63,7 @@ struct StoryIcon: View {
 struct StoryIcon_Previews: PreviewProvider {
     static var previews: some View {
         StoryIcon(index: 0, avatar: "avatar", showPlusIcon: true, onTapAction: {_ in})
+            .preferredColorScheme(.dark)
     }
 }
 
@@ -93,11 +94,15 @@ extension StoryIcon {
     }
     
     var plusIcon: some View {
-        Image(systemName: "plus.circle.fill")
-            .resizable()
+        Circle().fill(.blue)
             .scaledToFit()
-            .foregroundColor(.blue)
             .background(Circle().fill(.background).scaleEffect(1.3))
+            .overlay(
+                Image(systemName: "plus")
+                    .resizable()
+                    .scaledToFit()
+                    .scaleEffect(0.5)
+            )
             .aspectRatio(0.3, contentMode: .fit)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
             .padding([.bottom, .trailing], 4)
