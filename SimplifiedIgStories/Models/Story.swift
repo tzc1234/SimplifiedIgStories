@@ -22,8 +22,3 @@ struct Story: Hashable, Codable, Identifiable {
         return portions.count > 0
     }
 }
-
-struct Portion: Hashable, Codable, Identifiable {
-    var id: Int
-    var imageName: String
-}

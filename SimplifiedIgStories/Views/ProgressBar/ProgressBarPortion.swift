@@ -20,17 +20,19 @@ struct ProgressBarPortion: View {
     // TracingEndX must be a @StateObject to keep it unchange.
     @StateObject private var tracingEndX = TracingEndX(currentEndX: 0.0)
     
-    let duration = 5.0
+    
     @State private var traceableRectangleId = 0
     @State private var isAnimationPaused = false
     
     let portionIndex: Int
     @Binding var portionAnimationStatuses: [Int: ProgressBarPortionAnimationStatus]
+    let duration: Double
     let storyIndex: Int // This storyIndex is for debug msg.
     
-    init(portionIndex: Int, portionAnimationStatuses: Binding<[Int: ProgressBarPortionAnimationStatus]>, storyIndex: Int) {
+    init(portionIndex: Int, portionAnimationStatuses: Binding<[Int: ProgressBarPortionAnimationStatus]>, duration: Double, storyIndex: Int) {
         self.portionIndex = portionIndex
         self._portionAnimationStatuses = portionAnimationStatuses
+        self.duration = duration
         self.storyIndex = storyIndex
     }
     
@@ -88,6 +90,7 @@ struct ProgressBarPortion_Previews: PreviewProvider {
         ProgressBarPortion(
             portionIndex: 0,
             portionAnimationStatuses: .constant([:]),
+            duration: 5.0,
             storyIndex: 0
         )
     }

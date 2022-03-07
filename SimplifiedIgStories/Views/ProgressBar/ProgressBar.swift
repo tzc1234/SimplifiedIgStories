@@ -36,6 +36,7 @@ struct ProgressBar: View {
                 ProgressBarPortion(
                     portionIndex: index,
                     portionAnimationStatuses: $portionAnimationStatuses,
+                    duration: portions[index].duration,
                     storyIndex: storyIndex
                 )
                 

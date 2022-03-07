@@ -21,6 +21,9 @@
 		BE8C498F27C674FD000541E0 /* StoryContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8C498E27C674FD000541E0 /* StoryContainer.swift */; };
 		BE8D954327C44C6F00D9D6DB /* storiesData.json in Resources */ = {isa = PBXBuildFile; fileRef = BE8D954227C44C6F00D9D6DB /* storiesData.json */; };
 		BE8D954527C44CA200D9D6DB /* Story.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8D954427C44CA200D9D6DB /* Story.swift */; };
+		BE8F580127D63F1A00F9DB92 /* forestVideo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = BE8F580027D63EF300F9DB92 /* forestVideo.mp4 */; };
+		BE8F580327D641AF00F9DB92 /* Portion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8F580227D641AE00F9DB92 /* Portion.swift */; };
+		BE8F580527D643BC00F9DB92 /* seaVideo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = BE8F580427D643BC00F9DB92 /* seaVideo.mp4 */; };
 		BE90CDFA27D0020B001EA0CA /* SwiftyCamViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE90CDF527D0020A001EA0CA /* SwiftyCamViewController.swift */; };
 		BE90CDFB27D0020B001EA0CA /* SwiftyCamViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE90CDF627D0020A001EA0CA /* SwiftyCamViewControllerDelegate.swift */; };
 		BE90CDFC27D0020B001EA0CA /* Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE90CDF727D0020A001EA0CA /* Orientation.swift */; };
@@ -63,6 +66,9 @@
 		BE8C498E27C674FD000541E0 /* StoryContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContainer.swift; sourceTree = "<group>"; };
 		BE8D954227C44C6F00D9D6DB /* storiesData.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = storiesData.json; sourceTree = "<group>"; };
 		BE8D954427C44CA200D9D6DB /* Story.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Story.swift; sourceTree = "<group>"; };
+		BE8F580027D63EF300F9DB92 /* forestVideo.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = forestVideo.mp4; sourceTree = "<group>"; };
+		BE8F580227D641AE00F9DB92 /* Portion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Portion.swift; sourceTree = "<group>"; };
+		BE8F580427D643BC00F9DB92 /* seaVideo.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = seaVideo.mp4; sourceTree = "<group>"; };
 		BE90CDF527D0020A001EA0CA /* SwiftyCamViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyCamViewController.swift; sourceTree = "<group>"; };
 		BE90CDF627D0020A001EA0CA /* SwiftyCamViewControllerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyCamViewControllerDelegate.swift; sourceTree = "<group>"; };
 		BE90CDF727D0020A001EA0CA /* Orientation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Orientation.swift; sourceTree = "<group>"; };
@@ -155,9 +161,7 @@
 				BE2C557127BFFE9D0087EE7F /* StoryView.swift */,
 				BE720F7A27BD10E800E862A5 /* ProgressBar */,
 				BE91AA5327BFD96700BB9846 /* StoryPortionView.swift */,
-				BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */,
 				BE90CE0527D00BCD001EA0CA /* Camera */,
-				BE9336C127D21811009E5370 /* AVPlayerControllerRepresentable.swift */,
 				BE9336C327D22162009E5370 /* StoryPreview.swift */,
 			);
 			path = Views;
@@ -176,6 +180,8 @@
 			isa = PBXGroup;
 			children = (
 				BE9336CB27D24CC1009E5370 /* LoadingView.swift */,
+				BE9336C127D21811009E5370 /* AVPlayerControllerRepresentable.swift */,
+				BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -242,6 +248,8 @@
 			isa = PBXGroup;
 			children = (
 				BE8D954227C44C6F00D9D6DB /* storiesData.json */,
+				BE8F580427D643BC00F9DB92 /* seaVideo.mp4 */,
+				BE8F580027D63EF300F9DB92 /* forestVideo.mp4 */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -251,6 +259,7 @@
 			children = (
 				BEA1D95D27C3DA7100D0A67A /* User.swift */,
 				BE8D954427C44CA200D9D6DB /* Story.swift */,
+				BE8F580227D641AE00F9DB92 /* Portion.swift */,
 				BE5E506A27C53736007E6A73 /* StoryGlobalObject.swift */,
 			);
 			path = Models;
@@ -331,6 +340,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE8F580527D643BC00F9DB92 /* seaVideo.mp4 in Resources */,
+				BE8F580127D63F1A00F9DB92 /* forestVideo.mp4 in Resources */,
 				BE090B5F27B9562D00B6F906 /* Preview Assets.xcassets in Resources */,
 				BE090B5C27B9562D00B6F906 /* Assets.xcassets in Resources */,
 				BE8D954327C44C6F00D9D6DB /* storiesData.json in Resources */,
@@ -351,6 +362,7 @@
 				BE93B8C127C8D96900B97C40 /* TraceableRectangle.swift in Sources */,
 				BE90CDFE27D0020B001EA0CA /* SwiftyCamButton.swift in Sources */,
 				BE90CDFA27D0020B001EA0CA /* SwiftyCamViewController.swift in Sources */,
+				BE8F580327D641AF00F9DB92 /* Portion.swift in Sources */,
 				BE9336C427D22162009E5370 /* StoryPreview.swift in Sources */,
 				BE90CE0427D00A0E001EA0CA /* StoryCamView.swift in Sources */,
 				BE090B6727B9568700B6F906 /* StoryIcon.swift in Sources */,

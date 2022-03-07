@@ -18,6 +18,11 @@
 				"id": 0,
 				"imageName": "sea1"
 			},
+            {
+                "id": 15,
+                "videoName": "seaVideo",
+                "videoDuration": 8.0
+            },
 			{
 				"id": 1,
 				"imageName": "sea2"
@@ -93,6 +98,11 @@
             {
                 "id": 10,
                 "imageName": "forest2"
+            },
+            {
+                "id": 14,
+                "videoName": "forestVideo",
+                "videoDuration": 7.0
             },
             {
                 "id": 11,

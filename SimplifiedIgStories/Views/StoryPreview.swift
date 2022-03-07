@@ -74,7 +74,11 @@ extension StoryPreview {
     
     @ViewBuilder private var videoView: some View {
         if let videoUrl = videoUrl {
-            AVPlayerControllerRepresentable(videoUrl: videoUrl)
+            AVPlayerControllerRepresentable(
+                videoUrl: videoUrl,
+                shouldLoop: true,
+                isPaused: .constant(nil)
+            )
         }
     }
     

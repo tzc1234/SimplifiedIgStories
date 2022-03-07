@@ -80,7 +80,7 @@ extension StoryView {
         ZStack(alignment: .top) {
             ForEach(portions.indices) { index in
                 if currentStoryPortionIndex == index {
-                    StoryPortionView(index: index, photoName: portions[index].imageName)
+                    StoryPortionView(index: index, photoName: portions[index].imageName, videoUrl: portions[index].videoUrl)
                 }
             }
         }
