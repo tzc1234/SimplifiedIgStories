@@ -20,20 +20,19 @@ struct ProgressBarPortion: View {
     // TracingEndX must be a @StateObject to keep it unchange.
     @StateObject private var tracingEndX = TracingEndX(currentEndX: 0.0)
     
-    
     @State private var traceableRectangleId = 0
     @State private var isAnimationPaused = false
     
     let portionIndex: Int
     @Binding var portionAnimationStatuses: [Int: ProgressBarPortionAnimationStatus]
     let duration: Double
-    let storyIndex: Int // This storyIndex is for debug msg.
+    let storyId: Int // For debug msg.
     
-    init(portionIndex: Int, portionAnimationStatuses: Binding<[Int: ProgressBarPortionAnimationStatus]>, duration: Double, storyIndex: Int) {
+    init(portionIndex: Int, portionAnimationStatuses: Binding<[Int: ProgressBarPortionAnimationStatus]>, duration: Double, storyId: Int) {
         self.portionIndex = portionIndex
         self._portionAnimationStatuses = portionAnimationStatuses
         self.duration = duration
-        self.storyIndex = storyIndex
+        self.storyId = storyId
     }
     
     var body: some View {
@@ -91,7 +90,7 @@ struct ProgressBarPortion_Previews: PreviewProvider {
             portionIndex: 0,
             portionAnimationStatuses: .constant([:]),
             duration: 5.0,
-            storyIndex: 0
+            storyId: 0
         )
     }
 }
@@ -117,12 +116,12 @@ extension ProgressBarPortion {
     }
     
     func initializeAnimation() {
-        print("storyIndex\(storyIndex), portion\(portionIndex) initial.")
+        print("storyId: \(storyId), portion\(portionIndex) initial.")
         resetTraceableRectangle()
     }
     
     func startAnimation(maxWidth: Double) {
-        print("storyIndex\(storyIndex), portion\(portionIndex) start.")
+        print("storyId: \(storyId), portion\(portionIndex) start.")
         resetTraceableRectangle()
         withAnimation(.linear(duration: duration)) {
             endX = maxWidth
@@ -131,7 +130,7 @@ extension ProgressBarPortion {
     
     // TODO: combine restartAnimation and startAnimation
     func restartAnimation(maxWidth: Double) {
-        print("storyIndex\(storyIndex), portion\(portionIndex) restart.")
+        print("storyId: \(storyId), portion\(portionIndex) restart.")
         resetTraceableRectangle()
         withAnimation(.linear(duration: duration)) {
             endX = maxWidth
@@ -139,19 +138,19 @@ extension ProgressBarPortion {
     }
     
     func pauseAnimation() {
-        print("storyIndex\(storyIndex), portion\(portionIndex) pause.")
+        print("storyId: \(storyId), portion\(portionIndex) pause.")
         resetTraceableRectangle(toLength: tracingEndX.currentEndX)
     }
     
     func resumeAnimation(maxWidth: Double) {
-        print("storyIndex\(storyIndex), portion\(portionIndex) resume.")
+        print("storyId: \(storyId), portion\(portionIndex) resume.")
         withAnimation(.linear(duration: duration * (1 - tracingEndX.currentEndX / maxWidth))) {
             endX = maxWidth
         }
     }
     
     func finishAnimation(maxWidth: Double) {
-        print("storyIndex\(storyIndex), portion\(portionIndex) finish.")
+        print("storyId: \(storyId), portion\(portionIndex) finish.")
         resetTraceableRectangle(toLength: maxWidth)
     }
 }

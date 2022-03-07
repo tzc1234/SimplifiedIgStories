@@ -9,21 +9,20 @@ import SwiftUI
 
 /// The "BRAIN" of story animations.
 struct ProgressBar: View {
-    @EnvironmentObject private var modelData: ModelData
-    @EnvironmentObject private var storyGlobal: StoryGlobalObject
+    @EnvironmentObject private var vm: StoryViewModel
     
-    let storyIndex: Int
+    let story: Story
     @Binding private var storyPortionTransitionDirection: StoryPortionTransitionDirection
     @Binding private var currentStoryPortionIndex: Int
     
     @State private var portionAnimationStatuses: [Int: ProgressBarPortionAnimationStatus] = [:]
     
     init(
-        storyIndex: Int,
+        story: Story,
         storyPortionTransitionDirection: Binding<StoryPortionTransitionDirection>,
         currentStoryPortionIndex: Binding<Int>)
     {
-        self.storyIndex = storyIndex
+        self.story = story
         self._storyPortionTransitionDirection = storyPortionTransitionDirection
         self._currentStoryPortionIndex = currentStoryPortionIndex
     }
@@ -32,12 +31,12 @@ struct ProgressBar: View {
         HStack {
             Spacer(minLength: 2)
             
-            ForEach(portions.indices) { index in
+            ForEach(story.portions.indices) { index in // TODO: potential bug.
                 ProgressBarPortion(
                     portionIndex: index,
                     portionAnimationStatuses: $portionAnimationStatuses,
-                    duration: portions[index].duration,
-                    storyIndex: storyIndex
+                    duration: story.portions[index].duration,
+                    storyId: story.id
                 )
                 
                 Spacer(minLength: 2)
@@ -61,13 +60,13 @@ struct ProgressBar: View {
                 // At the first portion and
                 if currentStoryPortionIndex == 0 {
                     // at the first story,
-                    if storyIndex == firstStoryIndex {
+                    if story.id == vm.firstStoryIdDisplayedByContainer {
                         // just start animation.
                         setCurrentPortionAnimationStatusTo(previousStatus == .start ? .restart : .start)
                     } else { // Not the first story,
                         // go to previous story.
                         setCurrentPortionAnimationStatusTo(.inital)
-                        storyGlobal.currentStoryIndex -= 1
+                        vm.currentStoryId -= 1
                     }
                 } else {
                     // Go back to previous portion normally.
@@ -83,12 +82,12 @@ struct ProgressBar: View {
             // Start next portion's animation.
             if newValue == .finish {
                 // At last portion now,
-                if currentStoryPortionIndex + 1 > portionCount - 1 {
+                if currentStoryPortionIndex + 1 > story.portions.count - 1 {
                     // close StoryContainer, if it's the last story now.
-                    if storyGlobal.currentStoryIndex + 1 > storyCount - 1 {
-                        storyGlobal.closeStoryContainer()
+                    if vm.currentStoryId + 1 > vm.stories.count - 1 {
+                        vm.closeStoryContainer()
                     } else { // Not the last stroy, go to next story normally.
-                        storyGlobal.currentStoryIndex += 1
+                        vm.currentStoryId += 1
                     }
                 } else { // Not the last portion, go to next portion.
                     currentStoryPortionIndex += 1
@@ -98,7 +97,7 @@ struct ProgressBar: View {
                 storyPortionTransitionDirection = .none // reset
             }
         }
-        .onChange(of: storyGlobal.isDragging) { isDragging in
+        .onChange(of: vm.isDragging) { isDragging in
             if isCurrentStory {
                 if isDragging {
                     // Pause the animation when dragging.
@@ -106,7 +105,7 @@ struct ProgressBar: View {
                         setCurrentPortionAnimationStatusTo(.pause)
                     }
                 } else { // Dragged.
-                    if !isCurrentPortionAnimating && !isSameStoryAfterDragged {
+                    if !isCurrentPortionAnimating && !vm.isSameStoryAfterDragged {
                         setCurrentPortionAnimationStatusTo(.start)
                     } else if currentPortionAnimationStatus == .pause {
                         setCurrentPortionAnimationStatusTo(.resume)
@@ -114,7 +113,7 @@ struct ProgressBar: View {
                 }
             }
         }
-        .onChange(of: storyGlobal.currentStoryIndex) { _ in
+        .onChange(of: vm.currentStoryId) { _ in
             if isCurrentStory {
                 // After went to the next story, start its animation.
                 if !isCurrentPortionAnimating {
@@ -128,34 +127,20 @@ struct ProgressBar: View {
 
 struct ProgressBar_Previews: PreviewProvider {
     static var previews: some View {
+        let vm = StoryViewModel(dataService: MockDataService())
         ProgressBar(
-            storyIndex: 0,
+            story: vm.stories[1],
             storyPortionTransitionDirection: .constant(.none),
             currentStoryPortionIndex: .constant(0)
         )
+            .environmentObject(StoryViewModel(dataService: MockDataService()))
     }
 }
 
 // MARK: computed variables
 extension ProgressBar {
-    var storyCount: Int {
-        modelData.stories.count
-    }
-    
-    var firstStoryIndex: Int {
-        modelData.firstStoryIndex
-    }
-    
-    var portions: [Portion] {
-        modelData.stories[storyIndex].portions
-    }
-    
-    var portionCount: Int {
-        portions.count
-    }
-    
     var isCurrentStory: Bool {
-        storyGlobal.currentStoryIndex == storyIndex
+        vm.currentStoryId == story.id
     }
     
     var currentPortionAnimationStatus: ProgressBarPortionAnimationStatus? {
@@ -166,10 +151,6 @@ extension ProgressBar {
         currentPortionAnimationStatus == .start ||
         currentPortionAnimationStatus == .restart ||
         currentPortionAnimationStatus == .resume
-    }
-    
-    var isSameStoryAfterDragged: Bool {
-        storyGlobal.currentStoryIndex == storyGlobal.storyIndexBeforeDragged
     }
 }
 

@@ -9,11 +9,9 @@ import SwiftUI
 
 @main
 struct SimplifiedIgStoriesApp: App {
-    @StateObject private var modelData = ModelData()
-    
     var body: some Scene {
         WindowGroup {
-            HomeView().environmentObject(modelData)
+            HomeView()
         }
     }
 }

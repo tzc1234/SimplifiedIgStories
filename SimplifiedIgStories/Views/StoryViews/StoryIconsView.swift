@@ -11,19 +11,16 @@ struct StoryIconsView: View {
     static let spacing: Double = 8.0
     
     let stories: [Story]
-    let onTapAction: ((Int) -> Void)
+    let onTapAction: ((_ storyId: Int) -> Void)
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(alignment: .center, spacing: 0) {
                 Spacer(minLength: Self.spacing)
                 
-                ForEach(stories.indices) { index in
+                ForEach(stories) { story in
                     StoryIconTitleView(
-                        index: index,
-                        avatar: stories[index].user.avatar,
-                        title: stories[index].user.title,
-                        showPlusIcon: stories[index].user.isCurrentUser && stories[index].portions.count == 0,
+                        story: story,
                         onTapAction: onTapAction
                     )
                     .frame(width: 90, height: 100)
@@ -40,6 +37,7 @@ struct StoryIconsView: View {
 
 struct StoryIconsView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryIconsView(stories: ModelData().stories, onTapAction: {_ in})
+        let vm = StoryViewModel(dataService: MockDataService())
+        StoryIconsView(stories: vm.stories, onTapAction: {_ in})
     }
 }

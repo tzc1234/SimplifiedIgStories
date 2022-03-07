@@ -13,7 +13,6 @@
 		BE090B6727B9568700B6F906 /* StoryIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE090B6627B9568700B6F906 /* StoryIcon.swift */; };
 		BE2C557227BFFE9D0087EE7F /* StoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557127BFFE9D0087EE7F /* StoryView.swift */; };
 		BE2C557427C0197B0087EE7F /* DetectableTapGesturePositionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */; };
-		BE5E506B27C53736007E6A73 /* StoryGlobalObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5E506A27C53736007E6A73 /* StoryGlobalObject.swift */; };
 		BE720F7C27BD111800E862A5 /* ProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE720F7B27BD111800E862A5 /* ProgressBar.swift */; };
 		BE84C2CA27C78E5400C42165 /* AnyTransition+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE84C2C927C78E5400C42165 /* AnyTransition+Additions.swift */; };
 		BE8A758127BC107000E9F745 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8A758027BC106F00E9F745 /* HomeView.swift */; };
@@ -24,6 +23,8 @@
 		BE8F580127D63F1A00F9DB92 /* forestVideo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = BE8F580027D63EF300F9DB92 /* forestVideo.mp4 */; };
 		BE8F580327D641AF00F9DB92 /* Portion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8F580227D641AE00F9DB92 /* Portion.swift */; };
 		BE8F580527D643BC00F9DB92 /* seaVideo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = BE8F580427D643BC00F9DB92 /* seaVideo.mp4 */; };
+		BE8F580727D6668000F9DB92 /* AppDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8F580627D6668000F9DB92 /* AppDataService.swift */; };
+		BE8F580A27D668E900F9DB92 /* StoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8F580927D668E900F9DB92 /* StoryViewModel.swift */; };
 		BE90CDFA27D0020B001EA0CA /* SwiftyCamViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE90CDF527D0020A001EA0CA /* SwiftyCamViewController.swift */; };
 		BE90CDFB27D0020B001EA0CA /* SwiftyCamViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE90CDF627D0020A001EA0CA /* SwiftyCamViewControllerDelegate.swift */; };
 		BE90CDFC27D0020B001EA0CA /* Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE90CDF727D0020A001EA0CA /* Orientation.swift */; };
@@ -42,11 +43,10 @@
 		BE93B8C127C8D96900B97C40 /* TraceableRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE93B8C027C8D96900B97C40 /* TraceableRectangle.swift */; };
 		BEA1D95827C3C74D00D0A67A /* Date+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA1D95727C3C74D00D0A67A /* Date+Additions.swift */; };
 		BEA1D95E27C3DA7100D0A67A /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA1D95D27C3DA7100D0A67A /* User.swift */; };
-		BEA1D96027C3DB1200D0A67A /* ModelData.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA1D95F27C3DB1200D0A67A /* ModelData.swift */; };
 		BEA7D9FF27C6DFFC00DA81E6 /* TraceableArc.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA7D9FE27C6DFFC00DA81E6 /* TraceableArc.swift */; };
 		BEA8E50F27D0CFD200640B19 /* VideoRecordButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA8E50E27D0CFD200640B19 /* VideoRecordButton.swift */; };
 		BEA901D427BC716E00E3362D /* ProgressBarPortion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA901D327BC716E00E3362D /* ProgressBarPortion.swift */; };
-		BEAED9E427D36F7D00A98F3A /* IndexFramePreferenceKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEAED9E327D36F7D00A98F3A /* IndexFramePreferenceKey.swift */; };
+		BEAED9E427D36F7D00A98F3A /* IdFramePreferenceKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEAED9E327D36F7D00A98F3A /* IdFramePreferenceKey.swift */; };
 		BED0F60D27BBF64B00D93F15 /* StoryIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */; };
 /* End PBXBuildFile section */
 
@@ -58,7 +58,6 @@
 		BE090B6627B9568700B6F906 /* StoryIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIcon.swift; sourceTree = "<group>"; };
 		BE2C557127BFFE9D0087EE7F /* StoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryView.swift; sourceTree = "<group>"; };
 		BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetectableTapGesturePositionView.swift; sourceTree = "<group>"; };
-		BE5E506A27C53736007E6A73 /* StoryGlobalObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGlobalObject.swift; sourceTree = "<group>"; };
 		BE720F7B27BD111800E862A5 /* ProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBar.swift; sourceTree = "<group>"; };
 		BE84C2C927C78E5400C42165 /* AnyTransition+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnyTransition+Additions.swift"; sourceTree = "<group>"; };
 		BE8A758027BC106F00E9F745 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -69,6 +68,8 @@
 		BE8F580027D63EF300F9DB92 /* forestVideo.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = forestVideo.mp4; sourceTree = "<group>"; };
 		BE8F580227D641AE00F9DB92 /* Portion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Portion.swift; sourceTree = "<group>"; };
 		BE8F580427D643BC00F9DB92 /* seaVideo.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = seaVideo.mp4; sourceTree = "<group>"; };
+		BE8F580627D6668000F9DB92 /* AppDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDataService.swift; sourceTree = "<group>"; };
+		BE8F580927D668E900F9DB92 /* StoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryViewModel.swift; sourceTree = "<group>"; };
 		BE90CDF527D0020A001EA0CA /* SwiftyCamViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyCamViewController.swift; sourceTree = "<group>"; };
 		BE90CDF627D0020A001EA0CA /* SwiftyCamViewControllerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyCamViewControllerDelegate.swift; sourceTree = "<group>"; };
 		BE90CDF727D0020A001EA0CA /* Orientation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Orientation.swift; sourceTree = "<group>"; };
@@ -87,11 +88,10 @@
 		BE93B8C027C8D96900B97C40 /* TraceableRectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TraceableRectangle.swift; sourceTree = "<group>"; };
 		BEA1D95727C3C74D00D0A67A /* Date+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Additions.swift"; sourceTree = "<group>"; };
 		BEA1D95D27C3DA7100D0A67A /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		BEA1D95F27C3DB1200D0A67A /* ModelData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelData.swift; sourceTree = "<group>"; };
 		BEA7D9FE27C6DFFC00DA81E6 /* TraceableArc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TraceableArc.swift; sourceTree = "<group>"; };
 		BEA8E50E27D0CFD200640B19 /* VideoRecordButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRecordButton.swift; sourceTree = "<group>"; };
 		BEA901D327BC716E00E3362D /* ProgressBarPortion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarPortion.swift; sourceTree = "<group>"; };
-		BEAED9E327D36F7D00A98F3A /* IndexFramePreferenceKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexFramePreferenceKey.swift; sourceTree = "<group>"; };
+		BEAED9E327D36F7D00A98F3A /* IdFramePreferenceKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdFramePreferenceKey.swift; sourceTree = "<group>"; };
 		BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIconsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -127,6 +127,7 @@
 			children = (
 				BE090B5727B9562B00B6F906 /* SimplifiedIgStoriesApp.swift */,
 				BE9336C827D24468009E5370 /* Helpers */,
+				BE8F580827D668C700F9DB92 /* ViewModels */,
 				BE090B6527B9566D00B6F906 /* Views */,
 				BE8F57FF27D60E7D00F9DB92 /* DataServices */,
 				BEA1D95C27C3DA3000D0A67A /* Models */,
@@ -153,6 +154,15 @@
 				BE8F57FE27D60E2A00F9DB92 /* Helpers */,
 				BEAED9E227D36F5A00A98F3A /* PreferenceKeys */,
 				BEA7D9FD27C6DFE500DA81E6 /* Shapes */,
+				BE47195027D6CFCC004500F2 /* StoryViews */,
+				BE90CE0527D00BCD001EA0CA /* Camera */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		BE47195027D6CFCC004500F2 /* StoryViews */ = {
+			isa = PBXGroup;
+			children = (
 				BE8A758027BC106F00E9F745 /* HomeView.swift */,
 				BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */,
 				BE8C498C27C62B3C000541E0 /* StoryIconTitleView.swift */,
@@ -161,10 +171,8 @@
 				BE2C557127BFFE9D0087EE7F /* StoryView.swift */,
 				BE720F7A27BD10E800E862A5 /* ProgressBar */,
 				BE91AA5327BFD96700BB9846 /* StoryPortionView.swift */,
-				BE90CE0527D00BCD001EA0CA /* Camera */,
-				BE9336C327D22162009E5370 /* StoryPreview.swift */,
 			);
-			path = Views;
+			path = StoryViews;
 			sourceTree = "<group>";
 		};
 		BE720F7A27BD10E800E862A5 /* ProgressBar */ = {
@@ -189,9 +197,17 @@
 		BE8F57FF27D60E7D00F9DB92 /* DataServices */ = {
 			isa = PBXGroup;
 			children = (
-				BEA1D95F27C3DB1200D0A67A /* ModelData.swift */,
+				BE8F580627D6668000F9DB92 /* AppDataService.swift */,
 			);
 			path = DataServices;
+			sourceTree = "<group>";
+		};
+		BE8F580827D668C700F9DB92 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				BE8F580927D668E900F9DB92 /* StoryViewModel.swift */,
+			);
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		BE90CDF327D001C3001EA0CA /* SwiftyCam */ = {
@@ -221,6 +237,7 @@
 				BE90CDFF27D0060D001EA0CA /* StorySwiftyCamControllerRepresentable.swift */,
 				BE90CE0327D00A0E001EA0CA /* StoryCamView.swift */,
 				BEA8E50E27D0CFD200640B19 /* VideoRecordButton.swift */,
+				BE9336C327D22162009E5370 /* StoryPreview.swift */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -260,7 +277,6 @@
 				BEA1D95D27C3DA7100D0A67A /* User.swift */,
 				BE8D954427C44CA200D9D6DB /* Story.swift */,
 				BE8F580227D641AE00F9DB92 /* Portion.swift */,
-				BE5E506A27C53736007E6A73 /* StoryGlobalObject.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -277,7 +293,7 @@
 		BEAED9E227D36F5A00A98F3A /* PreferenceKeys */ = {
 			isa = PBXGroup;
 			children = (
-				BEAED9E327D36F7D00A98F3A /* IndexFramePreferenceKey.swift */,
+				BEAED9E327D36F7D00A98F3A /* IdFramePreferenceKey.swift */,
 			);
 			path = PreferenceKeys;
 			sourceTree = "<group>";
@@ -361,9 +377,11 @@
 				BE90CDFD27D0020B001EA0CA /* PreviewView.swift in Sources */,
 				BE93B8C127C8D96900B97C40 /* TraceableRectangle.swift in Sources */,
 				BE90CDFE27D0020B001EA0CA /* SwiftyCamButton.swift in Sources */,
+				BE8F580A27D668E900F9DB92 /* StoryViewModel.swift in Sources */,
 				BE90CDFA27D0020B001EA0CA /* SwiftyCamViewController.swift in Sources */,
 				BE8F580327D641AF00F9DB92 /* Portion.swift in Sources */,
 				BE9336C427D22162009E5370 /* StoryPreview.swift in Sources */,
+				BE8F580727D6668000F9DB92 /* AppDataService.swift in Sources */,
 				BE90CE0427D00A0E001EA0CA /* StoryCamView.swift in Sources */,
 				BE090B6727B9568700B6F906 /* StoryIcon.swift in Sources */,
 				BE090B5827B9562B00B6F906 /* SimplifiedIgStoriesApp.swift in Sources */,
@@ -372,11 +390,9 @@
 				BE8C498F27C674FD000541E0 /* StoryContainer.swift in Sources */,
 				BE91AA5427BFD96800BB9846 /* StoryPortionView.swift in Sources */,
 				BE9336CC27D24CC1009E5370 /* LoadingView.swift in Sources */,
-				BE5E506B27C53736007E6A73 /* StoryGlobalObject.swift in Sources */,
 				BE9336CA27D24491009E5370 /* ImageSaver.swift in Sources */,
 				BE2C557427C0197B0087EE7F /* DetectableTapGesturePositionView.swift in Sources */,
-				BEAED9E427D36F7D00A98F3A /* IndexFramePreferenceKey.swift in Sources */,
-				BEA1D96027C3DB1200D0A67A /* ModelData.swift in Sources */,
+				BEAED9E427D36F7D00A98F3A /* IdFramePreferenceKey.swift in Sources */,
 				BEA901D427BC716E00E3362D /* ProgressBarPortion.swift in Sources */,
 				BE90CE0227D00719001EA0CA /* StorySwiftyCamViewController.swift in Sources */,
 				BE84C2CA27C78E5400C42165 /* AnyTransition+Additions.swift in Sources */,

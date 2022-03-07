@@ -16,15 +16,11 @@ struct StoryIcon: View {
     
     let animationDuration = 1.0
     
-    let index: Int
-    let avatar: String
-    let showPlusIcon: Bool
-    let onTapAction: ((Int) -> Void)
+    let story: Story
+    let onTapAction: ((_ storyId: Int) -> Void)
     
-    init(index: Int, avatar: String, showPlusIcon: Bool, onTapAction: @escaping ((Int) -> Void)) {
-        self.index = index
-        self.avatar = avatar
-        self.showPlusIcon = showPlusIcon
+    init(story: Story, onTapAction: @escaping ((_ storyId: Int) -> Void)) {
+        self.story = story
         self.onTapAction = onTapAction
     }
     
@@ -33,26 +29,24 @@ struct StoryIcon: View {
             ZStack {
                 arc
                 avatarImage
-                if showPlusIcon { plusIcon }
+                plusIcon
             }
             .scaledToFit()
             .scaleEffect(isOnTap ? 1.1 : 1.0)
             .frame(maxWidth: .infinity)
             .preference(
-                key: IndexFramePreferenceKey.self,
-                value: [index: geo.frame(in: .named(HomeView.coordinateSpaceName))]
+                key: IdFramePreferenceKey.self,
+                value: [story.id: geo.frame(in: .named(HomeView.coordinateSpaceName))]
             )
             .onChange(of: tracingEndAngle.currentEndAngle) { newValue in
-                if newValue == 360.0 {
-                    resetStrokeAnimationAfterCompletion()
-                }
+                if newValue == 360.0 { resetStrokeAnimationAfterCompletion() }
             }
             .onTapGesture {
                 withAnimation(.spring()) {
                     isOnTap.toggle()
                 }
                 
-                onTapAction(index)
+                onTapAction(story.id)
                 isOnTap.toggle()
             }
         }
@@ -62,8 +56,8 @@ struct StoryIcon: View {
 
 struct StoryIcon_Previews: PreviewProvider {
     static var previews: some View {
-        StoryIcon(index: 0, avatar: "avatar", showPlusIcon: true, onTapAction: {_ in})
-            .preferredColorScheme(.dark)
+        let vm = StoryViewModel(dataService: MockDataService())
+        StoryIcon(story: vm.stories[0], onTapAction: {_ in})
     }
 }
 
@@ -83,7 +77,7 @@ extension StoryIcon {
     
     private var avatarImage: some View {
         GeometryReader { geo in
-            Image(avatar)
+            Image(story.user.avatar)
                 .resizable()
                 .scaledToFill()
                 .clipShape(Circle())
@@ -93,19 +87,22 @@ extension StoryIcon {
         }
     }
     
-    private var plusIcon: some View {
-        Circle().fill(.blue)
-            .scaledToFit()
-            .background(Circle().fill(.background).scaleEffect(1.3))
-            .overlay(
-                Image(systemName: "plus")
-                    .resizable()
-                    .scaledToFit()
-                    .scaleEffect(0.5)
-            )
-            .aspectRatio(0.3, contentMode: .fit)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-            .padding([.bottom, .trailing], 4)
+    @ViewBuilder private var plusIcon: some View {
+        if story.user.isCurrentUser && story.portions.count == 0 {
+            Circle().fill(.blue)
+                .scaledToFit()
+                .background(Circle().fill(.background).scaleEffect(1.3))
+                .overlay(
+                    Image(systemName: "plus")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(.white)
+                        .scaleEffect(0.5)
+                )
+                .aspectRatio(0.3, contentMode: .fit)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                .padding([.bottom, .trailing], 4)
+        }
     }
 }
 

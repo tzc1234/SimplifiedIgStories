@@ -12,13 +12,12 @@ enum StoryPortionTransitionDirection {
 }
 
 struct StoryView: View {
+    @EnvironmentObject private var vm: StoryViewModel
+    
     @State var storyPortionTransitionDirection: StoryPortionTransitionDirection = .none
     @State var currentStoryPortionIndex: Int = 0
     
-    @EnvironmentObject private var modelDate: ModelData
-    @EnvironmentObject private var storyGlobal: StoryGlobalObject
-    
-    let storyIndex: Int
+    let story: Story
     
     var body: some View {
         ZStack {
@@ -34,10 +33,10 @@ struct StoryView: View {
             }
             
             VStack(alignment: .leading) {
-                Color.clear.frame(height: storyGlobal.topSpacing)
+                Color.clear.frame(height: vm.topSpacing)
                 
                 ProgressBar(
-                    storyIndex: storyIndex,
+                    story: story,
                     storyPortionTransitionDirection: $storyPortionTransitionDirection,
                     currentStoryPortionIndex: $currentStoryPortionIndex
                 )
@@ -54,22 +53,18 @@ struct StoryView: View {
                 
                 Spacer()
             }
-            
         }
         .clipShape(Rectangle())
-        .onAppear {
-            initAnimation()
-        }
-        
+        .onAppear { initAnimation() }
     }
     
 }
 
 struct StoryView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryView(storyIndex: 1)
-            .environmentObject(ModelData())
-            .environmentObject(StoryGlobalObject())
+        let vm = StoryViewModel(dataService: MockDataService())
+        StoryView(story: vm.stories[1])
+            .environmentObject(vm)
     }
 }
 
@@ -78,9 +73,13 @@ extension StoryView {
     // TODO: limit the number of storyPortionViews
     var storyPortionViews: some View {
         ZStack(alignment: .top) {
-            ForEach(portions.indices) { index in
+            ForEach(story.portions.indices) { index in
                 if currentStoryPortionIndex == index {
-                    StoryPortionView(index: index, photoName: portions[index].imageName, videoUrl: portions[index].videoUrl)
+                    StoryPortionView(
+                        index: index,
+                        photoName: story.portions[index].imageName,
+                        videoUrl: story.portions[index].videoUrl
+                    )
                 }
             }
         }
@@ -111,7 +110,7 @@ extension StoryView {
     
     var closeButton: some View {
         Button {
-            storyGlobal.closeStoryContainer()
+            vm.closeStoryContainer()
         } label: {
             ZStack {
                 // Increase close button tap area.
@@ -127,22 +126,11 @@ extension StoryView {
     }
 }
 
-// MARK: computed variables
-extension StoryView {
-    var story: Story {
-        modelDate.stories[storyIndex]
-    }
-    
-    var portions: [Portion] {
-        story.portions
-    }
-}
-
 // MARK: functions
 extension StoryView {
     func initAnimation() {
-        if storyPortionTransitionDirection == .none && storyGlobal.currentStoryIndex == storyIndex {
-            print("StoryView \(storyIndex) animation start!")
+        if storyPortionTransitionDirection == .none && vm.currentStoryId == story.id {
+            print("StoryId: \(story.id) animation start!")
             storyPortionTransitionDirection = .start
         }
     }

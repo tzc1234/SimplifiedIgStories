@@ -1,19 +1,29 @@
 //
-//  ModelData.swift
+//  AppDataService.swift
 //  SimplifiedIgStories
 //
-//  Created by Tsz-Lung on 21/2/2022.
+//  Created by Tsz-Lung on 7/3/2022.
 //
 
 import Foundation
 
-final class ModelData: ObservableObject {
-    @Published var stories: [Story] = load("storiesData.json")
-    
-    var firstStoryIndex: Int {
-        // Story 0 is current user story, may have no portions.
-        guard stories[0].hasPortion else { return 1 }
-        return 0
+protocol DataService {
+    func getStories() -> [Story]
+}
+
+class AppDataService: DataService {
+    // Mock the data as coming from an api call.
+    func getStories() -> [Story] {
+        let stories: [Story] = load("storiesData.json")
+        return stories
+    }
+}
+
+// For preview usage.
+class MockDataService: DataService {
+    func getStories() -> [Story] {
+        let stories: [Story] = load("storiesData.json")
+        return stories
     }
 }
 
