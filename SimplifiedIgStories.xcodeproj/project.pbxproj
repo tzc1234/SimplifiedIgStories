@@ -120,12 +120,13 @@
 			isa = PBXGroup;
 			children = (
 				BE090B5727B9562B00B6F906 /* SimplifiedIgStoriesApp.swift */,
-				BE90CDF427D001F4001EA0CA /* External */,
 				BE9336C827D24468009E5370 /* Helpers */,
 				BE090B6527B9566D00B6F906 /* Views */,
+				BE8F57FF27D60E7D00F9DB92 /* DataServices */,
 				BEA1D95C27C3DA3000D0A67A /* Models */,
 				BEA1D95627C3C71B00D0A67A /* Extensions */,
 				BEA1D95927C3D9EB00D0A67A /* Resources */,
+				BE90CDF427D001F4001EA0CA /* External */,
 				BE090B5B27B9562D00B6F906 /* Assets.xcassets */,
 				BE090B5D27B9562D00B6F906 /* Preview Content */,
 			);
@@ -143,9 +144,9 @@
 		BE090B6527B9566D00B6F906 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				BE8F57FE27D60E2A00F9DB92 /* Helpers */,
 				BEAED9E227D36F5A00A98F3A /* PreferenceKeys */,
 				BEA7D9FD27C6DFE500DA81E6 /* Shapes */,
-				BE9336CB27D24CC1009E5370 /* LoadingView.swift */,
 				BE8A758027BC106F00E9F745 /* HomeView.swift */,
 				BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */,
 				BE8C498C27C62B3C000541E0 /* StoryIconTitleView.swift */,
@@ -169,6 +170,22 @@
 				BE720F7B27BD111800E862A5 /* ProgressBar.swift */,
 			);
 			path = ProgressBar;
+			sourceTree = "<group>";
+		};
+		BE8F57FE27D60E2A00F9DB92 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				BE9336CB27D24CC1009E5370 /* LoadingView.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		BE8F57FF27D60E7D00F9DB92 /* DataServices */ = {
+			isa = PBXGroup;
+			children = (
+				BEA1D95F27C3DB1200D0A67A /* ModelData.swift */,
+			);
+			path = DataServices;
 			sourceTree = "<group>";
 		};
 		BE90CDF327D001C3001EA0CA /* SwiftyCam */ = {
@@ -234,7 +251,6 @@
 			children = (
 				BEA1D95D27C3DA7100D0A67A /* User.swift */,
 				BE8D954427C44CA200D9D6DB /* Story.swift */,
-				BEA1D95F27C3DB1200D0A67A /* ModelData.swift */,
 				BE5E506A27C53736007E6A73 /* StoryGlobalObject.swift */,
 			);
 			path = Models;

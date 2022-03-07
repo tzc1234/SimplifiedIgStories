@@ -18,7 +18,7 @@ struct StoryContainer: View {
     
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
-            // TODO: A risk of memory leak if too many stories.
+            // *** A risk of memory leak if too many stories.
             ForEach(stories.indices) { index in
                 if stories[index].portions.count > 0 {
                     GeometryReader { geo in

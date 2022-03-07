@@ -14,6 +14,7 @@ class VideoSaver {
         self.saveCompletedAction = saveCompletedAction
     }
     
+    // *** Should this save video action be run in a background thread?
     func saveVideoToAlbum(_ videoUrl: URL) {
         PHPhotoLibrary.shared().performChanges {
             PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: videoUrl)

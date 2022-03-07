@@ -24,15 +24,8 @@ struct StoryPreview: View {
     
     var body: some View {
         ZStack {
-            if let uiImage = uiImage {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .scaledToFill()
-            }
-            
-            if let videoUrl = videoUrl {
-                AVPlayerControllerRepresentable(videoUrl: videoUrl)
-            }
+            photoView
+            videoView
             
             VStack(alignment: .leading) {
                 HStack(alignment: .top, spacing: 0) {
@@ -58,8 +51,6 @@ struct StoryPreview: View {
             }
          
             savedLabel
-                .opacity(showSaved ? 1 : 0)
-                .animation(.easeIn, value: showSaved)
         }
         
     }
@@ -73,7 +64,21 @@ struct StoryPreview_Previews: PreviewProvider {
 
 // MARK: components
 extension StoryPreview {
-    var backBtn: some View {
+    @ViewBuilder private var photoView: some View {
+        if let uiImage = uiImage {
+            Image(uiImage: uiImage)
+                .resizable()
+                .scaledToFill()
+        }
+    }
+    
+    @ViewBuilder private var videoView: some View {
+        if let videoUrl = videoUrl {
+            AVPlayerControllerRepresentable(videoUrl: videoUrl)
+        }
+    }
+    
+    private var backBtn: some View {
         Button {
             showAlert.toggle()
         } label: {
@@ -98,7 +103,7 @@ extension StoryPreview {
         }
     }
     
-    var saveBtn: some View {
+    private var saveBtn: some View {
         Button {
             if uiImage != nil {
                 saveToAlbum(uiImage)
@@ -119,7 +124,7 @@ extension StoryPreview {
         .frame(width: 45, height: 45)
     }
     
-    var postBtn: some View {
+    private var postBtn: some View {
         Button {
             print("Post.")
         } label: {
@@ -134,7 +139,7 @@ extension StoryPreview {
         }
     }
     
-    var savedLabel: some View {
+    private var savedLabel: some View {
         Text("Saved")
             .font(.headline)
             .foregroundColor(.white)
@@ -142,12 +147,14 @@ extension StoryPreview {
             .background(
                 RoundedRectangle(cornerRadius: 10).foregroundColor(.darkGray)
             )
+            .opacity(showSaved ? 1 : 0)
+            .animation(.easeIn, value: showSaved)
     }
 }
 
 // MARK: functions
 extension StoryPreview {
-    func saveToAlbum<T>(_ object: T) {
+    private func saveToAlbum<T>(_ object: T) {
         let completeAction = {
             isLoading = false
             showSaved = true

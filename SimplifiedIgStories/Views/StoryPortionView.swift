@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// *** In real enironment, images are loaded through internet.
+// The case of failure should be considered.
 struct StoryPortionView: View {
     let index: Int
     let photoName: String

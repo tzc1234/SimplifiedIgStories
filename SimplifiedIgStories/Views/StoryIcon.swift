@@ -69,7 +69,7 @@ struct StoryIcon_Previews: PreviewProvider {
 
 // MARK: components
 extension StoryIcon {
-    var arc: some View {
+   private var arc: some View {
         TraceableArc(startAngle: 0, endAngle: endAngle, clockwise: true, traceEndAngle: tracingEndAngle)
             .strokeBorder(
                 .linearGradient(
@@ -81,7 +81,7 @@ extension StoryIcon {
             )
     }
     
-    var avatarImage: some View {
+    private var avatarImage: some View {
         GeometryReader { geo in
             Image(avatar)
                 .resizable()
@@ -93,7 +93,7 @@ extension StoryIcon {
         }
     }
     
-    var plusIcon: some View {
+    private var plusIcon: some View {
         Circle().fill(.blue)
             .scaledToFit()
             .background(Circle().fill(.background).scaleEffect(1.3))
@@ -111,7 +111,7 @@ extension StoryIcon {
 
 // MARK: functions
 extension StoryIcon {
-    func startStrokeAnimation() {
+    private func startStrokeAnimation() {
         if !isAnimating {
             isAnimating.toggle()
             
@@ -125,7 +125,7 @@ extension StoryIcon {
         }
     }
     
-    func pauseStrokeAnimation() {
+    private func pauseStrokeAnimation() {
         if isAnimating {
             isAnimating.toggle()
             withAnimation(.easeInOut(duration: 0)) {
@@ -134,7 +134,7 @@ extension StoryIcon {
         }
     }
     
-    func resetStrokeAnimationAfterCompletion() {
+    private func resetStrokeAnimationAfterCompletion() {
         // reset currentEndAngle to 0 after finishing animation
         tracingEndAngle.currentEndAngle = 0
         isAnimating = false

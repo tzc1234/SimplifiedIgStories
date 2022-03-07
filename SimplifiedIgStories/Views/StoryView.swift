@@ -75,6 +75,7 @@ struct StoryView_Previews: PreviewProvider {
 
 // MARK: components
 extension StoryView {
+    // TODO: limit the number of storyPortionViews
     var storyPortionViews: some View {
         ZStack(alignment: .top) {
             ForEach(portions.indices) { index in
