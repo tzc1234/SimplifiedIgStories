@@ -8,12 +8,20 @@
 import Foundation
 import SwiftUI
 
+enum PortionTransitionDirection {
+    case none, start, forward, backward
+}
+
+enum BarPortionAnimationStatus {
+    case inital, start, restart, pause, resume, finish
+}
+
 final class StoryViewModel: ObservableObject {
     @Published var currentStoryPortionId: Int = -1
     @Published var portionTransitionDirection: PortionTransitionDirection = .none
     
     // The key is portionId.
-    @Published var portionAnimationStatuses: [Int: ProgressBarPortionAnimationStatus] = [:]
+    @Published var barPortionAnimationStatuses: [Int: BarPortionAnimationStatus] = [:]
     
     let story: Story
     let storiesViewModel: StoriesViewModel
@@ -27,8 +35,8 @@ final class StoryViewModel: ObservableObject {
 
 // MARK: computed variables
 extension StoryViewModel {
-    var currentPortionAnimationStatus: ProgressBarPortionAnimationStatus? {
-        portionAnimationStatuses[currentStoryPortionId]
+    var currentPortionAnimationStatus: BarPortionAnimationStatus? {
+        barPortionAnimationStatuses[currentStoryPortionId]
     }
     
     var isCurrentPortionAnimating: Bool {
@@ -56,17 +64,19 @@ extension StoryViewModel {
         }
     }
     
-    func decideStoryPortionTransitionDirection(point: CGPoint) {
+    func decidePortionTransitionDirectionBy(point: CGPoint) {
         let screenWidth = UIScreen.main.bounds.width
         portionTransitionDirection = point.x <= screenWidth / 2 ? .backward : .forward
     }
     
-    func setCurrentPortionAnimationStatusTo(_ status: ProgressBarPortionAnimationStatus) {
-        portionAnimationStatuses[currentStoryPortionId] = status
+    func setCurrentBarPortionAnimationStatusTo(_ status: BarPortionAnimationStatus) {
+        barPortionAnimationStatuses[currentStoryPortionId] = status
     }
     
-    func performProgressBarTransition(transitionDirection: PortionTransitionDirection) {
+    func performProgressBarTransitionTo(_ transitionDirection: PortionTransitionDirection) {
+        // Not in current story, ignore.
         guard storiesViewModel.currentStoryId == story.id else { return }
+        
         switch transitionDirection {
         case .none: // For continue tap forward/backward to trigger onChange.
             break
@@ -74,105 +84,107 @@ extension StoryViewModel {
             // No first portion, should not be happened.
             guard let firstPortionId = firstPortionId else { return }
             
-            setCurrentPortionAnimationStatusTo(.inital)
             currentStoryPortionId = firstPortionId
-            setCurrentPortionAnimationStatusTo(.start)
+            setCurrentBarPortionAnimationStatusTo(.start)
         case .forward:
-            setCurrentPortionAnimationStatusTo(.finish)
+            setCurrentBarPortionAnimationStatusTo(.finish)
             // Will trigger the onChange of currentPortionAnimationStatus in ProgressBar.
         case .backward:
-            // No first portion should not be happened.
+            // No first portion, should not happen.
             guard let firstPortionId = story.portions.first?.id else { return }
-            
-            let previousStatus = currentPortionAnimationStatus
             
             // At the first portion and
             if currentStoryPortionId == firstPortionId {
                 // at the first story,
                 if story.id == storiesViewModel.firstStoryIdDisplayedByContainer {
-                    // just start animation.
-                    setCurrentPortionAnimationStatusTo(previousStatus == .start ? .restart : .start)
+                    // just start the animation.
+                    setCurrentBarPortionAnimationStatusTo(currentPortionAnimationStatus == .start ? .restart : .start)
                 } else { // Not at the first story (that means previous story must exist.),
                     // go to previous story.
-                    setCurrentPortionAnimationStatusTo(.inital)
-                    if let currentStoryIndex = storiesViewModel.atLeastOnePortionStories.firstIndex(where: { $0.id == story.id }) {
-                        let previousStoryIndex = currentStoryIndex - 1
-                        if previousStoryIndex >= 0 {
-                            storiesViewModel.currentStoryId = storiesViewModel.atLeastOnePortionStories[previousStoryIndex].id
-                        }
+                    setCurrentBarPortionAnimationStatusTo(.inital)
+                    
+                    let atLeastOnePortionStories = storiesViewModel.atLeastOnePortionStories
+                    guard let currentStoryIndex = atLeastOnePortionStories.firstIndex(where: { $0.id == story.id }) else {
+                        return
+                    }
+                    
+                    let previousStoryIndex = currentStoryIndex - 1
+                    if previousStoryIndex >= 0 {
+                        storiesViewModel.currentStoryId = atLeastOnePortionStories[previousStoryIndex].id
                     }
                 }
-            } else {
-                // Go back to previous portion normally.
-                setCurrentPortionAnimationStatusTo(.inital)
+            } else { // Not at the first story,
+                // go back to previous portion normally.
+                setCurrentBarPortionAnimationStatusTo(.inital)
                 
-                if let currentStoryPortionIndex = story.portions.firstIndex(where: { $0.id == currentStoryPortionId }) {
-                    let previousStoryPortionIndex = currentStoryPortionIndex - 1
-                    if previousStoryPortionIndex >= 0 {
-                        currentStoryPortionId = story.portions[previousStoryPortionIndex].id
-                    }
-                }
-                
-                setCurrentPortionAnimationStatusTo(.start)
-            }
-            
-            portionTransitionDirection = .none // reset
-        }
-    }
-    
-    func performNextProgressBarPortionAnimation(portionAnimationStatus: ProgressBarPortionAnimationStatus?) {
-        // Start next portion's animation.
-        if portionAnimationStatus == .finish {
-            guard let currentStoryPortionIndex = story.portions.firstIndex(where: { $0.id == currentStoryPortionId }) else {
-                return
-            }
-            
-            // At last portion now,
-            if currentStoryPortionIndex + 1 > story.portions.count - 1 {
-                guard let currentStoryIndex = storiesViewModel.atLeastOnePortionStories.firstIndex(where: { $0.id == storiesViewModel.currentStoryId }) else {
+                guard let currentStoryPortionIndex = story.portions.firstIndex(where: { $0.id == currentStoryPortionId }) else {
                     return
                 }
                 
-                // It's the last story now, close StoryContainer.
-                if currentStoryIndex + 1 > storiesViewModel.atLeastOnePortionStories.count - 1 {
-                    storiesViewModel.closeStoryContainer()
-                } else { // Not the last stroy now, go to next story normally.
-                    storiesViewModel.currentStoryId = storiesViewModel.atLeastOnePortionStories[currentStoryIndex + 1].id
+                let previousStoryPortionIndex = currentStoryPortionIndex - 1
+                if previousStoryPortionIndex >= 0 {
+                    currentStoryPortionId = story.portions[previousStoryPortionIndex].id
                 }
-            } else { // Not the last portion, go to next portion.
-                currentStoryPortionId = story.portions[currentStoryPortionIndex + 1].id
-                setCurrentPortionAnimationStatusTo(.start)
+                
+                setCurrentBarPortionAnimationStatusTo(.start)
             }
             
             portionTransitionDirection = .none // reset
         }
     }
     
+    func performNextProgressBarPortionAnimationWhenFinished(_ portionAnimationStatus: BarPortionAnimationStatus?) {
+        // Start next portion's animation when current bar portion finished.
+        guard portionAnimationStatus == .finish else { return }
+        
+        guard let currentStoryPortionIndex = story.portions.firstIndex(where: { $0.id == currentStoryPortionId }) else {
+            return
+        }
+        
+        // At last portion now,
+        if currentStoryPortionIndex + 1 > story.portions.count - 1 {
+            let atLeastOnePortionStories = storiesViewModel.atLeastOnePortionStories
+            guard let currentStoryIndex = atLeastOnePortionStories.firstIndex(where: { $0.id == storiesViewModel.currentStoryId }) else {
+                return
+            }
+            
+            // It's the last story now, close StoryContainer.
+            if currentStoryIndex + 1 > atLeastOnePortionStories.count - 1 {
+                storiesViewModel.closeStoryContainer()
+            } else { // Not the last stroy now, go to next story.
+                storiesViewModel.currentStoryId = atLeastOnePortionStories[currentStoryIndex + 1].id
+            }
+        } else { // Not the last portion, go to next portion.
+            currentStoryPortionId = story.portions[currentStoryPortionIndex + 1].id
+            setCurrentBarPortionAnimationStatusTo(.start)
+        }
+        
+        portionTransitionDirection = .none // reset
+    }
+    
     func performProgressBarTransitionWhen(isDragging: Bool) {
-        if storiesViewModel.currentStoryId == story.id {
-            if isDragging {
-                // Pause the animation when dragging.
-                if isCurrentPortionAnimating {
-                    setCurrentPortionAnimationStatusTo(.pause)
-                }
-            } else { // Dragged.
-                if !isCurrentPortionAnimating && !storiesViewModel.isSameStoryAfterDragged {
-                    setCurrentPortionAnimationStatusTo(.start)
-                } else if currentPortionAnimationStatus == .pause {
-                    setCurrentPortionAnimationStatusTo(.resume)
-                }
+        guard storiesViewModel.currentStoryId == story.id else { return }
+            
+        if isDragging {
+            // Pause the animation when dragging.
+            if isCurrentPortionAnimating {
+                setCurrentBarPortionAnimationStatusTo(.pause)
+            }
+        } else { // Dragged.
+            if !isCurrentPortionAnimating && !storiesViewModel.isSameStoryAfterDragged {
+                setCurrentBarPortionAnimationStatusTo(.start)
+            } else if currentPortionAnimationStatus == .pause {
+                setCurrentBarPortionAnimationStatusTo(.resume)
             }
         }
     }
     
     func startProgressBarAnimation() {
-        if storiesViewModel.currentStoryId == story.id {
-            print("startProgressBarAnimation 0000")
-            // After went to the next story, start its animation.
-            if !isCurrentPortionAnimating {
-                print("startProgressBarAnimation 1111")
-                setCurrentPortionAnimationStatusTo(.start)
-            }
+        guard storiesViewModel.currentStoryId == story.id else { return }
+            
+        // After went to the next story, start its animation.
+        if !isCurrentPortionAnimating {
+            setCurrentBarPortionAnimationStatusTo(.start)
         }
     }
 }

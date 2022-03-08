@@ -53,6 +53,7 @@ struct StoryContainer: View {
         )
         .statusBar(hidden: true)
         .onDisappear {
+            // Deinit all storyViewModels.
             vm.removeAllStoryViewModel()
         }
     }

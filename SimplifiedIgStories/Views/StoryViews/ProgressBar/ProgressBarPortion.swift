@@ -7,10 +7,6 @@
 
 import SwiftUI
 
-enum ProgressBarPortionAnimationStatus {
-    case inital, start, restart, pause, resume, finish
-}
-
 struct ProgressBarPortion: View {
     @Environment(\.scenePhase) private var scenePhase
     
@@ -46,7 +42,7 @@ struct ProgressBarPortion: View {
                     // Finished
                     if currentEndX >= geo.size.width {
                         tracingEndX.updateCurrentEndX(0)
-                        storyViewModel.portionAnimationStatuses[portionId] = .finish
+                        storyViewModel.barPortionAnimationStatuses[portionId] = .finish
                     }
                 }
                 .onChange(of: currentAnimationStatus) { newValue in
@@ -99,8 +95,8 @@ struct ProgressBarPortion_Previews: PreviewProvider {
 
 // MARK: computed varibles
 extension ProgressBarPortion {
-    var currentAnimationStatus: ProgressBarPortionAnimationStatus? {
-        storyViewModel.portionAnimationStatuses[portionId]
+    var currentAnimationStatus: BarPortionAnimationStatus? {
+        storyViewModel.barPortionAnimationStatuses[portionId]
     }
     
     var isAnimating: Bool {

@@ -7,16 +7,12 @@
 
 import SwiftUI
 
-enum PortionTransitionDirection {
-    case none, start, forward, backward
-}
-
 struct StoryView: View {
     let story: Story
     @ObservedObject private var storyViewModel: StoryViewModel
-    let closeAction: (() -> Void)
+    let closeAction: (() -> Void)?
     
-    init(story: Story, storyViewModel: StoryViewModel, closeAction: @escaping (() -> Void)) {
+    init(story: Story, storyViewModel: StoryViewModel, closeAction: (() -> Void)? = nil) {
         self.story = story
         self.storyViewModel = storyViewModel
         self.closeAction = closeAction
@@ -27,7 +23,7 @@ struct StoryView: View {
             storyPortionViews
             
             DetectableTapGesturePositionView(
-                tapCallback: storyViewModel.decideStoryPortionTransitionDirection
+                tapCallback: storyViewModel.decidePortionTransitionDirectionBy(point:)
             )
             
             VStack(alignment: .leading) {
@@ -61,8 +57,11 @@ struct StoryView: View {
 struct StoryView_Previews: PreviewProvider {
     static var previews: some View {
         let storiesViewModel = StoriesViewModel(dataService: MockDataService())
-        let story = storiesViewModel.stories[1]
-        StoryView(story: story, storyViewModel: storiesViewModel.getStoryViewModelBy(story: story), closeAction: {})
+        let story = storiesViewModel.atLeastOnePortionStories[0]
+        StoryView(
+            story: story,
+            storyViewModel: storiesViewModel.getStoryViewModelBy(story: story)
+        )
     }
 }
 
@@ -108,7 +107,7 @@ extension StoryView {
     
     private var closeButton: some View {
         Button {
-            closeAction()
+            closeAction?()
         } label: {
             ZStack {
                 // Increase close button tap area.

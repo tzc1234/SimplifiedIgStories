@@ -34,11 +34,11 @@ struct ProgressBar: View {
             }
         }
         .padding(.horizontal, 10)
-        .onChange(of: storyViewModel.portionTransitionDirection) { newValue in
-            storyViewModel.performProgressBarTransition(transitionDirection: newValue)
+        .onChange(of: storyViewModel.portionTransitionDirection) { newDirection in
+            storyViewModel.performProgressBarTransitionTo(newDirection)
         }
-        .onChange(of: storyViewModel.currentPortionAnimationStatus) { newValue in
-            storyViewModel.performNextProgressBarPortionAnimation(portionAnimationStatus: newValue)
+        .onChange(of: storyViewModel.currentPortionAnimationStatus) { newStatus in
+            storyViewModel.performNextProgressBarPortionAnimationWhenFinished(newStatus)
         }
         .onChange(of: storiesViewModel.isDragging) { isDragging in
             storyViewModel.performProgressBarTransitionWhen(isDragging: isDragging)

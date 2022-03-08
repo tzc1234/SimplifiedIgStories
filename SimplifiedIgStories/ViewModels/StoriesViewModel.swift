@@ -77,7 +77,7 @@ extension StoriesViewModel {
     }
     
     func getContainerOffset(width: CGFloat) -> CGFloat {
-        guard let index: Int = atLeastOnePortionStories.firstIndex(where: { $0.id == currentStoryId }) else {
+        guard let index = atLeastOnePortionStories.firstIndex(where: { $0.id == currentStoryId }) else {
             return 0.0
         }
         return -CGFloat(index) * width
@@ -110,10 +110,13 @@ extension StoriesViewModel {
     }
     
     func tapStoryIcon(storyId: Int) {
-        let story = stories.first { $0.id == storyId }
-        if story?.hasPortion ?? false {
+        guard let story = stories.first(where: { $0.id == storyId }) else {
+            return
+        }
+        
+        if story.hasPortion {
             showStoryContainer(storyId: storyId)
-        } else if story?.user.isCurrentUser ?? false {
+        } else if story.user.isCurrentUser {
             toggleStoryCamView()
         }
     }
