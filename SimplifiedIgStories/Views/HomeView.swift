@@ -9,8 +9,9 @@ import SwiftUI
 
 struct HomeView: View {
     static let coordinateSpaceName = "Home"
+    static var topSpacing = 0.0
     
-    @StateObject private var vm = StoryViewModel()
+    @StateObject private var vm = StoriesViewModel()
     
     private let titleHeight = 44.0
     private let width = UIScreen.main.bounds.width
@@ -24,7 +25,7 @@ struct HomeView: View {
                     VStack(alignment: .leading, spacing: 0.0) {
                         Color.clear.frame(height: geo.safeAreaInsets.top)
                         titleView
-                        storyIconsView
+                        StoryIconsView(stories: vm.stories, onTapAction: vm.tapStoryIcon)
                         Spacer()
                     }
                     
@@ -32,13 +33,13 @@ struct HomeView: View {
                 }
                 .coordinateSpace(name: Self.coordinateSpaceName)
                 .frame(width: width)
+                .environmentObject(vm)
                 
             }
             .offset(x: vm.showStoryCamView ? 0.0 : -width)
             .ignoresSafeArea()
-            .environmentObject(vm)
             .onAppear {
-                vm.topSpacing = geo.safeAreaInsets.top > 20.0 ? geo.safeAreaInsets.top : 0.0
+                Self.topSpacing = geo.safeAreaInsets.top > 20.0 ? geo.safeAreaInsets.top : 0.0
             }
             .onPreferenceChange(IdFramePreferenceKey.self) { idFrameDict in
                 vm.storyIconFrames = idFrameDict
@@ -50,7 +51,7 @@ struct HomeView: View {
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
-            .environmentObject(StoryViewModel(dataService: MockDataService()))
+            .environmentObject(StoriesViewModel(dataService: MockDataService()))
     }
 }
 
@@ -71,10 +72,6 @@ extension HomeView {
             .bold()
             .frame(height: titleHeight, alignment: .leading)
             .padding(.horizontal, 16)
-    }
-    
-    private var storyIconsView: some View {
-        StoryIconsView(stories: vm.stories, onTapAction: vm.tapStoryIcon)
     }
     
     @ViewBuilder private func storyContainer(geo: GeometryProxy) -> some View {

@@ -13,7 +13,7 @@ struct StoryPortionView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var isPaused: Bool? = nil
     
-    let index: Int
+    let storyPortionId: Int
     let photoName: String?
     let videoUrl: URL?
     
@@ -43,7 +43,7 @@ struct StoryPortionView: View {
 
 struct StoryPortionView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryPortionView(index: 0, photoName: "sea1", videoUrl: nil)
+        StoryPortionView(storyPortionId: 0, photoName: "sea1", videoUrl: nil)
     }
 }
 

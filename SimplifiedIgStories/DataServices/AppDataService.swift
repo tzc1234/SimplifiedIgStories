@@ -8,20 +8,20 @@
 import Foundation
 
 protocol DataService {
-    func getStories() -> [Story]
+    func loadStories() -> [Story]
 }
 
-class AppDataService: DataService {
+final class AppDataService: DataService {
     // Mock the data as coming from an api call.
-    func getStories() -> [Story] {
+    func loadStories() -> [Story] {
         let stories: [Story] = load("storiesData.json")
         return stories
     }
 }
 
 // For preview usage.
-class MockDataService: DataService {
-    func getStories() -> [Story] {
+final class MockDataService: DataService {
+    func loadStories() -> [Story] {
         let stories: [Story] = load("storiesData.json")
         return stories
     }

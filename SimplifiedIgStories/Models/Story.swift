@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Story: Hashable, Codable, Identifiable {
+struct Story: Codable, Identifiable {
     var id: Int
     var lastUpdate: Int?
     var portions: [Portion]

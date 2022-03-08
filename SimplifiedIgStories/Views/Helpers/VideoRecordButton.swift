@@ -79,7 +79,7 @@ struct VideoRecordButton: View {
 struct VideoRecordButton_Previews: PreviewProvider {
     static var previews: some View {
         VideoRecordButton(tapAction: {}, longPressingAction: {_ in })
-            .preferredColorScheme(.dark)
+            .background(.black)
     }
 }
 

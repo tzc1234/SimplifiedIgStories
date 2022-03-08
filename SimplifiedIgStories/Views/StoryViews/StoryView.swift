@@ -7,41 +7,35 @@
 
 import SwiftUI
 
-enum StoryPortionTransitionDirection {
+enum PortionTransitionDirection {
     case none, start, forward, backward
 }
 
 struct StoryView: View {
-    @EnvironmentObject private var vm: StoryViewModel
-    
-    @State var storyPortionTransitionDirection: StoryPortionTransitionDirection = .none
-    @State var currentStoryPortionIndex: Int = 0
-    
     let story: Story
+    @ObservedObject private var storyViewModel: StoryViewModel
+    let closeAction: (() -> Void)
+    
+    init(story: Story, storyViewModel: StoryViewModel, closeAction: @escaping (() -> Void)) {
+        self.story = story
+        self.storyViewModel = storyViewModel
+        self.closeAction = closeAction
+    }
     
     var body: some View {
         ZStack {
             storyPortionViews
             
-            DetectableTapGesturePositionView { point in
-                let screenWidth = UIScreen.main.bounds.width
-                if point.x <= screenWidth / 2 {
-                    storyPortionTransitionDirection = .backward
-                } else {
-                    storyPortionTransitionDirection = .forward
-                }
-            }
+            DetectableTapGesturePositionView(
+                tapCallback: storyViewModel.decideStoryPortionTransitionDirection
+            )
             
             VStack(alignment: .leading) {
-                Color.clear.frame(height: vm.topSpacing)
+                Color.clear.frame(height: HomeView.topSpacing)
                 
-                ProgressBar(
-                    story: story,
-                    storyPortionTransitionDirection: $storyPortionTransitionDirection,
-                    currentStoryPortionIndex: $currentStoryPortionIndex
-                )
-                    .frame(height: 2, alignment: .center)
-                    .padding(.top, 8)
+                ProgressBar(story: story, storyViewModel: storyViewModel)
+                    .frame(height: 2.0, alignment: .center)
+                    .padding(.top, 8.0)
                 
                 HStack {
                     avatarIcon
@@ -49,52 +43,56 @@ struct StoryView: View {
                     dateText
                     Spacer()
                     closeButton
-                }.padding(.leading, 20)
+                }
+                .padding(.leading, 20.0)
                 
                 Spacer()
             }
         }
         .clipShape(Rectangle())
-        .onAppear { initAnimation() }
+        .onAppear {
+            storyViewModel.initAnimation(story: story)
+        }
+        
     }
     
 }
 
 struct StoryView_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = StoryViewModel(dataService: MockDataService())
-        StoryView(story: vm.stories[1])
-            .environmentObject(vm)
+        let storiesViewModel = StoriesViewModel(dataService: MockDataService())
+        let story = storiesViewModel.stories[1]
+        StoryView(story: story, storyViewModel: storiesViewModel.getStoryViewModelBy(story: story), closeAction: {})
     }
 }
 
 // MARK: components
 extension StoryView {
-    // TODO: limit the number of storyPortionViews
-    var storyPortionViews: some View {
+    // TODO: Limit the number of StoryPortionViews.
+    private var storyPortionViews: some View {
         ZStack(alignment: .top) {
-            ForEach(story.portions.indices) { index in
-                if currentStoryPortionIndex == index {
+            ForEach(story.portions) { portion in
+                if portion.id == storyViewModel.currentStoryPortionId {
                     StoryPortionView(
-                        index: index,
-                        photoName: story.portions[index].imageName,
-                        videoUrl: story.portions[index].videoUrl
+                        storyPortionId: portion.id,
+                        photoName: portion.imageName,
+                        videoUrl: portion.videoUrl
                     )
                 }
             }
         }
     }
     
-    var avatarIcon: some View {
+    private var avatarIcon: some View {
         Image(story.user.avatar)
             .resizable()
             .scaledToFill()
-            .frame(width: 40, height: 40)
+            .frame(width: 40.0, height: 40.0)
             .clipShape(Circle())
             .overlay(Circle().strokeBorder(.white, lineWidth: 1))
     }
     
-    var nameText: some View {
+    private var nameText: some View {
         Text(story.user.title)
             .foregroundColor(.white)
             .font(.headline)
@@ -102,36 +100,26 @@ extension StoryView {
             .lineLimit(2)
     }
     
-    var dateText: some View {
+    private var dateText: some View {
         Text(story.lastUpdateDate?.timeAgoDisplay() ?? "")
             .foregroundColor(.white)
             .font(.subheadline)
     }
     
-    var closeButton: some View {
+    private var closeButton: some View {
         Button {
-            vm.closeStoryContainer()
+            closeAction()
         } label: {
             ZStack {
                 // Increase close button tap area.
-                Color.clear.frame(width: 45, height: 45)
+                Color.clear.frame(width: 45.0, height: 45.0)
                 Image(systemName: "xmark")
                     .resizable()
                     .foregroundColor(.white)
-                    .frame(width: 25, height: 25)
+                    .frame(width: 25.0, height: 25.0)
             }
             .contentShape(Rectangle())
         }
-        .padding(.trailing, 10)
-    }
-}
-
-// MARK: functions
-extension StoryView {
-    func initAnimation() {
-        if storyPortionTransitionDirection == .none && vm.currentStoryId == story.id {
-            print("StoryId: \(story.id) animation start!")
-            storyPortionTransitionDirection = .start
-        }
+        .padding(.trailing, 10.0)
     }
 }

@@ -56,7 +56,7 @@ struct StoryIcon: View {
 
 struct StoryIcon_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = StoryViewModel(dataService: MockDataService())
+        let vm = StoriesViewModel(dataService: MockDataService())
         StoryIcon(story: vm.stories[0], onTapAction: {_ in})
     }
 }

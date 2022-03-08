@@ -23,16 +23,16 @@ struct ProgressBarPortion: View {
     @State private var traceableRectangleId = 0
     @State private var isAnimationPaused = false
     
-    let portionIndex: Int
-    @Binding var portionAnimationStatuses: [Int: ProgressBarPortionAnimationStatus]
+    let portionId: Int
     let duration: Double
-    let storyId: Int // For debug msg.
+    let story: Story
+    @ObservedObject private var storyViewModel: StoryViewModel
     
-    init(portionIndex: Int, portionAnimationStatuses: Binding<[Int: ProgressBarPortionAnimationStatus]>, duration: Double, storyId: Int) {
-        self.portionIndex = portionIndex
-        self._portionAnimationStatuses = portionAnimationStatuses
+    init(portionId: Int, duration: Double, story: Story, storyViewModel: StoryViewModel) {
+        self.portionId = portionId
         self.duration = duration
-        self.storyId = storyId
+        self.story = story
+        self.storyViewModel = storyViewModel
     }
     
     var body: some View {
@@ -46,7 +46,7 @@ struct ProgressBarPortion: View {
                     // Finished
                     if currentEndX >= geo.size.width {
                         tracingEndX.updateCurrentEndX(0)
-                        portionAnimationStatuses[portionIndex] = .finish
+                        storyViewModel.portionAnimationStatuses[portionId] = .finish
                     }
                 }
                 .onChange(of: currentAnimationStatus) { newValue in
@@ -86,11 +86,13 @@ struct ProgressBarPortion: View {
 
 struct ProgressBarPortion_Previews: PreviewProvider {
     static var previews: some View {
+        let storiesViewModel = StoriesViewModel(dataService: MockDataService())
+        let story = storiesViewModel.stories[1]
         ProgressBarPortion(
-            portionIndex: 0,
-            portionAnimationStatuses: .constant([:]),
+            portionId: story.portions[0].id,
             duration: 5.0,
-            storyId: 0
+            story: story,
+            storyViewModel: storiesViewModel.getStoryViewModelBy(story: story)
         )
     }
 }
@@ -98,7 +100,7 @@ struct ProgressBarPortion_Previews: PreviewProvider {
 // MARK: computed varibles
 extension ProgressBarPortion {
     var currentAnimationStatus: ProgressBarPortionAnimationStatus? {
-        portionAnimationStatuses[portionIndex]
+        storyViewModel.portionAnimationStatuses[portionId]
     }
     
     var isAnimating: Bool {
@@ -116,12 +118,12 @@ extension ProgressBarPortion {
     }
     
     func initializeAnimation() {
-        print("storyId: \(storyId), portion\(portionIndex) initial.")
+        print("storyId: \(story.id), portionId: \(portionId) initial.")
         resetTraceableRectangle()
     }
     
     func startAnimation(maxWidth: Double) {
-        print("storyId: \(storyId), portion\(portionIndex) start.")
+        print("storyId: \(story.id), portionId: \(portionId) start.")
         resetTraceableRectangle()
         withAnimation(.linear(duration: duration)) {
             endX = maxWidth
@@ -130,7 +132,7 @@ extension ProgressBarPortion {
     
     // TODO: combine restartAnimation and startAnimation
     func restartAnimation(maxWidth: Double) {
-        print("storyId: \(storyId), portion\(portionIndex) restart.")
+        print("storyId: \(story.id), portionId: \(portionId) restart.")
         resetTraceableRectangle()
         withAnimation(.linear(duration: duration)) {
             endX = maxWidth
@@ -138,19 +140,19 @@ extension ProgressBarPortion {
     }
     
     func pauseAnimation() {
-        print("storyId: \(storyId), portion\(portionIndex) pause.")
+        print("storyId: \(story.id), portionId: \(portionId) pause.")
         resetTraceableRectangle(toLength: tracingEndX.currentEndX)
     }
     
     func resumeAnimation(maxWidth: Double) {
-        print("storyId: \(storyId), portion\(portionIndex) resume.")
+        print("storyId: \(story.id), portionId: \(portionId) resume.")
         withAnimation(.linear(duration: duration * (1 - tracingEndX.currentEndX / maxWidth))) {
             endX = maxWidth
         }
     }
     
     func finishAnimation(maxWidth: Double) {
-        print("storyId: \(storyId), portion\(portionIndex) finish.")
+        print("storyId: \(story.id), portionId: \(portionId) finish.")
         resetTraceableRectangle(toLength: maxWidth)
     }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Portion: Hashable, Codable, Identifiable {
+struct Portion: Codable, Identifiable {
     var id: Int
     var imageName: String?
     var videoName: String?

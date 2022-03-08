@@ -8,11 +8,12 @@
 import SwiftUI
 
 struct StoryContainer: View {
-    @EnvironmentObject private var vm: StoryViewModel
+    @EnvironmentObject private var vm: StoriesViewModel
+    
     @GestureState private var translation: CGFloat = 0
     
-    private let width = UIScreen.main.bounds.width
-    private let height = UIScreen.main.bounds.height
+    private let screenWidth = UIScreen.main.bounds.width
+    private let screenHeight = UIScreen.main.bounds.height
     
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
@@ -20,7 +21,7 @@ struct StoryContainer: View {
             ForEach(vm.atLeastOnePortionStories) { story in
                 GeometryReader { geo in
                     let frame = geo.frame(in: .global)
-                    StoryView(story: story)
+                    StoryView(story: story, storyViewModel: vm.getStoryViewModelBy(story: story), closeAction: vm.closeStoryContainer)
                     // Cubic transition reference: https://www.youtube.com/watch?v=NTun83toSQQ&ab_channel=Kavsoft
                         .rotation3DEffect(
                             vm.shouldAnimateCubicRotation ? .degrees(getRotationDegree(offsetX: frame.minX)) : .degrees(0),
@@ -30,13 +31,13 @@ struct StoryContainer: View {
                             perspective: 2.5
                         )
                 }
-                .frame(width: width, height: height)
+                .frame(width: screenWidth, height: screenHeight)
                 .ignoresSafeArea()
                 .opacity(story.id != vm.currentStoryId && !vm.shouldAnimateCubicRotation ? 0.0 : 1.0)
             }
         }
-        .frame(width: width, alignment: .leading)
-        .offset(x: vm.getContainerOffset(width: width))
+        .frame(width: screenWidth, alignment: .leading)
+        .offset(x: vm.getContainerOffset(width: screenWidth))
         .offset(x: translation)
         .animation(.interactiveSpring(), value: vm.currentStoryId)
         .animation(.interactiveSpring(), value: translation)
@@ -47,16 +48,19 @@ struct StoryContainer: View {
                     state = value.translation.width
                 }
                 .onEnded { value in
-                    vm.endDraggingStoryContainer(offset: value.translation.width / width)
+                    vm.endDraggingStoryContainer(offset: value.translation.width / screenWidth)
                 }
         )
         .statusBar(hidden: true)
+        .onDisappear {
+            vm.removeAllStoryViewModel()
+        }
     }
 }
 
 struct StoryContainer_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = StoryViewModel(dataService: MockDataService())
+        let vm = StoriesViewModel(dataService: MockDataService())
         StoryContainer().environmentObject(vm)
     }
 }
@@ -64,7 +68,7 @@ struct StoryContainer_Previews: PreviewProvider {
 // MARK: functions
 extension StoryContainer {
     private func getRotationDegree(offsetX: CGFloat) -> Double {
-        let tempAngle = offsetX / (width / 2)
+        let tempAngle = offsetX / (screenWidth / 2)
         let rotationDegree = 20.0
         return tempAngle * rotationDegree
     }
