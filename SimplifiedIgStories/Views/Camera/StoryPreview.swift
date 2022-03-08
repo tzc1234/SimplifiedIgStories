@@ -6,11 +6,14 @@
 //
 
 import SwiftUI
+import AVKit
 
 struct StoryPreview: View {
     @State private var isLoading = false
     @State private var showSaved = false
     @State private var showAlert = false
+    
+    @State private var player: AVPlayer?
     
     let uiImage: UIImage?
     let videoUrl: URL?
@@ -52,6 +55,11 @@ struct StoryPreview: View {
          
             savedLabel
         }
+        .onAppear {
+            if let videoUrl = videoUrl {
+                self.player = AVPlayer(url: videoUrl)
+            }
+        }
         
     }
 }
@@ -73,11 +81,10 @@ extension StoryPreview {
     }
     
     @ViewBuilder private var videoView: some View {
-        if let videoUrl = videoUrl {
+        if player != nil {
             AVPlayerControllerRepresentable(
-                videoUrl: videoUrl,
                 shouldLoop: true,
-                isPaused: .constant(nil)
+                player: $player
             )
         }
     }

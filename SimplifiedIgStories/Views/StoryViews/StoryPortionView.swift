@@ -6,16 +6,31 @@
 //
 
 import SwiftUI
+import AVKit
 
 // *** In real enironment, images are loaded through internet.
 // The case of failure should be considered.
 struct StoryPortionView: View {
     @Environment(\.scenePhase) private var scenePhase
-    @State private var isPaused: Bool? = nil
     
-    let storyPortionId: Int
+    @State private var player: AVPlayer?
+    private var playerItem: AVPlayerItem?
+    
+    let portionId: Int
+    @ObservedObject private var storyViewModel: StoryViewModel
     let photoName: String?
     let videoUrl: URL?
+    
+    init(portionId: Int, storyViewModel: StoryViewModel, photoName: String?, videoUrl: URL?) {
+        self.portionId = portionId
+        self.storyViewModel = storyViewModel
+        self.photoName = photoName
+        self.videoUrl = videoUrl
+        
+        if let videoUrl = videoUrl {
+            self.playerItem = AVPlayerItem(url: videoUrl)
+        }
+    }
     
     var body: some View {
         ZStack {
@@ -23,31 +38,51 @@ struct StoryPortionView: View {
             photoView
             videoView
         }
-        // Pause video playing when inactive.
-//        .onChange(of: scenePhase) { newPhase in
-//            if videoUrl != nil {
-//                if newPhase == .active {
-//                    isPaused = false
-//                } else if newPhase == .inactive {
-//                    isPaused = true
-//                }
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-//                    isPaused = nil
-//                }
-//                
-//            }
-//        }
+        .onAppear {
+            if let playerItem = playerItem {
+                self.player = AVPlayer(playerItem: playerItem)
+            }
+        }
+        .onChange(of: storyViewModel.barPortionAnimationStatuses[portionId]) { animationStatus in
+            guard let player = player else { return }
+            guard let animationStatus = animationStatus else { return }
+            
+            print("animationStatus: \(animationStatus)")
+            
+            switch animationStatus {
+            case .inital:
+                resetVideo()
+            case .start:
+                replayVideo()
+            case .restart:
+                replayVideo()
+            case .pause:
+                player.pause()
+            case .resume:
+                player.play()
+            case .finish:
+                break
+            }
+        }
         
     }
 }
 
 struct StoryPortionView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryPortionView(storyPortionId: 0, photoName: "sea1", videoUrl: nil)
+        let storiesViewModel = StoriesViewModel(dataService: MockDataService())
+        let story = storiesViewModel.atLeastOnePortionStories[1]
+        let portion = story.portions[0]
+        StoryPortionView(
+            portionId: portion.id,
+            storyViewModel: storiesViewModel.getStoryViewModelBy(story: story),
+            photoName: "sea1",
+            videoUrl: nil
+        )
     }
 }
 
-// MARK: compoents
+// MARK: components
 extension StoryPortionView {
     @ViewBuilder private var photoView: some View {
         if let photoName = photoName {
@@ -67,12 +102,37 @@ extension StoryPortionView {
     }
     
     @ViewBuilder private var videoView: some View {
-        if let videoUrl = videoUrl {
+        if player != nil {
             AVPlayerControllerRepresentable(
-                videoUrl: videoUrl,
                 shouldLoop: false,
-                isPaused: $isPaused
+                player: $player
             )
+        }
+    }
+}
+
+// MARK: functions
+extension StoryPortionView {
+    private func resetVideo() {
+        guard let player = player else { return }
+        
+        player.pause()
+        player.seek(to: .zero)
+    }
+    
+    private func replayVideo() {
+        guard let player = player else { return }
+        
+        player.seek(to: .zero)
+        player.play()
+    }
+    
+    private func finishVideo() {
+        guard let player = player else { return }
+        
+        player.pause()
+        if let duration = playerItem?.duration {
+            player.seek(to: duration)
         }
     }
 }

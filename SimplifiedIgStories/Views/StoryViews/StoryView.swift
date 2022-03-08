@@ -73,7 +73,8 @@ extension StoryView {
             ForEach(story.portions) { portion in
                 if portion.id == storyViewModel.currentStoryPortionId {
                     StoryPortionView(
-                        storyPortionId: portion.id,
+                        portionId: portion.id,
+                        storyViewModel: storyViewModel,
                         photoName: portion.imageName,
                         videoUrl: portion.videoUrl
                     )
