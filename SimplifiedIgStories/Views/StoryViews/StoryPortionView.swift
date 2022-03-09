@@ -14,7 +14,6 @@ struct StoryPortionView: View {
     @Environment(\.scenePhase) private var scenePhase
     
     @State private var player: AVPlayer?
-    private var playerItem: AVPlayerItem?
     
     let portionId: Int
     @ObservedObject private var storyViewModel: StoryViewModel
@@ -26,10 +25,6 @@ struct StoryPortionView: View {
         self.storyViewModel = storyViewModel
         self.photoName = photoName
         self.videoUrl = videoUrl
-        
-        if let videoUrl = videoUrl {
-            self.playerItem = AVPlayerItem(url: videoUrl)
-        }
     }
     
     var body: some View {
@@ -39,29 +34,26 @@ struct StoryPortionView: View {
             videoView
         }
         .onAppear {
-            if let playerItem = playerItem {
-                self.player = AVPlayer(playerItem: playerItem)
+            if let videoUrl = videoUrl {
+                player = AVPlayer(url: videoUrl)
             }
         }
         .onChange(of: storyViewModel.barPortionAnimationStatuses[portionId]) { animationStatus in
-            guard let player = player else { return }
             guard let animationStatus = animationStatus else { return }
-            
-            print("animationStatus: \(animationStatus)")
             
             switch animationStatus {
             case .inital:
-                resetVideo()
+                player?.reset()
             case .start:
-                replayVideo()
+                player?.replay()
             case .restart:
-                replayVideo()
+                player?.replay()
             case .pause:
-                player.pause()
+                player?.pause()
             case .resume:
-                player.play()
+                player?.play()
             case .finish:
-                break
+                player?.finish()
             }
         }
         
@@ -107,32 +99,6 @@ extension StoryPortionView {
                 shouldLoop: false,
                 player: $player
             )
-        }
-    }
-}
-
-// MARK: functions
-extension StoryPortionView {
-    private func resetVideo() {
-        guard let player = player else { return }
-        
-        player.pause()
-        player.seek(to: .zero)
-    }
-    
-    private func replayVideo() {
-        guard let player = player else { return }
-        
-        player.seek(to: .zero)
-        player.play()
-    }
-    
-    private func finishVideo() {
-        guard let player = player else { return }
-        
-        player.pause()
-        if let duration = playerItem?.duration {
-            player.seek(to: duration)
         }
     }
 }

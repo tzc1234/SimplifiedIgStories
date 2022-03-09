@@ -57,7 +57,7 @@ struct StoryPreview: View {
         }
         .onAppear {
             if let videoUrl = videoUrl {
-                self.player = AVPlayer(url: videoUrl)
+                player = AVPlayer(url: videoUrl)
             }
         }
         
