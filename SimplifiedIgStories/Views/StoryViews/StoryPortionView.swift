@@ -11,8 +11,6 @@ import AVKit
 // *** In real enironment, images are loaded through internet.
 // The case of failure should be considered.
 struct StoryPortionView: View {
-    @Environment(\.scenePhase) private var scenePhase
-    
     @State private var player: AVPlayer?
     
     let portionId: Int
@@ -39,21 +37,22 @@ struct StoryPortionView: View {
             }
         }
         .onChange(of: storyViewModel.barPortionAnimationStatuses[portionId]) { animationStatus in
+            guard let player = player else { return }
             guard let animationStatus = animationStatus else { return }
             
             switch animationStatus {
             case .inital:
-                player?.reset()
+                player.reset()
             case .start:
-                player?.replay()
+                player.replay()
             case .restart:
-                player?.replay()
+                player.replay()
             case .pause:
-                player?.pause()
+                player.pause()
             case .resume:
-                player?.play()
+                player.play()
             case .finish:
-                player?.finish()
+                player.finish()
             }
         }
         

@@ -8,16 +8,15 @@
 import SwiftUI
 
 struct ProgressBarPortion: View {
-    @Environment(\.scenePhase) private var scenePhase
-    
     // For animation purpose.
     @State private var endX = 0.0
+    
     // ProgressBarPortion will frequently be recreate,
     // TracingEndX must be a @StateObject to keep it unchange.
     @StateObject private var tracingEndX = TracingEndX(currentEndX: 0.0)
     
+    // For reset animation!
     @State private var traceableRectangleId = 0
-    @State private var isAnimationPaused = false
     
     let portionId: Int
     let duration: Double
@@ -37,7 +36,7 @@ struct ProgressBarPortion: View {
                 .fill(.white)
                 .background(Color(.lightGray).opacity(0.5))
                 .cornerRadius(6)
-                .id(traceableRectangleId) // For reset animation!
+                .id(traceableRectangleId)
                 .onChange(of: tracingEndX.currentEndX) { currentEndX in
                     // Finished
                     if currentEndX >= geo.size.width {
@@ -63,19 +62,7 @@ struct ProgressBarPortion: View {
                         }
                     }
                 }
-                // Pause animation when inactive.
-                .onChange(of: scenePhase) { newPhase in
-                    if isAnimating {
-                        if newPhase == .active && isAnimationPaused {
-                            resumeAnimation(maxWidth: geo.size.width)
-                            isAnimationPaused = false
-                        } else if newPhase == .inactive && !isAnimationPaused {
-                            pauseAnimation()
-                            isAnimationPaused = true
-                        }
-                    }
-                }
-            
+
         }
     }
 }
@@ -97,12 +84,6 @@ struct ProgressBarPortion_Previews: PreviewProvider {
 extension ProgressBarPortion {
     var currentAnimationStatus: BarPortionAnimationStatus? {
         storyViewModel.barPortionAnimationStatuses[portionId]
-    }
-    
-    var isAnimating: Bool {
-        currentAnimationStatus == .start ||
-        currentAnimationStatus == .restart ||
-        currentAnimationStatus == .resume
     }
 }
 

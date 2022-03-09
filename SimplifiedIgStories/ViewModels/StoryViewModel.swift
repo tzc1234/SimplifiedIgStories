@@ -187,4 +187,14 @@ extension StoryViewModel {
             setCurrentBarPortionAnimationStatusTo(.start)
         }
     }
+    
+    func pasuseOrResumeProgressBarAnimationDependsOn(scenePhase: ScenePhase) {
+        guard storiesViewModel.currentStoryId == story.id else { return }
+        
+        if scenePhase == .active && currentPortionAnimationStatus == .pause {
+            setCurrentBarPortionAnimationStatusTo(.resume)
+        } else if scenePhase == .inactive && isCurrentPortionAnimating {
+            setCurrentBarPortionAnimationStatusTo(.pause)
+        }
+    }
 }
