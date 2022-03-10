@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import Combine
 
 enum PortionTransitionDirection {
     case none, start, forward, backward
@@ -24,12 +25,19 @@ final class StoryViewModel: ObservableObject {
     @Published var barPortionAnimationStatuses: [Int: BarPortionAnimationStatus] = [:]
     
     let story: Story
-    let storiesViewModel: StoriesViewModel
+    let storiesViewModel: StoriesViewModel // parent ViewModel
+    private var anyCancellable: AnyCancellable?
     
     init(story: Story, storiesViewModel: StoriesViewModel) {
         self.story = story
         self.storiesViewModel = storiesViewModel
         self.initCurrentStoryPortionId()
+        
+        // Reference: https://stackoverflow.com/a/58406402
+        // Trigger current class's objectWillChange when parent's published property changed.
+        anyCancellable = storiesViewModel.objectWillChange.sink { [weak self] in
+            self?.objectWillChange.send()
+        }
     }
 }
 
@@ -104,7 +112,10 @@ extension StoryViewModel {
                     setCurrentBarPortionAnimationStatusTo(.inital)
                     
                     let atLeastOnePortionStories = storiesViewModel.atLeastOnePortionStories
-                    guard let currentStoryIndex = atLeastOnePortionStories.firstIndex(where: { $0.id == story.id }) else {
+                    guard
+                        let currentStoryIndex =
+                            atLeastOnePortionStories.firstIndex(where: { $0.id == story.id })
+                    else {
                         return
                     }
                     
@@ -117,7 +128,10 @@ extension StoryViewModel {
                 // go back to previous portion normally.
                 setCurrentBarPortionAnimationStatusTo(.inital)
                 
-                guard let currentStoryPortionIndex = story.portions.firstIndex(where: { $0.id == currentStoryPortionId }) else {
+                guard
+                    let currentStoryPortionIndex =
+                        story.portions.firstIndex(where: { $0.id == currentStoryPortionId })
+                else {
                     return
                 }
                 
@@ -137,14 +151,20 @@ extension StoryViewModel {
         // Start next portion's animation when current bar portion finished.
         guard portionAnimationStatus == .finish else { return }
         
-        guard let currentStoryPortionIndex = story.portions.firstIndex(where: { $0.id == currentStoryPortionId }) else {
+        guard
+            let currentStoryPortionIndex =
+                story.portions.firstIndex(where: { $0.id == currentStoryPortionId })
+        else {
             return
         }
         
         // At last portion now,
         if currentStoryPortionIndex + 1 > story.portions.count - 1 {
             let atLeastOnePortionStories = storiesViewModel.atLeastOnePortionStories
-            guard let currentStoryIndex = atLeastOnePortionStories.firstIndex(where: { $0.id == storiesViewModel.currentStoryId }) else {
+            guard
+                let currentStoryIndex =
+                    atLeastOnePortionStories.firstIndex(where: { $0.id == storiesViewModel.currentStoryId })
+            else {
                 return
             }
             

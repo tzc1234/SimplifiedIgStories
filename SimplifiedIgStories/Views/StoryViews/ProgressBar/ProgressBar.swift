@@ -9,14 +9,13 @@ import SwiftUI
 
 struct ProgressBar: View {
     @Environment(\.scenePhase) private var scenePhase
-    @EnvironmentObject private var storiesViewModel: StoriesViewModel
     
     let story: Story
-    @ObservedObject private var storyViewModel: StoryViewModel
+    @ObservedObject private var vm: StoryViewModel
     
     init(story: Story, storyViewModel: StoryViewModel) {
         self.story = story
-        self.storyViewModel = storyViewModel
+        self.vm = storyViewModel
     }
     
     var body: some View {
@@ -28,27 +27,27 @@ struct ProgressBar: View {
                     portionId: portion.id,
                     duration: portion.duration,
                     story: story,
-                    storyViewModel: storyViewModel
+                    storyViewModel: vm
                 )
                 
                 Spacer(minLength: 2)
             }
         }
         .padding(.horizontal, 10)
-        .onChange(of: storyViewModel.portionTransitionDirection) { newDirection in
-            storyViewModel.performProgressBarTransitionTo(newDirection)
+        .onChange(of: vm.portionTransitionDirection) { newDirection in
+            vm.performProgressBarTransitionTo(newDirection)
         }
-        .onChange(of: storyViewModel.currentPortionAnimationStatus) { newStatus in
-            storyViewModel.performNextProgressBarPortionAnimationWhenFinished(newStatus)
+        .onChange(of: vm.currentPortionAnimationStatus) { newStatus in
+            vm.performNextProgressBarPortionAnimationWhenFinished(newStatus)
         }
-        .onChange(of: storiesViewModel.isDragging) { isDragging in
-            storyViewModel.performProgressBarTransitionWhen(isDragging: isDragging)
+        .onChange(of: vm.storiesViewModel.isDragging) { isDragging in
+            vm.performProgressBarTransitionWhen(isDragging: isDragging)
         }
-        .onChange(of: storiesViewModel.currentStoryId) { _ in
-            storyViewModel.startProgressBarAnimation()
+        .onChange(of: vm.storiesViewModel.currentStoryId) { _ in
+            vm.startProgressBarAnimation()
         }
         .onChange(of: scenePhase) { newPhase in
-            storyViewModel.pasuseOrResumeProgressBarAnimationDependsOn(scenePhase: newPhase)
+            vm.pasuseOrResumeProgressBarAnimationDependsOn(scenePhase: newPhase)
         }
     }
     
