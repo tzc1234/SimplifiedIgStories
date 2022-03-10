@@ -162,6 +162,8 @@ extension StoryPreview {
                 vm.stories[yourStoryIndex].portions = portions
                 vm.stories[yourStoryIndex].lastUpdate = Date().timeIntervalSince1970
             }
+            
+            vm.toggleStoryCamView()
         } label: {
             Text("Post")
                 .font(.headline)
