@@ -35,6 +35,14 @@ final class StoriesViewModel: ObservableObject {
 
 // MARK: computed variables
 extension StoriesViewModel {
+    var yourStoryIndex: Int? {
+        stories.firstIndex(where: { $0.user.isCurrentUser })
+    }
+    
+    var lastPortionId: Int {
+        atLeastOnePortionStories.flatMap(\.portions).map(\.id).max() ?? -1
+    }
+    
     var atLeastOnePortionStories: [Story] {
         stories.filter(\.hasPortion)
     }

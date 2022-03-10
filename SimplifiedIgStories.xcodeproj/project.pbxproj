@@ -49,6 +49,7 @@
 		BEA901D427BC716E00E3362D /* ProgressBarPortion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA901D327BC716E00E3362D /* ProgressBarPortion.swift */; };
 		BEA93F9427D7511000964226 /* VideoRecordButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA8E50E27D0CFD200640B19 /* VideoRecordButton.swift */; };
 		BEAED9E427D36F7D00A98F3A /* IdFramePreferenceKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEAED9E327D36F7D00A98F3A /* IdFramePreferenceKey.swift */; };
+		BEB8752927DA120300D60110 /* LocalFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB8752827DA120300D60110 /* LocalFileManager.swift */; };
 		BED0F60D27BBF64B00D93F15 /* StoryIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */; };
 /* End PBXBuildFile section */
 
@@ -96,6 +97,7 @@
 		BEA8E50E27D0CFD200640B19 /* VideoRecordButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRecordButton.swift; sourceTree = "<group>"; };
 		BEA901D327BC716E00E3362D /* ProgressBarPortion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarPortion.swift; sourceTree = "<group>"; };
 		BEAED9E327D36F7D00A98F3A /* IdFramePreferenceKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdFramePreferenceKey.swift; sourceTree = "<group>"; };
+		BEB8752827DA120300D60110 /* LocalFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileManager.swift; sourceTree = "<group>"; };
 		BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIconsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -160,7 +162,7 @@
 				BEAED9E227D36F5A00A98F3A /* PreferenceKeys */,
 				BEA7D9FD27C6DFE500DA81E6 /* Shapes */,
 				BE47195027D6CFCC004500F2 /* StoryViews */,
-				BE90CE0527D00BCD001EA0CA /* Camera */,
+				BE90CE0527D00BCD001EA0CA /* CameraViews */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -175,6 +177,7 @@
 				BE2C557127BFFE9D0087EE7F /* StoryView.swift */,
 				BE720F7A27BD10E800E862A5 /* ProgressBar */,
 				BE91AA5327BFD96700BB9846 /* StoryPortionView.swift */,
+				BE9336C327D22162009E5370 /* StoryPreview.swift */,
 			);
 			path = StoryViews;
 			sourceTree = "<group>";
@@ -236,15 +239,14 @@
 			path = External;
 			sourceTree = "<group>";
 		};
-		BE90CE0527D00BCD001EA0CA /* Camera */ = {
+		BE90CE0527D00BCD001EA0CA /* CameraViews */ = {
 			isa = PBXGroup;
 			children = (
 				BE90CE0127D00719001EA0CA /* StorySwiftyCamViewController.swift */,
 				BE90CDFF27D0060D001EA0CA /* StorySwiftyCamControllerRepresentable.swift */,
 				BE90CE0327D00A0E001EA0CA /* StoryCamView.swift */,
-				BE9336C327D22162009E5370 /* StoryPreview.swift */,
 			);
-			path = Camera;
+			path = CameraViews;
 			sourceTree = "<group>";
 		};
 		BE9336C827D24468009E5370 /* Helpers */ = {
@@ -252,6 +254,7 @@
 			children = (
 				BE9336C927D24491009E5370 /* ImageSaver.swift */,
 				BE9336CD27D2690E009E5370 /* VideoSaver.swift */,
+				BEB8752827DA120300D60110 /* LocalFileManager.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -391,6 +394,7 @@
 				BE90CE0427D00A0E001EA0CA /* StoryCamView.swift in Sources */,
 				BE090B6727B9568700B6F906 /* StoryIcon.swift in Sources */,
 				BE090B5827B9562B00B6F906 /* SimplifiedIgStoriesApp.swift in Sources */,
+				BEB8752927DA120300D60110 /* LocalFileManager.swift in Sources */,
 				BE8A758127BC107000E9F745 /* HomeView.swift in Sources */,
 				BE9336C227D21811009E5370 /* AVPlayerControllerRepresentable.swift in Sources */,
 				BE8C498F27C674FD000541E0 /* StoryContainer.swift in Sources */,

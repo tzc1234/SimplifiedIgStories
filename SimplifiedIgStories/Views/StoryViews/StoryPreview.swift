@@ -9,6 +9,8 @@ import SwiftUI
 import AVKit
 
 struct StoryPreview: View {
+    @EnvironmentObject private var vm: StoriesViewModel
+    
     @State private var isLoading = false
     @State private var showSaved = false
     @State private var showAlert = false
@@ -67,6 +69,7 @@ struct StoryPreview: View {
 struct StoryPreview_Previews: PreviewProvider {
     static var previews: some View {
         StoryPreview(backBtnAction: {})
+            .environmentObject(StoriesViewModel(dataService: MockDataService()))
     }
 }
 
@@ -137,7 +140,28 @@ extension StoryPreview {
     
     private var postBtn: some View {
         Button {
-            print("Post.")
+            guard let yourStoryIndex = vm.yourStoryIndex else { return }
+            var portions = vm.stories[yourStoryIndex].portions
+            
+            if let uiImage = uiImage,
+                let imageUrl = LocalFileManager.instance.saveImageToTemp(image: uiImage)
+            {
+                portions.append(
+                    Portion(id: vm.lastPortionId + 1, imageUrl: imageUrl)
+                )
+                vm.stories[yourStoryIndex].portions = portions
+                vm.stories[yourStoryIndex].lastUpdate = Date().timeIntervalSince1970
+            } else if let videoUrl = videoUrl {
+                let asset = AVAsset(url: videoUrl)
+                let duration = asset.duration
+                let durationSeconds = CMTimeGetSeconds(duration)
+                
+                portions.append(
+                    Portion(id: vm.lastPortionId + 1, videoDuration: durationSeconds, videoUrlFromCam: videoUrl)
+                )
+                vm.stories[yourStoryIndex].portions = portions
+                vm.stories[yourStoryIndex].lastUpdate = Date().timeIntervalSince1970
+            }
         } label: {
             Text("Post")
                 .font(.headline)

@@ -13,6 +13,9 @@ struct Portion: Codable, Identifiable {
     var videoName: String?
     var videoDuration: Double?
     
+    var imageUrl: URL?
+    var videoUrlFromCam: URL?
+    
     var videoUrl: URL? {
         guard let videoName = videoName else { return nil }
         guard let videoPath = Bundle.main.path(forResource: videoName, ofType: "mp4") else {

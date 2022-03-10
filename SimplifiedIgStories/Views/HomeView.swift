@@ -33,11 +33,11 @@ struct HomeView: View {
                 }
                 .coordinateSpace(name: Self.coordinateSpaceName)
                 .frame(width: width)
-                .environmentObject(vm)
                 
             }
             .offset(x: vm.showStoryCamView ? 0.0 : -width)
             .ignoresSafeArea()
+            .environmentObject(vm)
             .onAppear {
                 Self.topSpacing = geo.safeAreaInsets.top > 20.0 ? geo.safeAreaInsets.top : 0.0
             }

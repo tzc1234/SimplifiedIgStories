@@ -13,16 +13,12 @@ import AVKit
 struct StoryPortionView: View {
     @State private var player: AVPlayer?
     
-    let portionId: Int
+    let portion: Portion
     @ObservedObject private var storyViewModel: StoryViewModel
-    let photoName: String?
-    let videoUrl: URL?
     
-    init(portionId: Int, storyViewModel: StoryViewModel, photoName: String?, videoUrl: URL?) {
-        self.portionId = portionId
+    init(portion: Portion, storyViewModel: StoryViewModel) {
+        self.portion = portion
         self.storyViewModel = storyViewModel
-        self.photoName = photoName
-        self.videoUrl = videoUrl
     }
     
     var body: some View {
@@ -32,11 +28,11 @@ struct StoryPortionView: View {
             videoView
         }
         .onAppear {
-            if let videoUrl = videoUrl {
+            if let videoUrl = portion.videoUrl ?? portion.videoUrlFromCam {
                 player = AVPlayer(url: videoUrl)
             }
         }
-        .onChange(of: storyViewModel.barPortionAnimationStatuses[portionId]) { animationStatus in
+        .onChange(of: storyViewModel.barPortionAnimationStatuses[portion.id]) { animationStatus in
             guard let player = player else { return }
             guard let animationStatus = animationStatus else { return }
             
@@ -65,10 +61,8 @@ struct StoryPortionView_Previews: PreviewProvider {
         let story = storiesViewModel.atLeastOnePortionStories[1]
         let portion = story.portions[0]
         StoryPortionView(
-            portionId: portion.id,
-            storyViewModel: storiesViewModel.getStoryViewModelBy(story: story),
-            photoName: "sea1",
-            videoUrl: nil
+            portion: portion,
+            storyViewModel: storiesViewModel.getStoryViewModelBy(story: story)
         )
     }
 }
@@ -76,20 +70,18 @@ struct StoryPortionView_Previews: PreviewProvider {
 // MARK: components
 extension StoryPortionView {
     @ViewBuilder private var photoView: some View {
-        if let photoName = photoName {
-            GeometryReader { geo in
-                Image(photoName)
-                    .resizable()
-                    .scaledToFill()
-                    .ignoresSafeArea()
-                    .overlay(.ultraThinMaterial)
-                    .clipShape(Rectangle())
-            }
-            
-            Image(photoName)
+        GeometryReader { geo in
+            getImage()?
                 .resizable()
-                .scaledToFit()
+                .scaledToFill()
+                .ignoresSafeArea()
+                .overlay(.ultraThinMaterial)
+                .clipShape(Rectangle())
         }
+        
+        getImage()?
+            .resizable()
+            .scaledToFit()
     }
     
     @ViewBuilder private var videoView: some View {
@@ -99,5 +91,18 @@ extension StoryPortionView {
                 player: $player
             )
         }
+    }
+}
+
+// MARK: functions
+extension StoryPortionView {
+    private func getImage() -> Image? {
+        if let imageName = portion.imageName {
+            return Image(imageName)
+        } else if let imageUrl = portion.imageUrl,
+                  let uiImage = LocalFileManager.instance.getImageBy(url: imageUrl) {
+            return Image(uiImage: uiImage)
+        }
+        return nil
     }
 }
