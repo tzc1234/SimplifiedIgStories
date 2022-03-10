@@ -102,10 +102,6 @@ extension StoriesViewModel {
             withAnimation(.easeInOut(duration: animationDuration)) { [weak self] in
                 self?.showContainer.toggle()
             }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration + 0.1) { [weak self] in
-                self?.shouldAnimateCubicRotation = true
-            }
         }
     }
     

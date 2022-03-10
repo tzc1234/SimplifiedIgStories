@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct HomeView: View {
-    static let coordinateSpaceName = "Home"
     static var topSpacing = 0.0
     
     @StateObject private var vm = StoriesViewModel()
     
     private let titleHeight = 44.0
-    private let width = UIScreen.main.bounds.width
+    private let screenWidth = UIScreen.main.bounds.width
+    private let screenHeight = UIScreen.main.bounds.height
     
     var body: some View {
         GeometryReader { geo in
@@ -31,11 +31,10 @@ struct HomeView: View {
                     
                     storyContainer(geo: geo)
                 }
-                .coordinateSpace(name: Self.coordinateSpaceName)
-                .frame(width: width)
+                .frame(width: screenWidth)
                 
             }
-            .offset(x: vm.showStoryCamView ? 0.0 : -width)
+            .offset(x: vm.showStoryCamView ? 0.0 : -screenWidth)
             .ignoresSafeArea()
             .environmentObject(vm)
             .onAppear {
@@ -63,7 +62,7 @@ extension HomeView {
                 StoryCamView(onCloseAction: vm.toggleStoryCamView)
             }
         }
-        .frame(width: width)
+        .frame(width: screenWidth)
     }
     
     private var titleView: some View {
@@ -76,15 +75,14 @@ extension HomeView {
     
     @ViewBuilder private func storyContainer(geo: GeometryProxy) -> some View {
         if vm.showContainer {
-            let currentTopSpacing = geo.safeAreaInsets.top == 0 ? 0 : titleHeight / 2 + geo.safeAreaInsets.top / 2
-            let offset = CGSize(
-                width: -(geo.size.width / 2 - vm.currentStoryIconFrame.midX + StoryIconsView.spacing / 2),
-                height: -(geo.size.height / 2 - vm.currentStoryIconFrame.midY + currentTopSpacing)
-            )
+            let frame = vm.currentStoryIconFrame
+            let scale = frame.height / screenHeight
+            let offsetX = -(geo.size.width / 2 - vm.currentStoryIconFrame.midX)
+            let offsetY = frame.origin.y
             
             StoryContainer()
                 .zIndex(1)
-                .transition(.iOSNativeOpenAppTransition(offest: offset))
+                .transition(.iOSOpenAppTransition(sacle: scale, offestX: offsetX, offsetY: offsetY))
         }
     }
 }

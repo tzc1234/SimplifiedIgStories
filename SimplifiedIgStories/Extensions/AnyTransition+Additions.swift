@@ -9,9 +9,9 @@ import Foundation
 import SwiftUI
 
 extension AnyTransition {
-    static func iOSNativeOpenAppTransition(offest: CGSize) -> AnyTransition {
-        scale(scale: 0.08)
-            .combined(with: .offset(offest))
+    static func iOSOpenAppTransition(sacle: Double, offestX: CGFloat, offsetY: CGFloat) -> AnyTransition {
+        scale(scale: sacle, anchor: .top)
+            .combined(with: .offset(x: offestX, y: offsetY))
             .combined(with: .opacity)
     }
 }

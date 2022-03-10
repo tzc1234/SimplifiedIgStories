@@ -30,10 +30,15 @@ struct StoryContainer: View {
                             anchorZ: 0.0,
                             perspective: 2.5
                         )
+                        .preference(key: FramePreferenceKey.self, value: frame)
                 }
                 .frame(width: screenWidth, height: screenHeight)
                 .ignoresSafeArea()
                 .opacity(story.id != vm.currentStoryId && !vm.shouldAnimateCubicRotation ? 0.0 : 1.0)
+                .onPreferenceChange(FramePreferenceKey.self) { frame in
+                    vm.shouldAnimateCubicRotation = frame.height == screenHeight
+                }
+                
             }
         }
         .frame(width: screenWidth, alignment: .leading)

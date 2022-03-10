@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct StoryIconsView: View {
-    static let spacing: Double = 8.0
+    let spacing: Double = 8.0
     
     let stories: [Story]
     let onTapAction: ((_ storyId: Int) -> Void)
@@ -16,7 +16,7 @@ struct StoryIconsView: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(alignment: .center, spacing: 0) {
-                Spacer(minLength: Self.spacing)
+                Spacer(minLength: spacing)
                 
                 ForEach(stories) { story in
                     StoryIconTitleView(
@@ -26,7 +26,7 @@ struct StoryIconsView: View {
                     .frame(width: 90, height: 100)
                     .padding(.vertical, 6)
                     
-                    Spacer(minLength: Self.spacing)
+                    Spacer(minLength: spacing)
                 }
             }
         }

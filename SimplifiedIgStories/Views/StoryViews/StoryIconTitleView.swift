@@ -8,18 +8,20 @@
 import SwiftUI
 
 struct StoryIconTitleView: View {
+    static let vStackSpacing = 4.0
+    
     @Environment(\.colorScheme) var colorScheme
     
     let story: Story
     let onTapAction: ((_ storyId: Int) -> Void)?
     
     var body: some View {
-        VStack(alignment: .center, spacing: 4) {
+        VStack(alignment: .center, spacing: Self.vStackSpacing) {
             GeometryReader { geo in
                 StoryIcon(story: story, onTapAction: onTapAction)
                     .preference(
                         key: IdFramePreferenceKey.self,
-                        value: [story.id: geo.frame(in: .named(HomeView.coordinateSpaceName))]
+                        value: [story.id: geo.frame(in: .global)]
                     )
             }
             
