@@ -11,11 +11,18 @@ struct StoryIconTitleView: View {
     @Environment(\.colorScheme) var colorScheme
     
     let story: Story
-    let onTapAction: ((_ storyId: Int) -> Void)
+    let onTapAction: ((_ storyId: Int) -> Void)?
     
     var body: some View {
         VStack(alignment: .center, spacing: 4) {
-            StoryIcon(story: story, onTapAction: onTapAction)
+            GeometryReader { geo in
+                StoryIcon(story: story, onTapAction: onTapAction)
+                    .preference(
+                        key: IdFramePreferenceKey.self,
+                        value: [story.id: geo.frame(in: .named(HomeView.coordinateSpaceName))]
+                    )
+            }
+            
             titleText
         }
     }

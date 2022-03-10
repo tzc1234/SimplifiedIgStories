@@ -9,13 +9,11 @@ import SwiftUI
 
 struct StoryView: View {
     let story: Story
-    @ObservedObject private var storyViewModel: StoryViewModel
-    let closeAction: (() -> Void)?
+    @ObservedObject private var vm: StoryViewModel
     
-    init(story: Story, storyViewModel: StoryViewModel, closeAction: (() -> Void)? = nil) {
+    init(story: Story, storyViewModel: StoryViewModel) {
         self.story = story
-        self.storyViewModel = storyViewModel
-        self.closeAction = closeAction
+        self.vm = storyViewModel
     }
     
     var body: some View {
@@ -23,13 +21,13 @@ struct StoryView: View {
             storyPortionViews
             
             DetectableTapGesturePositionView(
-                tapCallback: storyViewModel.decidePortionTransitionDirectionBy(point:)
+                tapCallback: vm.decidePortionTransitionDirectionBy(point:)
             )
             
             VStack(alignment: .leading) {
                 Color.clear.frame(height: HomeView.topSpacing)
                 
-                ProgressBar(story: story, storyViewModel: storyViewModel)
+                ProgressBar(story: story, storyViewModel: vm)
                     .frame(height: 2.0, alignment: .center)
                     .padding(.top, 8.0)
                 
@@ -47,7 +45,7 @@ struct StoryView: View {
         }
         .clipShape(Rectangle())
         .onAppear {
-            storyViewModel.initAnimation(story: story)
+            vm.initAnimation(story: story)
         }
         
     }
@@ -62,6 +60,7 @@ struct StoryView_Previews: PreviewProvider {
             story: story,
             storyViewModel: storiesViewModel.getStoryViewModelBy(story: story)
         )
+            .environmentObject(storiesViewModel)
     }
 }
 
@@ -71,10 +70,10 @@ extension StoryView {
     private var storyPortionViews: some View {
         ZStack(alignment: .top) {
             ForEach(story.portions) { portion in
-                if portion.id == storyViewModel.currentStoryPortionId {
+                if portion.id == vm.currentStoryPortionId {
                     StoryPortionView(
                         portion: portion,
-                        storyViewModel: storyViewModel
+                        storyViewModel: vm
                     )
                 }
             }
@@ -82,9 +81,18 @@ extension StoryView {
     }
     
     private var avatarIcon: some View {
-        Image(story.user.avatar)
-            .resizable()
-            .scaledToFill()
+        var onTapAction: ((Int) -> Void)?
+        if story.user.isCurrentUser {
+            onTapAction = { _ in
+                vm.storiesViewModel.closeStoryContainer()
+                DispatchQueue.main.asyncAfter(
+                    deadline: .now() + 0.3,
+                    execute: vm.storiesViewModel.toggleStoryCamView
+                )
+            }
+        }
+        
+        return StoryIcon(story: story, onTapAction: onTapAction)
             .frame(width: 40.0, height: 40.0)
             .clipShape(Circle())
             .overlay(Circle().strokeBorder(.white, lineWidth: 1))
@@ -105,9 +113,7 @@ extension StoryView {
     }
     
     private var closeButton: some View {
-        Button {
-            closeAction?()
-        } label: {
+        Button(action: vm.storiesViewModel.closeStoryContainer) {
             ZStack {
                 // Increase close button tap area.
                 Color.clear.frame(width: 45.0, height: 45.0)

@@ -21,7 +21,7 @@ struct StoryContainer: View {
             ForEach(vm.atLeastOnePortionStories) { story in
                 GeometryReader { geo in
                     let frame = geo.frame(in: .global)
-                    StoryView(story: story, storyViewModel: vm.getStoryViewModelBy(story: story), closeAction: vm.closeStoryContainer)
+                    StoryView(story: story, storyViewModel: vm.getStoryViewModelBy(story: story))
                     // Cubic transition reference: https://www.youtube.com/watch?v=NTun83toSQQ&ab_channel=Kavsoft
                         .rotation3DEffect(
                             vm.shouldAnimateCubicRotation ? .degrees(getRotationDegree(offsetX: frame.minX)) : .degrees(0),

@@ -85,7 +85,10 @@ extension StoriesViewModel {
     }
     
     func getContainerOffset(width: CGFloat) -> CGFloat {
-        guard let index = atLeastOnePortionStories.firstIndex(where: { $0.id == currentStoryId }) else {
+        guard
+            let index =
+                atLeastOnePortionStories.firstIndex(where: { $0.id == currentStoryId })
+        else {
             return 0.0
         }
         return -CGFloat(index) * width
@@ -141,7 +144,10 @@ extension StoriesViewModel {
             (currentStoryId == lastStoryIdDisplayedByContainer && offset < -0.2) {
             closeStoryContainer()
         } else { // Go to previous or next.
-            guard let currentStoryIndex = atLeastOnePortionStories.firstIndex(where: { $0.id == currentStoryId }) else {
+            guard
+                let currentStoryIndex =
+                    atLeastOnePortionStories.firstIndex(where: { $0.id == currentStoryId })
+            else {
                 return
             }
             

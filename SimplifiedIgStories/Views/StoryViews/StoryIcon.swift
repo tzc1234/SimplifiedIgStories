@@ -17,38 +17,34 @@ struct StoryIcon: View {
     let animationDuration = 1.0
     
     let story: Story
-    let onTapAction: ((_ storyId: Int) -> Void)
+    let onTapAction: ((_ storyId: Int) -> Void)?
     
-    init(story: Story, onTapAction: @escaping ((_ storyId: Int) -> Void)) {
+    init(story: Story, onTapAction: ((_ storyId: Int) -> Void)? = nil) {
         self.story = story
         self.onTapAction = onTapAction
     }
     
     var body: some View {
-        GeometryReader { geo in
-            ZStack {
-                arc
-                avatarImage
-                plusIcon
-            }
-            .scaledToFit()
-            .scaleEffect(isOnTap ? 1.1 : 1.0)
-            .frame(maxWidth: .infinity)
-            .preference(
-                key: IdFramePreferenceKey.self,
-                value: [story.id: geo.frame(in: .named(HomeView.coordinateSpaceName))]
-            )
-            .onChange(of: tracingEndAngle.currentEndAngle) { newValue in
-                if newValue == 360.0 { resetStrokeAnimationAfterCompletion() }
-            }
-            .onTapGesture {
-                withAnimation(.spring()) {
-                    isOnTap.toggle()
-                }
-                
-                onTapAction(story.id)
+        ZStack {
+            arc
+            avatarImage
+            plusIcon
+        }
+        .scaledToFit()
+        .scaleEffect(isOnTap ? 1.1 : 1.0)
+        .frame(maxWidth: .infinity)
+        .onChange(of: tracingEndAngle.currentEndAngle) { newValue in
+            if newValue == 360.0 { resetStrokeAnimationAfterCompletion() }
+        }
+        .onTapGesture {
+            guard let onTapAction = onTapAction else { return }
+            
+            withAnimation(.spring()) {
                 isOnTap.toggle()
             }
+            
+            onTapAction(story.id)
+            isOnTap.toggle()
         }
     }
     
@@ -57,7 +53,7 @@ struct StoryIcon: View {
 struct StoryIcon_Previews: PreviewProvider {
     static var previews: some View {
         let vm = StoriesViewModel(dataService: MockDataService())
-        StoryIcon(story: vm.stories[0], onTapAction: {_ in})
+        StoryIcon(story: vm.stories[0])
     }
 }
 
