@@ -53,11 +53,6 @@ struct StoryView: View {
                     .padding([.bottom, .horizontal])
                     
                 }
-                .cubicTransition(
-                    shouldRotate: vm.storiesViewModel.shouldAnimateCubicRotation,
-                    offsetX: geo.frame(in: .global).minX
-                )
-                
             }
             .background(
                 Group {
@@ -69,17 +64,17 @@ struct StoryView: View {
                             vm.storiesViewModel.shouldAnimateCubicRotation =
                             preferenceFrame.width == UIScreen.main.bounds.width
                         }
-                        .cubicTransition(
-                            shouldRotate: vm.storiesViewModel.shouldAnimateCubicRotation,
-                            offsetX: frame.minX
-                        )
-                        .ignoresSafeArea()
                 }
             )
             .onAppear {
                 vm.initAnimation(story: story)
                 print(geo.safeAreaInsets)
             }
+            .cubicTransition(
+                shouldRotate: vm.storiesViewModel.shouldAnimateCubicRotation,
+                offsetX: geo.frame(in: .global).minX
+            )
+            
         }
     }
 }

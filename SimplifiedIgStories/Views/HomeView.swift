@@ -15,7 +15,6 @@ struct HomeView: View {
     private let screenWidth = UIScreen.main.bounds.width
     private let screenHeight = UIScreen.main.bounds.height
     
-    
     var body: some View {
         GeometryReader { geo in
             HStack(alignment: .center, spacing: 0.0) {
