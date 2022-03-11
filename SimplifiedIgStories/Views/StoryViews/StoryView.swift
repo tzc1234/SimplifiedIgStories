@@ -19,10 +19,6 @@ struct StoryView: View {
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                DetectableTapGesturePositionView(
-                    tapCallback: vm.decidePortionTransitionDirectionBy(point:)
-                )
-                
                 VStack(alignment: .leading) {
                     ProgressBar(story: story, storyViewModel: vm)
                         .frame(height: 2.0, alignment: .center)
@@ -39,6 +35,12 @@ struct StoryView: View {
                     
                     Spacer()
                     
+                    DetectableTapGesturePositionView(
+                        tapCallback: vm.decidePortionTransitionDirectionBy(point:)
+                    )
+                    
+                    Spacer()
+                    
                     Button {
                         print("more.")
                     } label: {
@@ -49,7 +51,13 @@ struct StoryView: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .padding([.bottom, .horizontal])
+                    
                 }
+                .cubicTransition(
+                    shouldRotate: vm.storiesViewModel.shouldAnimateCubicRotation,
+                    offsetX: geo.frame(in: .global).minX
+                )
+                
             }
             .background(
                 Group {
@@ -57,17 +65,14 @@ struct StoryView: View {
                     storyPortionViews
                         .clipShape(Rectangle())
                         .preference(key: FramePreferenceKey.self, value: frame)
-                        // Cubic transition reference: https://www.youtube.com/watch?v=NTun83toSQQ&ab_channel=Kavsoft
-                        .rotation3DEffect(
-                            vm.storiesViewModel.shouldAnimateCubicRotation ? .degrees(getRotationDegree(offsetX: frame.minX)) : .degrees(0),
-                            axis: (x: 0.0, y: 1.0, z: 0.0),
-                            anchor: frame.minX > 0 ? .leading : .trailing,
-                            anchorZ: 0.0,
-                            perspective: 2.5
-                        )
-                        .onPreferenceChange(FramePreferenceKey.self) { prederenceFrame in
-                            vm.storiesViewModel.shouldAnimateCubicRotation = prederenceFrame.height == frame.height
+                        .onPreferenceChange(FramePreferenceKey.self) { preferenceFrame in
+                            vm.storiesViewModel.shouldAnimateCubicRotation =
+                            preferenceFrame.width == UIScreen.main.bounds.width
                         }
+                        .cubicTransition(
+                            shouldRotate: vm.storiesViewModel.shouldAnimateCubicRotation,
+                            offsetX: frame.minX
+                        )
                         .ignoresSafeArea()
                 }
             )
@@ -75,19 +80,8 @@ struct StoryView: View {
                 vm.initAnimation(story: story)
                 print(geo.safeAreaInsets)
             }
-            
         }
-        
-        
-        
     }
-    
-    private func getRotationDegree(offsetX: CGFloat) -> Double {
-        let tempAngle = offsetX / (UIScreen.main.bounds.width / 2)
-        let rotationDegree = 20.0
-        return tempAngle * rotationDegree
-    }
-    
 }
 
 struct StoryView_Previews: PreviewProvider {

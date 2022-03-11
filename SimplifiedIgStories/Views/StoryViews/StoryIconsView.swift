@@ -26,7 +26,6 @@ struct StoryIconsView: View {
                         onTapAction: onTapAction
                     )
                     .frame(width: 80, height: 90)
-                    .padding(.vertical, 6)
                     
                     Spacer(minLength: spacing)
                 }

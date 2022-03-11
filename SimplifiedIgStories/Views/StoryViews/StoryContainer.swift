@@ -13,7 +13,6 @@ struct StoryContainer: View {
     @GestureState private var translation: CGFloat = 0
     
     private let screenWidth = UIScreen.main.bounds.width
-//    private let screenHeight = UIScreen.main.bounds.height
     
     var body: some View {
         GeometryReader { geo in
@@ -53,16 +52,6 @@ struct StoryContainer: View {
 
 struct StoryContainer_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = StoriesViewModel()
-        StoryContainer().environmentObject(vm)
-    }
-}
-
-// MARK: functions
-extension StoryContainer {
-    private func getRotationDegree(offsetX: CGFloat) -> Double {
-        let tempAngle = offsetX / (screenWidth / 2)
-        let rotationDegree = 20.0
-        return tempAngle * rotationDegree
+        StoryContainer().environmentObject(StoriesViewModel())
     }
 }

@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct HomeView: View {
-    static var topSpacing = 0.0
-    
     @StateObject private var vm = StoriesViewModel()
+    @Namespace private var namespace
     
     private let titleHeight = 44.0
     private let screenWidth = UIScreen.main.bounds.width
     private let screenHeight = UIScreen.main.bounds.height
+    
     
     var body: some View {
         GeometryReader { geo in
@@ -35,9 +35,6 @@ struct HomeView: View {
             }
             .offset(x: vm.showStoryCamView ? 0.0 : -screenWidth)
             .environmentObject(vm)
-            .onAppear {
-                Self.topSpacing = geo.safeAreaInsets.top > 20.0 ? geo.safeAreaInsets.top : 0.0
-            }
             .onPreferenceChange(IdFramePreferenceKey.self) { idFrameDict in
                 vm.storyIconFrames = idFrameDict
             }
@@ -73,15 +70,15 @@ extension HomeView {
     }
     
     @ViewBuilder private func storyContainer(geo: GeometryProxy) -> some View {
+        let frame = vm.currentStoryIconFrame
+        let offsetX = -(geo.size.width / 2 - frame.midX)
+        let offsetY = titleHeight + ((frame.height - frame.width / 1.5) / 2.0)
+        
         if vm.showContainer {
-            let frame = vm.currentStoryIconFrame
-            let scale = frame.height / screenHeight
-            let offsetX = -(geo.size.width / 2 - vm.currentStoryIconFrame.midX)
-            let offsetY = frame.origin.y
-            
             StoryContainer()
-                .zIndex(1)
-                .transition(.iOSOpenAppTransition(sacle: scale, offestX: offsetX, offsetY: offsetY))
+                .zIndex(1.0)
+                .frame(maxHeight: .infinity, alignment: .top)
+                .openAppLikeTransition(sacle: frame.height / screenHeight, offestX: offsetX, offsetY: offsetY)
         }
     }
 }

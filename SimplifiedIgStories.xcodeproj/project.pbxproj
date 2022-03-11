@@ -18,6 +18,7 @@
 		BE84C2CA27C78E5400C42165 /* AnyTransition+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE84C2C927C78E5400C42165 /* AnyTransition+Additions.swift */; };
 		BE8A758127BC107000E9F745 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8A758027BC106F00E9F745 /* HomeView.swift */; };
 		BE8AEF9027DB9D5800D7EAA1 /* VerticalLabelStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8AEF8F27DB9D5800D7EAA1 /* VerticalLabelStyle.swift */; };
+		BE8AEF9327DBDE8100D7EAA1 /* CubicTransitionModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8AEF9227DBDE8100D7EAA1 /* CubicTransitionModifier.swift */; };
 		BE8B973827DAAC6600A59292 /* FramePreferenceKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8B973727DAAC6600A59292 /* FramePreferenceKey.swift */; };
 		BE8C498D27C62B3C000541E0 /* StoryIconTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8C498C27C62B3C000541E0 /* StoryIconTitleView.swift */; };
 		BE8C498F27C674FD000541E0 /* StoryContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8C498E27C674FD000541E0 /* StoryContainer.swift */; };
@@ -68,6 +69,7 @@
 		BE84C2C927C78E5400C42165 /* AnyTransition+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnyTransition+Additions.swift"; sourceTree = "<group>"; };
 		BE8A758027BC106F00E9F745 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		BE8AEF8F27DB9D5800D7EAA1 /* VerticalLabelStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalLabelStyle.swift; sourceTree = "<group>"; };
+		BE8AEF9227DBDE8100D7EAA1 /* CubicTransitionModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CubicTransitionModifier.swift; sourceTree = "<group>"; };
 		BE8B973727DAAC6600A59292 /* FramePreferenceKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FramePreferenceKey.swift; sourceTree = "<group>"; };
 		BE8C498C27C62B3C000541E0 /* StoryIconTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIconTitleView.swift; sourceTree = "<group>"; };
 		BE8C498E27C674FD000541E0 /* StoryContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContainer.swift; sourceTree = "<group>"; };
@@ -163,9 +165,6 @@
 			children = (
 				BE8A758027BC106F00E9F745 /* HomeView.swift */,
 				BE8F57FE27D60E2A00F9DB92 /* Helpers */,
-				BE8AEF8E27DB9D3000D7EAA1 /* LabelStyles */,
-				BEAED9E227D36F5A00A98F3A /* PreferenceKeys */,
-				BEA7D9FD27C6DFE500DA81E6 /* Shapes */,
 				BE47195027D6CFCC004500F2 /* StoryViews */,
 				BE90CE0527D00BCD001EA0CA /* CameraViews */,
 			);
@@ -204,6 +203,14 @@
 			path = LabelStyles;
 			sourceTree = "<group>";
 		};
+		BE8AEF9127DBDE0E00D7EAA1 /* ViewModifiers */ = {
+			isa = PBXGroup;
+			children = (
+				BE8AEF9227DBDE8100D7EAA1 /* CubicTransitionModifier.swift */,
+			);
+			path = ViewModifiers;
+			sourceTree = "<group>";
+		};
 		BE8F57FE27D60E2A00F9DB92 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
@@ -211,6 +218,10 @@
 				BE9336C127D21811009E5370 /* AVPlayerControllerRepresentable.swift */,
 				BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */,
 				BEA8E50E27D0CFD200640B19 /* VideoRecordButton.swift */,
+				BE8AEF9127DBDE0E00D7EAA1 /* ViewModifiers */,
+				BE8AEF8E27DB9D3000D7EAA1 /* LabelStyles */,
+				BEAED9E227D36F5A00A98F3A /* PreferenceKeys */,
+				BEA7D9FD27C6DFE500DA81E6 /* Shapes */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -420,6 +431,7 @@
 				BE9336CA27D24491009E5370 /* ImageSaver.swift in Sources */,
 				BE2C557427C0197B0087EE7F /* DetectableTapGesturePositionView.swift in Sources */,
 				BEAED9E427D36F7D00A98F3A /* IdFramePreferenceKey.swift in Sources */,
+				BE8AEF9327DBDE8100D7EAA1 /* CubicTransitionModifier.swift in Sources */,
 				BEA901D427BC716E00E3362D /* ProgressBarPortion.swift in Sources */,
 				BE90CE0227D00719001EA0CA /* StorySwiftyCamViewController.swift in Sources */,
 				BE84C2CA27C78E5400C42165 /* AnyTransition+Additions.swift in Sources */,
