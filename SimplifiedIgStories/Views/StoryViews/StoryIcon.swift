@@ -13,14 +13,31 @@ struct StoryIcon: View {
     
     @State private var isAnimating = false
     @State private var isOnTap = false
+    @State private var arcId = 0
     
     let animationDuration = 1.0
     
+    enum PlusIconStyle {
+        case background, white
+    }
+    
     let story: Story
+    let showPlusIcon: Bool
+    let plusIconBgColor: Color
+    let showStroke: Bool
     let onTapAction: ((_ storyId: Int) -> Void)?
     
-    init(story: Story, onTapAction: ((_ storyId: Int) -> Void)? = nil) {
+    init(
+        story: Story,
+        showPlusIcon: Bool = false,
+        plusIconBgColor: Color = .background,
+        showStroke: Bool = true,
+        onTapAction: ((_ storyId: Int) -> Void)? = nil
+    ) {
         self.story = story
+        self.showPlusIcon = showPlusIcon
+        self.plusIconBgColor = plusIconBgColor
+        self.showStroke = showStroke
         self.onTapAction = onTapAction
     }
     
@@ -52,23 +69,25 @@ struct StoryIcon: View {
 
 struct StoryIcon_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = StoriesViewModel(dataService: MockDataService())
-        StoryIcon(story: vm.stories[0])
+        StoryIcon(story: StoriesViewModel().stories[0])
     }
 }
 
 // MARK: components
 extension StoryIcon {
-   private var arc: some View {
-        TraceableArc(startAngle: 0, endAngle: endAngle, clockwise: true, traceEndAngle: tracingEndAngle)
-            .strokeBorder(
-                .linearGradient(
-                    colors: [.red, .orange],
-                    startPoint: .topTrailing,
-                    endPoint: .bottomLeading
-                ),
-                lineWidth: 10.0, antialiased: true
-            )
+   @ViewBuilder private var arc: some View {
+       if showStroke {
+           TraceableArc(startAngle: 0, endAngle: endAngle, clockwise: true, traceEndAngle: tracingEndAngle)
+               .strokeBorder(
+                   .linearGradient(
+                       colors: [.red, .orange],
+                       startPoint: .topTrailing,
+                       endPoint: .bottomLeading
+                   ),
+                   lineWidth: 10.0, antialiased: true
+               )
+               .id(arcId)
+       }
     }
     
     private var avatarImage: some View {
@@ -79,15 +98,24 @@ extension StoryIcon {
                 .clipShape(Circle())
                 .frame(width: geo.size.width, height: geo.size.width, alignment: .center)
                 .scaleEffect(0.9)
-                .background(Circle().fill(.background).scaleEffect(0.95))
+                .background(
+                    Group {
+                        if showStroke {
+                            Circle().fill(.background).scaleEffect(0.95)
+                        }
+                    }
+                )
         }
     }
     
     @ViewBuilder private var plusIcon: some View {
-        if story.user.isCurrentUser && story.portions.count == 0 {
+        if showPlusIcon {
             Circle().fill(.blue)
                 .scaledToFit()
-                .background(Circle().fill(.background).scaleEffect(1.3))
+                .background(
+                    Circle()
+                        .fill(plusIconBgColor)
+                        .scaleEffect(1.3))
                 .overlay(
                     Image(systemName: "plus")
                         .resizable()
@@ -131,5 +159,10 @@ extension StoryIcon {
         // reset currentEndAngle to 0 after finishing animation
         tracingEndAngle.currentEndAngle = 0
         isAnimating = false
+    }
+    
+    private func resetAnimation() {
+        arcId = arcId == 0 ? 1 : 0
+        tracingEndAngle.currentEndAngle = 0
     }
 }

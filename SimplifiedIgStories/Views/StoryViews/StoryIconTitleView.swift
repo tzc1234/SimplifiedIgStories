@@ -13,12 +13,21 @@ struct StoryIconTitleView: View {
     @Environment(\.colorScheme) var colorScheme
     
     let story: Story
+    let showPlusIcon: Bool
+    let showStroke: Bool
     let onTapAction: ((_ storyId: Int) -> Void)?
+    
+    init(story: Story, showPlusIcon: Bool = false, showStroke: Bool = true, onTapAction: ((_ storyId: Int) -> Void)? = nil) {
+        self.story = story
+        self.showPlusIcon = showPlusIcon
+        self.showStroke = showStroke
+        self.onTapAction = onTapAction
+    }
     
     var body: some View {
         VStack(alignment: .center, spacing: Self.vStackSpacing) {
             GeometryReader { geo in
-                StoryIcon(story: story, onTapAction: onTapAction)
+                StoryIcon(story: story, showPlusIcon: showPlusIcon, showStroke: showStroke, onTapAction: onTapAction)
                     .preference(
                         key: IdFramePreferenceKey.self,
                         value: [story.id: geo.frame(in: .global)]
@@ -32,8 +41,7 @@ struct StoryIconTitleView: View {
 
 struct StoryIconTitleView_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = StoriesViewModel(dataService: MockDataService())
-        StoryIconTitleView(story: vm.stories[0], onTapAction: {_ in})
+        StoryIconTitleView(story: StoriesViewModel().stories[0])
     }
 }
 

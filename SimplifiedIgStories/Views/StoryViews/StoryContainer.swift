@@ -67,7 +67,7 @@ struct StoryContainer: View {
 
 struct StoryContainer_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = StoriesViewModel(dataService: MockDataService())
+        let vm = StoriesViewModel()
         StoryContainer().environmentObject(vm)
     }
 }

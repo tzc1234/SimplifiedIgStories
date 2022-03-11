@@ -55,7 +55,7 @@ struct ProgressBar: View {
 
 struct ProgressBar_Previews: PreviewProvider {
     static var previews: some View {
-        let storiesViewModel = StoriesViewModel(dataService: MockDataService())
+        let storiesViewModel = StoriesViewModel()
         let story = storiesViewModel.stories[1]
         ProgressBar(story: story, storyViewModel: storiesViewModel.getStoryViewModelBy(story: story))
             .environmentObject(storiesViewModel)

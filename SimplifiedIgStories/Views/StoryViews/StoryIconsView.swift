@@ -21,9 +21,11 @@ struct StoryIconsView: View {
                 ForEach(stories) { story in
                     StoryIconTitleView(
                         story: story,
+                        showPlusIcon: story.user.isCurrentUser && !story.hasPortion,
+                        showStroke: story.hasPortion,
                         onTapAction: onTapAction
                     )
-                    .frame(width: 90, height: 100)
+                    .frame(width: 80, height: 90)
                     .padding(.vertical, 6)
                     
                     Spacer(minLength: spacing)
@@ -37,7 +39,6 @@ struct StoryIconsView: View {
 
 struct StoryIconsView_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = StoriesViewModel(dataService: MockDataService())
-        StoryIconsView(stories: vm.stories, onTapAction: {_ in})
+        StoryIconsView(stories: StoriesViewModel().stories, onTapAction: {_ in})
     }
 }

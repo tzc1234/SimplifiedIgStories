@@ -54,7 +54,7 @@ struct StoryView: View {
 
 struct StoryView_Previews: PreviewProvider {
     static var previews: some View {
-        let storiesViewModel = StoriesViewModel(dataService: MockDataService())
+        let storiesViewModel = StoriesViewModel()
         let story = storiesViewModel.atLeastOnePortionStories[0]
         StoryView(
             story: story,
@@ -92,10 +92,14 @@ extension StoryView {
             }
         }
         
-        return StoryIcon(story: story, onTapAction: onTapAction)
+        return StoryIcon(
+            story: story,
+            showPlusIcon: story.user.isCurrentUser,
+            plusIconBgColor: .white,
+            showStroke: false,
+            onTapAction: onTapAction
+        )
             .frame(width: 40.0, height: 40.0)
-            .clipShape(Circle())
-            .overlay(Circle().strokeBorder(.white, lineWidth: 1))
     }
     
     private var nameText: some View {

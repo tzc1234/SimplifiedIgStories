@@ -69,7 +69,7 @@ struct StoryPreview: View {
 struct StoryPreview_Previews: PreviewProvider {
     static var previews: some View {
         StoryPreview(backBtnAction: {})
-            .environmentObject(StoriesViewModel(dataService: MockDataService()))
+            .environmentObject(StoriesViewModel())
     }
 }
 

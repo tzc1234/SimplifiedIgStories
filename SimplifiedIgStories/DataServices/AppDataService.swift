@@ -19,14 +19,6 @@ final class AppDataService: DataService {
     }
 }
 
-// For preview usage.
-final class MockDataService: DataService {
-    func loadStories() -> [Story] {
-        let stories: [Story] = load("storiesData.json")
-        return stories
-    }
-}
-
 func load<T: Decodable>(_ filename: String) -> T {
     let data: Data
     

@@ -12,4 +12,8 @@ extension Color {
     static var darkGray: Color {
         Color(uiColor: .darkGray)
     }
+    
+    static var background: Color {
+        Color(UIColor.systemBackground)
+    }
 }

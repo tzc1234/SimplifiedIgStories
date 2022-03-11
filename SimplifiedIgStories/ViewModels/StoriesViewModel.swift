@@ -109,7 +109,6 @@ extension StoriesViewModel {
         // Don't use .spring(). If you switch the StoryContainer fast from one, close then open another,
         // there will be a weird behaviour. The StoryView can not be updated completely and broken.
         withAnimation(.easeInOut(duration: 0.3)) { showContainer.toggle() }
-        shouldAnimateCubicRotation = false
     }
     
     func toggleStoryCamView() {
