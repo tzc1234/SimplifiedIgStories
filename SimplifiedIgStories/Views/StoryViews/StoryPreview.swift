@@ -143,15 +143,18 @@ extension StoryPreview {
             guard let yourStoryIndex = vm.yourStoryIndex else { return }
             var portions = vm.stories[yourStoryIndex].portions
             
+            // *** In real environment, the photo or video recorded should be uploaded to server side,
+            // this is a demo app, however, storing them into temp directory for displaying IG story animation.
             if let uiImage = uiImage,
                 let imageUrl = LocalFileManager.instance.saveImageToTemp(image: uiImage)
             {
+                // Just append a new Portion instance to current user's potion array.
                 portions.append(
                     Portion(id: vm.lastPortionId + 1, imageUrl: imageUrl)
                 )
                 vm.stories[yourStoryIndex].portions = portions
                 vm.stories[yourStoryIndex].lastUpdate = Date().timeIntervalSince1970
-            } else if let videoUrl = videoUrl {
+            } else if let videoUrl = videoUrl { // Similar process in video case.
                 let asset = AVAsset(url: videoUrl)
                 let duration = asset.duration
                 let durationSeconds = CMTimeGetSeconds(duration)

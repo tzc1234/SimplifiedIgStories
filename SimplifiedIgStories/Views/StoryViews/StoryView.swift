@@ -24,24 +24,40 @@ struct StoryView: View {
                 tapCallback: vm.decidePortionTransitionDirectionBy(point:)
             )
             
-            VStack(alignment: .leading) {
-                Color.clear.frame(height: HomeView.topSpacing)
-                
-                ProgressBar(story: story, storyViewModel: vm)
-                    .frame(height: 2.0, alignment: .center)
-                    .padding(.top, 8.0)
-                
-                HStack {
-                    avatarIcon
-                    nameText
-                    dateText
+            GeometryReader { geo in
+                VStack(alignment: .leading) {
+                    Color.clear.frame(height: HomeView.topSpacing)
+                    
+                    ProgressBar(story: story, storyViewModel: vm)
+                        .frame(height: 2.0, alignment: .center)
+                        .padding(.top, 8.0)
+                    
+                    HStack {
+                        avatarIcon
+                        nameText
+                        dateText
+                        Spacer()
+                        closeButton
+                    }
+                    .padding(.leading, 20.0)
+                    
                     Spacer()
-                    closeButton
+                    
+                    Button {
+                        print("more.")
+                    } label: {
+                        Label("More", systemImage: "ellipsis")
+                            .foregroundColor(.white)
+                            .font(.subheadline)
+                            .labelStyle(.verticalLabelStyle)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .padding([.horizontal, .bottom])
                 }
-                .padding(.leading, 20.0)
                 
-                Spacer()
             }
+            
+            
         }
         .clipShape(Rectangle())
         .onAppear {
