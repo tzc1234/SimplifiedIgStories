@@ -23,7 +23,6 @@ struct HomeView: View {
                 
                 ZStack {
                     VStack(alignment: .leading, spacing: 0.0) {
-                        Color.clear.frame(height: geo.safeAreaInsets.top)
                         titleView
                         StoryIconsView(stories: vm.stories, onTapAction: vm.tapStoryIcon)
                         Spacer()
@@ -35,7 +34,6 @@ struct HomeView: View {
                 
             }
             .offset(x: vm.showStoryCamView ? 0.0 : -screenWidth)
-            .ignoresSafeArea()
             .environmentObject(vm)
             .onAppear {
                 Self.topSpacing = geo.safeAreaInsets.top > 20.0 ? geo.safeAreaInsets.top : 0.0
@@ -44,6 +42,7 @@ struct HomeView: View {
                 vm.storyIconFrames = idFrameDict
             }
         }
+        
     }
 }
 

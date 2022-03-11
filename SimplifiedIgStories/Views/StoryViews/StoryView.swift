@@ -17,17 +17,13 @@ struct StoryView: View {
     }
     
     var body: some View {
-        ZStack {
-            storyPortionViews
-            
-            DetectableTapGesturePositionView(
-                tapCallback: vm.decidePortionTransitionDirectionBy(point:)
-            )
-            
-            GeometryReader { geo in
+        GeometryReader { geo in
+            ZStack {
+                DetectableTapGesturePositionView(
+                    tapCallback: vm.decidePortionTransitionDirectionBy(point:)
+                )
+                
                 VStack(alignment: .leading) {
-                    Color.clear.frame(height: HomeView.topSpacing)
-                    
                     ProgressBar(story: story, storyViewModel: vm)
                         .frame(height: 2.0, alignment: .center)
                         .padding(.top, 8.0)
@@ -52,18 +48,44 @@ struct StoryView: View {
                             .labelStyle(.verticalLabelStyle)
                     }
                     .frame(maxWidth: .infinity, alignment: .trailing)
-                    .padding([.horizontal, .bottom])
+                    .padding([.bottom, .horizontal])
                 }
-                
+            }
+            .background(
+                Group {
+                    let frame = geo.frame(in: .global)
+                    storyPortionViews
+                        .clipShape(Rectangle())
+                        .preference(key: FramePreferenceKey.self, value: frame)
+                        // Cubic transition reference: https://www.youtube.com/watch?v=NTun83toSQQ&ab_channel=Kavsoft
+                        .rotation3DEffect(
+                            vm.storiesViewModel.shouldAnimateCubicRotation ? .degrees(getRotationDegree(offsetX: frame.minX)) : .degrees(0),
+                            axis: (x: 0.0, y: 1.0, z: 0.0),
+                            anchor: frame.minX > 0 ? .leading : .trailing,
+                            anchorZ: 0.0,
+                            perspective: 2.5
+                        )
+                        .onPreferenceChange(FramePreferenceKey.self) { prederenceFrame in
+                            vm.storiesViewModel.shouldAnimateCubicRotation = prederenceFrame.height == frame.height
+                        }
+                        .ignoresSafeArea()
+                }
+            )
+            .onAppear {
+                vm.initAnimation(story: story)
+                print(geo.safeAreaInsets)
             }
             
-            
-        }
-        .clipShape(Rectangle())
-        .onAppear {
-            vm.initAnimation(story: story)
         }
         
+        
+        
+    }
+    
+    private func getRotationDegree(offsetX: CGFloat) -> Double {
+        let tempAngle = offsetX / (UIScreen.main.bounds.width / 2)
+        let rotationDegree = 20.0
+        return tempAngle * rotationDegree
     }
     
 }
@@ -76,7 +98,6 @@ struct StoryView_Previews: PreviewProvider {
             story: story,
             storyViewModel: storiesViewModel.getStoryViewModelBy(story: story)
         )
-            .environmentObject(storiesViewModel)
     }
 }
 

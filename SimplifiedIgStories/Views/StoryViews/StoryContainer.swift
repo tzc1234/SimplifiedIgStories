@@ -13,32 +13,17 @@ struct StoryContainer: View {
     @GestureState private var translation: CGFloat = 0
     
     private let screenWidth = UIScreen.main.bounds.width
-    private let screenHeight = UIScreen.main.bounds.height
+//    private let screenHeight = UIScreen.main.bounds.height
     
     var body: some View {
-        HStack(alignment: .top, spacing: 0) {
-            // *** A risk of memory leak if too many stories.
-            ForEach(vm.atLeastOnePortionStories) { story in
-                GeometryReader { geo in
-                    let frame = geo.frame(in: .global)
+        GeometryReader { geo in
+            HStack(alignment: .top, spacing: 0) {
+                // *** A risk of memory leak if too many stories.
+                ForEach(vm.atLeastOnePortionStories) { story in
                     StoryView(story: story, storyViewModel: vm.getStoryViewModelBy(story: story))
-                    // Cubic transition reference: https://www.youtube.com/watch?v=NTun83toSQQ&ab_channel=Kavsoft
-                        .rotation3DEffect(
-                            vm.shouldAnimateCubicRotation ? .degrees(getRotationDegree(offsetX: frame.minX)) : .degrees(0),
-                            axis: (x: 0.0, y: 1.0, z: 0.0),
-                            anchor: frame.minX > 0 ? .leading : .trailing,
-                            anchorZ: 0.0,
-                            perspective: 2.5
-                        )
-                        .preference(key: FramePreferenceKey.self, value: frame)
+                        .frame(width: screenWidth, height: geo.size.height)
+                        .opacity(story.id != vm.currentStoryId && !vm.shouldAnimateCubicRotation ? 0.0 : 1.0)
                 }
-                .frame(width: screenWidth, height: screenHeight)
-                .ignoresSafeArea()
-                .opacity(story.id != vm.currentStoryId && !vm.shouldAnimateCubicRotation ? 0.0 : 1.0)
-                .onPreferenceChange(FramePreferenceKey.self) { frame in
-                    vm.shouldAnimateCubicRotation = frame.height == screenHeight
-                }
-                
             }
         }
         .frame(width: screenWidth, alignment: .leading)
@@ -62,6 +47,7 @@ struct StoryContainer: View {
             // remove all storyViewModels manually, deinit along with this storyContainer.
             vm.removeAllStoryViewModel()
         }
+        
     }
 }
 

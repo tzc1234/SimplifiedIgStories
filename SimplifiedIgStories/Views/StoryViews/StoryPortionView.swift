@@ -74,7 +74,6 @@ extension StoryPortionView {
             getImage()?
                 .resizable()
                 .scaledToFill()
-                .ignoresSafeArea()
                 .overlay(.ultraThinMaterial)
                 .clipShape(Rectangle())
         }
