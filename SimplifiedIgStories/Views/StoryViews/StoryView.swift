@@ -47,8 +47,7 @@ struct StoryView: View {
                                 vm.deleteCurrentPortion()
                             }
                             Button("Cancel", role: .cancel, action: {})
-                    }
-                    
+                        }
                 }
             }
             .background(
