@@ -10,11 +10,11 @@ import SwiftUI
 struct ProgressBar: View {
     @Environment(\.scenePhase) private var scenePhase
     
-    let story: Story
+    let storyId: Int
     @ObservedObject private var vm: StoryViewModel
     
-    init(story: Story, storyViewModel: StoryViewModel) {
-        self.story = story
+    init(storyId: Int, storyViewModel: StoryViewModel) {
+        self.storyId = storyId
         self.vm = storyViewModel
     }
     
@@ -22,11 +22,11 @@ struct ProgressBar: View {
         HStack {
             Spacer(minLength: 2)
             
-            ForEach(story.portions) { portion in
+            ForEach(vm.story.portions) { portion in
                 ProgressBarPortion(
                     portionId: portion.id,
                     duration: portion.duration,
-                    story: story,
+                    storyId: storyId,
                     storyViewModel: vm
                 )
                 
@@ -57,7 +57,9 @@ struct ProgressBar_Previews: PreviewProvider {
     static var previews: some View {
         let storiesViewModel = StoriesViewModel()
         let story = storiesViewModel.stories[1]
-        ProgressBar(story: story, storyViewModel: storiesViewModel.getStoryViewModelBy(story: story))
-            .environmentObject(storiesViewModel)
+        ProgressBar(
+            storyId: story.id,
+            storyViewModel: storiesViewModel.getStoryViewModelBy(storyId: story.id)
+        )
     }
 }

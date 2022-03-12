@@ -61,7 +61,7 @@ extension HomeView {
     }
     
     private var titleView: some View {
-        Text("IG Stories")
+        Text("Stories")
             .font(.title)
             .bold()
             .frame(height: titleHeight, alignment: .leading)

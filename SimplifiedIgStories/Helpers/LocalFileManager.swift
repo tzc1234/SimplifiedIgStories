@@ -35,4 +35,15 @@ class LocalFileManager {
         guard FileManager.default.fileExists(atPath: url.path) else { return nil }
         return UIImage(contentsOfFile: url.path)
     }
+    
+    func deleteFileBy(url: URL) {
+        guard FileManager.default.fileExists(atPath: url.path) else { return }
+        
+        do {
+            try FileManager.default.removeItem(at: url)
+            print("Delete file at \(url.path) successful.")
+        } catch let error {
+            print("Error: \(error.localizedDescription)")
+        }
+    }
 }

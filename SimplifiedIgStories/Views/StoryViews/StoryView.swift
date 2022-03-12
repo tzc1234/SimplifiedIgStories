@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct StoryView: View {
-    let story: Story
+    let storyId: Int
     @ObservedObject private var vm: StoryViewModel
     
-    init(story: Story, storyViewModel: StoryViewModel) {
-        self.story = story
+    init(storyId: Int, storyViewModel: StoryViewModel) {
+        self.storyId = storyId
         self.vm = storyViewModel
     }
     
@@ -20,7 +20,7 @@ struct StoryView: View {
         GeometryReader { geo in
             ZStack {
                 VStack(alignment: .leading) {
-                    ProgressBar(story: story, storyViewModel: vm)
+                    ProgressBar(storyId: storyId, storyViewModel: vm)
                         .frame(height: 2.0, alignment: .center)
                         .padding(.top, 8.0)
                     
@@ -41,16 +41,13 @@ struct StoryView: View {
                     
                     Spacer()
                     
-                    Button {
-                        print("more.")
-                    } label: {
-                        Label("More", systemImage: "ellipsis")
-                            .foregroundColor(.white)
-                            .font(.subheadline)
-                            .labelStyle(.verticalLabelStyle)
+                    moreButton
+                        .confirmationDialog("", isPresented: $vm.showConfirmationDialog, titleVisibility: .hidden) {
+                            Button("Delete", role: .destructive) {
+                                vm.deleteCurrentPortion()
+                            }
+                            Button("Cancel", role: .cancel, action: {})
                     }
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                    .padding([.bottom, .horizontal])
                     
                 }
             }
@@ -61,17 +58,19 @@ struct StoryView: View {
                         .clipShape(Rectangle())
                         .preference(key: FramePreferenceKey.self, value: frame)
                         .onPreferenceChange(FramePreferenceKey.self) { preferenceFrame in
-                            vm.storiesViewModel.shouldAnimateCubicRotation =
+                            vm.storiesViewModel.shouldCubicRotation =
                             preferenceFrame.width == UIScreen.main.bounds.width
                         }
                 }
             )
             .onAppear {
-                vm.initAnimation(story: story)
-                print(geo.safeAreaInsets)
+                vm.initAnimation(storyId: storyId)
+            }
+            .onChange(of: vm.showConfirmationDialog) { newValue in
+                vm.setCurrentBarPortionAnimationStatusTo(newValue ? .pause : .resume)
             }
             .cubicTransition(
-                shouldRotate: vm.storiesViewModel.shouldAnimateCubicRotation,
+                shouldRotate: vm.storiesViewModel.shouldCubicRotation,
                 offsetX: geo.frame(in: .global).minX
             )
             
@@ -84,8 +83,8 @@ struct StoryView_Previews: PreviewProvider {
         let storiesViewModel = StoriesViewModel()
         let story = storiesViewModel.atLeastOnePortionStories[0]
         StoryView(
-            story: story,
-            storyViewModel: storiesViewModel.getStoryViewModelBy(story: story)
+            storyId: story.id,
+            storyViewModel: storiesViewModel.getStoryViewModelBy(storyId: story.id)
         )
     }
 }
@@ -95,7 +94,7 @@ extension StoryView {
     // TODO: Limit the number of StoryPortionViews.
     private var storyPortionViews: some View {
         ZStack(alignment: .top) {
-            ForEach(story.portions) { portion in
+            ForEach(vm.story.portions) { portion in
                 if portion.id == vm.currentStoryPortionId {
                     StoryPortionView(
                         portion: portion,
@@ -108,7 +107,7 @@ extension StoryView {
     
     private var avatarIcon: some View {
         var onTapAction: ((Int) -> Void)?
-        if story.user.isCurrentUser {
+        if vm.story.user.isCurrentUser {
             onTapAction = { _ in
                 vm.storiesViewModel.closeStoryContainer()
                 DispatchQueue.main.asyncAfter(
@@ -119,8 +118,8 @@ extension StoryView {
         }
         
         return StoryIcon(
-            story: story,
-            showPlusIcon: story.user.isCurrentUser,
+            story: vm.story,
+            showPlusIcon: vm.story.user.isCurrentUser,
             plusIconBgColor: .white,
             showStroke: false,
             onTapAction: onTapAction
@@ -129,7 +128,7 @@ extension StoryView {
     }
     
     private var nameText: some View {
-        Text(story.user.title)
+        Text(vm.story.user.title)
             .foregroundColor(.white)
             .font(.headline)
             .fontWeight(.bold)
@@ -137,7 +136,7 @@ extension StoryView {
     }
     
     private var dateText: some View {
-        Text(story.lastUpdateDate?.timeAgoDisplay() ?? "")
+        Text(vm.story.lastUpdateDate?.timeAgoDisplay() ?? "")
             .foregroundColor(.white)
             .font(.subheadline)
     }
@@ -155,5 +154,20 @@ extension StoryView {
             .contentShape(Rectangle())
         }
         .padding(.trailing, 10.0)
+    }
+    
+    @ViewBuilder var moreButton: some View {
+        if vm.story.user.isCurrentUser {
+            Button {
+                vm.showConfirmationDialog.toggle()
+            } label: {
+                Label("More", systemImage: "ellipsis")
+                    .foregroundColor(.white)
+                    .font(.subheadline)
+                    .labelStyle(.verticalLabelStyle)
+            }
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            .padding([.bottom, .horizontal])
+        }
     }
 }

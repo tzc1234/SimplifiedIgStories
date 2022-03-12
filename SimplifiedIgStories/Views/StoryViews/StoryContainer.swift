@@ -19,9 +19,12 @@ struct StoryContainer: View {
             HStack(alignment: .top, spacing: 0) {
                 // *** A risk of memory leak if too many stories.
                 ForEach(vm.atLeastOnePortionStories) { story in
-                    StoryView(story: story, storyViewModel: vm.getStoryViewModelBy(story: story))
+                    StoryView(
+                        storyId: story.id,
+                        storyViewModel: vm.getStoryViewModelBy(storyId: story.id)
+                    )
                         .frame(width: screenWidth, height: geo.size.height)
-                        .opacity(story.id != vm.currentStoryId && !vm.shouldAnimateCubicRotation ? 0.0 : 1.0)
+                        .opacity(story.id != vm.currentStoryId && !vm.shouldCubicRotation ? 0.0 : 1.0)
                 }
             }
         }

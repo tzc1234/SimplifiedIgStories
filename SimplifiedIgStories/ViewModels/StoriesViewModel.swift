@@ -13,7 +13,7 @@ final class StoriesViewModel: ObservableObject {
     
     @Published var currentStoryId = 0
     @Published var showContainer = false
-    @Published var shouldAnimateCubicRotation = false
+    @Published var shouldCubicRotation = false
     @Published var showStoryCamView = false
     @Published var isDragging = false
     
@@ -70,11 +70,11 @@ extension StoriesViewModel {
         stories = dataService.loadStories()
     }
     
-    func getStoryViewModelBy(story: Story) -> StoryViewModel {
-        guard let storyViewModel = storyViewModels[story.id] else {
-            let newStoryViewModel = StoryViewModel(story: story, storiesViewModel: self)
-            storyViewModels[story.id] = newStoryViewModel
-            print("StoryId: \(story.id)'s StoryViewModel Created!")
+    func getStoryViewModelBy(storyId: Int) -> StoryViewModel {
+        guard let storyViewModel = storyViewModels[storyId] else {
+            let newStoryViewModel = StoryViewModel(storyId: storyId, storiesViewModel: self)
+            storyViewModels[storyId] = newStoryViewModel
+            print("Story: \(storyId)'s StoryViewModel Created!")
             return newStoryViewModel
         }
         return storyViewModel

@@ -24,12 +24,14 @@ final class StoryViewModel: ObservableObject {
     // The key is portionId.
     @Published var barPortionAnimationStatuses: [Int: BarPortionAnimationStatus] = [:]
     
-    let story: Story
+    @Published var showConfirmationDialog = false
+    
+    let storyId: Int
     let storiesViewModel: StoriesViewModel // parent ViewModel
     private var anyCancellable: AnyCancellable?
     
-    init(story: Story, storiesViewModel: StoriesViewModel) {
-        self.story = story
+    init(storyId: Int, storiesViewModel: StoriesViewModel) {
+        self.storyId = storyId
         self.storiesViewModel = storiesViewModel
         self.initCurrentStoryPortionId()
         
@@ -43,6 +45,12 @@ final class StoryViewModel: ObservableObject {
 
 // MARK: computed variables
 extension StoryViewModel {
+    var story: Story {
+        // *** All the stories are from local JSON, not from API,
+        // so I use force unwarp. Don't do this in real environment!
+        storiesViewModel.stories.first(where: { $0.id == storyId })!
+    }
+    
     var currentPortionAnimationStatus: BarPortionAnimationStatus? {
         barPortionAnimationStatuses[currentStoryPortionId]
     }
@@ -65,9 +73,9 @@ extension StoryViewModel {
         currentStoryPortionId = firstPortionId
     }
     
-    func initAnimation(story: Story) {
-        if storiesViewModel.currentStoryId == story.id && portionTransitionDirection == .none {
-            print("StoryId: \(story.id) animation Init!!")
+    func initAnimation(storyId: Int) {
+        if storiesViewModel.currentStoryId == storyId && portionTransitionDirection == .none {
+            print("StoryId: \(storyId) animation Init!!")
             portionTransitionDirection = .start
         }
     }
@@ -216,5 +224,26 @@ extension StoryViewModel {
         } else if scenePhase == .inactive && isCurrentPortionAnimating {
             setCurrentBarPortionAnimationStatusTo(.pause)
         }
+    }
+    
+    func deleteCurrentPortion() {
+        // *** In real environment, the photo or video should be deleted in server side,
+        // this is a demo app, however, deleting them from temp directory.
+        guard
+            let storyIndex =
+                storiesViewModel.stories.firstIndex(where: { $0.id == storyId }),
+            let portionIndex =
+                story.portions.firstIndex(where: { $0.id == currentStoryPortionId })
+        else {
+            return
+        }
+        
+        let portion = story.portions[portionIndex]
+        if let fileUrl = portion.imageUrl ?? portion.videoUrl {
+            LocalFileManager.instance.deleteFileBy(url: fileUrl)
+        }
+        
+        storiesViewModel.stories[storyIndex].portions.remove(at: portionIndex)
+        storiesViewModel.closeStoryContainer()
     }
 }
