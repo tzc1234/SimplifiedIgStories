@@ -58,7 +58,7 @@ struct StoryPortionView: View {
 struct StoryPortionView_Previews: PreviewProvider {
     static var previews: some View {
         let storiesViewModel = StoriesViewModel()
-        let story = storiesViewModel.atLeastOnePortionStories[1]
+        let story = storiesViewModel.currentStories[0]
         let portion = story.portions[0]
         StoryPortionView(
             portion: portion,

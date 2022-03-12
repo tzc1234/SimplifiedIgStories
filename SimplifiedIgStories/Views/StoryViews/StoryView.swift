@@ -22,7 +22,7 @@ struct StoryView: View {
                 VStack(alignment: .leading) {
                     ProgressBar(storyId: storyId, storyViewModel: vm)
                         .frame(height: 2.0, alignment: .center)
-                        .padding(.top, 8.0)
+                        .padding(.top, 12.0)
                     
                     HStack {
                         avatarIcon
@@ -54,7 +54,6 @@ struct StoryView: View {
                 Group {
                     let frame = geo.frame(in: .global)
                     storyPortionViews
-                        .clipShape(Rectangle())
                         .preference(key: FramePreferenceKey.self, value: frame)
                         .onPreferenceChange(FramePreferenceKey.self) { preferenceFrame in
                             vm.storiesViewModel.shouldCubicRotation =
@@ -78,15 +77,16 @@ struct StoryView: View {
                 shouldRotate: vm.storiesViewModel.shouldCubicRotation,
                 offsetX: geo.frame(in: .global).minX
             )
-            
         }
+        .cornerRadius(20.0)
+        
     }
 }
 
 struct StoryView_Previews: PreviewProvider {
     static var previews: some View {
         let storiesViewModel = StoriesViewModel()
-        let story = storiesViewModel.atLeastOnePortionStories[0]
+        let story = storiesViewModel.currentStories[0]
         StoryView(
             storyId: story.id,
             storyViewModel: storiesViewModel.getStoryViewModelBy(storyId: story.id)
@@ -108,6 +108,7 @@ extension StoryView {
                 }
             }
         }
+        .clipShape(Rectangle())
     }
     
     private var avatarIcon: some View {

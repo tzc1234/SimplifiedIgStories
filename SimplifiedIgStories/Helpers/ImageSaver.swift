@@ -8,10 +8,12 @@
 import UIKit
 
 class ImageSaver: NSObject {
-    var saveCompletedAction: (() -> Void)?
+    typealias SaveCompletion = (() -> Void)?
     
-    init(saveCompletedAction: (() -> Void)? = nil) {
-        self.saveCompletedAction = saveCompletedAction
+    var saveCompletion: SaveCompletion
+    
+    init(saveCompletedAction: SaveCompletion = nil) {
+        self.saveCompletion = saveCompletedAction
     }
     
     func saveImageToAlbum(_ image: UIImage) {
@@ -22,7 +24,7 @@ class ImageSaver: NSObject {
         if let error = error {
             print("Save image error: \(error.localizedDescription)")
         } else {
-            saveCompletedAction?()
+            saveCompletion?()
         }
     }
 }

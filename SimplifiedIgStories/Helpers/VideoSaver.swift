@@ -8,10 +8,12 @@
 import Photos
 
 class VideoSaver {
-    var saveCompletedAction: (() -> Void)?
+    typealias SaveCompletion = (() -> Void)?
     
-    init(saveCompletedAction: (() -> Void)? = nil) {
-        self.saveCompletedAction = saveCompletedAction
+    var saveCompletion: SaveCompletion
+    
+    init(saveCompletedAction: SaveCompletion = nil) {
+        self.saveCompletion = saveCompletedAction
     }
     
     // *** Should this save video action be run in a background thread?
@@ -24,7 +26,7 @@ class VideoSaver {
             } else if isSaved {
                 // *** Note that: if used for a struct(SwiftUI), self can't be weak!
                 // Weak self is for class.
-                self.saveCompletedAction?()
+                self.saveCompletion?()
             }
         }
     }

@@ -115,14 +115,14 @@ extension StoryViewModel {
             // At the first portion and
             if currentStoryPortionId == firstPortionId {
                 // at the first story,
-                if story.id == storiesViewModel.firstStoryIdDisplayedByContainer {
+                if story.id == storiesViewModel.currentStories.first?.id {
                     // just start the animation.
                     setCurrentBarPortionAnimationStatusTo(currentPortionAnimationStatus == .start ? .restart : .start)
                 } else { // Not at the first story (that means previous story must exist.),
                     // go to previous story.
                     setCurrentBarPortionAnimationStatusTo(.inital)
                     
-                    let atLeastOnePortionStories = storiesViewModel.atLeastOnePortionStories
+                    let atLeastOnePortionStories = storiesViewModel.currentStories
                     guard
                         let currentStoryIndex =
                             atLeastOnePortionStories.firstIndex(where: { $0.id == story.id })
@@ -171,7 +171,7 @@ extension StoryViewModel {
         
         // At last portion now,
         if currentStoryPortionIndex + 1 > story.portions.count - 1 {
-            let atLeastOnePortionStories = storiesViewModel.atLeastOnePortionStories
+            let atLeastOnePortionStories = storiesViewModel.currentStories
             guard
                 let currentStoryIndex =
                     atLeastOnePortionStories.firstIndex(where: { $0.id == storiesViewModel.currentStoryId })

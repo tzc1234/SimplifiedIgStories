@@ -18,13 +18,13 @@ struct StoryContainer: View {
         GeometryReader { geo in
             HStack(alignment: .top, spacing: 0) {
                 // *** A risk of memory leak if too many stories.
-                ForEach(vm.atLeastOnePortionStories) { story in
+                ForEach(vm.currentStories) { story in
                     StoryView(
                         storyId: story.id,
                         storyViewModel: vm.getStoryViewModelBy(storyId: story.id)
                     )
-                        .frame(width: screenWidth, height: geo.size.height)
                         .opacity(story.id != vm.currentStoryId && !vm.shouldCubicRotation ? 0.0 : 1.0)
+                        .frame(width: screenWidth, height: geo.size.height)
                 }
             }
         }
@@ -55,6 +55,7 @@ struct StoryContainer: View {
 
 struct StoryContainer_Previews: PreviewProvider {
     static var previews: some View {
-        StoryContainer().environmentObject(StoriesViewModel())
+        StoryContainer()
+            .environmentObject(StoriesViewModel())
     }
 }
