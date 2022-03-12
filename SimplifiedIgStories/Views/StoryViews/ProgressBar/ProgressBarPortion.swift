@@ -21,13 +21,13 @@ struct ProgressBarPortion: View {
     let portionId: Int
     let duration: Double
     let storyId: Int
-    @ObservedObject private var storyViewModel: StoryViewModel
+    @ObservedObject private var vm: StoryViewModel
     
     init(portionId: Int, duration: Double, storyId: Int, storyViewModel: StoryViewModel) {
         self.portionId = portionId
         self.duration = duration
         self.storyId = storyId
-        self.storyViewModel = storyViewModel
+        self.vm = storyViewModel
     }
     
     var body: some View {
@@ -41,10 +41,19 @@ struct ProgressBarPortion: View {
                     // Finished
                     if currentEndX >= geo.size.width {
                         tracingEndX.updateCurrentEndX(0)
-                        storyViewModel.barPortionAnimationStatuses[portionId] = .finish
+                        vm.barPortionAnimationStatuses[portionId] = .finish
                     }
                 }
-                .onChange(of: currentAnimationStatus) { newValue in
+                .onReceive(vm.barPortionAnimationStatusesPublisher, perform: { animationStatuses in
+                    guard let animationStatus = animationStatuses[portionId] else {
+                        return
+                    }
+                    
+                    if animationStatus == .finish {
+                        finishAnimation()
+                    }
+                })
+                .onChange(of: vm.barPortionAnimationStatuses[portionId]) { newValue in
                     if let portionAnimationStatus = newValue {
                         switch portionAnimationStatus {
                         case .inital:
@@ -58,7 +67,7 @@ struct ProgressBarPortion: View {
                         case .resume:
                             resumeAnimation(maxWidth: geo.size.width)
                         case .finish:
-                            finishAnimation(maxWidth: geo.size.width)
+                            finishAnimation()
                         }
                     }
                 }
@@ -77,13 +86,6 @@ struct ProgressBarPortion_Previews: PreviewProvider {
             storyId: story.id,
             storyViewModel: storiesViewModel.getStoryViewModelBy(storyId: story.id)
         )
-    }
-}
-
-// MARK: computed varibles
-extension ProgressBarPortion {
-    var currentAnimationStatus: BarPortionAnimationStatus? {
-        storyViewModel.barPortionAnimationStatuses[portionId]
     }
 }
 
@@ -128,8 +130,8 @@ extension ProgressBarPortion {
         }
     }
     
-    func finishAnimation(maxWidth: Double) {
+    func finishAnimation() {
         print("storyId: \(storyId), portionId: \(portionId) finish.")
-        resetTraceableRectangle(toLength: maxWidth)
+        resetTraceableRectangle(toLength: UIScreen.main.bounds.width)
     }
 }

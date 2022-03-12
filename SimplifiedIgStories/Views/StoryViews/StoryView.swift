@@ -66,7 +66,13 @@ struct StoryView: View {
                 vm.initAnimation(storyId: storyId)
             }
             .onChange(of: vm.showConfirmationDialog) { newValue in
-                vm.setCurrentBarPortionAnimationStatusTo(newValue ? .pause : .resume)
+                if newValue {
+                    vm.setCurrentBarPortionAnimationStatusTo(.pause)
+                } else {
+                    if vm.currentPortionAnimationStatus == .pause {
+                        vm.setCurrentBarPortionAnimationStatusTo(.resume)
+                    }
+                }
             }
             .cubicTransition(
                 shouldRotate: vm.storiesViewModel.shouldCubicRotation,

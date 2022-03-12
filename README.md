@@ -1,7 +1,6 @@
-# Simple Instagram Stories
+# Simple Instagram Story
 A simple version of IG story demo app which is my study of **SwiftUI**. 
 It can now only display photos.
-**Work in Progress**.
 
 ## Updated on 12/03/2022:
 1. Support removing current user story.

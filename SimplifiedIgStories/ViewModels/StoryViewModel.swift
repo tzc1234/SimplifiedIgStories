@@ -26,6 +26,9 @@ final class StoryViewModel: ObservableObject {
     
     @Published var showConfirmationDialog = false
     
+    let barPortionAnimationStatusesPublisher =
+    PassthroughSubject<[Int: BarPortionAnimationStatus], Never>()
+    
     let storyId: Int
     let storiesViewModel: StoriesViewModel // parent ViewModel
     private var anyCancellable: AnyCancellable?
@@ -238,12 +241,30 @@ extension StoryViewModel {
             return
         }
         
-        let portion = story.portions[portionIndex]
+        let portions = story.portions
+        let portion = portions[portionIndex]
+        
         if let fileUrl = portion.imageUrl ?? portion.videoUrl {
             LocalFileManager.instance.deleteFileBy(url: fileUrl)
         }
         
         storiesViewModel.stories[storyIndex].portions.remove(at: portionIndex)
-        storiesViewModel.closeStoryContainer()
+
+        // If next portionIndex within the portions, go next
+        if portionIndex + 1 < portions.count {
+            currentStoryPortionId = portions[portionIndex + 1].id
+            
+            let previousPortions = Array(portions[0..<portionIndex])
+            previousPortions.forEach {
+                // *** Can't use barPortionAnimationStatuses for triggering finish status onChange in ProgressBarPortion,
+                // because previousPortions are all in finish status, NO CHANGES!
+                // So use a passthroughSubject publisher as an expedient. TODO: FIX THIS.
+                barPortionAnimationStatusesPublisher.send([$0.id: .finish])
+            }
+            
+            setCurrentBarPortionAnimationStatusTo(.start)
+        } else {
+            storiesViewModel.closeStoryContainer()
+        }
     }
 }
