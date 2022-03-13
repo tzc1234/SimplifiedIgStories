@@ -7,53 +7,15 @@
 
 import SwiftUI
 
-final class StoryCamGlobal: ObservableObject {
-    @Published var cameraSelection: SwiftyCamViewController.CameraSelection = .rear
-    @Published var enableVideoRecordBtn = false
-    @Published var flashMode: FlashMode = .off
-    
-    @Published var shouldPhotoTake = false
-    var lastTakenImage: UIImage?
-    @Published var photoDidTake = false
-    
-    @Published var videoRecordingStatus: VideoRecordingStatus = .none
-    var lastVideoUrl: URL?
-    @Published var videoDidRecord = false
-    
-    enum FlashMode {
-        case on, off, auto
-        
-        var swiftyCamFlashMode: SwiftyCamViewController.FlashMode {
-            switch self {
-            case .auto: return .auto
-            case .on: return .on
-            case .off: return .off
-            }
-        }
-        
-        var systemImageName: String {
-            switch self {
-            case .auto: return "bolt.badge.a.fill"
-            case .on: return "bolt.fill"
-            case .off: return  "bolt.slash.fill"
-            }
-        }
-    }
-    
-    enum VideoRecordingStatus {
-        case none, start, stop
-    }
-}
-
 struct StoryCamView: View {
-    @StateObject private var storyCamGlobal = StoryCamGlobal()
+    @StateObject private var vm = StoryCamViewModel()
     
     let onCloseAction: (() -> Void)
     
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                StorySwiftyCamControllerRepresentable(storyCamGlobal: storyCamGlobal)
+                StorySwiftyCamControllerRepresentable(storyCamGlobal: vm)
                 
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(alignment: .top, spacing: 0) {
@@ -82,16 +44,10 @@ struct StoryCamView: View {
                 }
                 .padding(.vertical, 20)
                
-                if storyCamGlobal.photoDidTake, let uiImage = storyCamGlobal.lastTakenImage {
-                    StoryPreview(uiImage: uiImage) {
-                        storyCamGlobal.photoDidTake = false
-                    }
-                }
-                
-                if storyCamGlobal.videoDidRecord, let url = storyCamGlobal.lastVideoUrl {
-                    StoryPreview(videoUrl: url) {
-                        storyCamGlobal.videoDidRecord = false
-                    }
+                if vm.photoDidTake, let uiImage = vm.lastTakenImage {
+                    StoryPreview(uiImage: uiImage) { vm.photoDidTake = false }
+                } else if vm.videoDidRecord, let url = vm.lastVideoUrl {
+                    StoryPreview(videoUrl: url) { vm.videoDidRecord = false }
                 }
                 
             }
@@ -124,7 +80,7 @@ extension StoryCamView {
             }
             .contentShape(Rectangle())
         }
-        .opacity(storyCamGlobal.videoRecordingStatus == .start ? 0 : 1)
+        .opacity(vm.videoRecordingStatus == .start ? 0 : 1)
     }
     
     var flashButton: some View {
@@ -133,31 +89,31 @@ extension StoryCamView {
         } label: {
             ZStack {
                 Color.clear.frame(width: 45, height: 45)
-                Image(systemName: storyCamGlobal.flashMode.systemImageName)
+                Image(systemName: vm.flashMode.systemImageName)
                     .resizable()
                     .scaledToFit()
                     .foregroundColor(.white)
                     .frame(width: 30, height: 30)
             }
         }
-        .opacity(storyCamGlobal.videoRecordingStatus == .start ? 0 : 1)
+        .opacity(vm.videoRecordingStatus == .start ? 0 : 1)
     }
     
     var videoRecordButton: some View {
         VideoRecordButton() {
-            storyCamGlobal.shouldPhotoTake = true
+            vm.shouldPhotoTake = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                storyCamGlobal.shouldPhotoTake = false
+                vm.shouldPhotoTake = false
             }
         } longPressingAction: { isPressing in
-            storyCamGlobal.videoRecordingStatus = isPressing ? .start : .stop
+            vm.videoRecordingStatus = isPressing ? .start : .stop
         }
-        .allowsHitTesting(storyCamGlobal.enableVideoRecordBtn)
+        .allowsHitTesting(vm.enableVideoRecordBtn)
     }
     
     var changeCameraButton: some View {
         Button {
-            storyCamGlobal.cameraSelection = storyCamGlobal.cameraSelection == .rear ? .front : .rear
+            vm.cameraSelection = vm.cameraSelection == .rear ? .front : .rear
         } label: {
             Image(systemName: "arrow.triangle.2.circlepath")
                 .resizable()
@@ -165,20 +121,20 @@ extension StoryCamView {
                 .foregroundColor(.white)
                 .frame(width: 40, height: 40)
         }
-        .opacity(storyCamGlobal.videoRecordingStatus == .start ? 0 : 1)
+        .opacity(vm.videoRecordingStatus == .start ? 0 : 1)
     }
 }
 
 // MARK: functions
 extension StoryCamView {
     func toggleFlashMode() {
-        switch storyCamGlobal.flashMode {
+        switch vm.flashMode {
         case .auto:
-            storyCamGlobal.flashMode = .off
+            vm.flashMode = .off
         case .on:
-            storyCamGlobal.flashMode = .auto
+            vm.flashMode = .auto
         case .off:
-            storyCamGlobal.flashMode = .on
+            vm.flashMode = .on
         }
     }
 }

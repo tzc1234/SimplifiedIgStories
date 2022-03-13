@@ -9,9 +9,9 @@ import UIKit
 import SwiftUI
 
 struct StorySwiftyCamControllerRepresentable: UIViewControllerRepresentable {
-    @ObservedObject private var storyCamGlobal: StoryCamGlobal
+    @ObservedObject private var storyCamGlobal: StoryCamViewModel
     
-    init(storyCamGlobal: StoryCamGlobal) {
+    init(storyCamGlobal: StoryCamViewModel) {
         self.storyCamGlobal = storyCamGlobal
     }
     

@@ -53,6 +53,7 @@
 		BEA93F9427D7511000964226 /* VideoRecordButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA8E50E27D0CFD200640B19 /* VideoRecordButton.swift */; };
 		BEAED9E427D36F7D00A98F3A /* IdFramePreferenceKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEAED9E327D36F7D00A98F3A /* IdFramePreferenceKey.swift */; };
 		BEB8752927DA120300D60110 /* LocalFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB8752827DA120300D60110 /* LocalFileManager.swift */; };
+		BEC3B4C427DE585F00B44BDF /* StoryCamViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */; };
 		BED0F60D27BBF64B00D93F15 /* StoryIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */; };
 /* End PBXBuildFile section */
 
@@ -104,6 +105,7 @@
 		BEA901D327BC716E00E3362D /* ProgressBarPortion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarPortion.swift; sourceTree = "<group>"; };
 		BEAED9E327D36F7D00A98F3A /* IdFramePreferenceKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdFramePreferenceKey.swift; sourceTree = "<group>"; };
 		BEB8752827DA120300D60110 /* LocalFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileManager.swift; sourceTree = "<group>"; };
+		BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCamViewModel.swift; sourceTree = "<group>"; };
 		BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIconsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -239,6 +241,7 @@
 			children = (
 				BE8F580927D668E900F9DB92 /* StoriesViewModel.swift */,
 				BE6B73C627D794AD003D2B24 /* StoryViewModel.swift */,
+				BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -436,6 +439,7 @@
 				BE90CE0227D00719001EA0CA /* StorySwiftyCamViewController.swift in Sources */,
 				BE84C2CA27C78E5400C42165 /* AnyTransition+Additions.swift in Sources */,
 				BED0F60D27BBF64B00D93F15 /* StoryIconsView.swift in Sources */,
+				BEC3B4C427DE585F00B44BDF /* StoryCamViewModel.swift in Sources */,
 				BE8D954527C44CA200D9D6DB /* Story.swift in Sources */,
 				BE8C498D27C62B3C000541E0 /* StoryIconTitleView.swift in Sources */,
 				BE2C557227BFFE9D0087EE7F /* StoryView.swift in Sources */,

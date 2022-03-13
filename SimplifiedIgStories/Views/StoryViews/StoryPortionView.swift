@@ -14,11 +14,11 @@ struct StoryPortionView: View {
     @State private var player: AVPlayer?
     
     let portion: Portion
-    @ObservedObject private var storyViewModel: StoryViewModel
+    @ObservedObject private var vm: StoryViewModel
     
     init(portion: Portion, storyViewModel: StoryViewModel) {
         self.portion = portion
-        self.storyViewModel = storyViewModel
+        self.vm = storyViewModel
     }
     
     var body: some View {
@@ -32,7 +32,7 @@ struct StoryPortionView: View {
                 player = AVPlayer(url: videoUrl)
             }
         }
-        .onChange(of: storyViewModel.barPortionAnimationStatuses[portion.id]) { animationStatus in
+        .onChange(of: vm.barPortionAnimationStatuses[portion.id]) { animationStatus in
             guard let player = player else { return }
             guard let animationStatus = animationStatus else { return }
             

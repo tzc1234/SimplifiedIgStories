@@ -254,15 +254,6 @@ extension StoryViewModel {
         // If next portionIdx within the portions, go next
         if portionIdx + 1 < portions.count {
             currentStoryPortionId = portions[portionIdx + 1].id
-            
-            let prevPortions = Array(portions[0..<portionIdx])
-            prevPortions.forEach {
-                // *** Can't use barPortionAnimationStatuses for triggering finish status onChange in ProgressBarPortion,
-                // because previousPortions are all in finish status, NO CHANGES!
-                // So use a passthroughSubject publisher as an expedient. TODO: FIX THIS.
-                barPortionAnimationStatusesPublisher.send([$0.id: .finish])
-            }
-            
             setCurrentBarPortionAnimationStatusTo(.start)
         } else {
             storiesViewModel.closeStoryContainer()
