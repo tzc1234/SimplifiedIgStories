@@ -39,7 +39,7 @@ extension StoriesViewModel {
         stories.first(where: { $0.user.isCurrentUser })?.id
     }
     
-    var yourStoryIndex: Int? {
+    var yourStoryIdx: Int? {
         stories.firstIndex(where: { $0.user.isCurrentUser })
     }
     
@@ -114,12 +114,8 @@ extension StoriesViewModel {
     
     func showStoryContainer(storyId: Int) {
         currentStoryId = storyId
-        
-        let animationDuration = 0.3
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            withAnimation(.easeInOut(duration: animationDuration)) { [weak self] in
-                self?.showContainer.toggle()
-            }
+        withAnimation(.easeInOut(duration: 0.3)) { [weak self] in
+            self?.showContainer.toggle()
         }
     }
     
@@ -144,15 +140,15 @@ extension StoriesViewModel {
             closeStoryContainer()
         } else { // Go to previous or next.
             guard
-                let currentStoryIndex =
+                let currentStoryIdx =
                     currentStories.firstIndex(where: { $0.id == currentStoryId })
             else {
                 return
             }
             
-            let nextIndex = Int((CGFloat(currentStoryIndex) - offset).rounded())
-            let adjustedNextIndex = min(nextIndex, stories.count - 1)
-            currentStoryId = currentStories[adjustedNextIndex].id
+            let nextIdx = Int((CGFloat(currentStoryIdx) - offset).rounded())
+            // Make sure within boundary.
+            currentStoryId = currentStories[min(nextIdx, stories.count - 1)].id
         }
         
         isDragging = false // End dragging.

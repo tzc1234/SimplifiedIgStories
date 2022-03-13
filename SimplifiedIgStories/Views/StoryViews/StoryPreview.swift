@@ -140,8 +140,8 @@ extension StoryPreview {
     
     private var postBtn: some View {
         Button {
-            guard let yourStoryIndex = vm.yourStoryIndex else { return }
-            var portions = vm.stories[yourStoryIndex].portions
+            guard let yourStoryIdx = vm.yourStoryIdx else { return }
+            var portions = vm.stories[yourStoryIdx].portions
             
             // *** In real environment, the photo or video recorded should be uploaded to server side,
             // this is a demo app, however, storing them into temp directory for displaying IG story animation.
@@ -152,8 +152,8 @@ extension StoryPreview {
                 portions.append(
                     Portion(id: vm.lastPortionId + 1, imageUrl: imageUrl)
                 )
-                vm.stories[yourStoryIndex].portions = portions
-                vm.stories[yourStoryIndex].lastUpdate = Date().timeIntervalSince1970
+                vm.stories[yourStoryIdx].portions = portions
+                vm.stories[yourStoryIdx].lastUpdate = Date().timeIntervalSince1970
             } else if let videoUrl = videoUrl { // Similar process in video case.
                 let asset = AVAsset(url: videoUrl)
                 let duration = asset.duration
@@ -162,8 +162,8 @@ extension StoryPreview {
                 portions.append(
                     Portion(id: vm.lastPortionId + 1, videoDuration: durationSeconds, videoUrlFromCam: videoUrl)
                 )
-                vm.stories[yourStoryIndex].portions = portions
-                vm.stories[yourStoryIndex].lastUpdate = Date().timeIntervalSince1970
+                vm.stories[yourStoryIdx].portions = portions
+                vm.stories[yourStoryIdx].lastUpdate = Date().timeIntervalSince1970
             }
             
             vm.toggleStoryCamView()

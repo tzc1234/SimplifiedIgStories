@@ -39,7 +39,7 @@ final class StoryViewModel: ObservableObject {
         self.initCurrentStoryPortionId()
         
         // Reference: https://stackoverflow.com/a/58406402
-        // Trigger current class's objectWillChange when parent's published property changed.
+        // Trigger current ViewModel objectWillChange when parent's published property changed.
         anyCancellable = storiesViewModel.objectWillChange.sink { [weak self] in
             self?.objectWillChange.send()
         }
@@ -110,7 +110,7 @@ extension StoryViewModel {
             // Will trigger the onChange of currentPortionAnimationStatus in ProgressBar.
         case .backward:
             // No first portion, should not happen.
-            guard let firstPortionId = story.portions.first?.id else { return }
+            guard let firstPortionId = firstPortionId else { return }
             
             // At the first portion and
             if currentStoryPortionId == firstPortionId {
@@ -122,17 +122,18 @@ extension StoryViewModel {
                     // go to previous story.
                     setCurrentBarPortionAnimationStatusTo(.inital)
                     
-                    let atLeastOnePortionStories = storiesViewModel.currentStories
+                    let currentStories = storiesViewModel.currentStories
                     guard
-                        let currentStoryIndex =
-                            atLeastOnePortionStories.firstIndex(where: { $0.id == story.id })
+                        let currentStoryIdx =
+                            currentStories.firstIndex(where: { $0.id == story.id })
                     else {
                         return
                     }
                     
-                    let previousStoryIndex = currentStoryIndex - 1
-                    if previousStoryIndex >= 0 {
-                        storiesViewModel.currentStoryId = atLeastOnePortionStories[previousStoryIndex].id
+                    let prevStoryIdx = currentStoryIdx - 1
+                    if prevStoryIdx >= 0 { // If within the boundary,
+                        // go previous.
+                        storiesViewModel.currentStoryId = currentStories[prevStoryIdx].id
                     }
                 }
             } else { // Not at the first story,
@@ -140,15 +141,15 @@ extension StoryViewModel {
                 setCurrentBarPortionAnimationStatusTo(.inital)
                 
                 guard
-                    let currentStoryPortionIndex =
+                    let currentStoryPortionIdx =
                         story.portions.firstIndex(where: { $0.id == currentStoryPortionId })
                 else {
                     return
                 }
                 
-                let previousStoryPortionIndex = currentStoryPortionIndex - 1
-                if previousStoryPortionIndex >= 0 {
-                    currentStoryPortionId = story.portions[previousStoryPortionIndex].id
+                let prevStoryPortionIdx = currentStoryPortionIdx - 1
+                if prevStoryPortionIdx >= 0 {
+                    currentStoryPortionId = story.portions[prevStoryPortionIdx].id
                 }
                 
                 setCurrentBarPortionAnimationStatusTo(.start)
@@ -163,30 +164,30 @@ extension StoryViewModel {
         guard portionAnimationStatus == .finish else { return }
         
         guard
-            let currentStoryPortionIndex =
+            let currentStoryPortionIdx =
                 story.portions.firstIndex(where: { $0.id == currentStoryPortionId })
         else {
             return
         }
         
         // At last portion now,
-        if currentStoryPortionIndex + 1 > story.portions.count - 1 {
-            let atLeastOnePortionStories = storiesViewModel.currentStories
+        if currentStoryPortionIdx + 1 > story.portions.count - 1 {
+            let currentStories = storiesViewModel.currentStories
             guard
-                let currentStoryIndex =
-                    atLeastOnePortionStories.firstIndex(where: { $0.id == storiesViewModel.currentStoryId })
+                let currentStoryIdx =
+                    currentStories.firstIndex(where: { $0.id == storiesViewModel.currentStoryId })
             else {
                 return
             }
             
             // It's the last story now, close StoryContainer.
-            if currentStoryIndex + 1 > atLeastOnePortionStories.count - 1 {
+            if currentStoryIdx + 1 > currentStories.count - 1 {
                 storiesViewModel.closeStoryContainer()
             } else { // Not the last stroy now, go to next story.
-                storiesViewModel.currentStoryId = atLeastOnePortionStories[currentStoryIndex + 1].id
+                storiesViewModel.currentStoryId = currentStories[currentStoryIdx + 1].id
             }
         } else { // Not the last portion, go to next portion.
-            currentStoryPortionId = story.portions[currentStoryPortionIndex + 1].id
+            currentStoryPortionId = story.portions[currentStoryPortionIdx + 1].id
             setCurrentBarPortionAnimationStatusTo(.start)
         }
         
@@ -233,29 +234,29 @@ extension StoryViewModel {
         // *** In real environment, the photo or video should be deleted in server side,
         // this is a demo app, however, deleting them from temp directory.
         guard
-            let storyIndex =
+            let storyIdx =
                 storiesViewModel.stories.firstIndex(where: { $0.id == storyId }),
-            let portionIndex =
+            let portionIdx =
                 story.portions.firstIndex(where: { $0.id == currentStoryPortionId })
         else {
             return
         }
         
         let portions = story.portions
-        let portion = portions[portionIndex]
+        let portion = portions[portionIdx]
         
         if let fileUrl = portion.imageUrl ?? portion.videoUrl {
             LocalFileManager.instance.deleteFileBy(url: fileUrl)
         }
         
-        storiesViewModel.stories[storyIndex].portions.remove(at: portionIndex)
+        storiesViewModel.stories[storyIdx].portions.remove(at: portionIdx)
 
-        // If next portionIndex within the portions, go next
-        if portionIndex + 1 < portions.count {
-            currentStoryPortionId = portions[portionIndex + 1].id
+        // If next portionIdx within the portions, go next
+        if portionIdx + 1 < portions.count {
+            currentStoryPortionId = portions[portionIdx + 1].id
             
-            let previousPortions = Array(portions[0..<portionIndex])
-            previousPortions.forEach {
+            let prevPortions = Array(portions[0..<portionIdx])
+            prevPortions.forEach {
                 // *** Can't use barPortionAnimationStatuses for triggering finish status onChange in ProgressBarPortion,
                 // because previousPortions are all in finish status, NO CHANGES!
                 // So use a passthroughSubject publisher as an expedient. TODO: FIX THIS.
