@@ -119,11 +119,7 @@ extension StoryPreview {
     
     private var saveBtn: some View {
         Button {
-            if uiImage != nil {
-                saveToAlbum(uiImage)
-            } else {
-                saveToAlbum(videoUrl)
-            }
+            saveToAlbum()
         } label: {
             Image(systemName: "arrow.down.to.line")
                 .resizable()
@@ -180,13 +176,7 @@ extension StoryPreview {
     }
     
     private var savedLabel: some View {
-        Text("Saved")
-            .font(.headline)
-            .foregroundColor(.white)
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 10).foregroundColor(.darkGray)
-            )
+        SavedLabel()
             .opacity(showSaved ? 1 : 0)
             .animation(.easeIn, value: showSaved)
     }
@@ -194,8 +184,8 @@ extension StoryPreview {
 
 // MARK: functions
 extension StoryPreview {
-    private func saveToAlbum<T>(_ object: T) {
-        let completeAction = {
+    private func saveToAlbum() {
+        let completion = {
             isLoading = false
             showSaved = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -203,16 +193,14 @@ extension StoryPreview {
             }
         }
         
-        if object is UIImage?, let image = object as? UIImage {
-            let imageSaver = ImageSaver(saveCompletedAction: completeAction)
+        if let uiImage = uiImage {
+            let imageSaver = ImageSaver(saveCompletedAction: completion)
             isLoading = true
-            imageSaver.saveImageToAlbum(image)
-        } else if object is URL?, let url = object as? URL {
-            let videoSaver = VideoSaver(saveCompletedAction: completeAction)
+            imageSaver.saveImageToAlbum(uiImage)
+        } else if let videoUrl = videoUrl {
+            let videoSaver = VideoSaver(saveCompletedAction: completion)
             isLoading = true
-            videoSaver.saveVideoToAlbum(url)
-        } else {
-            print("File Not Support!")
+            videoSaver.saveVideoToAlbum(videoUrl)
         }
     }
 }

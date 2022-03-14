@@ -46,9 +46,18 @@ struct StoryView: View {
                             Button("Delete", role: .destructive) {
                                 vm.deleteCurrentPortion()
                             }
+                            Button("Save", role: .none) {
+                                vm.saveCurrentPortion()
+                            }
                             Button("Cancel", role: .cancel, action: {})
                         }
                 }
+                
+                if vm.isLoading { LoadingView() }
+                
+                SavedLabel()
+                    .opacity(vm.showSavedLabel ? 1 : 0)
+                    .animation(.easeIn, value: vm.showSavedLabel)
             }
             .background(
                 Group {
@@ -65,13 +74,10 @@ struct StoryView: View {
                 vm.initAnimation(storyId: storyId)
             }
             .onChange(of: vm.showConfirmationDialog) { newValue in
-                if newValue {
-                    vm.setCurrentBarPortionAnimationStatusTo(.pause)
-                } else {
-                    if vm.currentPortionAnimationStatus == .pause {
-                        vm.setCurrentBarPortionAnimationStatusTo(.resume)
-                    }
-                }
+                vm.pauseAndResumePortion(shouldPause: newValue)
+            }
+            .onChange(of: vm.showSavedLabel) { newValue in
+                vm.pauseAndResumePortion(shouldPause: newValue)
             }
             .cubicTransition(
                 shouldRotate: vm.storiesViewModel.shouldCubicRotation,
@@ -81,6 +87,7 @@ struct StoryView: View {
         .cornerRadius(20.0)
         
     }
+    
 }
 
 struct StoryView_Previews: PreviewProvider {
@@ -162,7 +169,7 @@ extension StoryView {
         .padding(.trailing, 10.0)
     }
     
-    @ViewBuilder var moreButton: some View {
+    @ViewBuilder private var moreButton: some View {
         if vm.story.user.isCurrentUser {
             Button {
                 vm.showConfirmationDialog.toggle()

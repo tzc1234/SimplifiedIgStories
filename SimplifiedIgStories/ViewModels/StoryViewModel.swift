@@ -29,6 +29,9 @@ final class StoryViewModel: ObservableObject {
     let barPortionAnimationStatusesPublisher =
     PassthroughSubject<[Int: BarPortionAnimationStatus], Never>()
     
+    @Published var isLoading = false
+    @Published var showSavedLabel = false
+    
     let storyId: Int
     let storiesViewModel: StoriesViewModel // parent ViewModel
     private var anyCancellable: AnyCancellable?
@@ -257,6 +260,45 @@ extension StoryViewModel {
             setCurrentBarPortionAnimationStatusTo(.start)
         } else {
             storiesViewModel.closeStoryContainer()
+        }
+    }
+    
+    func saveCurrentPortion() {
+        guard let portion = story.portions.first(where: { $0.id == currentStoryPortionId }) else {
+            return
+        }
+        
+        let completion = {
+            DispatchQueue.main.async { [weak self] in
+                self?.isLoading = false
+                self?.showSavedLabel = true
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                    self?.showSavedLabel = false
+                }
+            }
+        }
+        
+        if let imageUrl = portion.imageUrl, let uiImage = LocalFileManager.instance.getImageBy(url: imageUrl) {
+            let imageSaver = ImageSaver(saveCompletedAction: completion)
+            isLoading = true
+            imageSaver.saveImageToAlbum(uiImage)
+        } else if let videoUrl = portion.videoUrlFromCam {
+            let videoSaver = VideoSaver(saveCompletedAction: completion)
+            isLoading = true
+            videoSaver.saveVideoToAlbum(videoUrl)
+        }
+    }
+    
+    func pauseAndResumePortion(shouldPause: Bool) {
+        if shouldPause {
+            if isCurrentPortionAnimating {
+                setCurrentBarPortionAnimationStatusTo(.pause)
+            }
+        } else {
+            if currentPortionAnimationStatus == .pause {
+                setCurrentBarPortionAnimationStatusTo(.resume)
+            }
         }
     }
 }
