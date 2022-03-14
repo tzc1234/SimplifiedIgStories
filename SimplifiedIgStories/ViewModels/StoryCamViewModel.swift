@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import AVKit
 
 final class StoryCamViewModel: ObservableObject {
     @Published var cameraSelection: SwiftyCamViewController.CameraSelection = .rear
@@ -20,6 +21,8 @@ final class StoryCamViewModel: ObservableObject {
     @Published var videoRecordingStatus: VideoRecordingStatus = .none
     var lastVideoUrl: URL?
     @Published var videoDidRecord = false
+    
+    @Published var camPermGranted = false
     
     enum FlashMode {
         case on, off, auto
@@ -43,5 +46,16 @@ final class StoryCamViewModel: ObservableObject {
     
     enum VideoRecordingStatus {
         case none, start, stop
+    }
+}
+
+// MARK: functions
+extension StoryCamViewModel {
+    func requestPermission() {
+        AVCaptureDevice.requestAccess(for: .video) { isGranted in
+            DispatchQueue.main.async { [weak self] in
+                self?.camPermGranted = isGranted
+            }
+        }
     }
 }

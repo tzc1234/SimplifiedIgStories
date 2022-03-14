@@ -9,10 +9,10 @@ import UIKit
 import SwiftUI
 
 struct StorySwiftyCamControllerRepresentable: UIViewControllerRepresentable {
-    @ObservedObject private var storyCamGlobal: StoryCamViewModel
+    @ObservedObject private var storyCamViewModel: StoryCamViewModel
     
     init(storyCamGlobal: StoryCamViewModel) {
-        self.storyCamGlobal = storyCamGlobal
+        self.storyCamViewModel = storyCamGlobal
     }
     
     func makeUIViewController(context: Context) -> StorySwiftyCamViewController {
@@ -23,19 +23,19 @@ struct StorySwiftyCamControllerRepresentable: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ uiViewController: StorySwiftyCamViewController, context: Context) {
-        if storyCamGlobal.cameraSelection != uiViewController.currentCamera {
+        if storyCamViewModel.cameraSelection != uiViewController.currentCamera {
             uiViewController.switchCamera()
         }
         
-        if storyCamGlobal.flashMode.swiftyCamFlashMode != uiViewController.flashMode {
-            uiViewController.flashMode = storyCamGlobal.flashMode.swiftyCamFlashMode
+        if storyCamViewModel.flashMode.swiftyCamFlashMode != uiViewController.flashMode {
+            uiViewController.flashMode = storyCamViewModel.flashMode.swiftyCamFlashMode
         }
         
-        if storyCamGlobal.shouldPhotoTake {
+        if storyCamViewModel.shouldPhotoTake {
             uiViewController.takePhoto()
         }
         
-        switch storyCamGlobal.videoRecordingStatus {
+        switch storyCamViewModel.videoRecordingStatus {
         case .none:
             break
         case .start:
@@ -58,18 +58,18 @@ struct StorySwiftyCamControllerRepresentable: UIViewControllerRepresentable {
         
         // MARK: SwiftyCamViewControllerDelegate
         func swiftyCamSessionDidStartRunning(_ swiftyCam: SwiftyCamViewController) {
-            print("Session did start running")
-            parent.storyCamGlobal.enableVideoRecordBtn = true
+            print("Camera session did start running")
+            parent.storyCamViewModel.enableVideoRecordBtn = true
         }
         
         func swiftyCamSessionDidStopRunning(_ swiftyCam: SwiftyCamViewController) {
-            print("Session did stop running")
-            parent.storyCamGlobal.enableVideoRecordBtn = false
+            print("Camera session did stop running")
+            parent.storyCamViewModel.enableVideoRecordBtn = false
         }
         
         func swiftyCam(_ swiftyCam: SwiftyCamViewController, didTake photo: UIImage) {
-            parent.storyCamGlobal.lastTakenImage = photo
-            parent.storyCamGlobal.photoDidTake = true
+            parent.storyCamViewModel.lastTakenImage = photo
+            parent.storyCamViewModel.photoDidTake = true
         }
         
         func swiftyCam(_ swiftyCam: SwiftyCamViewController, didBeginRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
@@ -78,13 +78,13 @@ struct StorySwiftyCamControllerRepresentable: UIViewControllerRepresentable {
         
         func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishRecordingVideo camera: SwiftyCamViewController.CameraSelection) {
             print("Did finish Recording Video")
-            parent.storyCamGlobal.videoRecordingStatus = .none
+            parent.storyCamViewModel.videoRecordingStatus = .none
         }
         
         func swiftyCam(_ swiftyCam: SwiftyCamViewController, didFinishProcessVideoAt url: URL) {
             print("VideoUrl: \(url)")
-            parent.storyCamGlobal.lastVideoUrl = url
-            parent.storyCamGlobal.videoDidRecord = true
+            parent.storyCamViewModel.lastVideoUrl = url
+            parent.storyCamViewModel.videoDidRecord = true
         }
     }
 }

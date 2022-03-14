@@ -15,7 +15,11 @@ struct StoryCamView: View {
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                StorySwiftyCamControllerRepresentable(storyCamGlobal: vm)
+                if vm.camPermGranted {
+                    StorySwiftyCamControllerRepresentable(storyCamGlobal: vm)
+                } else {
+                    PermissionView()
+                }
                 
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(alignment: .top, spacing: 0) {
@@ -54,13 +58,16 @@ struct StoryCamView: View {
             .statusBar(hidden: true)
             
         }
+        .onAppear {
+            vm.requestPermission()
+        }
         
     }
 }
 
 struct StoryCamView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryCamView(onCloseAction: {}).background(.green)
+        StoryCamView(onCloseAction: {})
     }
 }
 
