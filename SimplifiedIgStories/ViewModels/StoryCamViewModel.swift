@@ -23,6 +23,7 @@ final class StoryCamViewModel: ObservableObject {
     @Published var videoDidRecord = false
     
     @Published var camPermGranted = false
+    @Published var microphonePermGranted = false
     
     enum FlashMode {
         case on, off, auto
@@ -52,9 +53,17 @@ final class StoryCamViewModel: ObservableObject {
 // MARK: functions
 extension StoryCamViewModel {
     func requestPermission() {
+        // Camera
         AVCaptureDevice.requestAccess(for: .video) { isGranted in
             DispatchQueue.main.async { [weak self] in
                 self?.camPermGranted = isGranted
+            }
+        }
+        
+        // Microphone
+        AVCaptureDevice.requestAccess(for: .audio) { isGranted in
+            DispatchQueue.main.async { [weak self] in
+                self?.microphonePermGranted = isGranted
             }
         }
     }

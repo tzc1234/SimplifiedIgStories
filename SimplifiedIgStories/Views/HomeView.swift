@@ -54,7 +54,7 @@ extension HomeView {
     private var storyCamView: some View {
         ZStack {
             if vm.showStoryCamView {
-                StoryCamView(onCloseAction: vm.toggleStoryCamView)
+                StoryCamView(tapCloseAction: vm.toggleStoryCamView)
             }
         }
         .frame(width: screenWidth)

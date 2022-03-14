@@ -10,22 +10,28 @@ import SwiftUI
 struct StoryCamView: View {
     @StateObject private var vm = StoryCamViewModel()
     
-    let onCloseAction: (() -> Void)
+    let tapCloseAction: (() -> Void)?
+    
+    init(tapCloseAction: (() -> Void)? = nil) {
+        self.tapCloseAction = tapCloseAction
+    }
     
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                if vm.camPermGranted {
+                if vm.camPermGranted && vm.microphonePermGranted {
                     StorySwiftyCamControllerRepresentable(storyCamGlobal: vm)
                 } else {
-                    PermissionView()
+                    StoryCamPermissionView(storyCamViewModel: vm)
                 }
                 
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(alignment: .top, spacing: 0) {
                         closeButton
                         Spacer()
-                        flashButton
+                        if vm.camPermGranted && vm.microphonePermGranted {
+                            flashButton
+                        }
                         Spacer()
                         Color.clear.frame(width: 45)
                     }
@@ -35,13 +41,17 @@ struct StoryCamView: View {
                     
                     HStack(alignment: .bottom, spacing: 0) {
                         Spacer()
-                        videoRecordButton
+                        if vm.camPermGranted && vm.microphonePermGranted {
+                            videoRecordButton
+                        }
                         Spacer()
                     }
                     
                     HStack(alignment: .bottom, spacing: 0) {
                         Spacer()
-                        changeCameraButton
+                        if vm.camPermGranted && vm.microphonePermGranted {
+                            changeCameraButton
+                        }
                     }
                     .padding(.horizontal, 20)
                     
@@ -67,7 +77,7 @@ struct StoryCamView: View {
 
 struct StoryCamView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryCamView(onCloseAction: {})
+        StoryCamView()
     }
 }
 
@@ -75,7 +85,7 @@ struct StoryCamView_Previews: PreviewProvider {
 extension StoryCamView {
     var closeButton: some View {
         Button{
-            onCloseAction()
+            tapCloseAction?()
         } label: {
             ZStack {
                 Color.clear.frame(width: 45, height: 45)
