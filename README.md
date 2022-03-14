@@ -1,6 +1,9 @@
 # Simple Instagram Story
 A simple version, not many functions, of IG story demo app which is my study of **SwiftUI**.
 
+## Updated on 14/03/2022:
+1. Handle camera and microphone permission.
+
 ## Updated on 12/03/2022:
 1. Support removing current user story.
 
