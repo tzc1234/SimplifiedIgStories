@@ -17,57 +17,54 @@ struct StoryCamView: View {
     }
     
     var body: some View {
-        GeometryReader { geo in
-            ZStack {
-                if vm.camPermGranted && vm.microphonePermGranted {
-                    StorySwiftyCamControllerRepresentable(storyCamGlobal: vm)
-                } else {
-                    StoryCamPermissionView(storyCamViewModel: vm)
+        ZStack {
+            if vm.camPermGranted && vm.microphonePermGranted {
+                StorySwiftyCamControllerRepresentable(storyCamGlobal: vm)
+            } else {
+                StoryCamPermissionView(storyCamViewModel: vm)
+            }
+            
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(alignment: .top, spacing: 0) {
+                    closeButton
+                    Spacer()
+                    if vm.camPermGranted && vm.microphonePermGranted {
+                        flashButton
+                    }
+                    Spacer()
+                    Color.clear.frame(width: 45)
+                }
+                .padding(.horizontal, 20)
+                
+                Spacer()
+                
+                HStack(alignment: .bottom, spacing: 0) {
+                    Spacer()
+                    if vm.camPermGranted && vm.microphonePermGranted {
+                        videoRecordButton
+                    }
+                    Spacer()
                 }
                 
-                VStack(alignment: .leading, spacing: 0) {
-                    HStack(alignment: .top, spacing: 0) {
-                        closeButton
-                        Spacer()
-                        if vm.camPermGranted && vm.microphonePermGranted {
-                            flashButton
-                        }
-                        Spacer()
-                        Color.clear.frame(width: 45)
-                    }
-                    .padding(.horizontal, 20)
-                    
+                HStack(alignment: .bottom, spacing: 0) {
                     Spacer()
-                    
-                    HStack(alignment: .bottom, spacing: 0) {
-                        Spacer()
-                        if vm.camPermGranted && vm.microphonePermGranted {
-                            videoRecordButton
-                        }
-                        Spacer()
+                    if vm.camPermGranted && vm.microphonePermGranted {
+                        changeCameraButton
                     }
-                    
-                    HStack(alignment: .bottom, spacing: 0) {
-                        Spacer()
-                        if vm.camPermGranted && vm.microphonePermGranted {
-                            changeCameraButton
-                        }
-                    }
-                    .padding(.horizontal, 20)
-                    
                 }
-                .padding(.vertical, 20)
-               
-                if vm.photoDidTake, let uiImage = vm.lastTakenImage {
-                    StoryPreview(uiImage: uiImage) { vm.photoDidTake = false }
-                } else if vm.videoDidRecord, let url = vm.lastVideoUrl {
-                    StoryPreview(videoUrl: url) { vm.videoDidRecord = false }
-                }
+                .padding(.horizontal, 20)
                 
             }
-            .statusBar(hidden: true)
+            .padding(.vertical, 20)
+            
+            if vm.photoDidTake, let uiImage = vm.lastTakenImage {
+                StoryPreview(uiImage: uiImage) { vm.photoDidTake = false }
+            } else if vm.videoDidRecord, let url = vm.lastVideoUrl {
+                StoryPreview(videoUrl: url) { vm.videoDidRecord = false }
+            }
             
         }
+        .statusBar(hidden: true)
         .onAppear {
             vm.requestPermission()
         }
@@ -83,7 +80,7 @@ struct StoryCamView_Previews: PreviewProvider {
 
 // MARK: components
 extension StoryCamView {
-    var closeButton: some View {
+    private var closeButton: some View {
         Button{
             tapCloseAction?()
         } label: {
@@ -100,7 +97,7 @@ extension StoryCamView {
         .opacity(vm.videoRecordingStatus == .start ? 0 : 1)
     }
     
-    var flashButton: some View {
+    private var flashButton: some View {
         Button {
             toggleFlashMode()
         } label: {
@@ -116,7 +113,7 @@ extension StoryCamView {
         .opacity(vm.videoRecordingStatus == .start ? 0 : 1)
     }
     
-    var videoRecordButton: some View {
+    private var videoRecordButton: some View {
         VideoRecordButton() {
             vm.shouldPhotoTake = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -128,7 +125,7 @@ extension StoryCamView {
         .allowsHitTesting(vm.enableVideoRecordBtn)
     }
     
-    var changeCameraButton: some View {
+    private var changeCameraButton: some View {
         Button {
             vm.cameraSelection = vm.cameraSelection == .rear ? .front : .rear
         } label: {
@@ -144,7 +141,7 @@ extension StoryCamView {
 
 // MARK: functions
 extension StoryCamView {
-    func toggleFlashMode() {
+    private func toggleFlashMode() {
         switch vm.flashMode {
         case .auto:
             vm.flashMode = .off

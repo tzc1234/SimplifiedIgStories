@@ -71,7 +71,6 @@ struct StoryCamPermissionView: View {
 struct PermissionView_Previews: PreviewProvider {
     static var previews: some View {
         StoryCamPermissionView(storyCamViewModel: StoryCamViewModel())
-            .preferredColorScheme(.dark)
     }
 }
 

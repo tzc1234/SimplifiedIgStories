@@ -52,19 +52,50 @@ final class StoryCamViewModel: ObservableObject {
 
 // MARK: functions
 extension StoryCamViewModel {
+    private func checkCameraPermission() {
+        let camPermStatus = AVCaptureDevice.authorizationStatus(for: .video)
+        switch camPermStatus {
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { isGranted in
+                DispatchQueue.main.async { [weak self] in
+                    self?.camPermGranted = isGranted
+                }
+            }
+        case .restricted:
+            // nothing can do
+            break
+        case .denied:
+            camPermGranted = false
+        case .authorized:
+            camPermGranted = true
+        @unknown default:
+            break
+        }
+    }
+    
+    private func checkMicrophonePermission() {
+        let microphonePermStatus = AVCaptureDevice.authorizationStatus(for: .audio)
+        switch microphonePermStatus {
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .audio) { isGranted in
+                DispatchQueue.main.async { [weak self] in
+                    self?.microphonePermGranted = isGranted
+                }
+            }
+        case .restricted:
+            // nothing can do
+            break
+        case .denied:
+            microphonePermGranted = false
+        case .authorized:
+            microphonePermGranted = true
+        @unknown default:
+            break
+        }
+    }
+    
     func requestPermission() {
-        // Camera
-        AVCaptureDevice.requestAccess(for: .video) { isGranted in
-            DispatchQueue.main.async { [weak self] in
-                self?.camPermGranted = isGranted
-            }
-        }
-        
-        // Microphone
-        AVCaptureDevice.requestAccess(for: .audio) { isGranted in
-            DispatchQueue.main.async { [weak self] in
-                self?.microphonePermGranted = isGranted
-            }
-        }
+        checkCameraPermission()
+        checkMicrophonePermission()
     }
 }
