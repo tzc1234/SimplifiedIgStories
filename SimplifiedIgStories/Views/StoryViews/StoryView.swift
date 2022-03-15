@@ -55,9 +55,7 @@ struct StoryView: View {
                 
                 if vm.isLoading { LoadingView() }
                 
-                SavedLabel()
-                    .opacity(vm.showSavedLabel ? 1 : 0)
-                    .animation(.easeIn, value: vm.showSavedLabel)
+                noticeLabel
             }
             .background(
                 Group {
@@ -76,7 +74,7 @@ struct StoryView: View {
             .onChange(of: vm.showConfirmationDialog) { newValue in
                 vm.pauseAndResumePortion(shouldPause: newValue)
             }
-            .onChange(of: vm.showSavedLabel) { newValue in
+            .onChange(of: vm.showNoticeLabel) { newValue in
                 vm.pauseAndResumePortion(shouldPause: newValue)
             }
             .cubicTransition(
@@ -182,5 +180,11 @@ extension StoryView {
             .frame(maxWidth: .infinity, alignment: .trailing)
             .padding([.bottom, .horizontal])
         }
+    }
+    
+    private var noticeLabel: some View {
+        NoticeLabel(message: vm.noticeMsg)
+            .opacity(vm.showNoticeLabel ? 1 : 0)
+            .animation(.easeIn, value: vm.showNoticeLabel)
     }
 }

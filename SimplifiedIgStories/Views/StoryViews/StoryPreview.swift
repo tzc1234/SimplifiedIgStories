@@ -12,8 +12,9 @@ struct StoryPreview: View {
     @EnvironmentObject private var vm: StoriesViewModel
     
     @State private var isLoading = false
-    @State private var showSaved = false
+    @State private var showNoticeLabel = false
     @State private var showAlert = false
+    @State private var noticeMsg = ""
     
     @State private var player: AVPlayer?
     
@@ -55,7 +56,7 @@ struct StoryPreview: View {
                 LoadingView()
             }
          
-            savedLabel
+            noticeLabel
         }
         .onAppear {
             if let videoUrl = videoUrl {
@@ -136,33 +137,7 @@ extension StoryPreview {
     
     private var postBtn: some View {
         Button {
-            guard let yourStoryIdx = vm.yourStoryIdx else { return }
-            var portions = vm.stories[yourStoryIdx].portions
-            
-            // *** In real environment, the photo or video recorded should be uploaded to server side,
-            // this is a demo app, however, storing them into temp directory for displaying IG story animation.
-            if let uiImage = uiImage,
-                let imageUrl = LocalFileManager.instance.saveImageToTemp(image: uiImage)
-            {
-                // Just append a new Portion instance to current user's potion array.
-                portions.append(
-                    Portion(id: vm.lastPortionId + 1, imageUrl: imageUrl)
-                )
-                vm.stories[yourStoryIdx].portions = portions
-                vm.stories[yourStoryIdx].lastUpdate = Date().timeIntervalSince1970
-            } else if let videoUrl = videoUrl { // Similar process in video case.
-                let asset = AVAsset(url: videoUrl)
-                let duration = asset.duration
-                let durationSeconds = CMTimeGetSeconds(duration)
-                
-                portions.append(
-                    Portion(id: vm.lastPortionId + 1, videoDuration: durationSeconds, videoUrlFromCam: videoUrl)
-                )
-                vm.stories[yourStoryIdx].portions = portions
-                vm.stories[yourStoryIdx].lastUpdate = Date().timeIntervalSince1970
-            }
-            
-            vm.toggleStoryCamView()
+            postStoryPortion()
         } label: {
             Text("Post")
                 .font(.headline)
@@ -175,32 +150,82 @@ extension StoryPreview {
         }
     }
     
-    private var savedLabel: some View {
-        SavedLabel()
-            .opacity(showSaved ? 1 : 0)
-            .animation(.easeIn, value: showSaved)
+    private var noticeLabel: some View {
+        NoticeLabel(message: noticeMsg)
+            .opacity(showNoticeLabel ? 1 : 0)
+            .animation(.easeInOut, value: showNoticeLabel)
     }
 }
 
 // MARK: functions
 extension StoryPreview {
+    private func showNoticeMsg(_ msg: String) {
+        noticeMsg = msg
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            showNoticeLabel = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                showNoticeLabel = false
+            }
+        }
+    }
+    
     private func saveToAlbum() {
-        let completion = {
-            isLoading = false
-            showSaved = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                showSaved = false
+        let completion: ImageVideoSaveCompletion = { result in
+            switch result {
+            case .success(_):
+                isLoading = false
+                showNoticeMsg("Saved.")
+            case .failure(let imageVideoSaveErr):
+                switch imageVideoSaveErr {
+                case .noAddPhotoPermission:
+                    isLoading = false
+                    showNoticeMsg("Couldn't save. No add photo permission.")
+                case .saveError(let err):
+                    isLoading = false
+                    showNoticeMsg("ERROR: \(err.localizedDescription)")
+                }
             }
         }
         
         if let uiImage = uiImage {
-            let imageSaver = ImageSaver(saveCompletedAction: completion)
+            let imageSaver = ImageSaver(completion: completion)
             isLoading = true
             imageSaver.saveImageToAlbum(uiImage)
         } else if let videoUrl = videoUrl {
-            let videoSaver = VideoSaver(saveCompletedAction: completion)
+            let videoSaver = VideoSaver(completion: completion)
             isLoading = true
             videoSaver.saveVideoToAlbum(videoUrl)
         }
+    }
+    
+    private func postStoryPortion() {
+        guard let yourStoryIdx = vm.yourStoryIdx else { return }
+        
+        var portions = vm.stories[yourStoryIdx].portions
+        
+        // *** In real environment, the photo or video recorded should be uploaded to server side,
+        // this is a demo app, however, storing them into temp directory for displaying IG story animation.
+        if let uiImage = uiImage,
+            let imageUrl = LocalFileManager.instance.saveImageToTemp(image: uiImage)
+        {
+            // Just append a new Portion instance to current user's potion array.
+            portions.append(
+                Portion(id: vm.lastPortionId + 1, imageUrl: imageUrl)
+            )
+            vm.stories[yourStoryIdx].portions = portions
+            vm.stories[yourStoryIdx].lastUpdate = Date().timeIntervalSince1970
+        } else if let videoUrl = videoUrl { // Similar process in video case.
+            let asset = AVAsset(url: videoUrl)
+            let duration = asset.duration
+            let durationSeconds = CMTimeGetSeconds(duration)
+            
+            portions.append(
+                Portion(id: vm.lastPortionId + 1, videoDuration: durationSeconds, videoUrlFromCam: videoUrl)
+            )
+            vm.stories[yourStoryIdx].portions = portions
+            vm.stories[yourStoryIdx].lastUpdate = Date().timeIntervalSince1970
+        }
+        
+        vm.toggleStoryCamView()
     }
 }

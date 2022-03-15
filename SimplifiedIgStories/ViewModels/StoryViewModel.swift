@@ -30,7 +30,8 @@ final class StoryViewModel: ObservableObject {
     PassthroughSubject<[Int: BarPortionAnimationStatus], Never>()
     
     @Published var isLoading = false
-    @Published var showSavedLabel = false
+    @Published var showNoticeLabel = false
+    @Published var noticeMsg = ""
     
     let storyId: Int
     let storiesViewModel: StoriesViewModel // parent ViewModel
@@ -264,29 +265,52 @@ extension StoryViewModel {
     }
     
     func saveCurrentPortion() {
-        guard let portion = story.portions.first(where: { $0.id == currentStoryPortionId }) else {
+        guard
+            let portion =
+                story.portions.first(where: { $0.id == currentStoryPortionId })
+        else {
             return
         }
         
-        let completion = {
+        let completion: ImageVideoSaveCompletion = { result in
             DispatchQueue.main.async { [weak self] in
-                self?.isLoading = false
-                self?.showSavedLabel = true
+                guard let self = self else { return }
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-                    self?.showSavedLabel = false
+                switch result {
+                case .success(_):
+                    self.isLoading = false
+                    self.showNoticeMsg("Saved.")
+                case .failure(let imageVideoSaveErr):
+                    switch imageVideoSaveErr {
+                    case .noAddPhotoPermission:
+                        self.isLoading = false
+                        self.showNoticeMsg("Couldn't save. No add photo permission.")
+                    case .saveError(let err):
+                        self.isLoading = false
+                        self.showNoticeMsg("ERROR: \(err.localizedDescription)")
+                    }
                 }
             }
         }
         
         if let imageUrl = portion.imageUrl, let uiImage = LocalFileManager.instance.getImageBy(url: imageUrl) {
-            let imageSaver = ImageSaver(saveCompletedAction: completion)
+            let imageSaver = ImageSaver(completion: completion)
             isLoading = true
             imageSaver.saveImageToAlbum(uiImage)
         } else if let videoUrl = portion.videoUrlFromCam {
-            let videoSaver = VideoSaver(saveCompletedAction: completion)
+            let videoSaver = VideoSaver(completion: completion)
             isLoading = true
             videoSaver.saveVideoToAlbum(videoUrl)
+        }
+    }
+    
+    func showNoticeMsg(_ msg: String) {
+        noticeMsg = msg
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            self?.showNoticeLabel = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+                self?.showNoticeLabel = false
+            }
         }
     }
     
