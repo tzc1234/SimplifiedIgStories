@@ -35,7 +35,7 @@ struct ProgressBar: View {
         }
         .padding(.horizontal, 10)
         .onChange(of: vm.portionTransitionDirection) { newDirection in
-            vm.performProgressBarTransitionTo(newDirection)
+            vm.performProgressBarTransition(to: newDirection)
         }
         .onChange(of: vm.currentPortionAnimationStatus) { newStatus in
             vm.performNextProgressBarPortionAnimationWhenFinished(newStatus)
@@ -47,7 +47,7 @@ struct ProgressBar: View {
             vm.startProgressBarAnimation()
         }
         .onChange(of: scenePhase) { newPhase in
-            vm.pasuseOrResumeProgressBarAnimationDependsOn(scenePhase: newPhase)
+            vm.pasuseOrResumeProgressBarAnimationDepends(on: newPhase)
         }
     }
     

@@ -36,7 +36,7 @@ struct StoryView: View {
                     Spacer()
                     
                     DetectableTapGesturePositionView(
-                        tapCallback: vm.decidePortionTransitionDirectionBy(point:)
+                        tapCallback: vm.decidePortionTransitionDirection(by:)
                     )
                     
                     Spacer()
@@ -47,7 +47,7 @@ struct StoryView: View {
                                 vm.deleteCurrentPortion()
                             }
                             Button("Save", role: .none) {
-                                vm.saveCurrentPortion()
+                                vm.savePortionImageVideo()
                             }
                             Button("Cancel", role: .cancel, action: {})
                         }
@@ -69,7 +69,7 @@ struct StoryView: View {
                 }
             )
             .onAppear {
-                vm.initAnimation(storyId: storyId)
+                vm.initStoryAnimation(by: storyId)
             }
             .onChange(of: vm.showConfirmationDialog) { newValue in
                 vm.pauseAndResumePortion(shouldPause: newValue)
