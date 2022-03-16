@@ -66,7 +66,7 @@ extension StoriesViewModel {
 
 // MARK: functions
 extension StoriesViewModel {
-    func loadStories() {
+    private func loadStories() {
         stories = dataService.loadStories()
     }
     
@@ -93,7 +93,7 @@ extension StoriesViewModel {
         }
         
         if story.hasPortion {
-            showStoryContainer(storyId: storyId)
+            showStoryContainer(byStoryId: storyId)
         } else if story.user.isCurrentUser {
             toggleStoryCamView()
         }
@@ -102,7 +102,7 @@ extension StoriesViewModel {
 
 // MARK: functions for StoryContainer
 extension StoriesViewModel {
-    func getContainerOffset(width: CGFloat) -> CGFloat {
+    func getContainerOffset(byWidth width: CGFloat) -> CGFloat {
         guard
             let index =
                 currentStories.firstIndex(where: { $0.id == currentStoryId })
@@ -112,7 +112,7 @@ extension StoriesViewModel {
         return -CGFloat(index) * width
     }
     
-    func showStoryContainer(storyId: Int) {
+    func showStoryContainer(byStoryId storyId: Int) {
         currentStoryId = storyId
         withAnimation(.easeInOut(duration: 0.3)) { [weak self] in
             self?.showContainer.toggle()
@@ -132,7 +132,7 @@ extension StoriesViewModel {
         storyIdBeforeDragged = currentStoryId
     }
     
-    func endDraggingStoryContainer(offset: CGFloat) {
+    func endDraggingStoryContainer(withOffset offset: CGFloat) {
         // Imitate the close behaviour of IG story when dragging right in the first story,
         // or dragging left in the last story, close the container.
         if (currentStoryId == currentStories.first?.id && offset > 0.2) ||
@@ -147,7 +147,7 @@ extension StoriesViewModel {
             }
             
             let nextIdx = Int((CGFloat(currentStoryIdx) - offset).rounded())
-            // Make sure within boundary.
+            // Make sure within the boundary.
             currentStoryId = currentStories[min(nextIdx, stories.count - 1)].id
         }
         

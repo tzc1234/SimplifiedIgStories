@@ -29,7 +29,7 @@ struct StoryContainer: View {
             }
         }
         .frame(width: screenWidth, alignment: .leading)
-        .offset(x: vm.getContainerOffset(width: screenWidth))
+        .offset(x: vm.getContainerOffset(byWidth: screenWidth))
         .offset(x: translation)
         .animation(.interactiveSpring(), value: vm.currentStoryId)
         .animation(.interactiveSpring(), value: translation)
@@ -40,7 +40,7 @@ struct StoryContainer: View {
                     state = value.translation.width
                 }
                 .onEnded { value in
-                    vm.endDraggingStoryContainer(offset: value.translation.width / screenWidth)
+                    vm.endDraggingStoryContainer(withOffset: value.translation.width / screenWidth)
                 }
         )
         .statusBar(hidden: true)
