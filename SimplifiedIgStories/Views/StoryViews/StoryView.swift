@@ -94,7 +94,7 @@ struct StoryView_Previews: PreviewProvider {
         let story = storiesViewModel.currentStories[0]
         StoryView(
             storyId: story.id,
-            storyViewModel: storiesViewModel.getStoryViewModelBy(storyId: story.id)
+            storyViewModel: storiesViewModel.getStoryViewModel(by: story.id)
         )
     }
 }

@@ -25,10 +25,6 @@ final class StoryViewModel: ObservableObject {
     @Published var barPortionAnimationStatuses: [Int: BarPortionAnimationStatus] = [:]
     
     @Published var showConfirmationDialog = false
-    
-    let barPortionAnimationStatusesPublisher =
-    PassthroughSubject<[Int: BarPortionAnimationStatus], Never>()
-    
     @Published var isLoading = false
     @Published var showNoticeLabel = false
     @Published var noticeMsg = ""

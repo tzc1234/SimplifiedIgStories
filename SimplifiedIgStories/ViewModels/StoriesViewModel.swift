@@ -70,7 +70,7 @@ extension StoriesViewModel {
         stories = dataService.loadStories()
     }
     
-    func getStoryViewModelBy(storyId: Int) -> StoryViewModel {
+    func getStoryViewModel(by storyId: Int) -> StoryViewModel {
         guard let existingStoryViewModel = storyViewModels[storyId] else {
             let newStoryViewModel = StoryViewModel(storyId: storyId, storiesViewModel: self)
             storyViewModels[storyId] = newStoryViewModel
@@ -87,13 +87,13 @@ extension StoriesViewModel {
         withAnimation(.default) { showStoryCamView.toggle() }
     }
     
-    func tapStoryIcon(storyId: Int) {
+    func tapStoryIcon(with storyId: Int) {
         guard let story = stories.first(where: { $0.id == storyId }) else {
             return
         }
         
         if story.hasPortion {
-            showStoryContainer(byStoryId: storyId)
+            showStoryContainer(by: storyId)
         } else if story.user.isCurrentUser {
             toggleStoryCamView()
         }
@@ -102,7 +102,7 @@ extension StoriesViewModel {
 
 // MARK: functions for StoryContainer
 extension StoriesViewModel {
-    func getContainerOffset(byWidth width: CGFloat) -> CGFloat {
+    func getContainerOffset(by width: CGFloat) -> CGFloat {
         guard
             let index =
                 currentStories.firstIndex(where: { $0.id == currentStoryId })
@@ -112,7 +112,7 @@ extension StoriesViewModel {
         return -CGFloat(index) * width
     }
     
-    func showStoryContainer(byStoryId storyId: Int) {
+    func showStoryContainer(by storyId: Int) {
         currentStoryId = storyId
         withAnimation(.easeInOut(duration: 0.3)) { [weak self] in
             self?.showContainer.toggle()

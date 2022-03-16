@@ -21,7 +21,7 @@ struct StoryContainer: View {
                 ForEach(vm.currentStories) { story in
                     StoryView(
                         storyId: story.id,
-                        storyViewModel: vm.getStoryViewModelBy(storyId: story.id)
+                        storyViewModel: vm.getStoryViewModel(by: story.id)
                     )
                         .opacity(story.id != vm.currentStoryId && !vm.shouldCubicRotation ? 0.0 : 1.0)
                         .frame(width: screenWidth, height: geo.size.height)
@@ -29,7 +29,7 @@ struct StoryContainer: View {
             }
         }
         .frame(width: screenWidth, alignment: .leading)
-        .offset(x: vm.getContainerOffset(byWidth: screenWidth))
+        .offset(x: vm.getContainerOffset(by: screenWidth))
         .offset(x: translation)
         .animation(.interactiveSpring(), value: vm.currentStoryId)
         .animation(.interactiveSpring(), value: translation)

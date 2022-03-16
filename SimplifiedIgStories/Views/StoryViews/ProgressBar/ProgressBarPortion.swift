@@ -44,15 +44,6 @@ struct ProgressBarPortion: View {
                         vm.barPortionAnimationStatuses[portionId] = .finish
                     }
                 }
-                .onReceive(vm.barPortionAnimationStatusesPublisher, perform: { animationStatuses in
-                    guard let animationStatus = animationStatuses[portionId] else {
-                        return
-                    }
-                    
-                    if animationStatus == .finish {
-                        finishAnimation()
-                    }
-                })
                 .onChange(of: vm.barPortionAnimationStatuses[portionId]) { newValue in
                     if let portionAnimationStatus = newValue {
                         switch portionAnimationStatus {
@@ -84,7 +75,7 @@ struct ProgressBarPortion_Previews: PreviewProvider {
             portionId: story.portions[0].id,
             duration: 5.0,
             storyId: story.id,
-            storyViewModel: storiesViewModel.getStoryViewModelBy(storyId: story.id)
+            storyViewModel: storiesViewModel.getStoryViewModel(by: story.id)
         )
     }
 }

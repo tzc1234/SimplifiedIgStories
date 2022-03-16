@@ -62,7 +62,7 @@ struct StoryPortionView_Previews: PreviewProvider {
         let portion = story.portions[0]
         StoryPortionView(
             portion: portion,
-            storyViewModel: storiesViewModel.getStoryViewModelBy(storyId: story.id)
+            storyViewModel: storiesViewModel.getStoryViewModel(by: story.id)
         )
     }
 }
