@@ -1,6 +1,9 @@
 # Simple Instagram Story
 A simple version, not many functions, of IG story demo app which is my study of **SwiftUI**.
 
+## Updated on 17/03/2022:
+1. Start a new branch for studying Combine Framework.
+
 ## Updated on 14/03/2022:
 1. Handle camera and microphone permission.
 
