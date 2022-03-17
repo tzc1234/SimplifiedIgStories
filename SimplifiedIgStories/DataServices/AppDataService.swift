@@ -6,36 +6,45 @@
 //
 
 import Foundation
+import Combine
+
+enum DataServiceError: Error {
+    case jsonFileNotFound
+    case other(Error)
+    
+    var errString: String {
+        switch self {
+        case .jsonFileNotFound:
+            return "JSON file not found."
+        case .other(let error):
+            return error.localizedDescription
+        }
+    }
+}
 
 protocol DataService {
-    func loadStories() -> [Story]
+    func fetchStories() -> AnyPublisher<[Story], DataServiceError>
 }
 
 final class AppDataService: DataService {
-    // Mock the data as coming from an api call.
-    func loadStories() -> [Story] {
-        let stories: [Story] = load("storiesData.json")
-        return stories
-    }
-}
-
-func load<T: Decodable>(_ filename: String) -> T {
-    let data: Data
+    private let filename = "storiesData.json"
     
-    guard let file = Bundle.main.url(forResource: filename, withExtension: nil) else {
-        fatalError("Couldn't find \(filename) in main bundle.")
-    }
-    
-    do {
-        data = try Data(contentsOf: file)
-    } catch {
-        fatalError("Couldn't load \(filename) from main bundle:\n\(error)")
-    }
+    func fetchStories() -> AnyPublisher<[Story], DataServiceError> {
+        guard let url = Bundle.main.url(forResource: filename, withExtension: nil) else {
+            return Fail<[Story], DataServiceError>(error: .jsonFileNotFound)
+                .eraseToAnyPublisher()
+        }
         
-    do {
-        let decoder = JSONDecoder()
-        return try decoder.decode(T.self, from: data)
-    } catch {
-        fatalError("Couldn't parse \(filename) as \(T.self):\n\(error)")
+        let publisher = URLSession.shared.dataTaskPublisher(for: url)
+            .map { data, _ in
+                return data
+            }
+            .decode(type: [Story].self, decoder: JSONDecoder())
+            .catch { error in
+                return Fail<[Story], DataServiceError>(error: .other(error))
+            }
+            .eraseToAnyPublisher()
+        
+        return publisher
     }
 }

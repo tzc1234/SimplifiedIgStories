@@ -33,7 +33,6 @@ struct StoryIconsView: View {
         }
         
     }
-    
 }
 
 struct StoryIconsView_Previews: PreviewProvider {

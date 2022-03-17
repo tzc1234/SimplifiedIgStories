@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import Combine
 
 final class StoriesViewModel: ObservableObject {
     @Published var stories: [Story] = []
@@ -25,11 +26,13 @@ final class StoriesViewModel: ObservableObject {
     // key: storyId
     var storyViewModels: [Int: StoryViewModel] = [:]
     
+    private var subscriptions = Set<AnyCancellable>()
+    
     private let dataService: DataService
     
     init(dataService: DataService = AppDataService()) {
         self.dataService = dataService
-        self.loadStories()
+        self.fetchStories()
     }
 }
 
@@ -66,8 +69,21 @@ extension StoriesViewModel {
 
 // MARK: functions
 extension StoriesViewModel {
-    private func loadStories() {
-        stories = dataService.loadStories()
+    private func fetchStories() {
+        dataService.fetchStories()
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let dataServiceError):
+                    print(dataServiceError.errString)
+                    self.stories = []
+                }
+            } receiveValue: { stories in
+                self.stories = stories
+            }
+            .store(in: &subscriptions)
     }
     
     func getStoryViewModel(by storyId: Int) -> StoryViewModel {
