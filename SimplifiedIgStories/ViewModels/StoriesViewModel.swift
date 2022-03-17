@@ -72,16 +72,16 @@ extension StoriesViewModel {
     private func fetchStories() {
         dataService.fetchStories()
             .receive(on: DispatchQueue.main)
-            .sink { completion in
+            .sink { [weak self] completion in
                 switch completion {
                 case .finished:
                     break
                 case .failure(let dataServiceError):
                     print(dataServiceError.errString)
-                    self.stories = []
+                    self?.stories = []
                 }
-            } receiveValue: { stories in
-                self.stories = stories
+            } receiveValue: { [weak self] stories in
+                self?.stories = stories
             }
             .store(in: &subscriptions)
     }
