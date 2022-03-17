@@ -29,9 +29,10 @@ final class StoryViewModel: ObservableObject {
     @Published private(set) var showNoticeLabel = false
     @Published private(set) var noticeMsg = ""
     
+    private var subscriptions = Set<AnyCancellable>()
+    
     let storyId: Int
     let storiesViewModel: StoriesViewModel // parent ViewModel
-    private var anyCancellable: AnyCancellable?
     
     init(storyId: Int, storiesViewModel: StoriesViewModel) {
         self.storyId = storyId
@@ -40,9 +41,10 @@ final class StoryViewModel: ObservableObject {
         
         // Reference: https://stackoverflow.com/a/58406402
         // Trigger current ViewModel objectWillChange when parent's published property changed.
-        anyCancellable = storiesViewModel.objectWillChange.sink { [weak self] in
+        storiesViewModel.objectWillChange.sink { [weak self] in
             self?.objectWillChange.send()
         }
+        .store(in: &subscriptions)
     }
 }
 
@@ -142,36 +144,35 @@ extension StoryViewModel {
             return
         }
         
-        let completion: ImageVideoSaveCompletion = { result in
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                
-                switch result {
-                case .success(_):
-                    self.isLoading = false
-                    self.showNotice(withMsg: "Saved.")
-                case .failure(let imageVideoSaveErr):
-                    switch imageVideoSaveErr {
-                    case .noAddPhotoPermission:
-                        self.isLoading = false
-                        self.showNotice(withMsg: "Couldn't save. No add photo permission.")
-                    case .saveError(let err):
-                        self.isLoading = false
-                        self.showNotice(withMsg: "ERROR: \(err.localizedDescription)")
-                    }
-                }
-            }
+        var publisher: AnyPublisher<String, ImageVideoSaveError>?
+        if let imageUrl = portion.imageUrl, let uiImage = LocalFileManager.instance.getImageBy(url: imageUrl) {
+            isLoading = true
+            publisher = ImageSaver().saveToAlbum(uiImage)
+        } else if let videoUrl = portion.videoUrlFromCam {
+            isLoading = true
+            publisher = VideoSaver().saveToAlbum(videoUrl)
         }
         
-        if let imageUrl = portion.imageUrl, let uiImage = LocalFileManager.instance.getImageBy(url: imageUrl) {
-            let imageSaver = ImageSaver(completion: completion)
-            isLoading = true
-            imageSaver.saveImageToAlbum(uiImage)
-        } else if let videoUrl = portion.videoUrlFromCam {
-            let videoSaver = VideoSaver(completion: completion)
-            isLoading = true
-            videoSaver.saveVideoToAlbum(videoUrl)
-        }
+        publisher?
+             .receive(on: DispatchQueue.main)
+             .sink { [weak self] completion in
+                 self?.isLoading = false
+                 
+                 switch completion {
+                 case .finished:
+                     break
+                 case .failure(let imageVideoError):
+                     switch imageVideoError {
+                     case .noAddPhotoPermission:
+                         self?.showNotice(withMsg: "Couldn't save. No add photo permission.")
+                     case .saveError(let err):
+                         self?.showNotice(withMsg: "ERROR: \(err.localizedDescription)")
+                     }
+                 }
+             } receiveValue: { [weak self] msg in
+                 self?.showNotice(withMsg: msg)
+             }
+             .store(in: &subscriptions)
     }
     
     func showNotice(withMsg msg: String) {

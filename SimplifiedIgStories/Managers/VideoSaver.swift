@@ -6,29 +6,27 @@
 //
 
 import PhotosUI
+import Combine
 
 class VideoSaver {
-    let completion: ImageVideoSaveCompletion
-    
-    init(completion: ImageVideoSaveCompletion = nil) {
-        self.completion = completion
-    }
-    
-    func saveVideoToAlbum(_ videoUrl: URL) {
-        PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
-            if status == .authorized {
-                PHPhotoLibrary.shared().performChanges {
-                    PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: videoUrl)
-                } completionHandler: { isSaved, error in
-                    if let error = error {
-                        self.completion?(.failure(.saveError(error)))
-                    } else if isSaved {
-                        self.completion?(.success("Saved."))
+    func saveToAlbum(_ videoUrl: URL) -> AnyPublisher<String, ImageVideoSaveError> {
+        Future<String, ImageVideoSaveError> { promise in
+            PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
+                if status == .authorized {
+                    PHPhotoLibrary.shared().performChanges {
+                        PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: videoUrl)
+                    } completionHandler: { isSaved, error in
+                        if let error = error {
+                            promise(.failure(.saveError(error)))
+                        } else if isSaved {
+                            promise(.success("Saved."))
+                        }
                     }
+                } else {
+                    promise(.failure(.noAddPhotoPermission))
                 }
-            } else {
-                self.completion?(.failure(.noAddPhotoPermission))
             }
         }
+        .eraseToAnyPublisher()
     }
 }

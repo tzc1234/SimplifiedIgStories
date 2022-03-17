@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AVKit
+import Combine
 
 struct StoryPreview: View {
     @EnvironmentObject private var vm: StoriesViewModel
@@ -17,6 +18,7 @@ struct StoryPreview: View {
     @State private var noticeMsg = ""
     
     @State private var player: AVPlayer?
+    @State private var subscriptions = Set<AnyCancellable>()
     
     let uiImage: UIImage?
     let videoUrl: URL?
@@ -170,32 +172,35 @@ extension StoryPreview {
     }
     
     private func saveToAlbum() {
-        let completion: ImageVideoSaveCompletion = { result in
-            switch result {
-            case .success(_):
-                isLoading = false
-                showNoticeMsg("Saved.")
-            case .failure(let imageVideoSaveErr):
-                switch imageVideoSaveErr {
-                case .noAddPhotoPermission:
-                    isLoading = false
-                    showNoticeMsg("Couldn't save. No add photo permission.")
-                case .saveError(let err):
-                    isLoading = false
-                    showNoticeMsg("ERROR: \(err.localizedDescription)")
-                }
-            }
+        var publisher: AnyPublisher<String, ImageVideoSaveError>?
+        if let uiImage = uiImage {
+            isLoading = true
+            publisher = ImageSaver().saveToAlbum(uiImage)
+        } else if let videoUrl = videoUrl {
+            isLoading = true
+            publisher = VideoSaver().saveToAlbum(videoUrl)
         }
         
-        if let uiImage = uiImage {
-            let imageSaver = ImageSaver(completion: completion)
-            isLoading = true
-            imageSaver.saveImageToAlbum(uiImage)
-        } else if let videoUrl = videoUrl {
-            let videoSaver = VideoSaver(completion: completion)
-            isLoading = true
-            videoSaver.saveVideoToAlbum(videoUrl)
-        }
+        publisher?
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { completion in
+                isLoading = false
+                
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    switch error {
+                    case .noAddPhotoPermission:
+                        showNoticeMsg("Couldn't save. No add photo permission.")
+                    case .saveError(let err):
+                        showNoticeMsg("ERROR: \(err.localizedDescription)")
+                    }
+                }
+            }, receiveValue: { msg in
+                showNoticeMsg(msg)
+            })
+            .store(in: &subscriptions)
     }
     
     private func postStoryPortion() {

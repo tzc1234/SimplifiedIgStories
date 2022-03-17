@@ -7,6 +7,7 @@
 
 import UIKit
 import PhotosUI
+import Combine
 
 enum ImageVideoSaveError: Error {
     case noAddPhotoPermission
@@ -16,13 +17,9 @@ enum ImageVideoSaveError: Error {
 typealias ImageVideoSaveCompletion = ((Result<String, ImageVideoSaveError>) -> Void)?
 
 class ImageSaver: NSObject {
-    let completion: ImageVideoSaveCompletion
+    private var completion: ImageVideoSaveCompletion = nil
     
-    init(completion: ImageVideoSaveCompletion = nil) {
-        self.completion = completion
-    }
-    
-    func saveImageToAlbum(_ image: UIImage) {
+    func saveToAlbum(_ image: UIImage) -> AnyPublisher<String, ImageVideoSaveError> {
         PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
             if status == .authorized {
                 UIImageWriteToSavedPhotosAlbum(image, self, #selector(ImageSaver.performSaveImage), nil)
@@ -30,6 +27,18 @@ class ImageSaver: NSObject {
                 self.completion?(.failure(.noAddPhotoPermission))
             }
         }
+        
+        return Future<String, ImageVideoSaveError> { [weak self] promise in
+            self?.completion = { result in
+                switch result {
+                case .success(let str):
+                    promise(.success(str))
+                case .failure(let error):
+                    promise(.failure(error))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
     }
     
     @objc private func performSaveImage(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
