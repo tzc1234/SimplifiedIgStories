@@ -9,11 +9,8 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject private var vm = StoriesViewModel()
-    @Namespace private var namespace
     
     private let titleHeight = 44.0
-    private let screenWidth = UIScreen.main.bounds.width
-    private let screenHeight = UIScreen.main.bounds.height
     
     var body: some View {
         GeometryReader { geo in
@@ -29,10 +26,10 @@ struct HomeView: View {
                     
                     storyContainer(geo: geo)
                 }
-                .frame(width: screenWidth)
+                .frame(width: .screenWidth)
                 
             }
-            .offset(x: vm.showStoryCamView ? 0.0 : -screenWidth)
+            .offset(x: vm.showStoryCamView ? 0.0 : -.screenWidth)
             .environmentObject(vm)
             .onPreferenceChange(IdFramePreferenceKey.self) { idFrameDict in
                 vm.storyIconFrames = idFrameDict
@@ -57,7 +54,7 @@ extension HomeView {
                 StoryCamView(tapCloseAction: vm.toggleStoryCamView)
             }
         }
-        .frame(width: screenWidth)
+        .frame(width: .screenWidth)
     }
     
     private var titleView: some View {
@@ -77,7 +74,7 @@ extension HomeView {
             StoryContainer()
                 .zIndex(1.0)
                 .frame(maxHeight: .infinity, alignment: .top)
-                .openAppLikeTransition(sacle: frame.height / screenHeight, offestX: offsetX, offsetY: offsetY)
+                .openAppLikeTransition(sacle: frame.height / .screenHeight, offestX: offsetX, offsetY: offsetY)
         }
     }
 }

@@ -12,8 +12,6 @@ struct StoryContainer: View {
     
     @GestureState private var translation: CGFloat = 0
     
-    private let screenWidth = UIScreen.main.bounds.width
-    
     var body: some View {
         GeometryReader { geo in
             HStack(alignment: .top, spacing: 0) {
@@ -24,12 +22,12 @@ struct StoryContainer: View {
                         storyViewModel: vm.getStoryViewModel(by: story.id)
                     )
                         .opacity(story.id != vm.currentStoryId && !vm.shouldCubicRotation ? 0.0 : 1.0)
-                        .frame(width: screenWidth, height: geo.size.height)
+                        .frame(width: .screenWidth, height: geo.size.height)
                 }
             }
         }
-        .frame(width: screenWidth, alignment: .leading)
-        .offset(x: vm.getContainerOffset(by: screenWidth))
+        .frame(width: .screenWidth, alignment: .leading)
+        .offset(x: vm.getContainerOffset(by: .screenWidth))
         .offset(x: translation)
         .animation(.interactiveSpring(), value: vm.currentStoryId)
         .animation(.interactiveSpring(), value: translation)
@@ -40,7 +38,7 @@ struct StoryContainer: View {
                     state = value.translation.width
                 }
                 .onEnded { value in
-                    vm.endDraggingStoryContainer(withOffset: value.translation.width / screenWidth)
+                    vm.endDraggingStoryContainer(withOffset: value.translation.width / .screenWidth)
                 }
         )
         .statusBar(hidden: true)

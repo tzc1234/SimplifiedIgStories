@@ -91,8 +91,7 @@ extension StoryViewModel {
     }
     
     func decidePortionTransitionDirection(by point: CGPoint) {
-        let screenWidth = UIScreen.main.bounds.width
-        portionTransitionDirection = point.x <= screenWidth / 2 ? .backward : .forward
+        portionTransitionDirection = point.x <= .screenWidth / 2 ? .backward : .forward
     }
     
     func deleteCurrentPortion() {
