@@ -36,9 +36,7 @@ final class AppDataService: DataService {
         }
         
         let publisher = URLSession.shared.dataTaskPublisher(for: url)
-            .map { data, _ in
-                return data
-            }
+            .map { $0.data }
             .decode(type: [Story].self, decoder: JSONDecoder())
             .catch { error in
                 return Fail<[Story], DataServiceError>(error: .other(error))
