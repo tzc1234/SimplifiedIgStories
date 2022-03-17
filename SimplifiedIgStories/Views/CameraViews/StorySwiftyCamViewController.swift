@@ -8,8 +8,6 @@
 import UIKit
 
 class StorySwiftyCamViewController: SwiftyCamViewController {
-    static let maximumVideoDuration: Double = 10.0
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -18,9 +16,8 @@ class StorySwiftyCamViewController: SwiftyCamViewController {
         pinchToZoom = false
         swipeToZoom = false
         tapToFocus = true
-        maximumVideoDuration = Self.maximumVideoDuration
+        maximumVideoDuration = .maximumVideoDuration
         audioEnabled = true
         doubleTapCameraSwitch = false
     }
-    
 }

@@ -18,7 +18,6 @@ struct VideoRecordButton: View {
     @State var longPressingAction: ((_ isPressing: Bool) -> Void)
     
     let buttonSize = 80.0
-    let duration = StorySwiftyCamViewController.maximumVideoDuration + 1
     
     var body: some View {
         ZStack {
@@ -49,7 +48,8 @@ struct VideoRecordButton: View {
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.6), value: isLongPressing || isTapped)
         .simultaneousGesture(
-            LongPressGesture(minimumDuration: duration, maximumDistance: buttonSize)
+            // +1 second for spring animation.
+            LongPressGesture(minimumDuration: .maximumVideoDuration + 1, maximumDistance: buttonSize)
                 .updating($isLongPressing) { currentState, gestureState, _ in
                     gestureState = currentState
                 }
@@ -78,20 +78,22 @@ struct VideoRecordButton: View {
 
 struct VideoRecordButton_Previews: PreviewProvider {
     static var previews: some View {
-        VideoRecordButton(tapAction: {}, longPressingAction: {_ in })
-            .background(.black)
+        ZStack {
+            Color.black
+            VideoRecordButton(tapAction: {}, longPressingAction: {_ in })
+        }
     }
 }
 
 // MARK: functions
 extension VideoRecordButton {
-    func startStrokeAnimation() {
-        withAnimation(.linear(duration: duration - 1)) {
+    private func startStrokeAnimation() {
+        withAnimation(.linear(duration: .maximumVideoDuration)) {
             fill = 1.0
         }
     }
     
-    func resetStrokeAnimation() {
+    private func resetStrokeAnimation() {
         fill = 0.0
         animationCircleId = animationCircleId == 0 ? 1 : 0
     }

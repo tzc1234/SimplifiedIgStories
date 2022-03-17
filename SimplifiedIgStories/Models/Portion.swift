@@ -25,8 +25,8 @@ struct Portion: Codable, Identifiable {
     }
     
     var duration: Double {
-        guard videoUrl != nil, let videoDuration = videoDuration else {
-            return 5.0 // *** Default duration.
+        guard let videoDuration = videoDuration else {
+            return .defaultStoryDuration
         }
         return videoDuration
     }
