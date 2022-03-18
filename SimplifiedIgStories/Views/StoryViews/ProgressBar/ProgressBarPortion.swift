@@ -82,17 +82,17 @@ struct ProgressBarPortion_Previews: PreviewProvider {
 
 // MARK: functions
 extension ProgressBarPortion {
-    func resetTraceableRectangle(toLength endX: Double = 0.0) {
+    private func resetTraceableRectangle(toLength endX: Double = 0.0) {
         self.endX = endX
         traceableRectangleId = traceableRectangleId == 0 ? 1 : 0
     }
     
-    func initializeAnimation() {
+    private func initializeAnimation() {
         print("storyId: \(storyId), portionId: \(portionId) initial.")
         resetTraceableRectangle()
     }
     
-    func startAnimation(maxWidth: Double) {
+    private func startAnimation(maxWidth: Double) {
         print("storyId: \(storyId), portionId: \(portionId) start.")
         resetTraceableRectangle()
         withAnimation(.linear(duration: duration)) {
@@ -101,7 +101,7 @@ extension ProgressBarPortion {
     }
     
     // TODO: combine restartAnimation and startAnimation
-    func restartAnimation(maxWidth: Double) {
+    private func restartAnimation(maxWidth: Double) {
         print("storyId: \(storyId), portionId: \(portionId) restart.")
         resetTraceableRectangle()
         withAnimation(.linear(duration: duration)) {
@@ -109,19 +109,19 @@ extension ProgressBarPortion {
         }
     }
     
-    func pauseAnimation() {
+    private func pauseAnimation() {
         print("storyId: \(storyId), portionId: \(portionId) pause.")
         resetTraceableRectangle(toLength: tracingEndX.currentEndX)
     }
     
-    func resumeAnimation(maxWidth: Double) {
+    private func resumeAnimation(maxWidth: Double) {
         print("storyId: \(storyId), portionId: \(portionId) resume.")
         withAnimation(.linear(duration: duration * (1 - tracingEndX.currentEndX / maxWidth))) {
             endX = maxWidth
         }
     }
     
-    func finishAnimation() {
+    private func finishAnimation() {
         print("storyId: \(storyId), portionId: \(portionId) finish.")
         resetTraceableRectangle(toLength: UIScreen.main.bounds.width)
     }
