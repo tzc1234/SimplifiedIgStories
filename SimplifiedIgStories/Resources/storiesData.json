@@ -45,25 +45,25 @@
 		"portions": [
 			{
 				"id": 3,
-				"imageName": "Einstein1"
+				"imageName": "peace1"
 			},
 			{
 				"id": 4,
-				"imageName": "Einstein2"
+				"imageName": "peace2"
 			},
 			{
 				"id": 5,
-				"imageName": "Einstein3"
+				"imageName": "peace3"
 			},
             {
                 "id": 8,
-                "imageName": "Einstein4"
+                "imageName": "peace4"
             }
 		],
 		"user": {
 			"id": 1,
-			"name": "Einstein",
-			"avatar": "Einstein4",
+			"name": "Peace",
+			"avatar": "peace4",
             "isCurrentUser": false
 		}
 	},
@@ -73,17 +73,17 @@
         "portions": [
             {
                 "id": 6,
-                "imageName": "Newton1"
+                "imageName": "bird1"
             },
             {
                 "id": 7,
-                "imageName": "Newton2"
+                "imageName": "bird2"
             }
         ],
         "user": {
             "id": 2,
-            "name": "Newton",
-            "avatar": "Newton",
+            "name": "Bird",
+            "avatar": "bird1",
             "isCurrentUser": false
         }
     },
