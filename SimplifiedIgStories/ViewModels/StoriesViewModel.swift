@@ -12,10 +12,10 @@ final class StoriesViewModel: ObservableObject {
     @Published var stories: [Story] = []
     
     @Published var currentStoryId = 0
-    @Published var showContainer = false
+    @Published private(set) var showContainer = false
     @Published var shouldCubicRotation = false
-    @Published var showStoryCamView = false
-    @Published var isDragging = false
+    @Published private(set) var showStoryCamView = false
+    @Published private(set) var isDragging = false
     
     var storyIdBeforeDragged = 0
     
@@ -114,8 +114,8 @@ extension StoriesViewModel {
     
     func showStoryContainer(by storyId: Int) {
         currentStoryId = storyId
-        withAnimation(.easeInOut(duration: 0.3)) { [weak self] in
-            self?.showContainer.toggle()
+        withAnimation(.easeInOut(duration: 0.3)) {
+            showContainer = true
         }
     }
     
@@ -123,7 +123,7 @@ extension StoriesViewModel {
         // Don't use .spring(). If you switch the StoryContainer fast from one, close then open another,
         // there will be a weird behaviour. The StoryView can not be updated completely and broken.
         withAnimation(.easeInOut(duration: 0.3)) {
-            showContainer.toggle()
+            showContainer = false
         }
     }
     

@@ -81,6 +81,9 @@ struct StoryView: View {
                 shouldRotate: vm.storiesViewModel.shouldCubicRotation,
                 offsetX: geo.frame(in: .global).minX
             )
+            .onDisappear {
+                print("storyId: \(storyId) view onDisappear.")
+            }
         }
         .cornerRadius(20.0)
         
@@ -103,7 +106,7 @@ struct StoryView_Previews: PreviewProvider {
 extension StoryView {
     // TODO: Limit the number of StoryPortionViews.
     private var storyPortionViews: some View {
-        ZStack(alignment: .top) {
+        ZStack {
             ForEach(vm.story.portions) { portion in
                 if portion.id == vm.currentStoryPortionId {
                     StoryPortionView(

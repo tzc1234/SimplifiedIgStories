@@ -18,16 +18,16 @@ enum BarPortionAnimationStatus {
 }
 
 final class StoryViewModel: ObservableObject {
-    @Published var currentStoryPortionId: Int = -1
-    @Published var portionTransitionDirection: PortionTransitionDirection = .none
+    @Published private(set) var currentStoryPortionId: Int = -1
+    @Published private(set) var portionTransitionDirection: PortionTransitionDirection = .none
     
     // The key is portionId.
     @Published var barPortionAnimationStatuses: [Int: BarPortionAnimationStatus] = [:]
     
     @Published var showConfirmationDialog = false
-    @Published var isLoading = false
-    @Published var showNoticeLabel = false
-    @Published var noticeMsg = ""
+    @Published private(set) var isLoading = false
+    @Published private(set) var showNoticeLabel = false
+    @Published private(set) var noticeMsg = ""
     
     let storyId: Int
     let storiesViewModel: StoriesViewModel // parent ViewModel
@@ -95,11 +95,7 @@ extension StoryViewModel {
     }
     
     func deleteCurrentPortion() {
-        // *** In real environment, the photo or video should be deleted in server side,
-        // this is a demo app, however, deleting them from temp directory.
         guard
-            let storyIdx =
-                storiesViewModel.stories.firstIndex(where: { $0.id == storyId }),
             let portionIdx =
                 story.portions.firstIndex(where: { $0.id == currentStoryPortionId })
         else {
@@ -107,26 +103,41 @@ extension StoryViewModel {
         }
         
         let portions = story.portions
-        let portion = portions[portionIdx]
+
+        // If next portionIdx within the portions, go next
+        if portionIdx + 1 < portions.count {
+            deletePortionFromStory(by: portionIdx)
+            
+            currentStoryPortionId = portions[portionIdx + 1].id
+            setCurrentBarPortionAnimationStatus(to: .start)
+        } else {
+            storiesViewModel.closeStoryContainer()
+            deletePortionFromStory(by: portionIdx)
+        }
+    }
+    
+    // *** In real environment, the photo or video should be deleted in server side,
+    // this is a demo app, however, deleting them from temp directory.
+    private func deletePortionFromStory(by portionIdx: Int) {
+        guard
+            let storyIdx =
+                storiesViewModel.stories.firstIndex(where: { $0.id == storyId })
+        else {
+            return
+        }
         
+        let portion = story.portions[portionIdx]
         if let fileUrl = portion.imageUrl ?? portion.videoUrl {
             LocalFileManager.instance.deleteFileBy(url: fileUrl)
         }
         
         storiesViewModel.stories[storyIdx].portions.remove(at: portionIdx)
-
-        // If next portionIdx within the portions, go next
-        if portionIdx + 1 < portions.count {
-            currentStoryPortionId = portions[portionIdx + 1].id
-            setCurrentBarPortionAnimationStatus(to: .start)
-        } else {
-            storiesViewModel.closeStoryContainer()
-        }
     }
     
     func savePortionImageVideo() {
         guard
-            let portion = story.portions.first(where: { $0.id == currentStoryPortionId })
+            let portion =
+                story.portions.first(where: { $0.id == currentStoryPortionId })
         else {
             return
         }
