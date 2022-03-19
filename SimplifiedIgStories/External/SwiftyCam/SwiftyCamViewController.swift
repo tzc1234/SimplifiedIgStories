@@ -317,14 +317,14 @@ open class SwiftyCamViewController: UIViewController {
 
 		// Test authorization status for Camera and Micophone
 
-		switch AVCaptureDevice.authorizationStatus(for: AVMediaType.video) {
+		switch AVCaptureDevice.authorizationStatus(for: .video) {
 		case .authorized:
 			// already authorized
 			break
 		case .notDetermined:
 			// not yet determined
 			sessionQueue.suspend()
-			AVCaptureDevice.requestAccess(for: AVMediaType.video, completionHandler: { [unowned self] granted in
+			AVCaptureDevice.requestAccess(for: .video, completionHandler: { [unowned self] granted in
 				if !granted {
 					self.setupResult = .notAuthorized
 				}
@@ -395,13 +395,11 @@ open class SwiftyCamViewController: UIViewController {
 		super.viewDidAppear(animated)
 
 		// Subscribe to device rotation notifications
-
 		if shouldUseDeviceOrientation {
 			orientation.start()
 		}
 
 		// Set background audio preference
-
 		setBackgroundAudioPreference()
 
 		sessionQueue.async {
@@ -744,13 +742,13 @@ open class SwiftyCamViewController: UIViewController {
 	}
 
 	/// Add Audio Inputs
-
 	fileprivate func addAudioInput() {
         guard audioEnabled else { return }
         
 		do {
-            if let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio){
+            if let audioDevice = AVCaptureDevice.default(for: .audio){
                 let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice)
+                
                 if session.canAddInput(audioDeviceInput) {
                     session.addInput(audioDeviceInput)
                 } else {
@@ -944,25 +942,13 @@ open class SwiftyCamViewController: UIViewController {
 	}
 
 	/// Sets whether SwiftyCam should enable background audio from other applications or sources
-
 	fileprivate func setBackgroundAudioPreference() {
-		guard allowBackgroundAudio else {
+		guard allowBackgroundAudio && audioEnabled else {
 			return
 		}
 
-        guard audioEnabled else {
-            return
-        }
-
 		do {
-            if #available(iOS 10.0, *) {
-                try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .default, options: [.mixWithOthers, .allowBluetooth, .allowAirPlay, .allowBluetoothA2DP])
-            } else {
-                let options: [AVAudioSession.CategoryOptions] = [.mixWithOthers, .allowBluetooth]
-                let category = AVAudioSession.Category.playAndRecord
-                let selector = NSSelectorFromString("setCategory:withOptions:error:")
-                AVAudioSession.sharedInstance().perform(selector, with: category, with: options)
-            }
+            try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .default, options: [.mixWithOthers, .allowBluetooth, .defaultToSpeaker])
             try AVAudioSession.sharedInstance().setActive(true)
 			session.automaticallyConfiguresApplicationAudioSession = false
 		} catch {

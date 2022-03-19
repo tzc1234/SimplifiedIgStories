@@ -18,10 +18,27 @@ struct AVPlayerControllerRepresentable: UIViewControllerRepresentable {
     }
     
     func makeUIViewController(context: Context) -> AVPlayerViewController {
+        NotificationCenter.default.addObserver(
+            context.coordinator,
+            selector: #selector(Coordinator.playerItemDidPlayToEndTime),
+            name: .AVPlayerItemDidPlayToEndTime,
+            object: nil
+        )
+        
         let vc = AVPlayerViewController()
         vc.showsPlaybackControls = false
         
-        NotificationCenter.default.addObserver(context.coordinator, selector: #selector(Coordinator.playerItemDidPlayToEndTime), name: .AVPlayerItemDidPlayToEndTime, object: nil)
+        do {
+            try AVAudioSession.sharedInstance()
+                .setCategory(
+                    .playAndRecord,
+                    mode: .default,
+                    options: [.mixWithOthers, .allowBluetooth, .defaultToSpeaker]
+                )
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch let error {
+            print(error.localizedDescription)
+        }
         
         DispatchQueue.main.async {
             vc.player = player
