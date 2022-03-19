@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import AVKit
+import Combine
 
 final class StoryCamViewModel: ObservableObject {
     @Published var cameraSelection: SwiftyCamViewController.CameraSelection = .rear
@@ -25,6 +26,11 @@ final class StoryCamViewModel: ObservableObject {
     @Published var camPermGranted = false
     @Published var microphonePermGranted = false
     
+    private var subscription: AnyCancellable?
+}
+
+// MARK: enums
+extension StoryCamViewModel {
     enum FlashMode {
         case on, off, auto
         
@@ -97,5 +103,35 @@ extension StoryCamViewModel {
     func requestPermission() {
         checkCameraPermission()
         checkMicrophonePermission()
+    }
+    
+    func subscribe(to publisher: AnyPublisher<SwiftyCamStatus, Never>) {
+        subscription = publisher
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] swiftyCamStatus in
+                guard let self = self else { return }
+                
+                switch swiftyCamStatus {
+                case .sessionStarted:
+                    print("Camera session did start running")
+                    self.enableVideoRecordBtn = true
+                case .sessionStopped:
+                    print("Camera session did stop running")
+                    self.enableVideoRecordBtn = false
+                case .photoTaken(photo: let photo):
+                    self.lastTakenImage = photo
+                    self.photoDidTake = true
+                case .recordingVideoBegun:
+                    print("Did Begin Recording Video")
+                case .recordingVideoFinished:
+                    print("Did finish Recording Video")
+                    self.videoRecordingStatus = .none
+                case .processingVideoFinished(videoUrl: let videoUrl):
+                    self.lastVideoUrl = videoUrl
+                    self.videoDidRecord = true
+                default:
+                    break
+                }
+            })
     }
 }

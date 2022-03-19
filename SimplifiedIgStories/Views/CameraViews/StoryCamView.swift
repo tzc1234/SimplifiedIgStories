@@ -19,7 +19,7 @@ struct StoryCamView: View {
     var body: some View {
         ZStack {
             if vm.camPermGranted && vm.microphonePermGranted {
-                StorySwiftyCamControllerRepresentable(storyCamGlobal: vm)
+                StorySwiftyCamControllerRepresentable(storyCamViewModel: vm)
             } else {
                 StoryCamPermissionView(storyCamViewModel: vm)
             }
