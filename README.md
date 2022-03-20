@@ -1,6 +1,10 @@
 # Simple Instagram Story
 A simple version, not many functions, of IG story demo app which is my study of **SwiftUI**.
 
+## Updated on 20/03/2022:
+1. Merge combine branch to main.
+2. Add SwiftyCam package by my forked [combine-framework](https://github.com/tzc1234/SwiftyCam/tree/combine-framework).
+
 ## Updated on 17/03/2022:
 1. Start a new branch for studying Combine Framework.
 
