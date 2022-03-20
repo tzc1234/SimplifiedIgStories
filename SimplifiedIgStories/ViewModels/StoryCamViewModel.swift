@@ -9,22 +9,23 @@ import Foundation
 import SwiftUI
 import AVKit
 import Combine
+import SwiftyCam
 
 final class StoryCamViewModel: ObservableObject {
     @Published var cameraSelection: SwiftyCamViewController.CameraSelection = .rear
-    @Published var enableVideoRecordBtn = false
+    @Published private(set) var enableVideoRecordBtn = false
     @Published var flashMode: FlashMode = .off
     
     @Published var shouldPhotoTake = false
-    var lastTakenImage: UIImage?
+    private(set) var lastTakenImage: UIImage?
     @Published var photoDidTake = false
     
     @Published var videoRecordingStatus: VideoRecordingStatus = .none
-    var lastVideoUrl: URL?
+    private(set) var lastVideoUrl: URL?
     @Published var videoDidRecord = false
     
-    @Published var camPermGranted = false
-    @Published var microphonePermGranted = false
+    @Published private(set) var camPermGranted = false
+    @Published private(set) var microphonePermGranted = false
     
     private var subscription: AnyCancellable?
 }

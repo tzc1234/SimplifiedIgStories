@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftyCam
 
 class StorySwiftyCamViewController: SwiftyCamViewController {
     override func viewDidLoad() {

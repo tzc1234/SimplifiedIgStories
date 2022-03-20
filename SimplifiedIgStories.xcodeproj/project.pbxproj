@@ -43,6 +43,7 @@
 		BE9336CC27D24CC1009E5370 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9336CB27D24CC1009E5370 /* LoadingView.swift */; };
 		BE9336CE27D2690E009E5370 /* VideoSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9336CD27D2690E009E5370 /* VideoSaver.swift */; };
 		BE93B8C127C8D96900B97C40 /* TraceableRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE93B8C027C8D96900B97C40 /* TraceableRectangle.swift */; };
+		BE9E56D327E76C27007D62A3 /* SwiftyCam in Frameworks */ = {isa = PBXBuildFile; productRef = BE9E56D227E76C27007D62A3 /* SwiftyCam */; };
 		BE9EF6C527E3673600942976 /* Configs.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9EF6C427E3673600942976 /* Configs.swift */; };
 		BE9EF6C727E36F7D00942976 /* CGFloat+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9EF6C627E36F7D00942976 /* CGFloat+Additions.swift */; };
 		BEA1D95827C3C74D00D0A67A /* Date+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA1D95727C3C74D00D0A67A /* Date+Additions.swift */; };
@@ -54,10 +55,6 @@
 		BEB8752927DA120300D60110 /* LocalFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB8752827DA120300D60110 /* LocalFileManager.swift */; };
 		BEC3B4C427DE585F00B44BDF /* StoryCamViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */; };
 		BED0F60D27BBF64B00D93F15 /* StoryIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */; };
-		BEFFE84B27E691250023E246 /* SwiftyCamViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEFFE84727E691250023E246 /* SwiftyCamViewController.swift */; };
-		BEFFE84C27E691250023E246 /* Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEFFE84827E691250023E246 /* Orientation.swift */; };
-		BEFFE84D27E691250023E246 /* SwiftyCamButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEFFE84927E691250023E246 /* SwiftyCamButton.swift */; };
-		BEFFE84E27E691250023E246 /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEFFE84A27E691250023E246 /* PreviewView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -109,10 +106,6 @@
 		BEB8752827DA120300D60110 /* LocalFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileManager.swift; sourceTree = "<group>"; };
 		BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCamViewModel.swift; sourceTree = "<group>"; };
 		BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIconsView.swift; sourceTree = "<group>"; };
-		BEFFE84727E691250023E246 /* SwiftyCamViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyCamViewController.swift; sourceTree = "<group>"; };
-		BEFFE84827E691250023E246 /* Orientation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Orientation.swift; sourceTree = "<group>"; };
-		BEFFE84927E691250023E246 /* SwiftyCamButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyCamButton.swift; sourceTree = "<group>"; };
-		BEFFE84A27E691250023E246 /* PreviewView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,6 +113,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE9E56D327E76C27007D62A3 /* SwiftyCam in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -254,21 +248,9 @@
 			path = ViewModels;
 			sourceTree = "<group>";
 		};
-		BE90CDF327D001C3001EA0CA /* SwiftyCam */ = {
-			isa = PBXGroup;
-			children = (
-				BEFFE84827E691250023E246 /* Orientation.swift */,
-				BEFFE84A27E691250023E246 /* PreviewView.swift */,
-				BEFFE84927E691250023E246 /* SwiftyCamButton.swift */,
-				BEFFE84727E691250023E246 /* SwiftyCamViewController.swift */,
-			);
-			path = SwiftyCam;
-			sourceTree = "<group>";
-		};
 		BE90CDF427D001F4001EA0CA /* External */ = {
 			isa = PBXGroup;
 			children = (
-				BE90CDF327D001C3001EA0CA /* SwiftyCam */,
 			);
 			path = External;
 			sourceTree = "<group>";
@@ -360,6 +342,9 @@
 			dependencies = (
 			);
 			name = SimplifiedIgStories;
+			packageProductDependencies = (
+				BE9E56D227E76C27007D62A3 /* SwiftyCam */,
+			);
 			productName = IgStoriesSwiftUI;
 			productReference = BE090B5427B9562B00B6F906 /* Simple IG Story.app */;
 			productType = "com.apple.product-type.application";
@@ -388,6 +373,9 @@
 				Base,
 			);
 			mainGroup = BE090B4B27B9562B00B6F906;
+			packageReferences = (
+				BE9E56D127E76C27007D62A3 /* XCRemoteSwiftPackageReference "SwiftyCam" */,
+			);
 			productRefGroup = BE090B5527B9562B00B6F906 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -418,7 +406,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE9336CE27D2690E009E5370 /* VideoSaver.swift in Sources */,
-				BEFFE84E27E691250023E246 /* PreviewView.swift in Sources */,
 				BEA7D9FF27C6DFFC00DA81E6 /* TraceableArc.swift in Sources */,
 				BE5CDC2D27DF4AAA00352A60 /* NoticeLabel.swift in Sources */,
 				BE93B8C127C8D96900B97C40 /* TraceableRectangle.swift in Sources */,
@@ -438,7 +425,6 @@
 				BE8A758127BC107000E9F745 /* HomeView.swift in Sources */,
 				BE9336C227D21811009E5370 /* AVPlayerControllerRepresentable.swift in Sources */,
 				BE8C498F27C674FD000541E0 /* StoryContainer.swift in Sources */,
-				BEFFE84C27E691250023E246 /* Orientation.swift in Sources */,
 				BE925CF427D8B06D005D8107 /* AVPlayer+Additions.swift in Sources */,
 				BE91AA5427BFD96800BB9846 /* StoryPortionView.swift in Sources */,
 				BE9336CC27D24CC1009E5370 /* LoadingView.swift in Sources */,
@@ -449,9 +435,7 @@
 				BEA901D427BC716E00E3362D /* ProgressBarPortion.swift in Sources */,
 				BE90CE0227D00719001EA0CA /* StorySwiftyCamViewController.swift in Sources */,
 				BE84C2CA27C78E5400C42165 /* AnyTransition+Additions.swift in Sources */,
-				BEFFE84B27E691250023E246 /* SwiftyCamViewController.swift in Sources */,
 				BED0F60D27BBF64B00D93F15 /* StoryIconsView.swift in Sources */,
-				BEFFE84D27E691250023E246 /* SwiftyCamButton.swift in Sources */,
 				BEC3B4C427DE585F00B44BDF /* StoryCamViewModel.swift in Sources */,
 				BE8D954527C44CA200D9D6DB /* Story.swift in Sources */,
 				BE8C498D27C62B3C000541E0 /* StoryIconTitleView.swift in Sources */,
@@ -675,6 +659,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		BE9E56D127E76C27007D62A3 /* XCRemoteSwiftPackageReference "SwiftyCam" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tzc1234/SwiftyCam.git";
+			requirement = {
+				branch = "combine-framework";
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		BE9E56D227E76C27007D62A3 /* SwiftyCam */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BE9E56D127E76C27007D62A3 /* XCRemoteSwiftPackageReference "SwiftyCam" */;
+			productName = SwiftyCam;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = BE090B4C27B9562B00B6F906 /* Project object */;
 }
