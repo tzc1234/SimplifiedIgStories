@@ -148,7 +148,6 @@
 				BEA1D95C27C3DA3000D0A67A /* Models */,
 				BEA1D95627C3C71B00D0A67A /* Extensions */,
 				BEA1D95927C3D9EB00D0A67A /* Resources */,
-				BE90CDF427D001F4001EA0CA /* External */,
 				BE090B5B27B9562D00B6F906 /* Assets.xcassets */,
 				BE090B5D27B9562D00B6F906 /* Preview Content */,
 			);
@@ -246,13 +245,6 @@
 				BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */,
 			);
 			path = ViewModels;
-			sourceTree = "<group>";
-		};
-		BE90CDF427D001F4001EA0CA /* External */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = External;
 			sourceTree = "<group>";
 		};
 		BE90CE0527D00BCD001EA0CA /* CameraViews */ = {

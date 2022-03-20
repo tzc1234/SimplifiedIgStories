@@ -120,7 +120,9 @@ extension StoryCamView {
                 vm.shouldPhotoTake = false
             }
         } longPressingAction: { isPressing in
-            vm.videoRecordingStatus = isPressing ? .start : .stop
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                vm.videoRecordingStatus = isPressing ? .start : .stop
+            }
         }
         .allowsHitTesting(vm.enableVideoRecordBtn)
     }
