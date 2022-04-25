@@ -10,31 +10,35 @@ import SwiftUI
 struct HomeView: View {
     @StateObject private var vm = StoriesViewModel()
     
-    private let titleHeight = 44.0
-    
     var body: some View {
-        GeometryReader { geo in
-            HStack(alignment: .center, spacing: 0.0) {
-                storyCamView
+        ZStack {
+            GeometryReader { _ in
+                HStack(spacing: 0.0) {
+                    storyCamView
                 
-                ZStack {
-                    VStack(alignment: .leading, spacing: 0.0) {
-                        titleView
-                        StoryIconsView(stories: vm.stories, onTapAction: vm.tapStoryIcon)
-                        Spacer()
+                    NavigationView {
+                        VStack {
+                            StoryIconsView(stories: vm.stories, onTapAction: vm.tapStoryIcon)
+                            Spacer()
+                        }
+                        .navigationTitle("Stories")
+                        .onPreferenceChange(IdFramePreferenceKey.self) { idFrameDict in
+                            vm.storyIconFrames = idFrameDict
+                        }
                     }
-                    
-                    storyContainer(geo: geo)
+                    .frame(width: .screenWidth)
+                    .navigationViewStyle(.stack)
                 }
-                .frame(width: .screenWidth)
-                
+    
             }
             .offset(x: vm.showStoryCamView ? 0.0 : -.screenWidth)
-            .environmentObject(vm)
-            .onPreferenceChange(IdFramePreferenceKey.self) { idFrameDict in
-                vm.storyIconFrames = idFrameDict
+            
+            GeometryReader { geo in
+                storyContainer(geo: geo)
             }
+            
         }
+        .environmentObject(vm)
         
     }
 }
@@ -54,27 +58,19 @@ extension HomeView {
                 StoryCamView(tapCloseAction: vm.toggleStoryCamView)
             }
         }
+        .ignoresSafeArea()
         .frame(width: .screenWidth)
     }
     
-    private var titleView: some View {
-        Text("Stories")
-            .font(.title)
-            .bold()
-            .frame(height: titleHeight, alignment: .leading)
-            .padding(.horizontal, 16)
-    }
-    
     @ViewBuilder private func storyContainer(geo: GeometryProxy) -> some View {
-        let frame = vm.currentStoryIconFrame
-        let offsetX = -(geo.size.width / 2 - frame.midX)
-        let offsetY = titleHeight + ((frame.height - frame.width / 1.5) / 2.0)
-        
+        let iconFrame: CGRect = vm.currentStoryIconFrame
+        let offsetX = -(geo.size.width / 2 - iconFrame.midX)
+        let offsetY = iconFrame.minY - geo.safeAreaInsets.top
         if vm.showContainer {
             StoryContainer()
                 .zIndex(1.0)
                 .frame(maxHeight: .infinity, alignment: .top)
-                .openAppLikeTransition(sacle: frame.height / .screenHeight, offestX: offsetX, offsetY: offsetY)
+                .openAppLikeTransition(sacle: iconFrame.height / .screenHeight, offestX: offsetX, offsetY: offsetY)
         }
     }
 }
