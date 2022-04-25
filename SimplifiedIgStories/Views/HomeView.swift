@@ -29,14 +29,10 @@ struct HomeView: View {
                     .frame(width: .screenWidth)
                     .navigationViewStyle(.stack)
                 }
-    
             }
             .offset(x: vm.showStoryCamView ? 0.0 : -.screenWidth)
             
-            GeometryReader { geo in
-                storyContainer(geo: geo)
-            }
-            
+            storyContainer
         }
         .environmentObject(vm)
         
@@ -62,15 +58,17 @@ extension HomeView {
         .frame(width: .screenWidth)
     }
     
-    @ViewBuilder private func storyContainer(geo: GeometryProxy) -> some View {
-        let iconFrame: CGRect = vm.currentStoryIconFrame
-        let offsetX = -(geo.size.width / 2 - iconFrame.midX)
-        let offsetY = iconFrame.minY - geo.safeAreaInsets.top
-        if vm.showContainer {
-            StoryContainer()
-                .zIndex(1.0)
-                .frame(maxHeight: .infinity, alignment: .top)
-                .openAppLikeTransition(sacle: iconFrame.height / .screenHeight, offestX: offsetX, offsetY: offsetY)
+    private var storyContainer: some View {
+        GeometryReader { geo in
+            let iconFrame: CGRect = vm.currentStoryIconFrame
+            let offsetX = -(geo.size.width / 2 - iconFrame.midX)
+            let offsetY = iconFrame.minY - geo.safeAreaInsets.top
+            if vm.showContainer {
+                StoryContainer()
+                    .zIndex(1.0)
+                    .frame(maxHeight: .infinity, alignment: .top)
+                    .openAppLikeTransition(sacle: iconFrame.height / .screenHeight, offestX: offsetX, offsetY: offsetY)
+            }
         }
     }
 }
