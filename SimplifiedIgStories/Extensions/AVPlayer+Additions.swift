@@ -20,8 +20,8 @@ extension AVPlayer {
     }
     
     func finish() {
-        guard let duration = currentItem?.duration else { return }
         pause()
+        guard let duration = currentItem?.duration, currentTime() != .zero else { return }
         seek(to: duration)
     }
 }
