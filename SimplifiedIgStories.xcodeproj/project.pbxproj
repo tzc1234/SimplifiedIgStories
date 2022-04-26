@@ -13,6 +13,7 @@
 		BE090B6727B9568700B6F906 /* StoryIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE090B6627B9568700B6F906 /* StoryIcon.swift */; };
 		BE2C557227BFFE9D0087EE7F /* StoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557127BFFE9D0087EE7F /* StoryView.swift */; };
 		BE2C557427C0197B0087EE7F /* DetectableTapGesturePositionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */; };
+		BE3A9E9B2818A2D800A310A0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BE3A9E9A2818A2D800A310A0 /* GoogleService-Info.plist */; };
 		BE5CDC2D27DF4AAA00352A60 /* NoticeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5CDC2C27DF4AAA00352A60 /* NoticeLabel.swift */; };
 		BE6B73C727D794AD003D2B24 /* StoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6B73C627D794AD003D2B24 /* StoryViewModel.swift */; };
 		BE720F7C27BD111800E862A5 /* ProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE720F7B27BD111800E862A5 /* ProgressBar.swift */; };
@@ -55,7 +56,6 @@
 		BEAFE90E2817F81C004C4D43 /* Double+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEAFE90D2817F81C004C4D43 /* Double+Additions.swift */; };
 		BEAFE9112817FFE1004C4D43 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BEAFE9102817FFE1004C4D43 /* FirebaseAnalytics */; };
 		BEAFE9132817FFE1004C4D43 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = BEAFE9122817FFE1004C4D43 /* FirebaseCrashlytics */; };
-		BEAFE9152818024C004C4D43 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BEAFE9142818024C004C4D43 /* GoogleService-Info.plist */; };
 		BEB8752927DA120300D60110 /* LocalFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB8752827DA120300D60110 /* LocalFileManager.swift */; };
 		BEC3B4C427DE585F00B44BDF /* StoryCamViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */; };
 		BED0F60D27BBF64B00D93F15 /* StoryIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */; };
@@ -69,6 +69,7 @@
 		BE090B6627B9568700B6F906 /* StoryIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIcon.swift; sourceTree = "<group>"; };
 		BE2C557127BFFE9D0087EE7F /* StoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryView.swift; sourceTree = "<group>"; };
 		BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetectableTapGesturePositionView.swift; sourceTree = "<group>"; };
+		BE3A9E9A2818A2D800A310A0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BE5CDC2C27DF4AAA00352A60 /* NoticeLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoticeLabel.swift; sourceTree = "<group>"; };
 		BE6B73C627D794AD003D2B24 /* StoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryViewModel.swift; sourceTree = "<group>"; };
 		BE720F7B27BD111800E862A5 /* ProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBar.swift; sourceTree = "<group>"; };
@@ -108,7 +109,6 @@
 		BEA901D327BC716E00E3362D /* ProgressBarPortion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarPortion.swift; sourceTree = "<group>"; };
 		BEAED9E327D36F7D00A98F3A /* IdFramePreferenceKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdFramePreferenceKey.swift; sourceTree = "<group>"; };
 		BEAFE90D2817F81C004C4D43 /* Double+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+Additions.swift"; sourceTree = "<group>"; };
-		BEAFE9142818024C004C4D43 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BEAFE91728185B2E004C4D43 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		BEB8752827DA120300D60110 /* LocalFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileManager.swift; sourceTree = "<group>"; };
 		BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCamViewModel.swift; sourceTree = "<group>"; };
@@ -159,7 +159,7 @@
 				BEA1D95927C3D9EB00D0A67A /* Resources */,
 				BE090B5B27B9562D00B6F906 /* Assets.xcassets */,
 				BEAFE91728185B2E004C4D43 /* Info.plist */,
-				BEAFE9142818024C004C4D43 /* GoogleService-Info.plist */,
+				BE3A9E9A2818A2D800A310A0 /* GoogleService-Info.plist */,
 				BE090B5D27B9562D00B6F906 /* Preview Content */,
 			);
 			path = SimplifiedIgStories;
@@ -403,7 +403,7 @@
 				BE090B5F27B9562D00B6F906 /* Preview Assets.xcassets in Resources */,
 				BE090B5C27B9562D00B6F906 /* Assets.xcassets in Resources */,
 				BE8D954327C44C6F00D9D6DB /* storiesData.json in Resources */,
-				BEAFE9152818024C004C4D43 /* GoogleService-Info.plist in Resources */,
+				BE3A9E9B2818A2D800A310A0 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -419,7 +419,7 @@
 			);
 			inputPaths = (
 				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
-				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
 			);
 			name = "Cashlytics Run Script";
 			outputFileListPaths = (
@@ -520,7 +520,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
