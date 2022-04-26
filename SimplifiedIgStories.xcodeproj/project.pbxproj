@@ -53,6 +53,9 @@
 		BEA93F9427D7511000964226 /* VideoRecordButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA8E50E27D0CFD200640B19 /* VideoRecordButton.swift */; };
 		BEAED9E427D36F7D00A98F3A /* IdFramePreferenceKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEAED9E327D36F7D00A98F3A /* IdFramePreferenceKey.swift */; };
 		BEAFE90E2817F81C004C4D43 /* Double+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEAFE90D2817F81C004C4D43 /* Double+Additions.swift */; };
+		BEAFE9112817FFE1004C4D43 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BEAFE9102817FFE1004C4D43 /* FirebaseAnalytics */; };
+		BEAFE9132817FFE1004C4D43 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = BEAFE9122817FFE1004C4D43 /* FirebaseCrashlytics */; };
+		BEAFE9152818024C004C4D43 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BEAFE9142818024C004C4D43 /* GoogleService-Info.plist */; };
 		BEB8752927DA120300D60110 /* LocalFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB8752827DA120300D60110 /* LocalFileManager.swift */; };
 		BEC3B4C427DE585F00B44BDF /* StoryCamViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */; };
 		BED0F60D27BBF64B00D93F15 /* StoryIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */; };
@@ -105,6 +108,7 @@
 		BEA901D327BC716E00E3362D /* ProgressBarPortion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarPortion.swift; sourceTree = "<group>"; };
 		BEAED9E327D36F7D00A98F3A /* IdFramePreferenceKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdFramePreferenceKey.swift; sourceTree = "<group>"; };
 		BEAFE90D2817F81C004C4D43 /* Double+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+Additions.swift"; sourceTree = "<group>"; };
+		BEAFE9142818024C004C4D43 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BEB8752827DA120300D60110 /* LocalFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileManager.swift; sourceTree = "<group>"; };
 		BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCamViewModel.swift; sourceTree = "<group>"; };
 		BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIconsView.swift; sourceTree = "<group>"; };
@@ -115,6 +119,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BEAFE9132817FFE1004C4D43 /* FirebaseCrashlytics in Frameworks */,
+				BEAFE9112817FFE1004C4D43 /* FirebaseAnalytics in Frameworks */,
 				BE9E56D327E76C27007D62A3 /* SwiftyCam in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -151,6 +157,7 @@
 				BEA1D95627C3C71B00D0A67A /* Extensions */,
 				BEA1D95927C3D9EB00D0A67A /* Resources */,
 				BE090B5B27B9562D00B6F906 /* Assets.xcassets */,
+				BEAFE9142818024C004C4D43 /* GoogleService-Info.plist */,
 				BE090B5D27B9562D00B6F906 /* Preview Content */,
 			);
 			path = SimplifiedIgStories;
@@ -331,6 +338,7 @@
 				BE090B5027B9562B00B6F906 /* Sources */,
 				BE090B5127B9562B00B6F906 /* Frameworks */,
 				BE090B5227B9562B00B6F906 /* Resources */,
+				BEAFE9162818081C004C4D43 /* Cashlytics Run Script */,
 			);
 			buildRules = (
 			);
@@ -339,6 +347,8 @@
 			name = SimplifiedIgStories;
 			packageProductDependencies = (
 				BE9E56D227E76C27007D62A3 /* SwiftyCam */,
+				BEAFE9102817FFE1004C4D43 /* FirebaseAnalytics */,
+				BEAFE9122817FFE1004C4D43 /* FirebaseCrashlytics */,
 			);
 			productName = IgStoriesSwiftUI;
 			productReference = BE090B5427B9562B00B6F906 /* Simple IG Story.app */;
@@ -370,6 +380,7 @@
 			mainGroup = BE090B4B27B9562B00B6F906;
 			packageReferences = (
 				BE9E56D127E76C27007D62A3 /* XCRemoteSwiftPackageReference "SwiftyCam" */,
+				BEAFE90F2817FFE1004C4D43 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = BE090B5527B9562B00B6F906 /* Products */;
 			projectDirPath = "";
@@ -390,10 +401,34 @@
 				BE090B5F27B9562D00B6F906 /* Preview Assets.xcassets in Resources */,
 				BE090B5C27B9562D00B6F906 /* Assets.xcassets in Resources */,
 				BE8D954327C44C6F00D9D6DB /* storiesData.json in Resources */,
+				BEAFE9152818024C004C4D43 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		BEAFE9162818081C004C4D43 /* Cashlytics Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "Cashlytics Run Script";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		BE090B5027B9562B00B6F906 /* Sources */ = {
@@ -483,7 +518,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -591,6 +626,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.3;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tszlung.SimplifiedIgStories;
 				PRODUCT_NAME = "Simple IG Story";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -625,6 +661,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.3;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tszlung.SimplifiedIgStories;
 				PRODUCT_NAME = "Simple IG Story";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -665,6 +702,14 @@
 				kind = branch;
 			};
 		};
+		BEAFE90F2817FFE1004C4D43 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.10.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -672,6 +717,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = BE9E56D127E76C27007D62A3 /* XCRemoteSwiftPackageReference "SwiftyCam" */;
 			productName = SwiftyCam;
+		};
+		BEAFE9102817FFE1004C4D43 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BEAFE90F2817FFE1004C4D43 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		BEAFE9122817FFE1004C4D43 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BEAFE90F2817FFE1004C4D43 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
