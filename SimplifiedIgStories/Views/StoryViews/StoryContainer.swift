@@ -21,8 +21,8 @@ struct StoryContainer: View {
                         storyId: story.id,
                         storyViewModel: vm.getStoryViewModel(by: story.id)
                     )
-                        .opacity(story.id != vm.currentStoryId && !vm.shouldCubicRotation ? 0.0 : 1.0)
-                        .frame(width: .screenWidth, height: geo.size.height)
+                    .opacity(story.id != vm.currentStoryId && !vm.shouldCubicRotation ? 0.0 : 1.0)
+                    .frame(width: .screenWidth, height: geo.size.height)
                 }
             }
         }

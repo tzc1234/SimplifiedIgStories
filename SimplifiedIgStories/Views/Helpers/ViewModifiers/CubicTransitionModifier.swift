@@ -25,7 +25,7 @@ struct CubicTransitionModifier: ViewModifier {
     }
     
     private func getRotationDegree(offsetX: CGFloat) -> Double {
-        let tempAngle = offsetX / (UIScreen.main.bounds.width / 2)
+        let tempAngle = offsetX / (.screenWidth / 2)
         let rotationDegree = 20.0
         return tempAngle * rotationDegree
     }

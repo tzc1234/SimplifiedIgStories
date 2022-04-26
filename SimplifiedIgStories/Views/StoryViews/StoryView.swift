@@ -64,7 +64,7 @@ struct StoryView: View {
                         .preference(key: FramePreferenceKey.self, value: frame)
                         .onPreferenceChange(FramePreferenceKey.self) { preferenceFrame in
                             vm.storiesViewModel.shouldCubicRotation =
-                            preferenceFrame.width == UIScreen.main.bounds.width
+                            preferenceFrame.width == .screenWidth
                         }
                 }
             )

@@ -123,6 +123,6 @@ extension ProgressBarPortion {
     
     private func finishAnimation() {
         print("storyId: \(storyId), portionId: \(portionId) finish.")
-        resetTraceableRectangle(toLength: UIScreen.main.bounds.width)
+        resetTraceableRectangle(toLength: .screenWidth)
     }
 }
