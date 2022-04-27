@@ -110,8 +110,10 @@ extension StoriesViewModel {
         
         if story.hasPortion {
             showStoryContainer(by: storyId)
+            AnalyticsHelper.logStoryIconTapEvent(by: storyId)
         } else if story.user.isCurrentUser {
             toggleStoryCamView()
+            AnalyticsHelper.logStoryIconTapEvent(by: yourStoryId)
         }
     }
 }
