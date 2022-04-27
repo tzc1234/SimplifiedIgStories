@@ -95,7 +95,7 @@ extension StoriesViewModel {
         return existingStoryViewModel
     }
     
-    func removeAllStoryViewModel() {
+    func removeAllStoryViewModels() {
         storyViewModels = [:]
     }
     

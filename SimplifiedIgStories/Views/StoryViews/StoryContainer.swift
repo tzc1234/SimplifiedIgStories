@@ -45,7 +45,7 @@ struct StoryContainer: View {
         .onDisappear {
             // *** All storyViewModels are retained by the storiesViewModel,
             // remove all storyViewModels manually, deinit along with this storyContainer.
-            vm.removeAllStoryViewModel()
+            vm.removeAllStoryViewModels()
         }
         
     }
