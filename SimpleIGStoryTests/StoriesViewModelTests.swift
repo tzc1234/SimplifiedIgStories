@@ -32,16 +32,22 @@ class StoriesViewModelTests: XCTestCase {
         vm = nil
     }
 
-    func test_StoriesViewModel_stories_atleastOneBelongsToCurrentUser() {
-        let stories = vm?.stories ?? []
+    func test_StoriesViewModel_stories_oneAndOnlyOneBelongsToCurrentUser() {
+        guard let vm = vm else {
+            XCTFail("StoriesViewModel should not be nil")
+            return
+        }
+        
+        let stories = vm.stories
         let currentUserStory = stories.first(where: { $0.user.isCurrentUser })
         let currentUserStoryIdx = stories.firstIndex(where: { $0.user.isCurrentUser })
         
         XCTAssertGreaterThan(stories.count, 0)
         XCTAssertNotNil(currentUserStory)
         XCTAssertNotNil(currentUserStoryIdx)
-        XCTAssertEqual(vm?.yourStoryId, currentUserStory?.id)
-        XCTAssertEqual(vm?.yourStoryIdx, currentUserStoryIdx)
+        XCTAssertEqual(vm.yourStoryId, currentUserStory?.id)
+        XCTAssertEqual(vm.yourStoryIdx, currentUserStoryIdx)
+        XCTAssertEqual(stories.filter({ $0.user.isCurrentUser }).count, 1)
     }
     
     func test_StoriesViewModel_currentStories_shouldContainOnlyOneCurrentUserStory_whenCurrentStoryIdIsSetToCurrentUserStoryId() {
@@ -195,7 +201,7 @@ class StoriesViewModelTests: XCTestCase {
         }
         
         guard let hasPortionStory = vm.stories.first(where: { $0.hasPortion }) else {
-            XCTFail("Should be a has portion story in stories array.")
+            XCTFail("Make sure one story has portion in testing data.")
             return
         }
         

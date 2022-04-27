@@ -1,6 +1,9 @@
 # Simple Instagram Story
 A simple version of, not many functions, IG story demo app, which is my study of **SwiftUI**.
 
+## Updated on 27/04/2022:
+1. Add unit tests for StoriesModelView.
+
 ## Updated on 20/03/2022:
 1. Merge combine branch to main.
 2. Add SwiftyCam package by a forked [combine-framework](https://github.com/tzc1234/SwiftyCam/tree/combine-framework) branch.
