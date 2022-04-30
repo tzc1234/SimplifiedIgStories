@@ -211,7 +211,7 @@ extension StoryPreview {
         // *** In real environment, the photo or video recorded should be uploaded to server side,
         // this is a demo app, however, storing them into temp directory for displaying IG story animation.
         if let uiImage = uiImage,
-            let imageUrl = LocalFileManager.instance.saveImageToTemp(image: uiImage)
+            let imageUrl = LocalFileManager.shared.saveImageToTemp(image: uiImage)
         {
             // Just append a new Portion instance to current user's potion array.
             portions.append(

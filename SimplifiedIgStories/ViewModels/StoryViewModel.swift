@@ -130,7 +130,7 @@ extension StoryViewModel {
         
         let portion = story.portions[portionIdx]
         if let fileUrl = portion.imageUrl ?? portion.videoUrl {
-            LocalFileManager.instance.deleteFileBy(url: fileUrl)
+            LocalFileManager.shared.deleteFileBy(url: fileUrl)
         }
         
         storiesViewModel.stories[storyIdx].portions.remove(at: portionIdx)
@@ -145,7 +145,7 @@ extension StoryViewModel {
         }
         
         var publisher: AnyPublisher<String, ImageVideoSaveError>?
-        if let imageUrl = portion.imageUrl, let uiImage = LocalFileManager.instance.getImageBy(url: imageUrl) {
+        if let imageUrl = portion.imageUrl, let uiImage = LocalFileManager.shared.getImageBy(url: imageUrl) {
             isLoading = true
             publisher = ImageSaver().saveToAlbum(uiImage)
         } else if let videoUrl = portion.videoUrlFromCam {

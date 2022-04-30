@@ -99,7 +99,7 @@ extension StoryPortionView {
         if let imageName = portion.imageName {
             return Image(imageName)
         } else if let imageUrl = portion.imageUrl,
-                  let uiImage = LocalFileManager.instance.getImageBy(url: imageUrl) {
+                  let uiImage = LocalFileManager.shared.getImageBy(url: imageUrl) {
             return Image(uiImage: uiImage)
         }
         return nil

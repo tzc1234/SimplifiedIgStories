@@ -28,9 +28,9 @@ final class StoriesViewModel: ObservableObject {
     
     private var subscriptions = Set<AnyCancellable>()
     
-    private let dataService: DataService
+    private let dataService: DataServiceable
     
-    init(dataService: DataService = AppDataService()) {
+    init(dataService: DataServiceable = AppDataService()) {
         self.dataService = dataService
         self.fetchStories()
     }

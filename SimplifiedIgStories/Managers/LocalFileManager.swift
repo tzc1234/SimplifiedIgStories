@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 class LocalFileManager {
-    static let instance = LocalFileManager()
+    static let shared = LocalFileManager()
     
     private init() {}
     

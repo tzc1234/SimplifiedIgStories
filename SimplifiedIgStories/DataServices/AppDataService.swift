@@ -22,11 +22,11 @@ enum DataServiceError: Error {
     }
 }
 
-protocol DataService {
+protocol DataServiceable {
     func fetchStories() -> AnyPublisher<[Story], DataServiceError>
 }
 
-final class AppDataService: DataService {
+final class AppDataService: DataServiceable {
     private let filename = "storiesData.json"
     
     func fetchStories() -> AnyPublisher<[Story], DataServiceError> {
