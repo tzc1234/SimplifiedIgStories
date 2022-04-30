@@ -8,10 +8,10 @@
 import Foundation
 
 struct Story: Codable, Identifiable {
-    var id: Int
+    let id: Int
     var lastUpdate: TimeInterval?
     var portions: [Portion]
-    var user: User
+    let user: User
     
     var lastUpdateDate: Date? {
         guard let lastUpdate = lastUpdate else { return nil }
