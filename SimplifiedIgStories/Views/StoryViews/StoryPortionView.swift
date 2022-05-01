@@ -87,7 +87,7 @@ extension StoryPortionView {
         if player != nil {
             AVPlayerControllerRepresentable(
                 shouldLoop: false,
-                player: $player
+                player: player
             )
         }
     }

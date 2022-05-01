@@ -10,11 +10,11 @@ import AVKit
 
 struct AVPlayerControllerRepresentable: UIViewControllerRepresentable {
     let shouldLoop: Bool
-    @Binding private var player: AVPlayer?
+    let player: AVPlayer?
     
-    init(shouldLoop: Bool, player: Binding<AVPlayer?>) {
+    init(shouldLoop: Bool, player: AVPlayer?) {
         self.shouldLoop = shouldLoop
-        self._player = player
+        self.player = player
     }
     
     func makeUIViewController(context: Context) -> AVPlayerViewController {

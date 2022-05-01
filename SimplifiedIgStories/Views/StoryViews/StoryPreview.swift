@@ -90,7 +90,7 @@ extension StoryPreview {
         if player != nil {
             AVPlayerControllerRepresentable(
                 shouldLoop: true,
-                player: $player
+                player: player
             )
         }
     }
