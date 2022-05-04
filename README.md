@@ -1,6 +1,9 @@
 # Simple IG Story
 A simple version of, not many functions, IG story demo app, fully implemented by **SwiftUI** and a bit of **Combine Framework**. This repository is my study record. 
 
+## Screenshots
+<img src="https://github.com/tzc1234/SimplifiedIgStories/blob/main/Screenshots/preview.gif" alt="preview" width="256" height="455"/>
+
 ### Updated on 27/04/2022:
 1. Add some unit tests for StoriesModelView.
 
