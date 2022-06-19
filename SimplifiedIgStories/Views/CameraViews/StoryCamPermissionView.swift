@@ -38,20 +38,20 @@ struct StoryCamPermissionView: View {
                 Button {
                     gotoSettings()
                 } label: {
-                    Text(vm.camPermGranted ? "✓ Camera access enabled" : "Enable Camera Access")
+                    Text(vm.isCamPermGranted ? "✓ Camera access enabled" : "Enable Camera Access")
                         .font(.headline)
                         .fontWeight(.semibold)
                 }
-                .disabled(vm.camPermGranted)
+                .disabled(vm.isCamPermGranted)
                 
                 Button {
                     gotoSettings()
                 } label: {
-                    Text(vm.microphonePermGranted ? "✓ Microphone access enabled" : "Enable Microphone Access")
+                    Text(vm.isMicrophonePermGranted ? "✓ Microphone access enabled" : "Enable Microphone Access")
                         .font(.headline)
                         .fontWeight(.semibold)
                 }
-                .disabled(vm.microphonePermGranted)
+                .disabled(vm.isMicrophonePermGranted)
             }
 
             Group {
@@ -70,7 +70,9 @@ struct StoryCamPermissionView: View {
 
 struct PermissionView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryCamPermissionView(storyCamViewModel: StoryCamViewModel())
+        StoryCamPermissionView(
+            storyCamViewModel: StoryCamViewModel(camManager: AVCamManager())
+        )
     }
 }
 

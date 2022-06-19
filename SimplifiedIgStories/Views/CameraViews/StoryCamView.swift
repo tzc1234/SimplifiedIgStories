@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct StoryCamView: View {
-    @StateObject private var vm = StoryCamViewModel()
+    @StateObject private var vm = StoryCamViewModel(camManager: AVCamManager())
     
     let tapCloseAction: (() -> Void)?
     
@@ -19,7 +19,7 @@ struct StoryCamView: View {
     var body: some View {
         ZStack {
             if vm.arePermissionsGranted {
-                StorySwiftyCamControllerRepresentable(storyCamViewModel: vm)
+                AVCaptureVideoPreviewRepresentable(storyCamViewModel: vm)
             } else {
                 StoryCamPermissionView(storyCamViewModel: vm)
             }
@@ -60,7 +60,12 @@ struct StoryCamView: View {
         }
         .statusBar(hidden: true)
         .onAppear {
-            vm.requestPermission()
+            vm.checkPermissions()
+        }
+        .onChange(of: vm.arePermissionsGranted) { isGranted in
+            if isGranted {
+                vm.setupSession()
+            }
         }
     }
 }
@@ -127,7 +132,7 @@ extension StoryCamView {
     @ViewBuilder private var changeCameraButton: some View {
         if vm.arePermissionsGranted {
             Button {
-                vm.cameraSelection = vm.cameraSelection == .rear ? .front : .rear
+                vm.camPosition = vm.camPosition == .back ? .front : .back
             } label: {
                 Image(systemName: "arrow.triangle.2.circlepath")
                     .resizable()

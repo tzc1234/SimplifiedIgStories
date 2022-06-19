@@ -15,6 +15,7 @@
 		BE2C557427C0197B0087EE7F /* DetectableTapGesturePositionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */; };
 		BE2D7792285F765F00DBD924 /* CamSetupError.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2D7791285F765F00DBD924 /* CamSetupError.swift */; };
 		BE2D7794285F797400DBD924 /* CamStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2D7793285F797400DBD924 /* CamStatus.swift */; };
+		BE2D7796285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2D7795285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift */; };
 		BE463A2D285F05AE00599929 /* AVCamManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE463A2C285F05AE00599929 /* AVCamManager.swift */; };
 		BE5CDC2D27DF4AAA00352A60 /* NoticeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5CDC2C27DF4AAA00352A60 /* NoticeLabel.swift */; };
 		BE69F50D281974E5001BA4EC /* StoriesViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE69F50C281974E5001BA4EC /* StoriesViewModelTests.swift */; };
@@ -35,8 +36,6 @@
 		BE8F580527D643BC00F9DB92 /* seaVideo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = BE8F580427D643BC00F9DB92 /* seaVideo.mp4 */; };
 		BE8F580727D6668000F9DB92 /* AppDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8F580627D6668000F9DB92 /* AppDataService.swift */; };
 		BE8F580A27D668E900F9DB92 /* StoriesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8F580927D668E900F9DB92 /* StoriesViewModel.swift */; };
-		BE90CE0027D0060D001EA0CA /* StorySwiftyCamControllerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE90CDFF27D0060D001EA0CA /* StorySwiftyCamControllerRepresentable.swift */; };
-		BE90CE0227D00719001EA0CA /* StorySwiftyCamViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE90CE0127D00719001EA0CA /* StorySwiftyCamViewController.swift */; };
 		BE90CE0427D00A0E001EA0CA /* StoryCamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE90CE0327D00A0E001EA0CA /* StoryCamView.swift */; };
 		BE91AA5427BFD96800BB9846 /* StoryPortionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE91AA5327BFD96700BB9846 /* StoryPortionView.swift */; };
 		BE925CF427D8B06D005D8107 /* AVPlayer+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE925CF327D8B06D005D8107 /* AVPlayer+Additions.swift */; };
@@ -82,6 +81,7 @@
 		BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetectableTapGesturePositionView.swift; sourceTree = "<group>"; };
 		BE2D7791285F765F00DBD924 /* CamSetupError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CamSetupError.swift; sourceTree = "<group>"; };
 		BE2D7793285F797400DBD924 /* CamStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CamStatus.swift; sourceTree = "<group>"; };
+		BE2D7795285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVCaptureVideoPreviewRepresentable.swift; sourceTree = "<group>"; };
 		BE463A2C285F05AE00599929 /* AVCamManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVCamManager.swift; sourceTree = "<group>"; };
 		BE5CDC2C27DF4AAA00352A60 /* NoticeLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoticeLabel.swift; sourceTree = "<group>"; };
 		BE69F503281973B3001BA4EC /* SimpleIGStoryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SimpleIGStoryTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -103,8 +103,6 @@
 		BE8F580427D643BC00F9DB92 /* seaVideo.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = seaVideo.mp4; sourceTree = "<group>"; };
 		BE8F580627D6668000F9DB92 /* AppDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDataService.swift; sourceTree = "<group>"; };
 		BE8F580927D668E900F9DB92 /* StoriesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesViewModel.swift; sourceTree = "<group>"; };
-		BE90CDFF27D0060D001EA0CA /* StorySwiftyCamControllerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorySwiftyCamControllerRepresentable.swift; sourceTree = "<group>"; };
-		BE90CE0127D00719001EA0CA /* StorySwiftyCamViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorySwiftyCamViewController.swift; sourceTree = "<group>"; };
 		BE90CE0327D00A0E001EA0CA /* StoryCamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCamView.swift; sourceTree = "<group>"; };
 		BE91AA5327BFD96700BB9846 /* StoryPortionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPortionView.swift; sourceTree = "<group>"; };
 		BE925CF327D8B06D005D8107 /* AVPlayer+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVPlayer+Additions.swift"; sourceTree = "<group>"; };
@@ -297,10 +295,9 @@
 		BE90CE0527D00BCD001EA0CA /* CameraViews */ = {
 			isa = PBXGroup;
 			children = (
-				BE90CE0127D00719001EA0CA /* StorySwiftyCamViewController.swift */,
-				BE90CDFF27D0060D001EA0CA /* StorySwiftyCamControllerRepresentable.swift */,
 				BE72F93F27DF6F9300AA98A5 /* StoryCamPermissionView.swift */,
 				BEA8E50E27D0CFD200640B19 /* VideoRecordButton.swift */,
+				BE2D7795285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift */,
 				BE90CE0327D00A0E001EA0CA /* StoryCamView.swift */,
 			);
 			path = CameraViews;
@@ -508,7 +505,6 @@
 				BEAED9E427D36F7D00A98F3A /* IdFramePreferenceKey.swift in Sources */,
 				BE8AEF9327DBDE8100D7EAA1 /* CubicTransitionModifier.swift in Sources */,
 				BEA901D427BC716E00E3362D /* ProgressBarPortion.swift in Sources */,
-				BE90CE0227D00719001EA0CA /* StorySwiftyCamViewController.swift in Sources */,
 				BE84C2CA27C78E5400C42165 /* AnyTransition+Additions.swift in Sources */,
 				BED0F60D27BBF64B00D93F15 /* StoryIconsView.swift in Sources */,
 				BEC3B4C427DE585F00B44BDF /* StoryCamViewModel.swift in Sources */,
@@ -517,8 +513,8 @@
 				BE2C557227BFFE9D0087EE7F /* StoryView.swift in Sources */,
 				BEA93F9427D7511000964226 /* VideoRecordButton.swift in Sources */,
 				BE720F7C27BD111800E862A5 /* ProgressBar.swift in Sources */,
-				BE90CE0027D0060D001EA0CA /* StorySwiftyCamControllerRepresentable.swift in Sources */,
 				BE9336C727D22628009E5370 /* Color+Additions.swift in Sources */,
+				BE2D7796285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift in Sources */,
 				BE9EF6C527E3673600942976 /* Configs.swift in Sources */,
 				BEAFE90E2817F81C004C4D43 /* Double+Additions.swift in Sources */,
 				BEA1D95827C3C74D00D0A67A /* Date+Additions.swift in Sources */,

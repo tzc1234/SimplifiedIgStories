@@ -5,12 +5,20 @@
 //  Created by Tsz-Lung on 13/03/2022.
 //
 
+import AVFoundation
 import AVKit
 import Combine
 import SwiftyCam
+import SwiftUI
 
+@MainActor
 final class StoryCamViewModel: ObservableObject {
-    @Published var cameraSelection: SwiftyCamViewController.CameraSelection = .rear
+    @Published var camPosition: AVCaptureDevice.Position = .back {
+        willSet {
+            camManager.camPosition = newValue
+        }
+    }
+    
     @Published private(set) var enableVideoRecordBtn = false
     @Published var flashMode: FlashMode = .off
     
@@ -22,10 +30,28 @@ final class StoryCamViewModel: ObservableObject {
     private(set) var lastVideoUrl: URL?
     @Published var videoDidRecord = false
     
-    @Published private(set) var camPermGranted = false
-    @Published private(set) var microphonePermGranted = false
+    @Published private(set) var isCamPermGranted = false
+    @Published private(set) var isMicrophonePermGranted = false
     
-    private var subscription: AnyCancellable?
+    private var subscriptions = Set<AnyCancellable>()
+    
+    private var camManager: CamManager
+
+    init(camManager: CamManager) {
+        self.camManager = camManager
+        
+        camManager.camPermPublisher
+            .sink { [weak self] isGranted in
+                self?.isCamPermGranted = isGranted
+            }
+            .store(in: &subscriptions)
+        
+        camManager.microphonePermPublisher
+            .sink { [weak self] isGranted in
+                self?.isMicrophonePermGranted = isGranted
+            }
+            .store(in: &subscriptions)
+    }
 }
 
 // MARK: enums
@@ -58,84 +84,56 @@ extension StoryCamViewModel {
 // MARK: computed variables
 extension StoryCamViewModel {
     var arePermissionsGranted: Bool {
-        camPermGranted && microphonePermGranted
+        isCamPermGranted && isMicrophonePermGranted
+    }
+    
+    var videoPreviewLayer: AVCaptureVideoPreviewLayer {
+        camManager.videoPreviewLayer
+    }
+    
+    var session: AVCaptureSession {
+        camManager.session
     }
 }
 
-// MARK: functions
+// MARK: internal functions
 extension StoryCamViewModel {
-    private func checkCameraPermission() {
-        let camPermStatus = AVCaptureDevice.authorizationStatus(for: .video)
-        switch camPermStatus {
-        case .notDetermined:
-            AVCaptureDevice.requestAccess(for: .video) { isGranted in
-                DispatchQueue.main.async { [weak self] in
-                    self?.camPermGranted = isGranted
-                }
-            }
-        case .restricted:
-            break // nothing can do
-        case .denied:
-            camPermGranted = false
-        case .authorized:
-            camPermGranted = true
-        @unknown default:
-            break
-        }
+    func checkPermissions() {
+        camManager.checkPermissions()
     }
     
-    private func checkMicrophonePermission() {
-        let microphonePermStatus = AVCaptureDevice.authorizationStatus(for: .audio)
-        switch microphonePermStatus {
-        case .notDetermined:
-            AVCaptureDevice.requestAccess(for: .audio) { isGranted in
-                DispatchQueue.main.async { [weak self] in
-                    self?.microphonePermGranted = isGranted
-                }
-            }
-        case .restricted:
-            break // nothing can do
-        case .denied:
-            microphonePermGranted = false
-        case .authorized:
-            microphonePermGranted = true
-        @unknown default:
-            break
-        }
+    func setupSession() {
+        camManager.setupSession()
     }
     
-    func requestPermission() {
-        checkCameraPermission()
-        checkMicrophonePermission()
-    }
-    
-    func subscribe(to publisher: AnyPublisher<SwiftyCamStatus, Never>) {
-        subscription = publisher
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] swiftyCamStatus in
-                guard let self = self else { return }
-                
-                switch swiftyCamStatus {
-                case .sessionStarted:
-                    print("Camera session did start running")
-                    self.enableVideoRecordBtn = true
-                case .sessionStopped:
-                    print("Camera session did stop running")
-                    self.enableVideoRecordBtn = false
-                case .photoTaken(photo: let photo):
-                    self.lastTakenImage = photo
-                    self.photoDidTake = true
-                case .recordingVideoBegun:
-                    print("Did Begin Recording Video")
-                case .recordingVideoFinished:
-                    print("Did finish Recording Video")
-                    self.videoRecordingStatus = .none
-                case .processingVideoFinished(videoUrl: let videoUrl):
-                    self.lastVideoUrl = videoUrl
-                    self.videoDidRecord = true
-                default:
-                    break
-                }
-            })
-    }
+//    func subscribe(to publisher: AnyPublisher<SwiftyCamStatus, Never>) {
+//        publisher
+//            .receive(on: DispatchQueue.main)
+//            .sink(receiveValue: { [weak self] swiftyCamStatus in
+//                guard let self = self else { return }
+//
+//                switch swiftyCamStatus {
+//                case .sessionStarted:
+//                    print("Camera session did start running")
+//                    self.enableVideoRecordBtn = true
+//                case .sessionStopped:
+//                    print("Camera session did stop running")
+//                    self.enableVideoRecordBtn = false
+//                case .photoTaken(photo: let photo):
+//                    self.lastTakenImage = photo
+//                    self.photoDidTake = true
+//                case .recordingVideoBegun:
+//                    print("Did Begin Recording Video")
+//                case .recordingVideoFinished:
+//                    print("Did finish Recording Video")
+//                    self.videoRecordingStatus = .none
+//                case .processingVideoFinished(videoUrl: let videoUrl):
+//                    self.lastVideoUrl = videoUrl
+//                    self.videoDidRecord = true
+//                default:
+//                    break
+//                }
+//            })
+//            .store(in: &subscriptions)
+//    }
 }
