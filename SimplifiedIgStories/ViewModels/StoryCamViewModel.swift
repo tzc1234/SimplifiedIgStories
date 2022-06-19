@@ -8,7 +8,6 @@
 import AVFoundation
 import AVKit
 import Combine
-import SwiftUI
 
 @MainActor
 final class StoryCamViewModel: ObservableObject {
@@ -27,11 +26,28 @@ final class StoryCamViewModel: ObservableObject {
     
     @Published private(set) var enableVideoRecordBtn = false
     
-    @Published var shouldPhotoTake = false
+    @Published var shouldPhotoTake = false {
+        willSet {
+            if newValue {
+                camManager.takePhoto()
+            }
+        }
+    }
     private(set) var lastTakenImage: UIImage?
     @Published var photoDidTake = false
     
-    @Published var videoRecordingStatus: VideoRecordingStatus = .none
+    @Published var videoRecordingStatus: VideoRecordingStatus = .none {
+        willSet {
+            switch newValue {
+            case .none:
+                break
+            case .start:
+                camManager.startVideoRecording()
+            case .stop:
+                camManager.stopVideoRecording()
+            }
+        }
+    }
     private(set) var lastVideoUrl: URL?
     @Published var videoDidRecord = false
     
@@ -44,23 +60,12 @@ final class StoryCamViewModel: ObservableObject {
 
     init(camManager: CamManager) {
         self.camManager = camManager
-        
-        camManager.camPermPublisher
-            .sink { [weak self] isGranted in
-                self?.isCamPermGranted = isGranted
-            }
-            .store(in: &subscriptions)
-        
-        camManager.microphonePermPublisher
-            .sink { [weak self] isGranted in
-                self?.isMicrophonePermGranted = isGranted
-            }
-            .store(in: &subscriptions)
+        subscribeCamMangerPublishers()
     }
 }
 
 // MARK: enums
-extension StoryCamViewModel {    
+extension StoryCamViewModel {
     enum VideoRecordingStatus {
         case none, start, stop
     }
@@ -75,10 +80,6 @@ extension StoryCamViewModel {
     var videoPreviewLayer: AVCaptureVideoPreviewLayer {
         camManager.videoPreviewLayer
     }
-    
-    var session: AVCaptureSession {
-        camManager.session
-    }
 }
 
 // MARK: internal functions
@@ -90,35 +91,58 @@ extension StoryCamViewModel {
     func setupSession() {
         camManager.setupSession()
     }
-    
-//    func subscribe(to publisher: AnyPublisher<SwiftyCamStatus, Never>) {
-//        publisher
-//            .receive(on: DispatchQueue.main)
-//            .sink(receiveValue: { [weak self] swiftyCamStatus in
-//                guard let self = self else { return }
-//
-//                switch swiftyCamStatus {
-//                case .sessionStarted:
-//                    print("Camera session did start running")
-//                    self.enableVideoRecordBtn = true
-//                case .sessionStopped:
-//                    print("Camera session did stop running")
-//                    self.enableVideoRecordBtn = false
-//                case .photoTaken(photo: let photo):
-//                    self.lastTakenImage = photo
-//                    self.photoDidTake = true
-//                case .recordingVideoBegun:
-//                    print("Did Begin Recording Video")
-//                case .recordingVideoFinished:
-//                    print("Did finish Recording Video")
-//                    self.videoRecordingStatus = .none
-//                case .processingVideoFinished(videoUrl: let videoUrl):
-//                    self.lastVideoUrl = videoUrl
-//                    self.videoDidRecord = true
-//                default:
-//                    break
-//                }
-//            })
-//            .store(in: &subscriptions)
-//    }
+}
+
+// MARK: private functions
+extension StoryCamViewModel {
+    private func subscribeCamMangerPublishers() {
+        camManager.camPermPublisher
+            .sink { [weak self] isGranted in
+                self?.isCamPermGranted = isGranted
+            }
+            .store(in: &subscriptions)
+        
+        camManager.microphonePermPublisher
+            .sink { [weak self] isGranted in
+                self?.isMicrophonePermGranted = isGranted
+            }
+            .store(in: &subscriptions)
+        
+        camManager.camStatusPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] camStatus in
+                guard let self = self else { return }
+                
+                switch camStatus {
+                case .sessionStarted:
+                    print("Camera session did start running")
+                    self.enableVideoRecordBtn = true
+                case .sessionStopped:
+                    print("Camera session did stop running")
+                    self.enableVideoRecordBtn = false
+                case .photoTaken(photo: let photo):
+                    self.lastTakenImage = photo
+                    self.photoDidTake = true
+                case .processingPhotoFailure:
+                    break
+                case .processingPhotoDataFailure:
+                    break
+                case .convertToUIImageFailure:
+                    break
+                case .recordingVideoBegun:
+                    print("Did Begin Recording Video")
+                case .recordingVideoFinished:
+                    print("Did finish Recording Video")
+                    self.videoRecordingStatus = .none
+                case .processingVideoFailure:
+                    break
+                case .processingVideoFinished(videoUrl: let videoUrl):
+                    self.lastVideoUrl = videoUrl
+                    self.videoDidRecord = true
+                default:
+                    break
+                }
+            }
+            .store(in: &subscriptions)
+    }
 }

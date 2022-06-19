@@ -9,6 +9,9 @@ import AVFoundation
 import AVKit
 
 enum CamStatus {
+    case sessionStarted
+    case sessionStopped
+    
     case photoTaken(photo: UIImage)
     case processingPhotoFailure(err: Error)
     case processingPhotoDataFailure

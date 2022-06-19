@@ -18,9 +18,6 @@ struct AVCaptureVideoPreviewRepresentable: UIViewRepresentable {
         let view = UIView(frame: UIScreen.main.bounds)
         vm.videoPreviewLayer.frame = view.frame
         view.layer.addSublayer(vm.videoPreviewLayer)
-
-        vm.session.startRunning()
-        
         return view
     }
     

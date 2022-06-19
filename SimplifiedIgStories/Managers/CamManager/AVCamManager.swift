@@ -49,6 +49,7 @@ final class AVCamManager: NSObject, CamManager {
     private var movieFileOutput: AVCaptureMovieFileOutput?
     private var photoOutput: AVCapturePhotoOutput?
     private var backgroundRecordingID: UIBackgroundTaskIdentifier?
+    private var subscriptions = Set<AnyCancellable>()
 }
 
 // MARK: - internal functions
@@ -71,6 +72,8 @@ extension AVCamManager {
             }
             
             self.session.commitConfiguration()
+            self.subscribeCaptureSessionNotifications()
+            self.session.startRunning()
         }
     }
     
@@ -266,6 +269,24 @@ extension AVCamManager {
         @unknown default:
             break
         }
+    }
+    
+    private func subscribeCaptureSessionNotifications() {
+        NotificationCenter
+            .default
+            .publisher(for: .AVCaptureSessionDidStartRunning, object: nil)
+            .sink { [weak self] _ in
+                self?.camStatusPublisher.send(.sessionStarted)
+            }
+            .store(in: &subscriptions)
+
+        NotificationCenter
+            .default
+            .publisher(for: .AVCaptureSessionDidStopRunning, object: nil)
+            .sink { [weak self] _ in
+                self?.camStatusPublisher.send(.sessionStopped)
+            }
+            .store(in: &subscriptions)
     }
 }
 
