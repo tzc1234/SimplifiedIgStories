@@ -13,7 +13,9 @@
 		BE090B6727B9568700B6F906 /* StoryIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE090B6627B9568700B6F906 /* StoryIcon.swift */; };
 		BE2C557227BFFE9D0087EE7F /* StoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557127BFFE9D0087EE7F /* StoryView.swift */; };
 		BE2C557427C0197B0087EE7F /* DetectableTapGesturePositionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */; };
-		BE463A2D285F05AE00599929 /* CamManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE463A2C285F05AE00599929 /* CamManager.swift */; };
+		BE2D7792285F765F00DBD924 /* CamSetupError.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2D7791285F765F00DBD924 /* CamSetupError.swift */; };
+		BE2D7794285F797400DBD924 /* CamStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2D7793285F797400DBD924 /* CamStatus.swift */; };
+		BE463A2D285F05AE00599929 /* AVCamManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE463A2C285F05AE00599929 /* AVCamManager.swift */; };
 		BE5CDC2D27DF4AAA00352A60 /* NoticeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5CDC2C27DF4AAA00352A60 /* NoticeLabel.swift */; };
 		BE69F50D281974E5001BA4EC /* StoriesViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE69F50C281974E5001BA4EC /* StoriesViewModelTests.swift */; };
 		BE6B73C727D794AD003D2B24 /* StoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6B73C627D794AD003D2B24 /* StoryViewModel.swift */; };
@@ -78,7 +80,9 @@
 		BE090B6627B9568700B6F906 /* StoryIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIcon.swift; sourceTree = "<group>"; };
 		BE2C557127BFFE9D0087EE7F /* StoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryView.swift; sourceTree = "<group>"; };
 		BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetectableTapGesturePositionView.swift; sourceTree = "<group>"; };
-		BE463A2C285F05AE00599929 /* CamManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CamManager.swift; sourceTree = "<group>"; };
+		BE2D7791285F765F00DBD924 /* CamSetupError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CamSetupError.swift; sourceTree = "<group>"; };
+		BE2D7793285F797400DBD924 /* CamStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CamStatus.swift; sourceTree = "<group>"; };
+		BE463A2C285F05AE00599929 /* AVCamManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVCamManager.swift; sourceTree = "<group>"; };
 		BE5CDC2C27DF4AAA00352A60 /* NoticeLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoticeLabel.swift; sourceTree = "<group>"; };
 		BE69F503281973B3001BA4EC /* SimpleIGStoryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SimpleIGStoryTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE69F50C281974E5001BA4EC /* StoriesViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesViewModelTests.swift; sourceTree = "<group>"; };
@@ -199,6 +203,16 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		BE2D7790285F761F00DBD924 /* CamManager */ = {
+			isa = PBXGroup;
+			children = (
+				BE463A2C285F05AE00599929 /* AVCamManager.swift */,
+				BE2D7791285F765F00DBD924 /* CamSetupError.swift */,
+				BE2D7793285F797400DBD924 /* CamStatus.swift */,
+			);
+			path = CamManager;
+			sourceTree = "<group>";
+		};
 		BE47195027D6CFCC004500F2 /* StoryViews */ = {
 			isa = PBXGroup;
 			children = (
@@ -298,7 +312,7 @@
 				BE9336C927D24491009E5370 /* ImageSaver.swift */,
 				BE9336CD27D2690E009E5370 /* VideoSaver.swift */,
 				BEB8752827DA120300D60110 /* LocalFileManager.swift */,
-				BE463A2C285F05AE00599929 /* CamManager.swift */,
+				BE2D7790285F761F00DBD924 /* CamManager */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -472,6 +486,7 @@
 				BE8F580327D641AF00F9DB92 /* Portion.swift in Sources */,
 				BE9EF6C727E36F7D00942976 /* CGFloat+Additions.swift in Sources */,
 				BE9336C427D22162009E5370 /* StoryPreview.swift in Sources */,
+				BE2D7794285F797400DBD924 /* CamStatus.swift in Sources */,
 				BE8AEF9027DB9D5800D7EAA1 /* VerticalLabelStyle.swift in Sources */,
 				BE8F580727D6668000F9DB92 /* AppDataService.swift in Sources */,
 				BE90CE0427D00A0E001EA0CA /* StoryCamView.swift in Sources */,
@@ -482,11 +497,12 @@
 				BEB8752927DA120300D60110 /* LocalFileManager.swift in Sources */,
 				BE8A758127BC107000E9F745 /* HomeView.swift in Sources */,
 				BE9336C227D21811009E5370 /* AVPlayerControllerRepresentable.swift in Sources */,
+				BE2D7792285F765F00DBD924 /* CamSetupError.swift in Sources */,
 				BE8C498F27C674FD000541E0 /* StoryContainer.swift in Sources */,
 				BE925CF427D8B06D005D8107 /* AVPlayer+Additions.swift in Sources */,
 				BE91AA5427BFD96800BB9846 /* StoryPortionView.swift in Sources */,
 				BE9336CC27D24CC1009E5370 /* LoadingView.swift in Sources */,
-				BE463A2D285F05AE00599929 /* CamManager.swift in Sources */,
+				BE463A2D285F05AE00599929 /* AVCamManager.swift in Sources */,
 				BE9336CA27D24491009E5370 /* ImageSaver.swift in Sources */,
 				BE2C557427C0197B0087EE7F /* DetectableTapGesturePositionView.swift in Sources */,
 				BEAED9E427D36F7D00A98F3A /* IdFramePreferenceKey.swift in Sources */,

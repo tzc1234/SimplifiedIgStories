@@ -1,5 +1,5 @@
 //
-//  CamManager.swift
+//  AVCamManager.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 19/06/2022.
@@ -9,59 +9,9 @@ import AVFoundation
 import Combine
 import UIKit
 
-enum CamSetupError: Error {
-    case defaultVideoDeviceUnavailable
-    case createVideoDeviceInputFailure(err: Error)
-    case addVideoDeviceInputFailure
-    case defaultAudioDeviceUnavailable
-    case createAudioDeviceInputFailure(err: Error)
-    case addAudioDeviceInputFailure
-    case addMovieFileOutputFailure
-    case addPhotoOutputFailure
-    case backgroundAudioPreferenceSetupFailure
-    
-    var errMsg: String {
-        switch self {
-        case .defaultVideoDeviceUnavailable:
-            return "Default video device is unavailable."
-        case .createVideoDeviceInputFailure(let err):
-            return "Cannot create video device input: \(err)"
-        case .addVideoDeviceInputFailure:
-            return "Cannot add video device input to the session."
-        case .defaultAudioDeviceUnavailable:
-            return "Default audio device is unavailable."
-        case .createAudioDeviceInputFailure(let err):
-            return "Cannot create audio device input: \(err)"
-        case .addAudioDeviceInputFailure:
-            return "Cannot add audio device input to the session."
-        case .addMovieFileOutputFailure:
-            return "Cannot add movie file output to the session."
-        case .addPhotoOutputFailure:
-            return "Cannot add photo output to the session."
-        case .backgroundAudioPreferenceSetupFailure:
-            return "Cannot set background audio preference."
-        }
-    }
-}
-
+// MARK: - CamManager
 protocol CamManager {
     
-}
-
-// MARK: - CamStatus For Publishing
-enum CamStatus {
-    case sessionStarted
-    case sessionStopped
-    case photoTaken(photo: UIImage)
-    case recordingVideoBegun
-    case recordingVideoFinished
-    case processingVideoFinished(videoUrl: URL)
-    case cameraSwitched(camPosition: AVCaptureDevice.Position)
-    case focused(atPoint: CGPoint)
-    case zoomLevelChanged(zoomLevel: CGFloat)
-    case notAuthorized
-    case configureFailure
-    case recordingVideoFailure(err: Error)
 }
 
 // MARK: - AVCamManager
@@ -70,17 +20,21 @@ final class AVCamManager: NSObject, CamManager {
     @Published private(set) var microphonePermGranted = false
     let publisher = PassthroughSubject<CamStatus, Never>()
     
-    private let sessionQueue = DispatchQueue(label: "AVCamSessionQueue")
-    
     let session = AVCaptureSession()
-    var videoDeviceInput: AVCaptureDeviceInput?
-    var movieFileOutput: AVCaptureMovieFileOutput?
-    var photoOutput: AVCapturePhotoOutput?
-    var backgroundRecordingID: UIBackgroundTaskIdentifier?
-    
     var camPosition: AVCaptureDevice.Position = .back
     var flashMode: AVCaptureDevice.FlashMode = .off
     
+    private(set) lazy var videoPreviewLayer: AVCaptureVideoPreviewLayer = {
+        let layer = AVCaptureVideoPreviewLayer(session: session)
+        layer.videoGravity = .resizeAspectFill
+        return layer
+    }()
+    
+    private let sessionQueue = DispatchQueue(label: "AVCamSessionQueue")
+    private var videoDeviceInput: AVCaptureDeviceInput?
+    private var movieFileOutput: AVCaptureMovieFileOutput?
+    private var photoOutput: AVCapturePhotoOutput?
+    private var backgroundRecordingID: UIBackgroundTaskIdentifier?
     private var subscriptions = Set<AnyCancellable>()
 }
 
@@ -158,13 +112,67 @@ extension AVCamManager {
             throw CamSetupError.backgroundAudioPreferenceSetupFailure
         }
     }
+    
+    private func subscribeSessionNotifications() {
+        NotificationCenter
+            .default
+            .publisher(for: .AVCaptureSessionDidStartRunning, object: nil)
+            .sink { [weak self] _ in
+                self?.publisher.send(.sessionStarted)
+            }
+            .store(in: &subscriptions)
+        
+        NotificationCenter
+            .default
+            .publisher(for: .AVCaptureSessionDidStopRunning, object: nil)
+            .sink { [weak self] _ in
+                self?.publisher.send(.sessionStopped)
+            }
+            .store(in: &subscriptions)
+    }
+    
+    private func checkCameraPermission() {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { [weak self] isGranted in
+                self?.camPermGranted = isGranted
+            }
+        case .restricted:
+            break
+        case .denied:
+            camPermGranted = false
+        case .authorized:
+            camPermGranted = true
+        @unknown default:
+            break
+        }
+    }
+    
+    private func checkMicrophonePermission() {
+        switch AVCaptureDevice.authorizationStatus(for: .audio) {
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .audio) { [weak self] isGranted in
+                self?.microphonePermGranted = isGranted
+            }
+        case .restricted:
+            break
+        case .denied:
+            microphonePermGranted = false
+        case .authorized:
+            microphonePermGranted = true
+        @unknown default:
+            break
+        }
+    }
 }
 
 // MARK: - internal functions
 extension AVCamManager {
-    func configureSession() {
+    func setupSession() {
         sessionQueue.async { [weak self] in
-            guard let self = self else { return }
+            guard let self = self, !self.session.isRunning else {
+                return
+            }
             
             self.session.beginConfiguration()
             self.session.sessionPreset = .high
@@ -174,6 +182,7 @@ extension AVCamManager {
                 try self.addAudioInput()
                 try self.addVideoOutput()
                 try self.addPhotoOutput()
+                self.subscribeSessionNotifications()
             } catch {
                 let errMsg = (error as? CamSetupError)?.errMsg ?? error.localizedDescription
                 print(errMsg)
@@ -194,10 +203,10 @@ extension AVCamManager {
                 self.session.removeInput(input)
             }
 
-            // Re-add inputs.
             self.session.beginConfiguration()
             self.session.sessionPreset = .high
             
+            // Re-add inputs.
             do {
                 try self.addVideoInput()
                 try self.addAudioInput()
@@ -264,40 +273,9 @@ extension AVCamManager {
         }
     }
     
-    func checkCameraPermission() {
-        let camPermStatus = AVCaptureDevice.authorizationStatus(for: .video)
-        switch camPermStatus {
-        case .notDetermined:
-            AVCaptureDevice.requestAccess(for: .video) { [weak self] isGranted in
-                self?.camPermGranted = isGranted
-            }
-        case .restricted:
-            break
-        case .denied:
-            camPermGranted = false
-        case .authorized:
-            camPermGranted = true
-        @unknown default:
-            break
-        }
-    }
-    
-    func checkMicrophonePermission() {
-        let microphonePermStatus = AVCaptureDevice.authorizationStatus(for: .audio)
-        switch microphonePermStatus {
-        case .notDetermined:
-            AVCaptureDevice.requestAccess(for: .audio) { [weak self] isGranted in
-                self?.microphonePermGranted = isGranted
-            }
-        case .restricted:
-            break
-        case .denied:
-            microphonePermGranted = false
-        case .authorized:
-            microphonePermGranted = true
-        @unknown default:
-            break
-        }
+    func checkPermissions() {
+        checkCameraPermission()
+        checkMicrophonePermission()
     }
 }
 
@@ -305,20 +283,21 @@ extension AVCamManager {
 extension AVCamManager: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         if let error = error {
-            print("Error capturing photo: \(error)")
+            publisher.send(.processingPhotoFailure(err: error))
             return
         }
         
         guard let imageData = photo.fileDataRepresentation() else {
-            print("Fail to convert pixel buffer.")
+            publisher.send(.processingPhotoDataFailure)
             return
         }
         
-        if let image = UIImage(data: imageData, scale: 1.0) {
-            publisher.send(.photoTaken(photo: image))
-        } else {
-            print("Fail to convert to UIImage.")
+        guard let image = UIImage(data: imageData, scale: 1.0) else {
+            publisher.send(.convertToUIImageFailure)
+            return
         }
+        
+        publisher.send(.photoTaken(photo: image))
     }
 }
 
@@ -332,9 +311,9 @@ extension AVCamManager: AVCaptureFileOutputRecordingDelegate {
                 UIApplication.shared.endBackgroundTask(currentBackgroundRecordingID)
             }
         }
-
+        
         if let error = error {
-            publisher.send(.recordingVideoFailure(err: error))
+            publisher.send(.processingVideoFailure(err: error))
         } else {
             publisher.send(.processingVideoFinished(videoUrl: outputFileURL))
         }
