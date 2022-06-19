@@ -46,7 +46,6 @@
 		BE9336CC27D24CC1009E5370 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9336CB27D24CC1009E5370 /* LoadingView.swift */; };
 		BE9336CE27D2690E009E5370 /* VideoSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9336CD27D2690E009E5370 /* VideoSaver.swift */; };
 		BE93B8C127C8D96900B97C40 /* TraceableRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE93B8C027C8D96900B97C40 /* TraceableRectangle.swift */; };
-		BE9E56D327E76C27007D62A3 /* SwiftyCam in Frameworks */ = {isa = PBXBuildFile; productRef = BE9E56D227E76C27007D62A3 /* SwiftyCam */; };
 		BE9EF6C527E3673600942976 /* Configs.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9EF6C427E3673600942976 /* Configs.swift */; };
 		BE9EF6C727E36F7D00942976 /* CGFloat+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9EF6C627E36F7D00942976 /* CGFloat+Additions.swift */; };
 		BEA1D95827C3C74D00D0A67A /* Date+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA1D95727C3C74D00D0A67A /* Date+Additions.swift */; };
@@ -132,7 +131,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BE9E56D327E76C27007D62A3 /* SwiftyCam in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -382,7 +380,6 @@
 			);
 			name = SimplifiedIgStories;
 			packageProductDependencies = (
-				BE9E56D227E76C27007D62A3 /* SwiftyCam */,
 			);
 			productName = IgStoriesSwiftUI;
 			productReference = BE090B5427B9562B00B6F906 /* Simple IG Story.app */;
@@ -435,7 +432,6 @@
 			);
 			mainGroup = BE090B4B27B9562B00B6F906;
 			packageReferences = (
-				BE9E56D127E76C27007D62A3 /* XCRemoteSwiftPackageReference "SwiftyCam" */,
 			);
 			productRefGroup = BE090B5527B9562B00B6F906 /* Products */;
 			projectDirPath = "";
@@ -592,7 +588,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -647,7 +643,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -682,7 +678,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tszlung.SimplifiedIgStories;
 				PRODUCT_NAME = "Simple IG Story";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -716,7 +712,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tszlung.SimplifiedIgStories;
 				PRODUCT_NAME = "Simple IG Story";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -794,25 +790,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		BE9E56D127E76C27007D62A3 /* XCRemoteSwiftPackageReference "SwiftyCam" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/tzc1234/SwiftyCam.git";
-			requirement = {
-				branch = "combine-framework";
-				kind = branch;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		BE9E56D227E76C27007D62A3 /* SwiftyCam */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = BE9E56D127E76C27007D62A3 /* XCRemoteSwiftPackageReference "SwiftyCam" */;
-			productName = SwiftyCam;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = BE090B4C27B9562B00B6F906 /* Project object */;
 }

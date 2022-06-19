@@ -78,8 +78,6 @@ extension AVCamManager {
         sessionQueue.async { [weak self] in
             guard let self = self else { return }
             
-            self.camPosition = self.camPosition == .back ? .front : .back
-            
             // Remove all inputs first.
             for input in self.session.inputs {
                 self.session.removeInput(input)

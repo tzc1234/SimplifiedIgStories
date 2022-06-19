@@ -8,7 +8,6 @@
 import AVFoundation
 import AVKit
 import Combine
-import SwiftyCam
 import SwiftUI
 
 @MainActor
@@ -16,11 +15,17 @@ final class StoryCamViewModel: ObservableObject {
     @Published var camPosition: AVCaptureDevice.Position = .back {
         willSet {
             camManager.camPosition = newValue
+            camManager.switchCamera()
+        }
+    }
+    
+    @Published var flashMode: AVCaptureDevice.FlashMode = .off {
+        willSet {
+            camManager.flashMode = newValue
         }
     }
     
     @Published private(set) var enableVideoRecordBtn = false
-    @Published var flashMode: FlashMode = .off
     
     @Published var shouldPhotoTake = false
     private(set) var lastTakenImage: UIImage?
@@ -55,27 +60,7 @@ final class StoryCamViewModel: ObservableObject {
 }
 
 // MARK: enums
-extension StoryCamViewModel {
-    enum FlashMode {
-        case on, off, auto
-        
-        var swiftyCamFlashMode: SwiftyCamViewController.FlashMode {
-            switch self {
-            case .auto: return .auto
-            case .on: return .on
-            case .off: return .off
-            }
-        }
-        
-        var systemImageName: String {
-            switch self {
-            case .auto: return "bolt.badge.a.fill"
-            case .on: return "bolt.fill"
-            case .off: return  "bolt.slash.fill"
-            }
-        }
-    }
-    
+extension StoryCamViewModel {    
     enum VideoRecordingStatus {
         case none, start, stop
     }

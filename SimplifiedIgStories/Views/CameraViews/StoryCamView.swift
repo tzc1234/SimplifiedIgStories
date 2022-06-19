@@ -102,7 +102,7 @@ extension StoryCamView {
             } label: {
                 ZStack {
                     Color.clear.frame(width: 45, height: 45)
-                    Image(systemName: vm.flashMode.systemImageName)
+                    Image(systemName: flashModeImageName)
                         .resizable()
                         .scaledToFit()
                         .foregroundColor(.white)
@@ -143,6 +143,15 @@ extension StoryCamView {
             .opacity(vm.videoRecordingStatus == .start ? 0 : 1)
         }
     }
+    
+    private var flashModeImageName: String {
+        switch vm.flashMode {
+        case .auto: return "bolt.badge.a.fill"
+        case .on: return "bolt.fill"
+        case .off: return  "bolt.slash.fill"
+        @unknown default: return ""
+        }
+    }
 }
 
 // MARK: functions
@@ -155,6 +164,8 @@ extension StoryCamView {
             vm.flashMode = .auto
         case .off:
             vm.flashMode = .on
+        @unknown default:
+            break
         }
     }
 }
