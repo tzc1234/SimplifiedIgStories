@@ -11,7 +11,20 @@ import UIKit
 
 // MARK: - CamManager
 protocol CamManager {
+    var camPermGranted: Bool { get }
+    var microphonePermGranted: Bool { get }
+    var publisher: PassthroughSubject<CamStatus, Never> { get }
+    var session: AVCaptureSession { get }
+    var camPosition: AVCaptureDevice.Position { get set }
+    var flashMode: AVCaptureDevice.FlashMode { get set }
+    var videoPreviewLayer: AVCaptureVideoPreviewLayer { get }
     
+    func setupSession()
+    func switchCamera()
+    func takePhoto()
+    func startVideoRecording()
+    func stopVideoRecording()
+    func checkPermissions()
 }
 
 // MARK: - AVCamManager
@@ -36,6 +49,119 @@ final class AVCamManager: NSObject, CamManager {
     private var photoOutput: AVCapturePhotoOutput?
     private var backgroundRecordingID: UIBackgroundTaskIdentifier?
     private var subscriptions = Set<AnyCancellable>()
+}
+
+// MARK: - internal functions
+extension AVCamManager {
+    func setupSession() {
+        sessionQueue.async { [weak self] in
+            guard let self = self, !self.session.isRunning else {
+                return
+            }
+            
+            self.session.beginConfiguration()
+            self.session.sessionPreset = .high
+            
+            do {
+                try self.addVideoInput()
+                try self.addAudioInput()
+                try self.addVideoOutput()
+                try self.addPhotoOutput()
+                self.subscribeSessionNotifications()
+            } catch {
+                let errMsg = (error as? CamSetupError)?.errMsg ?? error.localizedDescription
+                print(errMsg)
+            }
+            
+            self.session.commitConfiguration()
+        }
+    }
+    
+    func switchCamera() {
+        sessionQueue.async { [weak self] in
+            guard let self = self else { return }
+            
+            self.camPosition = self.camPosition == .back ? .front : .back
+            
+            // Remove all inputs first.
+            for input in self.session.inputs {
+                self.session.removeInput(input)
+            }
+
+            self.session.beginConfiguration()
+            self.session.sessionPreset = .high
+            
+            // Re-add inputs.
+            do {
+                try self.addVideoInput()
+                try self.addAudioInput()
+            } catch {
+                let errMsg = (error as? CamSetupError)?.errMsg ?? error.localizedDescription
+                print(errMsg)
+            }
+            
+            self.session.commitConfiguration()
+            self.publisher.send(.cameraSwitched(camPosition: self.camPosition))
+        }
+    }
+    
+    func takePhoto() {
+        sessionQueue.async { [weak self] in
+            guard let self = self, let photoOutput = self.photoOutput else {
+                return
+            }
+            
+            let settings = AVCapturePhotoSettings()
+            settings.flashMode = self.flashMode
+            photoOutput.capturePhoto(with: settings, delegate: self)
+        }
+    }
+    
+    func startVideoRecording() {
+        sessionQueue.async { [weak self] in
+            guard let self = self,
+                    let movieFileOutput = self.movieFileOutput,
+                    !movieFileOutput.isRecording
+            else {
+                return
+            }
+            
+            self.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
+            
+            let movieFileOutputConnection = movieFileOutput.connection(with: .video)
+            movieFileOutputConnection?.videoOrientation = .portrait
+            
+            let availableVideoCodecTypes = movieFileOutput.availableVideoCodecTypes
+            if availableVideoCodecTypes.contains(.hevc) {
+                movieFileOutput.setOutputSettings([AVVideoCodecKey: AVVideoCodecType.hevc], for: movieFileOutputConnection!)
+            }
+            
+            let outputFileName = UUID().uuidString
+            let outputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("mov")!)
+            movieFileOutput.startRecording(to: URL(fileURLWithPath: outputFilePath), recordingDelegate: self)
+            
+            self.publisher.send(.recordingVideoBegun)
+        }
+    }
+    
+    func stopVideoRecording() {
+        sessionQueue.async { [weak self] in
+            guard let self = self,
+                    let movieFileOutput = self.movieFileOutput,
+                    movieFileOutput.isRecording
+            else {
+                return
+            }
+            
+            movieFileOutput.stopRecording()
+            self.publisher.send(.recordingVideoFinished)
+        }
+    }
+    
+    func checkPermissions() {
+        checkCameraPermission()
+        checkMicrophonePermission()
+    }
 }
 
 // MARK: - private functions
@@ -163,119 +289,6 @@ extension AVCamManager {
         @unknown default:
             break
         }
-    }
-}
-
-// MARK: - internal functions
-extension AVCamManager {
-    func setupSession() {
-        sessionQueue.async { [weak self] in
-            guard let self = self, !self.session.isRunning else {
-                return
-            }
-            
-            self.session.beginConfiguration()
-            self.session.sessionPreset = .high
-            
-            do {
-                try self.addVideoInput()
-                try self.addAudioInput()
-                try self.addVideoOutput()
-                try self.addPhotoOutput()
-                self.subscribeSessionNotifications()
-            } catch {
-                let errMsg = (error as? CamSetupError)?.errMsg ?? error.localizedDescription
-                print(errMsg)
-            }
-            
-            self.session.commitConfiguration()
-        }
-    }
-    
-    func switchCamera() {
-        sessionQueue.async { [weak self] in
-            guard let self = self else { return }
-            
-            self.camPosition = self.camPosition == .back ? .front : .back
-            
-            // Remove all inputs first.
-            for input in self.session.inputs {
-                self.session.removeInput(input)
-            }
-
-            self.session.beginConfiguration()
-            self.session.sessionPreset = .high
-            
-            // Re-add inputs.
-            do {
-                try self.addVideoInput()
-                try self.addAudioInput()
-            } catch {
-                let errMsg = (error as? CamSetupError)?.errMsg ?? error.localizedDescription
-                print(errMsg)
-            }
-            
-            self.session.commitConfiguration()
-            self.publisher.send(.cameraSwitched(camPosition: self.camPosition))
-        }
-    }
-    
-    func takePhoto() {
-        sessionQueue.async { [weak self] in
-            guard let self = self, let photoOutput = self.photoOutput else {
-                return
-            }
-            
-            let settings = AVCapturePhotoSettings()
-            settings.flashMode = self.flashMode
-            photoOutput.capturePhoto(with: settings, delegate: self)
-        }
-    }
-    
-    func startMovieRecording() {
-        sessionQueue.async { [weak self] in
-            guard let self = self,
-                    let movieFileOutput = self.movieFileOutput,
-                    !movieFileOutput.isRecording
-            else {
-                return
-            }
-            
-            self.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
-            
-            let movieFileOutputConnection = movieFileOutput.connection(with: .video)
-            movieFileOutputConnection?.videoOrientation = .portrait
-            
-            let availableVideoCodecTypes = movieFileOutput.availableVideoCodecTypes
-            if availableVideoCodecTypes.contains(.hevc) {
-                movieFileOutput.setOutputSettings([AVVideoCodecKey: AVVideoCodecType.hevc], for: movieFileOutputConnection!)
-            }
-            
-            let outputFileName = UUID().uuidString
-            let outputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("mov")!)
-            movieFileOutput.startRecording(to: URL(fileURLWithPath: outputFilePath), recordingDelegate: self)
-            
-            self.publisher.send(.recordingVideoBegun)
-        }
-    }
-    
-    func stopVideoRecording() {
-        sessionQueue.async { [weak self] in
-            guard let self = self,
-                    let movieFileOutput = self.movieFileOutput,
-                    movieFileOutput.isRecording
-            else {
-                return
-            }
-            
-            movieFileOutput.stopRecording()
-            self.publisher.send(.recordingVideoFinished)
-        }
-    }
-    
-    func checkPermissions() {
-        checkCameraPermission()
-        checkMicrophonePermission()
     }
 }
 
