@@ -29,14 +29,9 @@ struct AVPlayerControllerRepresentable: UIViewControllerRepresentable {
         vc.showsPlaybackControls = false
         
         do {
-            try AVAudioSession.sharedInstance()
-                .setCategory(
-                    .playAndRecord,
-                    mode: .default,
-                    options: [.mixWithOthers, .allowBluetooth, .defaultToSpeaker]
-                )
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
             try AVAudioSession.sharedInstance().setActive(true)
-        } catch let error {
+        } catch {
             print(error.localizedDescription)
         }
         

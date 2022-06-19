@@ -18,7 +18,7 @@ struct StoryCamView: View {
     
     var body: some View {
         ZStack {
-            if vm.camPermGranted && vm.microphonePermGranted {
+            if vm.arePermissionsGranted {
                 StorySwiftyCamControllerRepresentable(storyCamViewModel: vm)
             } else {
                 StoryCamPermissionView(storyCamViewModel: vm)
@@ -28,29 +28,24 @@ struct StoryCamView: View {
                 HStack(alignment: .top, spacing: 0) {
                     closeButton
                     Spacer()
-                    if vm.camPermGranted && vm.microphonePermGranted {
-                        flashButton
-                    }
+                    flashButton
                     Spacer()
                     Color.clear.frame(width: 45)
                 }
                 .padding(.horizontal, 20)
+                .padding(.vertical, 9)
                 
                 Spacer()
                 
                 HStack(alignment: .bottom, spacing: 0) {
                     Spacer()
-                    if vm.camPermGranted && vm.microphonePermGranted {
-                        videoRecordButton
-                    }
+                    videoRecordButton
                     Spacer()
                 }
                 
                 HStack(alignment: .bottom, spacing: 0) {
                     Spacer()
-                    if vm.camPermGranted && vm.microphonePermGranted {
-                        changeCameraButton
-                    }
+                    changeCameraButton
                 }
                 .padding(.horizontal, 20)
                 
@@ -62,13 +57,11 @@ struct StoryCamView: View {
             } else if vm.videoDidRecord, let url = vm.lastVideoUrl {
                 StoryPreview(videoUrl: url) { vm.videoDidRecord = false }
             }
-            
         }
         .statusBar(hidden: true)
         .onAppear {
             vm.requestPermission()
         }
-        
     }
 }
 
@@ -97,47 +90,53 @@ extension StoryCamView {
         .opacity(vm.videoRecordingStatus == .start ? 0 : 1)
     }
     
-    private var flashButton: some View {
-        Button {
-            toggleFlashMode()
-        } label: {
-            ZStack {
-                Color.clear.frame(width: 45, height: 45)
-                Image(systemName: vm.flashMode.systemImageName)
+    @ViewBuilder private var flashButton: some View {
+        if vm.arePermissionsGranted {
+            Button {
+                toggleFlashMode()
+            } label: {
+                ZStack {
+                    Color.clear.frame(width: 45, height: 45)
+                    Image(systemName: vm.flashMode.systemImageName)
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(.white)
+                        .frame(width: 30, height: 30)
+                }
+            }
+            .opacity(vm.videoRecordingStatus == .start ? 0 : 1)
+        }
+    }
+    
+    @ViewBuilder private var videoRecordButton: some View {
+        if vm.arePermissionsGranted {
+            VideoRecordButton() {
+                vm.shouldPhotoTake = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    vm.shouldPhotoTake = false
+                }
+            } longPressingAction: { isPressing in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    vm.videoRecordingStatus = isPressing ? .start : .stop
+                }
+            }
+            .allowsHitTesting(vm.enableVideoRecordBtn)
+        }
+    }
+    
+    @ViewBuilder private var changeCameraButton: some View {
+        if vm.arePermissionsGranted {
+            Button {
+                vm.cameraSelection = vm.cameraSelection == .rear ? .front : .rear
+            } label: {
+                Image(systemName: "arrow.triangle.2.circlepath")
                     .resizable()
                     .scaledToFit()
                     .foregroundColor(.white)
-                    .frame(width: 30, height: 30)
+                    .frame(width: 40, height: 40)
             }
+            .opacity(vm.videoRecordingStatus == .start ? 0 : 1)
         }
-        .opacity(vm.videoRecordingStatus == .start ? 0 : 1)
-    }
-    
-    private var videoRecordButton: some View {
-        VideoRecordButton() {
-            vm.shouldPhotoTake = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                vm.shouldPhotoTake = false
-            }
-        } longPressingAction: { isPressing in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                vm.videoRecordingStatus = isPressing ? .start : .stop
-            }
-        }
-        .allowsHitTesting(vm.enableVideoRecordBtn)
-    }
-    
-    private var changeCameraButton: some View {
-        Button {
-            vm.cameraSelection = vm.cameraSelection == .rear ? .front : .rear
-        } label: {
-            Image(systemName: "arrow.triangle.2.circlepath")
-                .resizable()
-                .scaledToFit()
-                .foregroundColor(.white)
-                .frame(width: 40, height: 40)
-        }
-        .opacity(vm.videoRecordingStatus == .start ? 0 : 1)
     }
 }
 

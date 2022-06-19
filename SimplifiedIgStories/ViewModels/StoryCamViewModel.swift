@@ -5,8 +5,6 @@
 //  Created by Tsz-Lung on 13/03/2022.
 //
 
-import Foundation
-import SwiftUI
 import AVKit
 import Combine
 import SwiftyCam
@@ -57,6 +55,13 @@ extension StoryCamViewModel {
     }
 }
 
+// MARK: computed variables
+extension StoryCamViewModel {
+    var arePermissionsGranted: Bool {
+        camPermGranted && microphonePermGranted
+    }
+}
+
 // MARK: functions
 extension StoryCamViewModel {
     private func checkCameraPermission() {
@@ -69,8 +74,7 @@ extension StoryCamViewModel {
                 }
             }
         case .restricted:
-            // nothing can do
-            break
+            break // nothing can do
         case .denied:
             camPermGranted = false
         case .authorized:
@@ -90,8 +94,7 @@ extension StoryCamViewModel {
                 }
             }
         case .restricted:
-            // nothing can do
-            break
+            break // nothing can do
         case .denied:
             microphonePermGranted = false
         case .authorized:

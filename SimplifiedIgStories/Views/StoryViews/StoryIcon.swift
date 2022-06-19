@@ -60,8 +60,11 @@ struct StoryIcon: View {
                 isOnTap.toggle()
             }
             
-            onTapAction(story.id)
             isOnTap.toggle()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                onTapAction(story.id)
+            }
         }
     }
     

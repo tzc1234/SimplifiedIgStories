@@ -13,6 +13,7 @@
 		BE090B6727B9568700B6F906 /* StoryIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE090B6627B9568700B6F906 /* StoryIcon.swift */; };
 		BE2C557227BFFE9D0087EE7F /* StoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557127BFFE9D0087EE7F /* StoryView.swift */; };
 		BE2C557427C0197B0087EE7F /* DetectableTapGesturePositionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */; };
+		BE463A2D285F05AE00599929 /* CamManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE463A2C285F05AE00599929 /* CamManager.swift */; };
 		BE5CDC2D27DF4AAA00352A60 /* NoticeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5CDC2C27DF4AAA00352A60 /* NoticeLabel.swift */; };
 		BE69F50D281974E5001BA4EC /* StoriesViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE69F50C281974E5001BA4EC /* StoriesViewModelTests.swift */; };
 		BE6B73C727D794AD003D2B24 /* StoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6B73C627D794AD003D2B24 /* StoryViewModel.swift */; };
@@ -77,6 +78,7 @@
 		BE090B6627B9568700B6F906 /* StoryIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIcon.swift; sourceTree = "<group>"; };
 		BE2C557127BFFE9D0087EE7F /* StoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryView.swift; sourceTree = "<group>"; };
 		BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetectableTapGesturePositionView.swift; sourceTree = "<group>"; };
+		BE463A2C285F05AE00599929 /* CamManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CamManager.swift; sourceTree = "<group>"; };
 		BE5CDC2C27DF4AAA00352A60 /* NoticeLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoticeLabel.swift; sourceTree = "<group>"; };
 		BE69F503281973B3001BA4EC /* SimpleIGStoryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SimpleIGStoryTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE69F50C281974E5001BA4EC /* StoriesViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesViewModelTests.swift; sourceTree = "<group>"; };
@@ -251,7 +253,6 @@
 				BE9336CB27D24CC1009E5370 /* LoadingView.swift */,
 				BE9336C127D21811009E5370 /* AVPlayerControllerRepresentable.swift */,
 				BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */,
-				BEA8E50E27D0CFD200640B19 /* VideoRecordButton.swift */,
 				BE5CDC2C27DF4AAA00352A60 /* NoticeLabel.swift */,
 				BE8AEF9127DBDE0E00D7EAA1 /* ViewModifiers */,
 				BE8AEF8E27DB9D3000D7EAA1 /* LabelStyles */,
@@ -285,6 +286,7 @@
 				BE90CE0127D00719001EA0CA /* StorySwiftyCamViewController.swift */,
 				BE90CDFF27D0060D001EA0CA /* StorySwiftyCamControllerRepresentable.swift */,
 				BE72F93F27DF6F9300AA98A5 /* StoryCamPermissionView.swift */,
+				BEA8E50E27D0CFD200640B19 /* VideoRecordButton.swift */,
 				BE90CE0327D00A0E001EA0CA /* StoryCamView.swift */,
 			);
 			path = CameraViews;
@@ -296,6 +298,7 @@
 				BE9336C927D24491009E5370 /* ImageSaver.swift */,
 				BE9336CD27D2690E009E5370 /* VideoSaver.swift */,
 				BEB8752827DA120300D60110 /* LocalFileManager.swift */,
+				BE463A2C285F05AE00599929 /* CamManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -483,6 +486,7 @@
 				BE925CF427D8B06D005D8107 /* AVPlayer+Additions.swift in Sources */,
 				BE91AA5427BFD96800BB9846 /* StoryPortionView.swift in Sources */,
 				BE9336CC27D24CC1009E5370 /* LoadingView.swift in Sources */,
+				BE463A2D285F05AE00599929 /* CamManager.swift in Sources */,
 				BE9336CA27D24491009E5370 /* ImageSaver.swift in Sources */,
 				BE2C557427C0197B0087EE7F /* DetectableTapGesturePositionView.swift in Sources */,
 				BEAED9E427D36F7D00A98F3A /* IdFramePreferenceKey.swift in Sources */,

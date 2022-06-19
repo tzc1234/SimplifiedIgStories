@@ -64,9 +64,9 @@ struct VideoRecordButton: View {
                     }
                 }
         )
-        .onChange(of: isLongPressing) { newValue in
-            longPressingAction(newValue)
-            if newValue {
+        .onChange(of: isLongPressing) { isLongPressing in
+            longPressingAction(isLongPressing)
+            if isLongPressing {
                 startStrokeAnimation()
             } else {
                 resetStrokeAnimation()
