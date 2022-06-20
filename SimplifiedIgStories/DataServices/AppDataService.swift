@@ -26,6 +26,7 @@ protocol DataServiceable {
     func fetchStories() -> AnyPublisher<[Story], DataServiceError>
 }
 
+// MARK: - AppDataService
 final class AppDataService: DataServiceable {
     private let filename = "storiesData.json"
     

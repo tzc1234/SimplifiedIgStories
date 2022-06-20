@@ -8,10 +8,8 @@ A simple version of IG story, this demo app is my **SwiftUI** study record.
 1. SwiftUI
 2. Combine
 3. AVFoundation
-4. Coordinator Pattern
-5. ViewModel
-6. Dependency Injection
-7. XCTest
+4. Dependency Injection
+5. XCTest
 
 ## Update History
 #### 19/06/2022:
