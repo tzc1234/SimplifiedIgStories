@@ -56,7 +56,7 @@ final class AVCamManager: NSObject, CamManager {
 extension AVCamManager {
     func setupSession() {
         sessionQueue.async { [weak self] in
-            guard let self = self else { return }
+            guard let self = self, !self.session.isRunning else { return }
             
             self.session.beginConfiguration()
             self.session.sessionPreset = .high
@@ -64,6 +64,7 @@ extension AVCamManager {
             do {
                 try self.addVideoInput()
                 try self.addAudioInput()
+                try self.setBackgroundAudioPreference()
                 try self.addVideoOutput()
                 try self.addPhotoOutput()
             } catch {
@@ -128,6 +129,7 @@ extension AVCamManager {
             
             let movieFileOutputConnection = movieFileOutput.connection(with: .video)
             movieFileOutputConnection?.videoOrientation = .portrait
+            movieFileOutputConnection?.isVideoMirrored = self.camPosition == .front
             
             let availableVideoCodecTypes = movieFileOutput.availableVideoCodecTypes
             if availableVideoCodecTypes.contains(.hevc) {
@@ -308,7 +310,12 @@ extension AVCamManager: AVCapturePhotoCaptureDelegate {
             return
         }
         
-        camStatusPublisher.send(.photoTaken(photo: image))
+        if camPosition == .front, let cgImage = image.cgImage {
+            let flippedImage = UIImage(cgImage: cgImage, scale: image.scale, orientation: .leftMirrored)
+            camStatusPublisher.send(.photoTaken(photo: flippedImage))
+        } else {
+            camStatusPublisher.send(.photoTaken(photo: image))
+        }
     }
 }
 

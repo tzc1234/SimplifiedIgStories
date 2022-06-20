@@ -34,7 +34,7 @@ final class StoryCamViewModel: ObservableObject {
         }
     }
     private(set) var lastTakenImage: UIImage?
-    @Published var photoDidTake = false
+    @Published var showPhotoPreview = false
     
     @Published var videoRecordingStatus: VideoRecordingStatus = .none {
         willSet {
@@ -49,7 +49,7 @@ final class StoryCamViewModel: ObservableObject {
         }
     }
     private(set) var lastVideoUrl: URL?
-    @Published var videoDidRecord = false
+    @Published var showVideoPreview = false
     
     @Published private(set) var isCamPermGranted = false
     @Published private(set) var isMicrophonePermGranted = false
@@ -122,7 +122,7 @@ extension StoryCamViewModel {
                     self.enableVideoRecordBtn = false
                 case .photoTaken(photo: let photo):
                     self.lastTakenImage = photo
-                    self.photoDidTake = true
+                    self.showPhotoPreview = true
                 case .processingPhotoFailure:
                     break
                 case .processingPhotoDataFailure:
@@ -138,7 +138,7 @@ extension StoryCamViewModel {
                     break
                 case .processingVideoFinished(videoUrl: let videoUrl):
                     self.lastVideoUrl = videoUrl
-                    self.videoDidRecord = true
+                    self.showVideoPreview = true
                 default:
                     break
                 }

@@ -27,13 +27,7 @@ struct AVPlayerControllerRepresentable: UIViewControllerRepresentable {
         
         let vc = AVPlayerViewController()
         vc.showsPlaybackControls = false
-        
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
-            try AVAudioSession.sharedInstance().setActive(true)
-        } catch {
-            print(error.localizedDescription)
-        }
+        context.coordinator.avPlayerViewController = vc
         
         DispatchQueue.main.async {
             vc.player = player
@@ -50,6 +44,7 @@ struct AVPlayerControllerRepresentable: UIViewControllerRepresentable {
     }
     
     class Coordinator {
+        weak var avPlayerViewController: AVPlayerViewController?
         private var parent: AVPlayerControllerRepresentable
         
         init(_ parent: AVPlayerControllerRepresentable) {
@@ -61,6 +56,10 @@ struct AVPlayerControllerRepresentable: UIViewControllerRepresentable {
                 parent.player?.seek(to: .zero)
                 parent.player?.play()
             }
+        }
+        
+        deinit {
+            avPlayerViewController?.showsPlaybackControls = true
         }
     }
 }

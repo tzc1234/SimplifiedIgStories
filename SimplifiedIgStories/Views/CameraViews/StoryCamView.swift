@@ -9,7 +9,6 @@ import SwiftUI
 
 struct StoryCamView: View {
     @StateObject private var vm = StoryCamViewModel(camManager: AVCamManager())
-    @State private var showStatusBar = true
     
     let tapCloseAction: (() -> Void)?
     
@@ -53,13 +52,13 @@ struct StoryCamView: View {
             }
             .padding(.vertical, 20)
             
-            if vm.photoDidTake, let uiImage = vm.lastTakenImage {
-                StoryPreview(uiImage: uiImage) { vm.photoDidTake = false }
-            } else if vm.videoDidRecord, let url = vm.lastVideoUrl {
-                StoryPreview(videoUrl: url) { vm.videoDidRecord = false }
+            if vm.showPhotoPreview, let uiImage = vm.lastTakenImage {
+                StoryPreview(uiImage: uiImage) { vm.showPhotoPreview = false }
+            } else if vm.showVideoPreview, let url = vm.lastVideoUrl {
+                StoryPreview(videoUrl: url) { vm.showVideoPreview = false }
             }
         }
-        .statusBar(hidden: showStatusBar)
+        .statusBar(hidden: true)
         .onAppear {
             vm.checkPermissions()
         }
@@ -69,8 +68,9 @@ struct StoryCamView: View {
             }
         }
         .onDisappear {
-            showStatusBar = false
+            print("StoryCamView disappear")
         }
+        
     }
 }
 
