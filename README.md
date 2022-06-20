@@ -2,8 +2,7 @@
 A simple version of IG story, this demo app is my **SwiftUI** study record.
 
 ## Screenshots
-<img src="https://github.com/tzc1234/SimplifiedIgStories/blob/main/Screenshots/preview.gif" alt="preview" width="256" height="455"/> <img src="https://github.com/tzc1234/SimplifiedIgStories/blob/main/Screenshots/preview2.jpeg" alt="preview2" width="256" height="455"/>
-<img src="https://github.com/tzc1234/SimplifiedIgStories/blob/main/Screenshots/preview3.jpeg" alt="preview3" width="256" height="455"/>
+<img src="https://github.com/tzc1234/SimplifiedIgStories/blob/main/Screenshots/preview.gif" alt="preview" width="256" height="455"/> <img src="https://github.com/tzc1234/SimplifiedIgStories/blob/main/Screenshots/preview2.jpg" alt="preview2" width="256" height="455"/> <img src="https://github.com/tzc1234/SimplifiedIgStories/blob/main/Screenshots/preview3.jpg" alt="preview3" width="256" height="455"/>
 
 ## Technologies
 1. SwiftUI
