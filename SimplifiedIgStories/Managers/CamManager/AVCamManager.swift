@@ -26,6 +26,7 @@ protocol CamManager {
     func startVideoRecording()
     func stopVideoRecording()
     func checkPermissions()
+    func focus(on point: CGPoint)
 }
 
 // MARK: - AVCamManager
@@ -45,6 +46,7 @@ final class AVCamManager: NSObject, CamManager {
     }()
     
     private let sessionQueue = DispatchQueue(label: "AVCamSessionQueue")
+    private var videoDevice: AVCaptureDevice?
     private var videoDeviceInput: AVCaptureDeviceInput?
     private var movieFileOutput: AVCaptureMovieFileOutput?
     private var photoOutput: AVCapturePhotoOutput?
@@ -63,6 +65,7 @@ extension AVCamManager {
             
             do {
                 try self.addVideoInput()
+                try self.setupFocusAndExposure()
                 try self.addAudioInput()
                 try self.setBackgroundAudioPreference()
                 try self.addVideoOutput()
@@ -93,6 +96,7 @@ extension AVCamManager {
             // Re-add inputs.
             do {
                 try self.addVideoInput()
+                try self.setupFocusAndExposure()
                 try self.addAudioInput()
             } catch {
                 let errMsg = (error as? CamSetupError)?.errMsg ?? error.localizedDescription
@@ -162,6 +166,34 @@ extension AVCamManager {
         checkCameraPermission()
         checkMicrophonePermission()
     }
+    
+    func focus(on point: CGPoint) {
+        let x = point.y / .screenHeight
+        let y = 1.0 - point.x / .screenWidth
+        let focusPoint = CGPoint(x: x, y: y)
+
+        sessionQueue.async { [weak self] in
+            guard let videoDevice = self?.videoDevice else { return }
+            
+            do {
+                try videoDevice.lockForConfiguration()
+
+                if videoDevice.isFocusPointOfInterestSupported && videoDevice.isFocusModeSupported(.continuousAutoFocus) {
+                    videoDevice.focusPointOfInterest = focusPoint
+                    videoDevice.focusMode = .continuousAutoFocus
+                }
+                
+                if videoDevice.isExposurePointOfInterestSupported && videoDevice.isExposureModeSupported(.continuousAutoExposure) {
+                    videoDevice.exposurePointOfInterest = focusPoint
+                    videoDevice.exposureMode = .continuousAutoExposure
+                }
+                
+                videoDevice.unlockForConfiguration()
+            } catch {
+                print("Cannot lock device for configuration: \(error)")
+            }
+        }
+    }
 }
 
 // MARK: - private functions
@@ -172,6 +204,8 @@ extension AVCamManager {
         else {
             throw CamSetupError.defaultVideoDeviceUnavailable
         }
+        
+        self.videoDevice = videoDevice
 
         do {
             let videoDeviceInput = try AVCaptureDeviceInput(device: videoDevice)
@@ -184,6 +218,24 @@ extension AVCamManager {
         } catch {
             throw CamSetupError.createVideoDeviceInputFailure(err: error)
         }
+    }
+    
+    private func setupFocusAndExposure() throws {
+        guard let videoDevice = videoDevice else {
+            throw CamSetupError.videoDeviceNotFound
+        }
+        
+        try videoDevice.lockForConfiguration()
+        
+        if videoDevice.isFocusModeSupported(.continuousAutoFocus) {
+            videoDevice.focusMode = .continuousAutoFocus
+        }
+
+        if videoDevice.isExposureModeSupported(.continuousAutoExposure) {
+            videoDevice.exposureMode = .continuousAutoExposure
+        }
+        
+        videoDevice.unlockForConfiguration()
     }
     
     private func addAudioInput() throws {

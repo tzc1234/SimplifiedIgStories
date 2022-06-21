@@ -15,6 +15,7 @@ enum CamSetupError: Error {
     case addMovieFileOutputFailure
     case addPhotoOutputFailure
     case backgroundAudioPreferenceSetupFailure
+    case videoDeviceNotFound
     
     var errMsg: String {
         switch self {
@@ -36,6 +37,8 @@ enum CamSetupError: Error {
             return "Cannot add photo output to the session."
         case .backgroundAudioPreferenceSetupFailure:
             return "Cannot set background audio preference."
+        case .videoDeviceNotFound:
+            return "Cannot find videoDevice."
         }
     }
 }

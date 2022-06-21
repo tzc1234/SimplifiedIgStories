@@ -56,6 +56,12 @@ final class StoryCamViewModel: ObservableObject {
     
     private var subscriptions = Set<AnyCancellable>()
     
+    var videoPreviewTapPoint: CGPoint = .zero {
+        didSet {
+            camManager.focus(on: videoPreviewTapPoint)
+        }
+    }
+    
     private var camManager: CamManager
 
     init(camManager: CamManager) {
