@@ -180,7 +180,7 @@ extension AVCamManager {
 
                 if videoDevice.isFocusPointOfInterestSupported && videoDevice.isFocusModeSupported(.continuousAutoFocus) {
                     videoDevice.focusPointOfInterest = focusPoint
-                    videoDevice.focusMode = .continuousAutoFocus
+                    videoDevice.focusMode = .autoFocus
                 }
                 
                 if videoDevice.isExposurePointOfInterestSupported && videoDevice.isExposureModeSupported(.continuousAutoExposure) {
