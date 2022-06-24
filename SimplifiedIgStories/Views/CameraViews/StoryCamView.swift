@@ -20,7 +20,6 @@ struct StoryCamView: View {
         ZStack {
             if vm.arePermissionsGranted {
                 AVCaptureVideoPreviewRepresentable(storyCamViewModel: vm)
-                    .frame(width: .screenWidth, height: .screenHeight)
             } else {
                 StoryCamPermissionView(storyCamViewModel: vm)
             }

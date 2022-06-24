@@ -27,7 +27,15 @@ final class StoryCamViewModel: ObservableObject {
         }
     }
     private(set) var lastTakenImage: UIImage?
-    @Published var showPhotoPreview = false
+    @Published var showPhotoPreview = false {
+        didSet {
+            if showPhotoPreview {
+                camManager.stopSession()
+            } else {
+                camManager.startSession()
+            }
+        }
+    }
     
     @Published var videoRecordingStatus: VideoRecordingStatus = .none {
         willSet {
@@ -42,7 +50,15 @@ final class StoryCamViewModel: ObservableObject {
         }
     }
     private(set) var lastVideoUrl: URL?
-    @Published var showVideoPreview = false
+    @Published var showVideoPreview = false {
+        didSet {
+            if showVideoPreview {
+                camManager.stopSession()
+            } else {
+                camManager.startSession()
+            }
+        }
+    }
     
     @Published private(set) var isCamPermGranted = false
     @Published private(set) var isMicrophonePermGranted = false
