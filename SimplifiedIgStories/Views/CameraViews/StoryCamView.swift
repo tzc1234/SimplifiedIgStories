@@ -136,7 +136,7 @@ extension StoryCamView {
     @ViewBuilder private var changeCameraButton: some View {
         if vm.arePermissionsGranted {
             Button {
-                vm.camPosition = vm.camPosition == .back ? .front : .back
+                vm.switchCamera()
             } label: {
                 Image(systemName: "arrow.triangle.2.circlepath")
                     .resizable()

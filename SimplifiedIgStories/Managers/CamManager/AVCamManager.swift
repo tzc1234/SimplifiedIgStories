@@ -16,7 +16,7 @@ protocol CamManager {
     var camStatusPublisher: PassthroughSubject<CamStatus, Never> { get }
     
     var session: AVCaptureSession { get }
-    var camPosition: AVCaptureDevice.Position { get set }
+    var camPosition: AVCaptureDevice.Position { get }
     var flashMode: AVCaptureDevice.FlashMode { get set }
     var videoPreviewLayer: AVCaptureVideoPreviewLayer { get }
     
@@ -36,7 +36,7 @@ final class AVCamManager: NSObject, CamManager {
     let camStatusPublisher = PassthroughSubject<CamStatus, Never>()
     
     let session = AVCaptureSession()
-    var camPosition: AVCaptureDevice.Position = .back
+    private(set) var camPosition: AVCaptureDevice.Position = .back
     var flashMode: AVCaptureDevice.FlashMode = .off
     
     private(set) lazy var videoPreviewLayer: AVCaptureVideoPreviewLayer = {
@@ -84,6 +84,8 @@ extension AVCamManager {
     func switchCamera() {
         sessionQueue.async { [weak self] in
             guard let self = self else { return }
+            
+            self.camPosition = self.camPosition == .back ? .front : .back
             
             // Remove all inputs first.
             for input in self.session.inputs {

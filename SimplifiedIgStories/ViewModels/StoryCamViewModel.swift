@@ -11,13 +11,6 @@ import Combine
 
 @MainActor
 final class StoryCamViewModel: ObservableObject {
-    @Published var camPosition: AVCaptureDevice.Position = .back {
-        willSet {
-            camManager.camPosition = newValue
-            camManager.switchCamera()
-        }
-    }
-    
     @Published var flashMode: AVCaptureDevice.FlashMode = .off {
         willSet {
             camManager.flashMode = newValue
@@ -96,6 +89,10 @@ extension StoryCamViewModel {
     
     func setupSession() {
         camManager.setupSession()
+    }
+    
+    func switchCamera() {
+        camManager.switchCamera()
     }
 }
 
