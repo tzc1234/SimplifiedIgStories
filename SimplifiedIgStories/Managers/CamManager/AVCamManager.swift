@@ -27,6 +27,7 @@ protocol CamManager {
     func stopVideoRecording()
     func checkPermissions()
     func focus(on point: CGPoint)
+    func zoom(to factor: CGFloat)
 }
 
 // MARK: - AVCamManager
@@ -189,6 +190,24 @@ extension AVCamManager {
                     videoDevice.exposurePointOfInterest = focusPoint
                     videoDevice.exposureMode = .continuousAutoExposure
                 }
+                
+                videoDevice.unlockForConfiguration()
+            } catch {
+                print("Cannot lock device for configuration: \(error)")
+            }
+        }
+    }
+    
+    func zoom(to factor: CGFloat) {
+        sessionQueue.async { [weak self] in
+            guard let self = self, let videoDevice = self.videoDevice else { return }
+            
+            do {
+                try videoDevice.lockForConfiguration()
+                
+                let maxZoomFactor = videoDevice.activeFormat.videoMaxZoomFactor
+                // Reference: https://stackoverflow.com/a/43278702
+                videoDevice.videoZoomFactor = max(1.0, min(videoDevice.videoZoomFactor + factor, maxZoomFactor))
                 
                 videoDevice.unlockForConfiguration()
             } catch {

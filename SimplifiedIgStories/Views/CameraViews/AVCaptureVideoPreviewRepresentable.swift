@@ -21,8 +21,17 @@ struct AVCaptureVideoPreviewRepresentable: UIViewRepresentable {
         vm.videoPreviewLayer.frame = view.frame
         view.layer.addSublayer(vm.videoPreviewLayer)
         
-        let tapGesture = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.tap(gesture:)))
+        let tapGesture = UITapGestureRecognizer(
+            target: context.coordinator,
+            action: #selector(Coordinator.tap(gesture:))
+        )
         view.addGestureRecognizer(tapGesture)
+        
+        let pinchGesture = UIPinchGestureRecognizer(
+            target: context.coordinator,
+            action: #selector(Coordinator.pinch(gesture:))
+        )
+        view.addGestureRecognizer(pinchGesture)
         
         return view
     }
@@ -44,6 +53,10 @@ struct AVCaptureVideoPreviewRepresentable: UIViewRepresentable {
             let point = gesture.location(in: gesture.view)
             parent.vm.videoPreviewTapPoint = point
             showFocusIndicator(at: point, in: gesture.view)
+        }
+        
+        @MainActor @objc func pinch(gesture: UIPinchGestureRecognizer) {
+            parent.vm.videoPreviewPinchFactor = atan2(gesture.velocity, 20.0)
         }
         
         private func showFocusIndicator(at point: CGPoint, in view: UIView?) {

@@ -55,6 +55,12 @@ final class StoryCamViewModel: ObservableObject {
         }
     }
     
+    var videoPreviewPinchFactor: CGFloat = .zero {
+        didSet {
+            camManager.zoom(to: videoPreviewPinchFactor)
+        }
+    }
+    
     private var camManager: CamManager
 
     init(camManager: CamManager) {
@@ -100,12 +106,14 @@ extension StoryCamViewModel {
 extension StoryCamViewModel {
     private func subscribeCamMangerPublishers() {
         camManager.camPermPublisher
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] isGranted in
                 self?.isCamPermGranted = isGranted
             }
             .store(in: &subscriptions)
         
         camManager.microphonePermPublisher
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] isGranted in
                 self?.isMicrophonePermGranted = isGranted
             }
