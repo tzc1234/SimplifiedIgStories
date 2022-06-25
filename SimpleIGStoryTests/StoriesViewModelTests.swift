@@ -6,24 +6,21 @@
 //
 
 import XCTest
-import Combine
 @testable import Simple_IG_Story
 
 class StoriesViewModelTests: XCTestCase {
     
     var vm: StoriesViewModel?
-    var subscriptions = Set<AnyCancellable>()
     
     override func setUpWithError() throws {
         vm = StoriesViewModel()
         
-        let expectation = XCTestExpectation(description: "wait 3s for asyn fetchStories.")
+        let expectation = XCTestExpectation(description: "wait 3s for async fetchStories")
         
-        vm?.$stories
-            .dropFirst()
-            .sink { _ in
-                expectation.fulfill()
-            }.store(in: &subscriptions)
+        Task {
+            await vm!.fetchStories()
+            expectation.fulfill()
+        }
         
         wait(for: [expectation], timeout: 3)
     }

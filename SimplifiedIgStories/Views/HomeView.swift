@@ -35,6 +35,9 @@ struct HomeView: View {
             storyContainer
         }
         .environmentObject(vm)
+        .task {
+            await vm.fetchStories()
+        }
         
     }
 }

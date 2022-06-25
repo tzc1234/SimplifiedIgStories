@@ -22,28 +22,27 @@ enum DataServiceError: Error {
     }
 }
 
-protocol DataServiceable {
-    func fetchStories() -> AnyPublisher<[Story], DataServiceError>
+protocol DataService {
+    func fetchStories() async throws -> [Story]
 }
 
 // MARK: - AppDataService
-final class AppDataService: DataServiceable {
+final class AppDataService: DataService {
     private let filename = "storiesData.json"
     
-    func fetchStories() -> AnyPublisher<[Story], DataServiceError> {
-        guard let url = Bundle.main.url(forResource: filename, withExtension: nil) else {
-            return Fail<[Story], DataServiceError>(error: .jsonFileNotFound)
-                .eraseToAnyPublisher()
+    func fetchStories() async throws -> [Story] {
+        guard let url = Bundle.main.url(forResource: filename, withExtension: nil)
+        else {
+            throw DataServiceError.jsonFileNotFound
         }
         
-        let publisher = URLSession.shared.dataTaskPublisher(for: url)
-            .map { $0.data }
-            .decode(type: [Story].self, decoder: JSONDecoder())
-            .catch { error in
-                return Fail<[Story], DataServiceError>(error: .other(error))
-            }
-            .eraseToAnyPublisher()
-        
-        return publisher
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            let stories = try JSONDecoder().decode([Story].self, from: data)
+            
+            return stories
+        } catch {
+            throw DataServiceError.other(error)
+        }
     }
 }

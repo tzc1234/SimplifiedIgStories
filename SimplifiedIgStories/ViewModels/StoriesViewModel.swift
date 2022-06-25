@@ -5,9 +5,7 @@
 //  Created by Tsz-Lung on 7/3/2022.
 //
 
-import Foundation
 import SwiftUI
-import Combine
 
 final class StoriesViewModel: ObservableObject {
     @Published var stories: [Story] = []
@@ -26,13 +24,10 @@ final class StoriesViewModel: ObservableObject {
     // key: storyId
     var storyViewModels: [Int: StoryViewModel] = [:]
     
-    private var subscriptions = Set<AnyCancellable>()
+    private let dataService: DataService
     
-    private let dataService: DataServiceable
-    
-    init(dataService: DataServiceable = AppDataService()) {
+    init(dataService: DataService = AppDataService()) {
         self.dataService = dataService
-        self.fetchStories()
     }
 }
 
@@ -69,21 +64,13 @@ extension StoriesViewModel {
 
 // MARK: functions
 extension StoriesViewModel {
-    private func fetchStories() {
-        dataService.fetchStories()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] completion in
-                switch completion {
-                case .finished:
-                    break
-                case .failure(let dataServiceError):
-                    print(dataServiceError.errString)
-                    self?.stories = []
-                }
-            } receiveValue: { [weak self] stories in
-                self?.stories = stories
-            }
-            .store(in: &subscriptions)
+    @MainActor func fetchStories() async {
+        do {
+            self.stories = try await dataService.fetchStories()
+        } catch {
+            let errMsg = (error as? DataServiceError)?.errString ?? error.localizedDescription
+            print(errMsg)
+        }
     }
     
     func getStoryViewModel(by storyId: Int) -> StoryViewModel {
