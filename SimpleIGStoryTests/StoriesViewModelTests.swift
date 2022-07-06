@@ -64,67 +64,6 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertNil(vm?.currentStories.first(where: { $0.user.isCurrentUser }))
     }
     
-    func test_StoriesViewModel_getStoryViewModel_returnValidStoryViewModelNoExistingStoryViewModelBefore() {
-        guard let vm = vm else {
-            XCTFail("StoriesViewModel should not be nil")
-            return
-        }
-        
-        guard let firstStoryId = vm.stories.first?.id else {
-            XCTFail("Should be at least a current user story in stories array.")
-            return
-        }
-       
-        XCTAssertNil(vm.storyViewModels[firstStoryId])
-        let storyViewModel = vm.getStoryViewModel(by: firstStoryId)
-        
-        XCTAssertEqual(vm.storyViewModels.count, 1)
-        XCTAssertNotNil(storyViewModel)
-        XCTAssertEqual(storyViewModel.storyId, firstStoryId)
-        XCTAssert(vm.storyViewModels[firstStoryId] === storyViewModel)
-    }
-    
-    func test_StoriesViewModel_getStoryViewModel_returnSameStoryViewModelIfCachedBefore() {
-        guard let vm = vm else {
-            XCTFail("StoriesViewModel should not be nil")
-            return
-        }
-        
-        guard let firstStoryId = vm.stories.first?.id else {
-            XCTFail("Should be at least a current user story in stories array.")
-            return
-        }
-        
-        let storyViewModel = vm.getStoryViewModel(by: firstStoryId)
-        XCTAssertEqual(vm.storyViewModels.count, 1)
-        XCTAssertEqual(storyViewModel.storyId, firstStoryId)
-        XCTAssert(vm.storyViewModels[firstStoryId] === storyViewModel)
-        
-        let _storyViewModel = vm.getStoryViewModel(by: firstStoryId)
-        XCTAssertEqual(vm.storyViewModels.count, 1)
-        XCTAssertEqual(_storyViewModel.storyId, firstStoryId)
-        XCTAssert(vm.storyViewModels[firstStoryId] === _storyViewModel)
-        XCTAssert(storyViewModel === _storyViewModel)
-    }
-    
-    func test_StoriesViewModel_removeAllStoryViewModel_removeAllStoryViewModelsAfterCall() {
-        guard let vm = vm else {
-            XCTFail("StoriesViewModel should not be nil")
-            return
-        }
-        
-        guard let firstStoryId = vm.stories.first?.id else {
-            XCTFail("Should be at least a current user story in stories array.")
-            return
-        }
-        
-        let _ = vm.getStoryViewModel(by: firstStoryId)
-        XCTAssertEqual(vm.storyViewModels.count, 1)
-        
-        vm.removeAllStoryViewModels()
-        XCTAssertEqual(vm.storyViewModels.count, 0)
-    }
-    
     func test_StoriesViewModel_toggleStoryCamView_setShowStoryCamViewProperly() {
         guard let vm = vm else {
             XCTFail("StoriesViewModel should not be nil")

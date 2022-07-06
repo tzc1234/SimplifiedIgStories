@@ -21,9 +21,6 @@ final class StoriesViewModel: ObservableObject {
     // key: storyId, value: storyIconFrame displayed in HomeView
     var storyIconFrames: [Int: CGRect] = [:]
     
-    // key: storyId
-    var storyViewModels: [Int: StoryViewModel] = [:]
-    
     private let dataService: DataService
     
     init(dataService: DataService = AppDataService()) {
@@ -71,19 +68,6 @@ extension StoriesViewModel {
             let errMsg = (error as? DataServiceError)?.errString ?? error.localizedDescription
             print(errMsg)
         }
-    }
-    
-    func getStoryViewModel(by storyId: Int) -> StoryViewModel {
-        guard let existingStoryViewModel = storyViewModels[storyId] else {
-            let newStoryViewModel = StoryViewModel(storyId: storyId, storiesViewModel: self)
-            storyViewModels[storyId] = newStoryViewModel
-            return newStoryViewModel
-        }
-        return existingStoryViewModel
-    }
-    
-    func removeAllStoryViewModels() {
-        storyViewModels = [:]
     }
     
     func toggleStoryCamView() {

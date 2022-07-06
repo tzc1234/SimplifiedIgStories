@@ -75,7 +75,7 @@ struct ProgressBarPortion_Previews: PreviewProvider {
             portionId: story.portions[0].id,
             duration: .defaultStoryDuration,
             storyId: story.id,
-            storyViewModel: storiesViewModel.getStoryViewModel(by: story.id)
+            storyViewModel: StoryViewModel(storyId: story.id, storiesViewModel: storiesViewModel)
         )
     }
 }

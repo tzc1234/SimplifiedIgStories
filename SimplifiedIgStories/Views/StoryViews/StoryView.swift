@@ -9,12 +9,7 @@ import SwiftUI
 
 struct StoryView: View {
     let storyId: Int
-    @ObservedObject private var vm: StoryViewModel
-    
-    init(storyId: Int, storyViewModel: StoryViewModel) {
-        self.storyId = storyId
-        self.vm = storyViewModel
-    }
+    @StateObject var vm: StoryViewModel
     
     var body: some View {
         GeometryReader { geo in
@@ -86,7 +81,6 @@ struct StoryView: View {
             }
         }
         .cornerRadius(20.0)
-        
     }
     
 }
@@ -97,7 +91,7 @@ struct StoryView_Previews: PreviewProvider {
         let story = storiesViewModel.currentStories[0]
         StoryView(
             storyId: story.id,
-            storyViewModel: storiesViewModel.getStoryViewModel(by: story.id)
+            vm: StoryViewModel(storyId: story.id, storiesViewModel: storiesViewModel)
         )
     }
 }

@@ -19,7 +19,7 @@ struct StoryContainer: View {
                 ForEach(vm.currentStories) { story in
                     StoryView(
                         storyId: story.id,
-                        storyViewModel: vm.getStoryViewModel(by: story.id)
+                        vm: StoryViewModel(storyId: story.id, storiesViewModel: vm)
                     )
                     .opacity(story.id != vm.currentStoryId && !vm.shouldCubicRotation ? 0.0 : 1.0)
                     .frame(width: .screenWidth, height: geo.size.height)
@@ -42,11 +42,6 @@ struct StoryContainer: View {
                 }
         )
         .statusBar(hidden: true)
-        .onDisappear {
-            // *** All storyViewModels are retained by the storiesViewModel,
-            // remove all storyViewModels manually, deinit along with this storyContainer.
-            vm.removeAllStoryViewModels()
-        }
         
     }
 }

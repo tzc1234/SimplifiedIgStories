@@ -46,6 +46,10 @@ final class StoryViewModel: ObservableObject {
         }
         .store(in: &subscriptions)
     }
+    
+    deinit {
+        print("StoryViewModel: \(storyId) deinit.")
+    }
 }
 
 // MARK: computed variables
