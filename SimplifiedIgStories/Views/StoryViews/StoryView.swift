@@ -42,7 +42,9 @@ struct StoryView: View {
                                 vm.deleteCurrentPortion()
                             }
                             Button("Save", role: .none) {
-                                vm.savePortionImageVideo()
+                                Task {
+                                    await vm.savePortionImageVideo()
+                                }
                             }
                             Button("Cancel", role: .cancel, action: {})
                         }

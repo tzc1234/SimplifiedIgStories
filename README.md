@@ -10,6 +10,7 @@ A simple version of IG story, this demo app is my **SwiftUI** study record.
 3. AVFoundation
 4. Dependency Injection
 5. XCTest
+6. Async/await
 
 ## Update History
 #### 19/06/2022:

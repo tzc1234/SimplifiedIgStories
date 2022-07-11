@@ -7,45 +7,44 @@
 
 import UIKit
 import PhotosUI
-import Combine
 
+// MARK: - ImageVideoSaveError
 enum ImageVideoSaveError: Error {
     case noAddPhotoPermission
     case saveError(Error)
+    
+    var errMsg: String {
+        switch self {
+        case .noAddPhotoPermission:
+            return "Couldn't save. No add photo permission."
+        case .saveError(let error):
+            return error.localizedDescription
+        }
+    }
 }
 
-typealias ImageVideoSaveCompletion = ((Result<String, ImageVideoSaveError>) -> Void)?
-
+// MARK: - ImageSaver
 class ImageSaver: NSObject {
-    private var completion: ImageVideoSaveCompletion = nil
+    private var saveImageContinuation: CheckedContinuation<String, Error>?
     
-    func saveToAlbum(_ image: UIImage) -> AnyPublisher<String, ImageVideoSaveError> {
-        PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
-            if status == .authorized {
-                UIImageWriteToSavedPhotosAlbum(image, self, #selector(ImageSaver.performSaveImage), nil)
-            } else {
-                self.completion?(.failure(.noAddPhotoPermission))
-            }
-        }
-        
-        return Future<String, ImageVideoSaveError> { [weak self] promise in
-            self?.completion = { result in
-                switch result {
-                case .success(let str):
-                    promise(.success(str))
-                case .failure(let error):
-                    promise(.failure(error))
+    func saveToAlbum(_ image: UIImage) async throws -> String {
+        return try await withCheckedThrowingContinuation { continuation in
+            PHPhotoLibrary.requestAuthorization(for: .addOnly) { [weak self] status in
+                if status == .authorized {
+                    self?.saveImageContinuation = continuation
+                    UIImageWriteToSavedPhotosAlbum(image, self, #selector(ImageSaver.performSaveImage), nil)
+                } else {
+                    continuation.resume(throwing: ImageVideoSaveError.noAddPhotoPermission)
                 }
             }
         }
-        .eraseToAnyPublisher()
     }
     
     @objc private func performSaveImage(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
         if let error = error {
-            completion?(.failure(.saveError(error)))
+            saveImageContinuation?.resume(throwing: ImageVideoSaveError.saveError(error))
         } else {
-            completion?(.success("Saved."))
+            saveImageContinuation?.resume(returning: "Saved.")
         }
     }
 }

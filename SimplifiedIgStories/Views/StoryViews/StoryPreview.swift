@@ -7,7 +7,6 @@
 
 import SwiftUI
 import AVKit
-import Combine
 
 struct StoryPreview: View {
     @EnvironmentObject private var vm: StoriesViewModel
@@ -18,7 +17,6 @@ struct StoryPreview: View {
     @State private var noticeMsg = ""
     
     @State private var player: AVPlayer?
-    @State private var subscriptions = Set<AnyCancellable>()
     
     let uiImage: UIImage?
     let videoUrl: URL?
@@ -172,35 +170,27 @@ extension StoryPreview {
     }
     
     private func saveToAlbum() {
-        var publisher: AnyPublisher<String, ImageVideoSaveError>?
-        if let uiImage = uiImage {
-            isLoading = true
-            publisher = ImageSaver().saveToAlbum(uiImage)
-        } else if let videoUrl = videoUrl {
-            isLoading = true
-            publisher = VideoSaver().saveToAlbum(videoUrl)
-        }
-        
-        publisher?
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { completion in
-                isLoading = false
+        Task { @MainActor in
+            do {
+                isLoading = true
                 
-                switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    switch error {
-                    case .noAddPhotoPermission:
-                        showNoticeMsg("Couldn't save. No add photo permission.")
-                    case .saveError(let err):
-                        showNoticeMsg("ERROR: \(err.localizedDescription)")
-                    }
+                var successMsg: String?
+                if let uiImage = uiImage {
+                    successMsg = try await ImageSaver().saveToAlbum(uiImage)
+                } else if let videoUrl = videoUrl {
+                    successMsg = try await VideoSaver().saveToAlbum(videoUrl)
                 }
-            }, receiveValue: { msg in
-                showNoticeMsg(msg)
-            })
-            .store(in: &subscriptions)
+                
+                isLoading = false
+                if let successMsg = successMsg {
+                    showNoticeMsg(successMsg)
+                }
+            } catch {
+                isLoading = false
+                let errMsg = (error as? ImageVideoSaveError)?.errMsg ?? error.localizedDescription
+                showNoticeMsg("ERROR: \(errMsg)")
+            }
+        }
     }
     
     private func postStoryPortion() {

@@ -5,7 +5,6 @@
 //  Created by Tsz-Lung on 08/03/2022.
 //
 
-import Foundation
 import SwiftUI
 import Combine
 
@@ -140,7 +139,8 @@ extension StoryViewModel {
         storiesViewModel.stories[storyIdx].portions.remove(at: portionIdx)
     }
     
-    func savePortionImageVideo() {
+    @MainActor
+    func savePortionImageVideo() async {
         guard
             let portion =
                 story.portions.first(where: { $0.id == currentStoryPortionId })
@@ -148,35 +148,25 @@ extension StoryViewModel {
             return
         }
         
-        var publisher: AnyPublisher<String, ImageVideoSaveError>?
-        if let imageUrl = portion.imageUrl, let uiImage = LocalFileManager.shared.getImageBy(url: imageUrl) {
+        do {
             isLoading = true
-            publisher = ImageSaver().saveToAlbum(uiImage)
-        } else if let videoUrl = portion.videoUrlFromCam {
-            isLoading = true
-            publisher = VideoSaver().saveToAlbum(videoUrl)
+            
+            var successMsg: String?
+            if let imageUrl = portion.imageUrl, let uiImage = LocalFileManager.shared.getImageBy(url: imageUrl) {
+                successMsg = try await ImageSaver().saveToAlbum(uiImage)
+            } else if let videoUrl = portion.videoUrlFromCam {
+                successMsg = try await VideoSaver().saveToAlbum(videoUrl)
+            }
+            
+            isLoading = false
+            if let successMsg = successMsg {
+                showNotice(withMsg: successMsg)
+            }
+        } catch {
+            isLoading = false
+            let errMsg = (error as? ImageVideoSaveError)?.errMsg ?? error.localizedDescription
+            showNotice(withMsg: errMsg)
         }
-        
-        publisher?
-             .receive(on: DispatchQueue.main)
-             .sink { [weak self] completion in
-                 self?.isLoading = false
-                 
-                 switch completion {
-                 case .finished:
-                     break
-                 case .failure(let imageVideoError):
-                     switch imageVideoError {
-                     case .noAddPhotoPermission:
-                         self?.showNotice(withMsg: "Couldn't save. No add photo permission.")
-                     case .saveError(let err):
-                         self?.showNotice(withMsg: "ERROR: \(err.localizedDescription)")
-                     }
-                 }
-             } receiveValue: { [weak self] msg in
-                 self?.showNotice(withMsg: msg)
-             }
-             .store(in: &subscriptions)
     }
     
     func showNotice(withMsg msg: String) {
