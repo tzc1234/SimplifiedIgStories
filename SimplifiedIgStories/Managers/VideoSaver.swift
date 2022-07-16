@@ -7,7 +7,7 @@
 
 import PhotosUI
 
-class VideoSaver {
+struct VideoSaver {
     func saveToAlbum(_ videoUrl: URL) async throws -> String {
         return try await withCheckedThrowingContinuation { continuation in
             PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in

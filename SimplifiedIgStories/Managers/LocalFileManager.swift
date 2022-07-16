@@ -26,7 +26,7 @@ class LocalFileManager {
             try data.write(to: url)
             print("Saving image: \(imageName) successful.")
             return url
-        } catch let error {
+        } catch {
             print("Error: \(error.localizedDescription)")
             return nil
         }
@@ -43,7 +43,7 @@ class LocalFileManager {
         do {
             try FileManager.default.removeItem(at: url)
             print("Delete file at \(url.path) successful.")
-        } catch let error {
+        } catch {
             print("Error: \(error.localizedDescription)")
         }
     }
