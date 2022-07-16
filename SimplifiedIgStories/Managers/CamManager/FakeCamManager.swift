@@ -30,6 +30,7 @@ final class FakeCamManager: CamManager {
     private(set) var lastPhoto: UIImage?
     private(set) var startVideoRecordingCalled = false
     private(set) var stopVideoRecordingCalled = false
+    private(set) var lastVideoUrl: URL?
     private(set) var focusPoint: CGPoint?
     private(set) var zoomFactor: CGFloat?
 }
@@ -71,6 +72,11 @@ extension FakeCamManager {
     func stopVideoRecording() {
         stopVideoRecordingCalled.toggle()
         camStatusPublisher.send(.recordingVideoFinished)
+    }
+    
+    func finishVideoProcessing() {
+        lastVideoUrl = URL(string: "videoUrl")
+        camStatusPublisher.send(.processingVideoFinished(videoUrl: lastVideoUrl!))
     }
     
     func checkPermissions() {

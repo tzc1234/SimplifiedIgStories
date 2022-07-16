@@ -9,8 +9,7 @@ import AVFoundation
 import AVKit
 import Combine
 
-@MainActor
-final class StoryCamViewModel: ObservableObject {
+@MainActor final class StoryCamViewModel: ObservableObject {
     @Published var flashMode: AVCaptureDevice.FlashMode = .off {
         willSet {
             camManager.flashMode = newValue
@@ -37,6 +36,9 @@ final class StoryCamViewModel: ObservableObject {
         }
     }
     
+    enum VideoRecordingStatus {
+        case none, start, stop
+    }
     @Published var videoRecordingStatus: VideoRecordingStatus = .none {
         willSet {
             switch newValue {
@@ -82,13 +84,6 @@ final class StoryCamViewModel: ObservableObject {
     init(camManager: CamManager) {
         self.camManager = camManager
         subscribeCamMangerPublishers()
-    }
-}
-
-// MARK: enums
-extension StoryCamViewModel {
-    enum VideoRecordingStatus {
-        case none, start, stop
     }
 }
 

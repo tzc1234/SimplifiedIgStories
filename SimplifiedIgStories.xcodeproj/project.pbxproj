@@ -19,6 +19,7 @@
 		BE463A2D285F05AE00599929 /* AVCamManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE463A2C285F05AE00599929 /* AVCamManager.swift */; };
 		BE5CDC2D27DF4AAA00352A60 /* NoticeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5CDC2C27DF4AAA00352A60 /* NoticeLabel.swift */; };
 		BE5F521C2882F74C001CB2B1 /* FakeCamManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5F521B2882F74C001CB2B1 /* FakeCamManager.swift */; };
+		BE5F521E28832923001CB2B1 /* StoryCamViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5F521D28832923001CB2B1 /* StoryCamViewModelTests.swift */; };
 		BE69F50D281974E5001BA4EC /* StoriesViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE69F50C281974E5001BA4EC /* StoriesViewModelTests.swift */; };
 		BE6B73C727D794AD003D2B24 /* StoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6B73C627D794AD003D2B24 /* StoryViewModel.swift */; };
 		BE720F7C27BD111800E862A5 /* ProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE720F7B27BD111800E862A5 /* ProgressBar.swift */; };
@@ -85,6 +86,7 @@
 		BE463A2C285F05AE00599929 /* AVCamManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVCamManager.swift; sourceTree = "<group>"; };
 		BE5CDC2C27DF4AAA00352A60 /* NoticeLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoticeLabel.swift; sourceTree = "<group>"; };
 		BE5F521B2882F74C001CB2B1 /* FakeCamManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeCamManager.swift; sourceTree = "<group>"; };
+		BE5F521D28832923001CB2B1 /* StoryCamViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCamViewModelTests.swift; sourceTree = "<group>"; };
 		BE69F503281973B3001BA4EC /* SimpleIGStoryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SimpleIGStoryTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE69F50C281974E5001BA4EC /* StoriesViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesViewModelTests.swift; sourceTree = "<group>"; };
 		BE6B73C627D794AD003D2B24 /* StoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryViewModel.swift; sourceTree = "<group>"; };
@@ -231,6 +233,7 @@
 			isa = PBXGroup;
 			children = (
 				BE69F50C281974E5001BA4EC /* StoriesViewModelTests.swift */,
+				BE5F521D28832923001CB2B1 /* StoryCamViewModelTests.swift */,
 			);
 			path = SimpleIGStoryTests;
 			sourceTree = "<group>";
@@ -526,6 +529,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE5F521E28832923001CB2B1 /* StoryCamViewModelTests.swift in Sources */,
 				BE69F50D281974E5001BA4EC /* StoriesViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
