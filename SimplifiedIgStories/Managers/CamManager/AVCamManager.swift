@@ -10,7 +10,7 @@ import Combine
 import UIKit
 
 // MARK: - CamManager
-protocol CamManager {
+protocol CamManager: AnyObject {
     var camPermPublisher: CurrentValueSubject<Bool, Never> { get }
     var microphonePermPublisher: CurrentValueSubject<Bool, Never> { get }
     var camStatusPublisher: PassthroughSubject<CamStatus, Never> { get }
@@ -19,7 +19,7 @@ protocol CamManager {
     var flashMode: AVCaptureDevice.FlashMode { get set }
     var videoPreviewLayer: AVCaptureVideoPreviewLayer { get }
     
-    func setupSession()
+    func setupAndStartSession()
     func startSession()
     func stopSession()
     func switchCamera()
@@ -58,7 +58,7 @@ final class AVCamManager: NSObject, CamManager {
 
 // MARK: - internal functions
 extension AVCamManager {
-    func setupSession() {
+    func setupAndStartSession() {
         sessionQueue.async { [weak self] in
             guard let self = self, !self.session.isRunning else { return }
             

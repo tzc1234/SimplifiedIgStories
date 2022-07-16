@@ -77,7 +77,7 @@ final class StoryCamViewModel: ObservableObject {
         }
     }
     
-    private var camManager: CamManager
+    private let camManager: CamManager
 
     init(camManager: CamManager) {
         self.camManager = camManager
@@ -109,8 +109,8 @@ extension StoryCamViewModel {
         camManager.checkPermissions()
     }
     
-    func setupSession() {
-        camManager.setupSession()
+    func setupAndStartSession() {
+        camManager.setupAndStartSession()
     }
     
     func switchCamera() {
@@ -166,7 +166,7 @@ extension StoryCamViewModel {
                 case .processingVideoFinished(videoUrl: let videoUrl):
                     self.lastVideoUrl = videoUrl
                     self.showVideoPreview = true
-                default:
+                case .cameraSwitched(camPosition: _):
                     break
                 }
             }
