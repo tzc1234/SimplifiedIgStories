@@ -210,7 +210,7 @@ import Combine
         XCTAssertNil(camManager.focusPoint)
         XCTAssertEqual(vm.videoPreviewTapPoint, .zero)
         
-        let point = CGPoint(x: 1.0, y: 1.0)
+        let point = CGPoint(x: CGFloat.random(in: 1...99), y: CGFloat.random(in: 1...99))
         vm.videoPreviewTapPoint = point
         
         XCTAssertEqual(vm.videoPreviewTapPoint, point)
@@ -221,7 +221,7 @@ import Combine
         XCTAssertNil(camManager.zoomFactor)
         XCTAssertEqual(vm.videoPreviewPinchFactor, .zero)
         
-        let factor: CGFloat = 1.0
+        let factor = CGFloat.random(in: 1...99)
         vm.videoPreviewPinchFactor = factor
         
         XCTAssertEqual(vm.videoPreviewPinchFactor, factor)
