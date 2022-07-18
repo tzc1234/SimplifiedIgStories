@@ -13,16 +13,18 @@ import Combine
 
     var camManager: FakeCamManager!
     var vm: StoryCamViewModel!
-    var subscriptions = Set<AnyCancellable>()
+    var subscriptions: Set<AnyCancellable>!
     
     @MainActor override func setUpWithError() throws {
         camManager = FakeCamManager()
         vm = StoryCamViewModel(camManager: camManager)
+        subscriptions = Set<AnyCancellable>()
     }
 
     @MainActor override func tearDownWithError() throws {
         camManager = nil
         vm = nil
+        subscriptions = nil
     }
     
     func test_StoryCamViewModel_checkPermissions_permissionGranted_afterFunctionCalled() {
