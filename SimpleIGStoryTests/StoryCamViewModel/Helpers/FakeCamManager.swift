@@ -23,14 +23,14 @@ final class FakeCamManager: CamManager {
     }()
     
     // Additional variables for testings.
-    private(set) var setupAndStartSessionCalled = false
-    private(set) var startSessionCalled = false
-    private(set) var stopSessionCalled = false
-    private(set) var switchCameraCalled = false
-    private(set) var takePhotoCalled = false
+    private(set) var setupAndStartSessionCallCount = 0
+    private(set) var startSessionCallCount = 0
+    private(set) var stopSessionCallCount = 0
+    private(set) var switchCameraCallCount = 0
+    private(set) var takePhotoCallCount = 0
     private(set) var lastPhoto: UIImage?
-    private(set) var startVideoRecordingCalled = false
-    private(set) var stopVideoRecordingCalled = false
+    private(set) var startVideoRecordingCallCount = 0
+    private(set) var stopVideoRecordingCallCount = 0
     private(set) var lastVideoUrl: URL?
     private(set) var focusPoint: CGPoint?
     private(set) var zoomFactor: CGFloat?
@@ -39,39 +39,39 @@ final class FakeCamManager: CamManager {
 // MARK: - internal functions
 extension FakeCamManager {
     func setupAndStartSession() {
-        setupAndStartSessionCalled.toggle()
+        setupAndStartSessionCallCount += 1
         camStatusPublisher.send(.sessionStarted)
     }
     
     func startSession() {
-        startSessionCalled.toggle()
+        startSessionCallCount += 1
         camStatusPublisher.send(.sessionStarted)
     }
     
     func stopSession() {
-        stopSessionCalled.toggle()
+        stopSessionCallCount += 1
         camStatusPublisher.send(.sessionStopped)
     }
     
     func switchCamera() {
-        switchCameraCalled.toggle()
+        switchCameraCallCount += 1
         camPosition = camPosition == .back ? .front : .back
         camStatusPublisher.send(.cameraSwitched(camPosition: camPosition))
     }
     
     func takePhoto() {
-        takePhotoCalled.toggle()
+        takePhotoCallCount += 1
         lastPhoto = UIImage()
         camStatusPublisher.send(.photoTaken(photo: lastPhoto!))
     }
     
     func startVideoRecording() {
-        startVideoRecordingCalled.toggle()
+        startVideoRecordingCallCount += 1
         camStatusPublisher.send(.recordingVideoBegun)
     }
     
     func stopVideoRecording() {
-        stopVideoRecordingCalled.toggle()
+        stopVideoRecordingCallCount += 1
         camStatusPublisher.send(.recordingVideoFinished)
     }
     

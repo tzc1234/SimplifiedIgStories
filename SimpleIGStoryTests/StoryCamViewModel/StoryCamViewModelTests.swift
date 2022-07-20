@@ -27,14 +27,14 @@ import Combine
         subscriptions = nil
     }
     
-    func test_StoryCamViewModel_checkPermissions_permissionGranted_afterFunctionCalled() {
-        XCTAssertFalse(camManager.camPermPublisher.value)
-        XCTAssertFalse(camManager.microphonePermPublisher.value)
-        XCTAssertFalse(vm.isCamPermGranted)
-        XCTAssertFalse(vm.isMicrophonePermGranted)
-        XCTAssertFalse(vm.arePermissionsGranted)
-        
-        let expectation = XCTestExpectation(description: "Should receive permissions from publishers within 3s.")
+    func test_checkPermissions_permissionsAreNotGranted_beforeFunctionCalled() {
+        XCTAssertFalse(vm.isCamPermGranted, "camera permission")
+        XCTAssertFalse(vm.isMicrophonePermGranted, "microphone permission")
+        XCTAssertFalse(vm.arePermissionsGranted, "both permissions")
+    }
+    
+    func test_checkPermissions_permissionGranted_afterFunctionCalled() {
+        let expectation = XCTestExpectation(description: "should receive permissions from publishers")
         
         vm.$isCamPermGranted.zip(vm.$isMicrophonePermGranted)
             .dropFirst()
@@ -45,25 +45,25 @@ import Combine
         
         vm.checkPermissions()
         
-        wait(for: [expectation], timeout: 3)
+        wait(for: [expectation], timeout: 0.1)
         
-        XCTAssertTrue(camManager.camPermPublisher.value)
-        XCTAssertTrue(camManager.microphonePermPublisher.value)
-        XCTAssertTrue(vm.isCamPermGranted)
-        XCTAssertTrue(vm.isMicrophonePermGranted)
-        XCTAssertTrue(vm.arePermissionsGranted)
+        XCTAssertTrue(vm.isCamPermGranted, "camera permission")
+        XCTAssertTrue(vm.isMicrophonePermGranted, "microphone permission")
+        XCTAssertTrue(vm.arePermissionsGranted, "both permission")
     }
     
-    func test_StoryCamViewModel_videoPreviewLayer_returnTheSameLayerAsCamManagerVideoPreviewLayer() {
-        XCTAssertEqual(vm.videoPreviewLayer, camManager.videoPreviewLayer)
+    func test_videoPreviewLayer_returnTheSameLayerAsCamManagerVideoPreviewLayer() {
+        XCTAssertIdentical(vm.videoPreviewLayer, camManager.videoPreviewLayer)
     }
 
-    func test_StoryCamViewModel_setupAndStartSession_sessionShouldBeStartedAfterCalled() {
-        XCTAssertFalse(vm.enableVideoRecordBtn)
-        XCTAssertFalse(camManager.setupAndStartSessionCalled)
-        
-        let camStatusPublisherExpectation = XCTestExpectation(description: "Should receive status from camStatusPublisher within 3s.")
-        let enableVideoRecordBtnExpectation = XCTestExpectation(description: "Should receive enableVideoRecordBtn value within 3s.")
+    func test_setupAndStartSession_enableVideoRecordBtnShouldBeFalse_beforeFunctionCalled() {
+        XCTAssertFalse(vm.enableVideoRecordBtn, "enableVideoRecordBtn")
+        XCTAssertEqual(camManager.setupAndStartSessionCallCount, 0, "setupAndStartSessionCallCount")
+    }
+    
+    func test_setupAndStartSession_enableVideoRecordBtnShouldBeTrueAndSessionShouldBeStarted_afterFunctionCalled() {
+        let camStatusPublisherExpectation = XCTestExpectation(description: "should receive status from camStatusPublisher")
+        let enableVideoRecordBtnExpectation = XCTestExpectation(description: "should receive enableVideoRecordBtn value")
         
         camManager.camStatusPublisher
             .sink { status in
@@ -71,7 +71,7 @@ import Combine
                 case .sessionStarted:
                     break
                 default:
-                    XCTFail("Should receive .sessionStarted status.")
+                    XCTFail("should receive .sessionStarted status")
                 }
                 
                 camStatusPublisherExpectation.fulfill()
@@ -87,53 +87,65 @@ import Combine
         
         vm.setupAndStartSession()
         
-        wait(for: [camStatusPublisherExpectation, enableVideoRecordBtnExpectation], timeout: 3)
+        wait(for: [camStatusPublisherExpectation, enableVideoRecordBtnExpectation], timeout: 0.1)
         
-        XCTAssertTrue(camManager.setupAndStartSessionCalled)
-        XCTAssertTrue(vm.enableVideoRecordBtn)
+        XCTAssertTrue(vm.enableVideoRecordBtn, "enableVideoRecordBtn")
+        XCTAssertEqual(camManager.setupAndStartSessionCallCount, 1, "setupAndStartSessionCallCount")
     }
     
-    func test_StoryCamViewModel_switchCamera_shouldReceiveCameraSwitchedStatusAfterFuctionCalled() {
-        XCTAssertFalse(camManager.switchCameraCalled)
-        XCTAssertEqual(camManager.camPosition, .back)
-        
+    func test_switchCamera_camPositionShouldBeBack_beforeFuctionCalled() {
+        XCTAssertEqual(camManager.switchCameraCallCount, 0, "switchCameraCallCount")
+        XCTAssertEqual(camManager.camPosition, .back, "camPosition")
+    }
+    
+    func test_switchCamera_shouldReceiveCameraSwitchedStatus_afterFuctionCalled() {
         camManager.camStatusPublisher
             .sink { status in
                 switch status {
                 case .cameraSwitched:
                     break
                 default:
-                    XCTFail("Should receive .sessionStarted status.")
+                    XCTFail("should receive .cameraSwitched status")
                 }
             }
             .store(in: &subscriptions)
         
         vm.switchCamera()
         
-        XCTAssertTrue(camManager.switchCameraCalled)
-        XCTAssertEqual(camManager.camPosition, .front)
+        XCTAssertEqual(camManager.switchCameraCallCount, 1, "switchCameraCallCount")
+        XCTAssertEqual(camManager.camPosition, .front, "camPosition")
     }
     
-    func test_StoryCamViewModel_flashMode_updateFlashMode() {
-        XCTAssertEqual(vm.flashMode, .off)
-        XCTAssertEqual(camManager.flashMode, .off)
-        
+    func test_flashMode_flashModeShouldBeOff_afterInital() {
+        XCTAssertEqual(vm.flashMode, .off, "vm.flashMode")
+        XCTAssertEqual(vm.flashMode, camManager.flashMode, "vm.flashMode == camManager.flashMode")
+    }
+    
+    func test_flashMode_flashModeValueShouldBeChanged_afterAssignNewValueToFlashMode() {
         vm.flashMode = .on
         
-        XCTAssertEqual(vm.flashMode, .on)
-        XCTAssertEqual(camManager.flashMode, .on)
-        XCTAssertEqual(camManager.flashMode, vm.flashMode)
+        XCTAssertEqual(vm.flashMode, .on, "vm.flashMode")
+        XCTAssertEqual(vm.flashMode, camManager.flashMode, "vm.flashMode == camManager.flashMode")
+        
+        vm.flashMode = .auto
+        
+        XCTAssertEqual(vm.flashMode, .auto, "vm.flashMode")
+        XCTAssertEqual(vm.flashMode, camManager.flashMode, "vm.flashMode == camManager.flashMode")
+        
+        vm.flashMode = .off
+        
+        XCTAssertEqual(vm.flashMode, .off, "vm.flashMode")
+        XCTAssertEqual(vm.flashMode, camManager.flashMode, "vm.flashMode == camManager.flashMode")
     }
     
-    func test_StoryCamViewModel_shouldPhotoTake_changeShouldPhotoTakeValue() {
-        XCTAssertFalse(vm.shouldPhotoTake)
-        XCTAssertFalse(vm.showPhotoPreview)
-        XCTAssertFalse(camManager.takePhotoCalled)
-        XCTAssertFalse(camManager.stopSessionCalled)
-        XCTAssertNil(camManager.lastPhoto)
-        XCTAssertNil(vm.lastTakenImage)
-        
-        let expection = XCTestExpectation(description: "Should received showPhotoPreview within 3s.")
+    func test_shouldPhotoTake_shouldPhotoTakeShouldBeFalse_afterInital() {
+        XCTAssertFalse(vm.shouldPhotoTake, "shouldPhotoTake")
+        XCTAssertFalse(vm.showPhotoPreview, "showPhotoPreview")
+        XCTAssertNil(vm.lastTakenImage, "lastTakenImage")
+    }
+    
+    func test_shouldPhotoTake_showPhotoPreviewShouldBeTrueAndLastTakenImageNotNil_afterShouldPhotoTakeSetToTrue() {
+        let expection = XCTestExpectation(description: "should received showPhotoPreview")
         
         vm.$showPhotoPreview
             .dropFirst()
@@ -144,26 +156,26 @@ import Combine
         
         vm.shouldPhotoTake = true
         
-        wait(for: [expection], timeout: 3)
+        wait(for: [expection], timeout: 0.1)
         
-        XCTAssertTrue(vm.shouldPhotoTake)
-        XCTAssertTrue(vm.showPhotoPreview)
-        XCTAssertTrue(camManager.takePhotoCalled)
-        XCTAssertTrue(camManager.stopSessionCalled)
-        XCTAssertNotNil(camManager.lastPhoto)
-        XCTAssertNotNil(vm.lastTakenImage)
-        XCTAssertEqual(camManager.lastPhoto, vm.lastTakenImage)
+        XCTAssertTrue(vm.shouldPhotoTake, "shouldPhotoTake")
+        XCTAssertTrue(vm.showPhotoPreview, "showPhotoPreview")
+        XCTAssertEqual(camManager.takePhotoCallCount, 1, "takePhotoCallCount")
+        XCTAssertEqual(camManager.stopSessionCallCount, 1, "stopSessionCallCount")
+        XCTAssertNotNil(vm.lastTakenImage, "lastTakenImage")
+        XCTAssertEqual(vm.lastTakenImage, camManager.lastPhoto, "vm.lastTakenImage == camManager.lastPhoto")
     }
     
-    func test_StoryCamViewModel_videoRecordingStatus_videoRecording() {
-        XCTAssertEqual(vm.videoRecordingStatus, .none)
-        XCTAssertFalse(camManager.startVideoRecordingCalled)
-        XCTAssertNil(vm.lastVideoUrl)
-        XCTAssertFalse(vm.showVideoPreview)
-        
-        let startVideoRecordingStatusExpection = XCTestExpectation(description: "Should received VideoRecordingStatus.start within 3s.")
-        let stopVideoRecordingStatusExpection = XCTestExpectation(description: "Should received VideoRecordingStatus.stop within 3s.")
-        let noneVideoRecordingStatusExpection = XCTestExpectation(description: "Should received VideoRecordingStatus.none within 3s.")
+    func test_videoRecordingStatus_videoRecordingStatusShouldBeNone_afterInital() {
+        XCTAssertEqual(vm.videoRecordingStatus, .none, "videoRecordingStatus")
+        XCTAssertNil(vm.lastVideoUrl, "lastVideoUrl")
+        XCTAssertFalse(vm.showVideoPreview, "showVideoPreview")
+    }
+    
+    func test_videoRecordingStatus_videoRecordingStatusChanges() {
+        let startVideoRecordingStatusExpection = XCTestExpectation(description: "Should received VideoRecordingStatus.start")
+        let stopVideoRecordingStatusExpection = XCTestExpectation(description: "Should received VideoRecordingStatus.stop")
+        let noneVideoRecordingStatusExpection = XCTestExpectation(description: "Should received VideoRecordingStatus.none")
         
         vm.$videoRecordingStatus
             .dropFirst()
@@ -181,52 +193,54 @@ import Combine
         
         vm.videoRecordingStatus = .start
         
-        wait(for: [startVideoRecordingStatusExpection], timeout: 3)
+        wait(for: [startVideoRecordingStatusExpection], timeout: 0.1)
         
-        XCTAssertEqual(vm.videoRecordingStatus, .start)
-        XCTAssertTrue(camManager.startVideoRecordingCalled)
-        XCTAssertFalse(camManager.stopVideoRecordingCalled)
-        XCTAssertNil(vm.lastVideoUrl)
-        XCTAssertFalse(vm.showVideoPreview)
+        XCTAssertEqual(vm.videoRecordingStatus, .start, "videoRecordingStatus")
+        XCTAssertNil(vm.lastVideoUrl, "lastVideoUrl")
+        XCTAssertFalse(vm.showVideoPreview, "showVideoPreview")
         
         vm.videoRecordingStatus = .stop
         
-        wait(for: [stopVideoRecordingStatusExpection], timeout: 3)
+        wait(for: [stopVideoRecordingStatusExpection], timeout: 0.1)
         
-        XCTAssertEqual(vm.videoRecordingStatus, .stop)
-        XCTAssertTrue(camManager.stopVideoRecordingCalled)
-        XCTAssertNil(vm.lastVideoUrl)
-        XCTAssertFalse(vm.showVideoPreview)
+        XCTAssertEqual(vm.videoRecordingStatus, .stop, "videoRecordingStatus")
+        XCTAssertNil(vm.lastVideoUrl, "lastVideoUrl")
+        XCTAssertFalse(vm.showVideoPreview, "showVideoPreview")
         
         camManager.finishVideoProcessing()
         
-        wait(for: [noneVideoRecordingStatusExpection], timeout: 3)
+        wait(for: [noneVideoRecordingStatusExpection], timeout: 0.1)
         
-        XCTAssertEqual(vm.videoRecordingStatus, .none)
-        XCTAssertNotNil(vm.lastVideoUrl)
-        XCTAssertTrue(vm.showVideoPreview)
-        XCTAssertEqual(vm.lastVideoUrl, camManager.lastVideoUrl)
+        XCTAssertEqual(vm.videoRecordingStatus, .none, "videoRecordingStatus")
+        XCTAssertNotNil(vm.lastVideoUrl, "lastVideoUrl")
+        XCTAssertTrue(vm.showVideoPreview, "showVideoPreview")
+        XCTAssertEqual(vm.lastVideoUrl, camManager.lastVideoUrl, "vm.lastVideoUrl == camManager.lastVideoUrl")
+        
+        XCTAssertEqual(camManager.startVideoRecordingCallCount, 1, "startVideoRecordingCallCount")
+        XCTAssertEqual(camManager.stopVideoRecordingCallCount, 1, "stopVideoRecordingCallCount")
     }
     
-    func test_StoryCamViewModel_videoPreviewTapPoint_updateVideoPreviewTapPoint() {
-        XCTAssertNil(camManager.focusPoint)
+    func test_videoPreviewTapPoint_videoPreviewTapPointShouldBeZero_afterInital() {
         XCTAssertEqual(vm.videoPreviewTapPoint, .zero)
-        
+    }
+    
+    func test_videoPreviewTapPoint_videoPreviewTapPointChanged_afterNewPointAssigned() {
         let point = CGPoint(x: CGFloat.random(in: 1...99), y: CGFloat.random(in: 1...99))
         vm.videoPreviewTapPoint = point
         
-        XCTAssertEqual(vm.videoPreviewTapPoint, point)
-        XCTAssertEqual(vm.videoPreviewTapPoint, camManager.focusPoint)
+        XCTAssertEqual(vm.videoPreviewTapPoint, point, "videoPreviewTapPoint")
+        XCTAssertEqual(vm.videoPreviewTapPoint, camManager.focusPoint, "vm.videoPreviewTapPoint == camManager.focusPoint")
     }
     
-    func test_StoryCamViewModel_videoPreviewPinchFactor_updateVideoPreviewPinchFactor() {
-        XCTAssertNil(camManager.zoomFactor)
+    func test_videoPreviewPinchFactor_videoPreviewPinchFactorShouldBeZero_afterInital() {
         XCTAssertEqual(vm.videoPreviewPinchFactor, .zero)
-        
+    }
+    
+    func test_videoPreviewPinchFactor_videoPreviewPinchFactorChanged_afterNewFactorAssigned() {
         let factor = CGFloat.random(in: 1...99)
         vm.videoPreviewPinchFactor = factor
         
-        XCTAssertEqual(vm.videoPreviewPinchFactor, factor)
-        XCTAssertEqual(vm.videoPreviewPinchFactor, camManager.zoomFactor)
+        XCTAssertEqual(vm.videoPreviewPinchFactor, factor, "videoPreviewPinchFactor")
+        XCTAssertEqual(vm.videoPreviewPinchFactor, camManager.zoomFactor, "vm.videoPreviewPinchFactor == camManager.zoomFactor")
     }
 }
