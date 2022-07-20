@@ -166,6 +166,13 @@ import Combine
         XCTAssertEqual(vm.lastTakenImage, camManager.lastPhoto, "vm.lastTakenImage == camManager.lastPhoto")
     }
     
+    func test_showPhotoPreview_startSessionShouldBeCalled_whenShowPhotoPreviewSetToFalse() {
+        vm.showPhotoPreview = false
+        
+        XCTAssertFalse(vm.showPhotoPreview, "showPhotoPreview")
+        XCTAssertEqual(camManager.startSessionCallCount, 1, "startSessionCallCount")
+    }
+    
     func test_videoRecordingStatus_videoRecordingStatusShouldBeNone_afterInital() {
         XCTAssertEqual(vm.videoRecordingStatus, .none, "videoRecordingStatus")
         XCTAssertNil(vm.lastVideoUrl, "lastVideoUrl")
@@ -218,6 +225,13 @@ import Combine
         
         XCTAssertEqual(camManager.startVideoRecordingCallCount, 1, "startVideoRecordingCallCount")
         XCTAssertEqual(camManager.stopVideoRecordingCallCount, 1, "stopVideoRecordingCallCount")
+    }
+    
+    func test_showVideoPreview_startSessionShouldBeCalled_whenShowVideoPreviewSetToFalse() {
+        vm.showVideoPreview = false
+        
+        XCTAssertFalse(vm.showVideoPreview, "showVideoPreview")
+        XCTAssertEqual(camManager.startSessionCallCount, 1, "startSessionCallCount")
     }
     
     func test_videoPreviewTapPoint_videoPreviewTapPointShouldBeZero_afterInital() {
