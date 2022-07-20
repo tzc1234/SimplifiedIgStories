@@ -8,6 +8,7 @@
 import AVFoundation
 import Combine
 import UIKit
+@testable import Simple_IG_Story
 
 final class FakeCamManager: CamManager {
     var camPermPublisher = CurrentValueSubject<Bool, Never>(false)
