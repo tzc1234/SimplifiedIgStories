@@ -12,28 +12,25 @@ struct HomeView: View {
     
     var body: some View {
         ZStack {
-            GeometryReader { _ in
-                HStack(spacing: 0.0) {
-                    storyCamView
+            HStack(spacing: 0.0) {
+                storyCamView
                 
-                    NavigationView {
-                        VStack {
-                            StoryIconsView(stories: vm.stories, onTapAction: vm.tapStoryIcon)
-                            Spacer()
-                        }
-                        .navigationTitle("Stories")
-                        .onPreferenceChange(IdFramePreferenceKey.self) { idFrameDict in
-                            vm.storyIconFrames = idFrameDict
-                        }
+                NavigationView {
+                    VStack {
+                        StoryIconsView(stories: vm.stories, onTapAction: vm.tapStoryIcon)
+                        Spacer()
                     }
-                    .frame(width: .screenWidth)
-                    .navigationViewStyle(.stack)
+                    .navigationTitle("Stories")
+                    .onPreferenceChange(IdFramePreferenceKey.self) { idFrameDict in
+                        vm.storyIconFrames = idFrameDict
+                    }
                 }
+                .navigationViewStyle(.stack)
             }
-            .offset(x: vm.showStoryCamView ? 0.0 : -.screenWidth)
             
             storyContainer
         }
+        .frame(width: .screenWidth)
         .environmentObject(vm)
         .task {
             await vm.fetchStories()
@@ -55,10 +52,10 @@ extension HomeView {
         ZStack {
             if vm.showStoryCamView {
                 StoryCamView(tapCloseAction: vm.toggleStoryCamView)
+                    .frame(width: .screenWidth)
             }
         }
         .ignoresSafeArea()
-        .frame(width: .screenWidth)
     }
     
     private var storyContainer: some View {

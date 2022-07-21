@@ -37,6 +37,6 @@ struct StoryIconsView: View {
 
 struct StoryIconsView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryIconsView(stories: StoriesViewModel().stories, onTapAction: {_ in})
+        StoryIconsView(stories: PreviewData.stories, onTapAction: {_ in})
     }
 }
