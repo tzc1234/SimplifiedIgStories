@@ -195,8 +195,8 @@
 		BE090B6527B9566D00B6F906 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				BE8A758027BC106F00E9F745 /* HomeView.swift */,
 				BE8F57FE27D60E2A00F9DB92 /* Helpers */,
+				BE8A758027BC106F00E9F745 /* HomeView.swift */,
 				BE47195027D6CFCC004500F2 /* StoryViews */,
 				BE90CE0527D00BCD001EA0CA /* CameraViews */,
 			);

@@ -56,7 +56,7 @@ final class AVCamManager: NSObject, CamManager {
     private var subscriptions = Set<AnyCancellable>()
 }
 
-// MARK: - internal functions
+// MARK: internal functions
 extension AVCamManager {
     func setupAndStartSession() {
         sessionQueue.async { [weak self] in
@@ -226,7 +226,7 @@ extension AVCamManager {
     }
 }
 
-// MARK: - private functions
+// MARK: private functions
 extension AVCamManager {
     private func addVideoInput() throws {
         guard let videoDevice =
@@ -374,7 +374,7 @@ extension AVCamManager {
     }
 }
 
-// MARK: - AVCapturePhotoCaptureDelegate
+// MARK: AVCapturePhotoCaptureDelegate
 extension AVCamManager: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         if let error = error {
@@ -401,7 +401,7 @@ extension AVCamManager: AVCapturePhotoCaptureDelegate {
     }
 }
 
-// MARK: - AVCaptureFileOutputRecordingDelegate
+// MARK: AVCaptureFileOutputRecordingDelegate
 extension AVCamManager: AVCaptureFileOutputRecordingDelegate {
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         if let currentBackgroundRecordingID = backgroundRecordingID {

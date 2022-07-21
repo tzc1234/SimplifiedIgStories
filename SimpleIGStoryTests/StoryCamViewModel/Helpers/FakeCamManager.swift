@@ -36,7 +36,7 @@ final class FakeCamManager: CamManager {
     private(set) var zoomFactor: CGFloat?
 }
 
-// MARK: - internal functions
+// MARK: internal functions
 extension FakeCamManager {
     func setupAndStartSession() {
         setupAndStartSessionCallCount += 1

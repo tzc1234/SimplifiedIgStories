@@ -12,7 +12,7 @@ struct VideoRecordButton: View {
     @State private var isTapped = false
     
     @State private var fill = 0.0
-    @State private var animationCircleId = 0
+    @State private var animatableCircleId = 0
     
     @State var tapAction: (() -> Void)
     @State var longPressingAction: ((_ isPressing: Bool) -> Void)
@@ -33,7 +33,7 @@ struct VideoRecordButton: View {
                 .rotationEffect(.degrees(-90))
                 .frame(width: buttonSize - 3, height: buttonSize - 3)
                 .scaleEffect(isLongPressing ? 1.5 : 1)
-                .id(animationCircleId)
+                .id(animatableCircleId)
             
             Circle()
                 .strokeBorder(.white, lineWidth: 6)
@@ -56,7 +56,7 @@ struct VideoRecordButton: View {
         )
         .highPriorityGesture(
             TapGesture()
-                .onEnded { _ in
+                .onEnded {
                     isTapped = true
                     tapAction()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -95,6 +95,6 @@ extension VideoRecordButton {
     
     private func resetStrokeAnimation() {
         fill = 0.0
-        animationCircleId = animationCircleId == 0 ? 1 : 0
+        animatableCircleId = animatableCircleId == 0 ? 1 : 0
     }
 }

@@ -148,11 +148,16 @@ extension StoryCamView {
         }
     }
     
+    
+}
+
+// MARK: computed variables
+extension StoryCamView {
     private var flashModeImageName: String {
         switch vm.flashMode {
         case .auto: return "bolt.badge.a.fill"
-        case .on: return "bolt.fill"
-        case .off: return  "bolt.slash.fill"
+        case .on:   return "bolt.fill"
+        case .off:  return "bolt.slash.fill"
         @unknown default: return ""
         }
     }

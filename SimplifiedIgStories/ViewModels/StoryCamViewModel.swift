@@ -133,18 +133,16 @@ extension StoryCamViewModel {
         camManager.camStatusPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] camStatus in
-                guard let self = self else { return }
-                
                 switch camStatus {
                 case .sessionStarted:
                     print("Camera session did start running")
-                    self.enableVideoRecordBtn = true
+                    self?.enableVideoRecordBtn = true
                 case .sessionStopped:
                     print("Camera session did stop running")
-                    self.enableVideoRecordBtn = false
+                    self?.enableVideoRecordBtn = false
                 case .photoTaken(photo: let photo):
-                    self.lastTakenImage = photo
-                    self.showPhotoPreview = true
+                    self?.lastTakenImage = photo
+                    self?.showPhotoPreview = true
                 case .processingPhotoFailure:
                     break
                 case .processingPhotoDataFailure:
@@ -155,12 +153,12 @@ extension StoryCamViewModel {
                     print("Did Begin Recording Video")
                 case .recordingVideoFinished:
                     print("Did finish Recording Video")
-                    self.videoRecordingStatus = .none
+                    self?.videoRecordingStatus = .none
                 case .processingVideoFailure:
                     break
                 case .processingVideoFinished(videoUrl: let videoUrl):
-                    self.lastVideoUrl = videoUrl
-                    self.showVideoPreview = true
+                    self?.lastVideoUrl = videoUrl
+                    self?.showVideoPreview = true
                 case .cameraSwitched(camPosition: _):
                     break
                 }

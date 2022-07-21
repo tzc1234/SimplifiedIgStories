@@ -5,7 +5,6 @@
 //  Created by Tsz-Lung on 11/03/2022.
 //
 
-import Foundation
 import SwiftUI
 
 // Cubic transition reference: https://www.youtube.com/watch?v=NTun83toSQQ&ab_channel=Kavsoft

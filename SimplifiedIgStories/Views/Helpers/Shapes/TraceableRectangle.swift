@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// MARK: - TraceableRectangle
 struct TraceableRectangle: Shape {
     let startX: Double
     var endX: Double
@@ -32,6 +33,7 @@ struct TraceableRectangle: Shape {
     }
 }
 
+// MARK: - TracingEndX
 final class TracingEndX: ObservableObject {
     @Published var currentEndX: Double
     

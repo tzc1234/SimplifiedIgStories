@@ -65,7 +65,7 @@ extension StoriesViewModel {
         do {
             self.stories = try await dataService.fetchStories()
         } catch {
-            let errMsg = (error as? DataServiceError)?.errString ?? error.localizedDescription
+            let errMsg = (error as? DataServiceError)?.errMsg ?? error.localizedDescription
             print(errMsg)
         }
     }

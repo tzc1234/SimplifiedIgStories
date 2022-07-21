@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// MARK: - TraceableArc
 struct TraceableArc: InsettableShape {
     let startAngle: Double
     var endAngle: Double
@@ -49,6 +50,7 @@ struct TraceableArc: InsettableShape {
     }
 }
 
+// MARK: - TracingEndAngle
 final class TracingEndAngle: ObservableObject {
     @Published var currentEndAngle: Double
     
