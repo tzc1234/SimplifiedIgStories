@@ -15,11 +15,7 @@ struct StoryIcon: View {
     @State private var isOnTap = false
     @State private var arcId = 0
     
-    let animationDuration = 1.0
-    
-    enum PlusIconStyle {
-        case background, white
-    }
+    private let animationDuration = 1.0
     
     let story: Story
     let showPlusIcon: Bool
@@ -72,7 +68,7 @@ struct StoryIcon: View {
 
 struct StoryIcon_Previews: PreviewProvider {
     static var previews: some View {
-        StoryIcon(story: StoriesViewModel().stories[0])
+        StoryIcon(story: PreviewData.stories[0])
     }
 }
 
@@ -133,7 +129,7 @@ extension StoryIcon {
     }
 }
 
-// MARK: functions
+// MARK: private functions
 extension StoryIcon {
     private func startStrokeAnimation() {
         if !isAnimating {

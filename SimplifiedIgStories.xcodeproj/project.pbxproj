@@ -11,6 +11,7 @@
 		BE090B5C27B9562D00B6F906 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE090B5B27B9562D00B6F906 /* Assets.xcassets */; };
 		BE090B5F27B9562D00B6F906 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE090B5E27B9562D00B6F906 /* Preview Assets.xcassets */; };
 		BE090B6727B9568700B6F906 /* StoryIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE090B6627B9568700B6F906 /* StoryIcon.swift */; };
+		BE09DD59288C758000F4278C /* HomeUIActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE09DD58288C758000F4278C /* HomeUIActionHandler.swift */; };
 		BE2C557227BFFE9D0087EE7F /* StoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557127BFFE9D0087EE7F /* StoryView.swift */; };
 		BE2C557427C0197B0087EE7F /* DetectableTapGesturePositionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */; };
 		BE2D7792285F765F00DBD924 /* CamSetupError.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2D7791285F765F00DBD924 /* CamSetupError.swift */; };
@@ -79,6 +80,7 @@
 		BE090B5B27B9562D00B6F906 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BE090B5E27B9562D00B6F906 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		BE090B6627B9568700B6F906 /* StoryIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIcon.swift; sourceTree = "<group>"; };
+		BE09DD58288C758000F4278C /* HomeUIActionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeUIActionHandler.swift; sourceTree = "<group>"; };
 		BE2C557127BFFE9D0087EE7F /* StoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryView.swift; sourceTree = "<group>"; };
 		BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetectableTapGesturePositionView.swift; sourceTree = "<group>"; };
 		BE2D7791285F765F00DBD924 /* CamSetupError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CamSetupError.swift; sourceTree = "<group>"; };
@@ -198,11 +200,20 @@
 			isa = PBXGroup;
 			children = (
 				BE8F57FE27D60E2A00F9DB92 /* Helpers */,
-				BE8A758027BC106F00E9F745 /* HomeView.swift */,
+				BE09DD57288C74F200F4278C /* Home */,
 				BE47195027D6CFCC004500F2 /* StoryViews */,
 				BE90CE0527D00BCD001EA0CA /* CameraViews */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		BE09DD57288C74F200F4278C /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				BE09DD58288C758000F4278C /* HomeUIActionHandler.swift */,
+				BE8A758027BC106F00E9F745 /* HomeView.swift */,
+			);
+			path = Home;
 			sourceTree = "<group>";
 		};
 		BE2D7790285F761F00DBD924 /* CamManager */ = {
@@ -225,7 +236,6 @@
 				BE2C557127BFFE9D0087EE7F /* StoryView.swift */,
 				BE720F7A27BD10E800E862A5 /* ProgressBar */,
 				BE91AA5327BFD96700BB9846 /* StoryPortionView.swift */,
-				BE9336C327D22162009E5370 /* StoryPreview.swift */,
 			);
 			path = StoryViews;
 			sourceTree = "<group>";
@@ -322,6 +332,7 @@
 				BEA8E50E27D0CFD200640B19 /* VideoRecordButton.swift */,
 				BE2D7795285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift */,
 				BE90CE0327D00A0E001EA0CA /* StoryCamView.swift */,
+				BE9336C327D22162009E5370 /* StoryPreview.swift */,
 			);
 			path = CameraViews;
 			sourceTree = "<group>";
@@ -526,6 +537,7 @@
 				BE2C557427C0197B0087EE7F /* DetectableTapGesturePositionView.swift in Sources */,
 				BEAED9E427D36F7D00A98F3A /* IdFramePreferenceKey.swift in Sources */,
 				BE8AEF9327DBDE8100D7EAA1 /* CubicTransitionModifier.swift in Sources */,
+				BE09DD59288C758000F4278C /* HomeUIActionHandler.swift in Sources */,
 				BEA901D427BC716E00E3362D /* ProgressBarPortion.swift in Sources */,
 				BE84C2CA27C78E5400C42165 /* AnyTransition+Additions.swift in Sources */,
 				BED0F60D27BBF64B00D93F15 /* StoryIconsView.swift in Sources */,

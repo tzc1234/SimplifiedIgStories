@@ -10,11 +10,9 @@ import SwiftUI
 struct StoryCamView: View {
     @StateObject private var vm = StoryCamViewModel(camManager: AVCamManager())
     
-    let tapCloseAction: (() -> Void)?
-    
-    init(tapCloseAction: (() -> Void)? = nil) {
-        self.tapCloseAction = tapCloseAction
-    }
+    let postImageAction: ((UIImage) -> Void)
+    let postVideoAction: ((URL) -> Void)
+    let tapCloseAction: (() -> Void)
     
     var body: some View {
         ZStack {
@@ -53,9 +51,17 @@ struct StoryCamView: View {
             .padding(.vertical, 20)
             
             if vm.showPhotoPreview, let uiImage = vm.lastTakenImage {
-                StoryPreview(uiImage: uiImage) { vm.showPhotoPreview = false }
+                StoryPreview(uiImage: uiImage, backBtnAction: {
+                    vm.showPhotoPreview = false
+                }, postBtnAction: {
+                    postImageAction(uiImage)
+                })
             } else if vm.showVideoPreview, let url = vm.lastVideoUrl {
-                StoryPreview(videoUrl: url) { vm.showVideoPreview = false }
+                StoryPreview(videoUrl: url, backBtnAction: {
+                    vm.showVideoPreview = false
+                }, postBtnAction: {
+                    postVideoAction(url)
+                })
             }
         }
         .statusBar(hidden: true)
@@ -76,7 +82,7 @@ struct StoryCamView: View {
 
 struct StoryCamView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryCamView()
+        StoryCamView(postImageAction: {_ in }, postVideoAction: {_ in }, tapCloseAction: {})
     }
 }
 
@@ -84,7 +90,7 @@ struct StoryCamView_Previews: PreviewProvider {
 extension StoryCamView {
     private var closeButton: some View {
         Button{
-            tapCloseAction?()
+            tapCloseAction()
         } label: {
             ZStack {
                 Color.clear.frame(width: 45, height: 45)
@@ -147,8 +153,6 @@ extension StoryCamView {
             .opacity(vm.videoRecordingStatus == .start ? 0 : 1)
         }
     }
-    
-    
 }
 
 // MARK: computed variables
@@ -163,7 +167,7 @@ extension StoryCamView {
     }
 }
 
-// MARK: functions
+// MARK: private functions
 extension StoryCamView {
     private func toggleFlashMode() {
         switch vm.flashMode {

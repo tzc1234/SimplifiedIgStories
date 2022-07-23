@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct StoryIconTitleView: View {
-    static let vStackSpacing = 4.0
-    
     @Environment(\.colorScheme) var colorScheme
     
     let story: Story
@@ -25,7 +23,7 @@ struct StoryIconTitleView: View {
     }
     
     var body: some View {
-        VStack(alignment: .center, spacing: Self.vStackSpacing) {
+        VStack(alignment: .center, spacing: 4.0) {
             GeometryReader { geo in
                 StoryIcon(story: story, showPlusIcon: showPlusIcon, showStroke: showStroke, onTapAction: onTapAction)
                     .preference(

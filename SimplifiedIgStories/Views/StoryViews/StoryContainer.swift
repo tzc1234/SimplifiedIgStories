@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct StoryContainer: View {
-    @EnvironmentObject private var vm: StoriesViewModel
-    
+    @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     @GestureState private var translation: CGFloat = 0
+    
+    @ObservedObject var vm: StoriesViewModel
     
     var body: some View {
         GeometryReader { geo in
@@ -27,18 +28,19 @@ struct StoryContainer: View {
             }
         }
         .frame(width: .screenWidth, alignment: .leading)
-        .offset(x: vm.getContainerOffset(by: .screenWidth))
+        .offset(x: getContainerOffset(by: .screenWidth))
         .offset(x: translation)
         .animation(.interactiveSpring(), value: vm.currentStoryId)
         .animation(.interactiveSpring(), value: translation)
         .gesture(
             DragGesture()
                 .updating($translation) { value, state, transaction in
-                    vm.dragStoryContainer()
+                    vm.isDragging = true
+                    vm.updateStoryIdBeforeDragged()
                     state = value.translation.width
                 }
                 .onEnded { value in
-                    vm.endDraggingStoryContainer(withOffset: value.translation.width / .screenWidth)
+                    endDraggingStoryContainer(withOffset: value.translation.width / .screenWidth)
                 }
         )
         .statusBar(hidden: true)
@@ -48,7 +50,34 @@ struct StoryContainer: View {
 
 struct StoryContainer_Previews: PreviewProvider {
     static var previews: some View {
-        StoryContainer()
-            .environmentObject(StoriesViewModel())
+        StoryContainer(vm: StoriesViewModel())
+    }
+}
+
+// MARK: helper functions
+extension StoryContainer {
+    private func getContainerOffset(by width: CGFloat) -> CGFloat {
+        guard let index = vm.currentStoryIndex else {
+            return 0.0
+        }
+        return -CGFloat(index) * width
+    }
+    
+    private func endDraggingStoryContainer(withOffset offset: CGFloat) {
+        // Imitate the close behaviour of IG story when dragging right in the first story,
+        // or dragging left in the last story, close the container.
+        if (vm.isNowAtFirstStory && offset > 0.2) || (vm.isNowAtLastStory && offset < -0.2) {
+            homeUIActionHandler.closeStoryContainer()
+        } else { // Go to previous or next.
+            guard let currentStoryIndex = vm.currentStoryIndex else {
+                return
+            }
+            
+            let nextIdx = Int((CGFloat(currentStoryIndex) - offset).rounded())
+            // Make sure within the boundary.
+            vm.setCurrentStoryId(vm.currentStories[min(nextIdx, vm.stories.count - 1)].id)
+        }
+        
+        vm.isDragging = false
     }
 }

@@ -9,8 +9,6 @@ import SwiftUI
 import AVKit
 
 struct StoryPreview: View {
-    @EnvironmentObject private var vm: StoriesViewModel
-    
     @State private var isLoading = false
     @State private var showNoticeLabel = false
     @State private var showAlert = false
@@ -21,11 +19,18 @@ struct StoryPreview: View {
     let uiImage: UIImage?
     let videoUrl: URL?
     let backBtnAction: (() -> Void)
+    let postBtnAction: (() -> Void)
     
-    init(uiImage: UIImage? = nil, videoUrl: URL? = nil, backBtnAction: @escaping (() -> Void)) {
+    init(
+        uiImage: UIImage? = nil,
+        videoUrl: URL? = nil,
+        backBtnAction: @escaping (() -> Void),
+        postBtnAction: @escaping (() -> Void)
+    ) {
         self.uiImage = uiImage
         self.videoUrl = videoUrl
         self.backBtnAction = backBtnAction
+        self.postBtnAction = postBtnAction
     }
     
     var body: some View {
@@ -69,8 +74,7 @@ struct StoryPreview: View {
 
 struct StoryPreview_Previews: PreviewProvider {
     static var previews: some View {
-        StoryPreview(backBtnAction: {})
-            .environmentObject(StoriesViewModel())
+        StoryPreview(backBtnAction: {}, postBtnAction: {})
     }
 }
 
@@ -137,7 +141,7 @@ extension StoryPreview {
     
     private var postBtn: some View {
         Button {
-            postStoryPortion()
+            postBtnAction()
         } label: {
             Text("Post")
                 .font(.headline)
@@ -193,34 +197,34 @@ extension StoryPreview {
         }
     }
     
-    private func postStoryPortion() {
-        guard let yourStoryIdx = vm.yourStoryIdx else { return }
-        
-        var portions = vm.stories[yourStoryIdx].portions
-        
-        // *** In real environment, the photo or video recorded should be uploaded to server side,
-        // this is a demo app, however, storing them into temp directory for displaying IG story animation.
-        if let uiImage = uiImage,
-            let imageUrl = LocalFileManager.shared.saveImageToTemp(image: uiImage)
-        {
-            // Just append a new Portion instance to current user's potion array.
-            portions.append(
-                Portion(id: vm.lastPortionId + 1, imageUrl: imageUrl)
-            )
-            vm.stories[yourStoryIdx].portions = portions
-            vm.stories[yourStoryIdx].lastUpdate = Date().timeIntervalSince1970
-        } else if let videoUrl = videoUrl { // Similar process in video case.
-            let asset = AVAsset(url: videoUrl)
-            let duration = asset.duration
-            let durationSeconds = CMTimeGetSeconds(duration)
-            
-            portions.append(
-                Portion(id: vm.lastPortionId + 1, videoDuration: durationSeconds, videoUrlFromCam: videoUrl)
-            )
-            vm.stories[yourStoryIdx].portions = portions
-            vm.stories[yourStoryIdx].lastUpdate = Date().timeIntervalSince1970
-        }
-        
-        vm.toggleStoryCamView()
-    }
+//    private func postStoryPortion() {
+//        guard let yourStoryIdx = vm.yourStoryIdx else { return }
+//        
+//        var portions = vm.stories[yourStoryIdx].portions
+//        
+//        // *** In real environment, the photo or video recorded should be uploaded to server side,
+//        // this is a demo app, however, storing them into temp directory for displaying IG story animation.
+//        if let uiImage = uiImage,
+//            let imageUrl = LocalFileManager.shared.saveImageToTemp(image: uiImage)
+//        {
+//            // Just append a new Portion instance to current user's potion array.
+//            portions.append(
+//                Portion(id: vm.lastPortionId + 1, imageUrl: imageUrl)
+//            )
+//            vm.stories[yourStoryIdx].portions = portions
+//            vm.stories[yourStoryIdx].lastUpdate = Date().timeIntervalSince1970
+//        } else if let videoUrl = videoUrl { // Similar process in video case.
+//            let asset = AVAsset(url: videoUrl)
+//            let duration = asset.duration
+//            let durationSeconds = CMTimeGetSeconds(duration)
+//            
+//            portions.append(
+//                Portion(id: vm.lastPortionId + 1, videoDuration: durationSeconds, videoUrlFromCam: videoUrl)
+//            )
+//            vm.stories[yourStoryIdx].portions = portions
+//            vm.stories[yourStoryIdx].lastUpdate = Date().timeIntervalSince1970
+//        }
+//        
+//        vm.toggleStoryCamView()
+//    }
 }

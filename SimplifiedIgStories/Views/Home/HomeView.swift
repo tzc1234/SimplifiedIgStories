@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct HomeView: View {
-    @StateObject private var vm = StoriesViewModel()
+    @StateObject private var handler = HomeUIActionHandler()
+    @StateObject private var storiesViewModel = StoriesViewModel()
+    @State private var containerAnimationBeginningFrame: CGRect?
     
     var body: some View {
         ZStack {
@@ -17,13 +19,12 @@ struct HomeView: View {
                 
                 NavigationView {
                     VStack {
-                        StoryIconsView(stories: vm.stories, onTapAction: vm.tapStoryIcon)
+                        StoryIconsView(vm: storiesViewModel) { frame in
+                            containerAnimationBeginningFrame = frame
+                        }
                         Spacer()
                     }
                     .navigationTitle("Stories")
-                    .onPreferenceChange(IdFramePreferenceKey.self) { idFrameDict in
-                        vm.storyIconFrames = idFrameDict
-                    }
                 }
                 .navigationViewStyle(.stack)
             }
@@ -31,18 +32,13 @@ struct HomeView: View {
             storyContainer
         }
         .frame(width: .screenWidth)
-        .environmentObject(vm)
-        .task {
-            await vm.fetchStories()
-        }
-        
+        .environmentObject(handler)
     }
 }
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
-            .environmentObject(StoriesViewModel())
     }
 }
 
@@ -50,9 +46,17 @@ struct HomeView_Previews: PreviewProvider {
 extension HomeView {
     private var storyCamView: some View {
         ZStack {
-            if vm.showStoryCamView {
-                StoryCamView(tapCloseAction: vm.toggleStoryCamView)
-                    .frame(width: .screenWidth)
+            if handler.showStoryCamView {
+                StoryCamView { image in
+                    // TODO:
+                } postVideoAction: { url in
+                    // TODO:
+                } tapCloseAction: {
+                    withAnimation(.default) {
+                        handler.showStoryCamView.toggle()
+                    }
+                }
+                .frame(width: .screenWidth)
             }
         }
         .ignoresSafeArea()
@@ -60,11 +64,10 @@ extension HomeView {
     
     private var storyContainer: some View {
         GeometryReader { geo in
-            let iconFrame: CGRect = vm.currentStoryIconFrame
-            let offsetX = -(geo.size.width / 2 - iconFrame.midX)
-            let offsetY = iconFrame.minY - geo.safeAreaInsets.top
-            if vm.showContainer {
-                StoryContainer()
+            if handler.showContainer, let iconFrame = containerAnimationBeginningFrame {
+                let offsetX = -(geo.size.width / 2 - iconFrame.midX)
+                let offsetY = iconFrame.minY - geo.safeAreaInsets.top
+                StoryContainer(vm: storiesViewModel)
                     .zIndex(1.0)
                     .frame(maxHeight: .infinity, alignment: .top)
                     .openAppLikeTransition(sacle: iconFrame.height / .screenHeight, offestX: offsetX, offsetY: offsetY)

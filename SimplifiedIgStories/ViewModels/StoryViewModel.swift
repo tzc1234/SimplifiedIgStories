@@ -116,7 +116,8 @@ extension StoryViewModel {
             currentStoryPortionId = portions[portionIdx + 1].id
             setCurrentBarPortionAnimationStatus(to: .start)
         } else {
-            storiesViewModel.closeStoryContainer()
+            // TODO:
+//            storiesViewModel.closeStoryContainer()
             deletePortionFromStory(by: portionIdx)
         }
     }
@@ -235,7 +236,7 @@ extension StoryViewModel {
                     let prevStoryIdx = currentStoryIdx - 1
                     if prevStoryIdx >= 0 { // If within the boundary,
                         // go previous.
-                        storiesViewModel.currentStoryId = currentStories[prevStoryIdx].id
+                        storiesViewModel.setCurrentStoryId(currentStories[prevStoryIdx].id)
                     }
                 }
             } else { // Not at the first story,
@@ -284,9 +285,10 @@ extension StoryViewModel {
             
             // It's the last story now, close StoryContainer.
             if currentStoryIdx + 1 > currentStories.count - 1 {
-                storiesViewModel.closeStoryContainer()
+                // TODO:
+//                storiesViewModel.closeStoryContainer()
             } else { // Not the last stroy now, go to next story.
-                storiesViewModel.currentStoryId = currentStories[currentStoryIdx + 1].id
+                storiesViewModel.setCurrentStoryId(currentStories[currentStoryIdx + 1].id)
             }
         } else { // Not the last portion, go to next portion.
             currentStoryPortionId = story.portions[currentStoryPortionIdx + 1].id

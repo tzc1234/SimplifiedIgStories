@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct StoryView: View {
+    @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
+    
     let storyId: Int
-    @StateObject var vm: StoryViewModel
+    @StateObject var vm: StoryViewModel // Injected from StoryContainer
     
     var body: some View {
         GeometryReader { geo in
@@ -119,10 +121,10 @@ extension StoryView {
         var onTapAction: ((Int) -> Void)?
         if vm.story.user.isCurrentUser {
             onTapAction = { _ in
-                vm.storiesViewModel.closeStoryContainer()
+                homeUIActionHandler.closeStoryContainer()
                 DispatchQueue.main.asyncAfter(
                     deadline: .now() + 0.3,
-                    execute: vm.storiesViewModel.toggleStoryCamView
+                    execute: homeUIActionHandler.toggleStoryCamView
                 )
             }
         }
@@ -152,7 +154,7 @@ extension StoryView {
     }
     
     private var closeButton: some View {
-        Button(action: vm.storiesViewModel.closeStoryContainer) {
+        Button(action: homeUIActionHandler.closeStoryContainer) {
             ZStack {
                 // Increase close button tap area.
                 Color.clear.frame(width: 45.0, height: 45.0)
