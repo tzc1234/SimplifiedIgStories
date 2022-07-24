@@ -72,8 +72,10 @@ extension StoryContainer {
         // Imitate the close behaviour of IG story when dragging to right in the first story,
         // or dragging to left in the last story, close the container.
         let threshold: CGFloat = 0.2
-        if (vm.isNowAtFirstStory && offset > threshold) || (vm.isNowAtLastStory && offset < -threshold) {
-            homeUIActionHandler.closeStoryContainer()
+        if vm.isNowAtFirstStory && offset > threshold {
+            homeUIActionHandler.closeStoryContainer(storyId: vm.firstCurrentStoryId)
+        } else if vm.isNowAtLastStory && offset < -threshold {
+            homeUIActionHandler.closeStoryContainer(storyId: vm.lastCurrentStoryId)
         } else if abs(offset.rounded()) > 0 {
             vm.moveCurrentStory(to: offset >= 0 ? .previous : .next)
         }

@@ -59,12 +59,20 @@ extension StoriesViewModel {
         currentStories.firstIndex(where: { $0.id == currentStoryId })
     }
     
+    var firstCurrentStoryId: Int? {
+        currentStories.first?.id
+    }
+    
+    var lastCurrentStoryId: Int? {
+        currentStories.last?.id
+    }
+    
     var isNowAtFirstStory: Bool {
-        currentStoryId == currentStories.first?.id
+        currentStoryId == firstCurrentStoryId
     }
     
     var isNowAtLastStory: Bool {
-        currentStoryId == currentStories.last?.id
+        currentStoryId == lastCurrentStoryId
     }
 }
 

@@ -10,7 +10,6 @@ import SwiftUI
 struct HomeView: View {
     @StateObject private var handler = HomeUIActionHandler()
     @StateObject private var storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
-    @State private var containerAnimationBeginningFrame: CGRect?
     
     var body: some View {
         ZStack {
@@ -19,9 +18,11 @@ struct HomeView: View {
                 
                 NavigationView {
                     VStack {
-                        StoryIconsView(vm: storiesViewModel) { frame in
-                            containerAnimationBeginningFrame = frame
-                        }
+                        StoryIconsView(vm: storiesViewModel)
+                            .onPreferenceChange(IdFramePreferenceKey.self) { idFrameDict in
+                                handler.storyIconFrames = idFrameDict
+                            }
+                        
                         Spacer()
                     }
                     .navigationTitle("Stories")
@@ -64,7 +65,8 @@ extension HomeView {
     
     private var storyContainer: some View {
         GeometryReader { geo in
-            if handler.showContainer, let iconFrame = containerAnimationBeginningFrame {
+            if handler.showContainer {
+                let iconFrame = handler.currentIconFrame
                 let offsetX = -(geo.size.width / 2 - iconFrame.midX)
                 let offsetY = iconFrame.minY - geo.safeAreaInsets.top
                 StoryContainer(vm: storiesViewModel)

@@ -9,11 +9,9 @@ import SwiftUI
 
 struct StoryIconsView: View {
     private let spacing: Double = 8.0
-    @State private var storyIconFrames: [Int: CGRect] = [:]
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     
     @ObservedObject var vm: StoriesViewModel // Injected from HomeView
-    let onTapIconAction: ((_ frame: CGRect?) -> Void)
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -32,9 +30,6 @@ struct StoryIconsView: View {
                     Spacer(minLength: spacing)
                 }
             }
-            .onPreferenceChange(IdFramePreferenceKey.self) { idFrameDict in
-               storyIconFrames = idFrameDict
-            }
         }
         .task {
             await vm.fetchStories()
@@ -45,29 +40,24 @@ struct StoryIconsView: View {
 struct StoryIconsView_Previews: PreviewProvider {
     static var previews: some View {
         let vm = StoriesViewModel(fileManager: LocalFileManager())
-        StoryIconsView(
-            vm: vm,
-            onTapIconAction: {_ in}
-        )
-        .environmentObject(HomeUIActionHandler())
-        .task {
-            await vm.fetchStories()
-        }
+        StoryIconsView(vm: vm)
+            .environmentObject(HomeUIActionHandler())
+            .task {
+                await vm.fetchStories()
+            }
     }
 }
 
 // MARK: helper functions
 extension StoryIconsView {
     private func tapIconAction(storyId: Int) {
-        onTapIconAction(storyIconFrames[storyId])
-        
         guard let story = vm.getStory(by: storyId) else {
             return
         }
         
         if story.hasPortion {
             vm.setCurrentStoryId(storyId)
-            homeUIActionHandler.showStoryContainer()
+            homeUIActionHandler.showStoryContainer(storyId: storyId)
         } else if story.user.isCurrentUser {
             homeUIActionHandler.toggleStoryCamView()
         }

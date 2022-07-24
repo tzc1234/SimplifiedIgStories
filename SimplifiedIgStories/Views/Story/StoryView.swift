@@ -121,7 +121,7 @@ extension StoryView {
         var onTapAction: ((Int) -> Void)?
         if vm.story.user.isCurrentUser {
             onTapAction = { _ in
-                homeUIActionHandler.closeStoryContainer()
+                homeUIActionHandler.closeStoryContainer(storyId: storyId)
                 DispatchQueue.main.asyncAfter(
                     deadline: .now() + 0.3,
                     execute: homeUIActionHandler.toggleStoryCamView
@@ -154,7 +154,9 @@ extension StoryView {
     }
     
     private var closeButton: some View {
-        Button(action: homeUIActionHandler.closeStoryContainer) {
+        Button {
+            homeUIActionHandler.closeStoryContainer(storyId: storyId)
+        } label: {
             ZStack {
                 // Increase close button tap area.
                 Color.clear.frame(width: 45.0, height: 45.0)
