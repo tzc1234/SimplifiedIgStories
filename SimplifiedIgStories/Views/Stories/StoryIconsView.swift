@@ -44,10 +44,15 @@ struct StoryIconsView: View {
 
 struct StoryIconsView_Previews: PreviewProvider {
     static var previews: some View {
+        let vm = StoriesViewModel(localFileManager: LocalFileManager())
         StoryIconsView(
-            vm: StoriesViewModel(localFileManager: LocalFileManager()),
+            vm: vm,
             onTapIconAction: {_ in}
         )
+        .environmentObject(HomeUIActionHandler())
+        .task {
+            await vm.fetchStories()
+        }
     }
 }
 

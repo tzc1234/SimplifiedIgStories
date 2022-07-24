@@ -201,7 +201,7 @@
 			children = (
 				BE8F57FE27D60E2A00F9DB92 /* Helpers */,
 				BE09DD57288C74F200F4278C /* Home */,
-				BE47195027D6CFCC004500F2 /* StoryViews */,
+				BE47195027D6CFCC004500F2 /* Stories */,
 				BE90CE0527D00BCD001EA0CA /* CameraViews */,
 			);
 			path = Views;
@@ -226,7 +226,7 @@
 			path = CamManager;
 			sourceTree = "<group>";
 		};
-		BE47195027D6CFCC004500F2 /* StoryViews */ = {
+		BE47195027D6CFCC004500F2 /* Stories */ = {
 			isa = PBXGroup;
 			children = (
 				BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */,
@@ -237,7 +237,7 @@
 				BE720F7A27BD10E800E862A5 /* ProgressBar */,
 				BE91AA5327BFD96700BB9846 /* StoryPortionView.swift */,
 			);
-			path = StoryViews;
+			path = Stories;
 			sourceTree = "<group>";
 		};
 		BE482F032886C0960094E54C /* Helpers */ = {

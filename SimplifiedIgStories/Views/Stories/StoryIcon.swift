@@ -69,6 +69,7 @@ struct StoryIcon: View {
 struct StoryIcon_Previews: PreviewProvider {
     static var previews: some View {
         StoryIcon(story: PreviewData.stories[0])
+            .previewLayout(.sizeThatFits)
     }
 }
 

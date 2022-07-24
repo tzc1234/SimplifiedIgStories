@@ -40,6 +40,7 @@ struct StoryIconTitleView: View {
 struct StoryIconTitleView_Previews: PreviewProvider {
     static var previews: some View {
         StoryIconTitleView(story: PreviewData.stories[0])
+            .previewLayout(.sizeThatFits)
     }
 }
 
