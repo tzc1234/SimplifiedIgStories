@@ -203,7 +203,7 @@
 				BE09DD57288C74F200F4278C /* Home */,
 				BE47195027D6CFCC004500F2 /* Stories */,
 				BE501444288D3F510043DF62 /* Story */,
-				BE90CE0527D00BCD001EA0CA /* CameraViews */,
+				BE90CE0527D00BCD001EA0CA /* Camera */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -211,7 +211,6 @@
 		BE09DD57288C74F200F4278C /* Home */ = {
 			isa = PBXGroup;
 			children = (
-				BE09DD58288C758000F4278C /* HomeUIActionHandler.swift */,
 				BE8A758027BC106F00E9F745 /* HomeView.swift */,
 			);
 			path = Home;
@@ -306,6 +305,7 @@
 				BE9336C127D21811009E5370 /* AVPlayerControllerRepresentable.swift */,
 				BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */,
 				BE5CDC2C27DF4AAA00352A60 /* NoticeLabel.swift */,
+				BE09DD58288C758000F4278C /* HomeUIActionHandler.swift */,
 				BE8AEF9127DBDE0E00D7EAA1 /* ViewModifiers */,
 				BE8AEF8E27DB9D3000D7EAA1 /* LabelStyles */,
 				BEAED9E227D36F5A00A98F3A /* PreferenceKeys */,
@@ -333,7 +333,7 @@
 			path = ViewModels;
 			sourceTree = "<group>";
 		};
-		BE90CE0527D00BCD001EA0CA /* CameraViews */ = {
+		BE90CE0527D00BCD001EA0CA /* Camera */ = {
 			isa = PBXGroup;
 			children = (
 				BE72F93F27DF6F9300AA98A5 /* StoryCamPermissionView.swift */,
@@ -342,7 +342,7 @@
 				BE90CE0327D00A0E001EA0CA /* StoryCamView.swift */,
 				BE9336C327D22162009E5370 /* StoryPreview.swift */,
 			);
-			path = CameraViews;
+			path = Camera;
 			sourceTree = "<group>";
 		};
 		BE9336C827D24468009E5370 /* Managers */ = {
