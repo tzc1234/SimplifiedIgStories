@@ -202,6 +202,7 @@
 				BE8F57FE27D60E2A00F9DB92 /* Helpers */,
 				BE09DD57288C74F200F4278C /* Home */,
 				BE47195027D6CFCC004500F2 /* Stories */,
+				BE501444288D3F510043DF62 /* Story */,
 				BE90CE0527D00BCD001EA0CA /* CameraViews */,
 			);
 			path = Views;
@@ -233,9 +234,6 @@
 				BE8C498C27C62B3C000541E0 /* StoryIconTitleView.swift */,
 				BE090B6627B9568700B6F906 /* StoryIcon.swift */,
 				BE8C498E27C674FD000541E0 /* StoryContainer.swift */,
-				BE2C557127BFFE9D0087EE7F /* StoryView.swift */,
-				BE720F7A27BD10E800E862A5 /* ProgressBar */,
-				BE91AA5327BFD96700BB9846 /* StoryPortionView.swift */,
 			);
 			path = Stories;
 			sourceTree = "<group>";
@@ -246,6 +244,16 @@
 				BE5F521B2882F74C001CB2B1 /* FakeCamManager.swift */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		BE501444288D3F510043DF62 /* Story */ = {
+			isa = PBXGroup;
+			children = (
+				BE2C557127BFFE9D0087EE7F /* StoryView.swift */,
+				BE720F7A27BD10E800E862A5 /* ProgressBar */,
+				BE91AA5327BFD96700BB9846 /* StoryPortionView.swift */,
+			);
+			path = Story;
 			sourceTree = "<group>";
 		};
 		BE59BF58288803950050EB21 /* StoryCamViewModel */ = {
