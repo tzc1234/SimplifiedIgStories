@@ -40,7 +40,7 @@ struct StoryContainer: View {
                     state = value.translation.width
                 }
                 .onEnded { value in
-                    endDraggingStoryContainer(withOffset: value.translation.width / .screenWidth)
+                    endDraggingStoryContainerWith(offset: value.translation.width / .screenWidth)
                 }
         )
         .statusBar(hidden: true)
@@ -68,20 +68,14 @@ extension StoryContainer {
         return -CGFloat(index) * width
     }
     
-    private func endDraggingStoryContainer(withOffset offset: CGFloat) {
-        // Imitate the close behaviour of IG story when dragging right in the first story,
-        // or dragging left in the last story, close the container.
+    private func endDraggingStoryContainerWith(offset: CGFloat) {
+        // Imitate the close behaviour of IG story when dragging to right in the first story,
+        // or dragging to left in the last story, close the container.
         let threshold: CGFloat = 0.2
         if (vm.isNowAtFirstStory && offset > threshold) || (vm.isNowAtLastStory && offset < -threshold) {
             homeUIActionHandler.closeStoryContainer()
-        } else { // Go to previous or next.
-            guard let currentStoryIndex = vm.currentStoryIndex else {
-                return
-            }
-            
-            let nextIdx = Int((CGFloat(currentStoryIndex) - offset).rounded())
-            let validIdx = min(nextIdx, vm.stories.count - 1) // Make sure within the boundary.
-            vm.setCurrentStoryId(vm.currentStories[validIdx].id)
+        } else if abs(offset.rounded()) > 0 {
+            vm.moveCurrentStory(to: offset >= 0 ? .previous : .next)
         }
         
         vm.isDragging = false

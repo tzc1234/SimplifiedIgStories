@@ -16,6 +16,10 @@ final class StoriesViewModel: ObservableObject {
     @Published var isDragging = false
     private var storyIdBeforeDragged = 0
     
+    enum StoryMoveDirection {
+        case previous, next
+    }
+    
     private let dataService: DataService
     private let fileManager: FileManageable
     
@@ -35,7 +39,7 @@ extension StoriesViewModel {
         stories.firstIndex(where: { $0.user.isCurrentUser })
     }
     
-    var lastPortionId: Int {
+    private var lastPortionId: Int {
         currentStories.flatMap(\.portions).map(\.id).max() ?? -1
     }
     
@@ -86,7 +90,24 @@ extension StoriesViewModel {
         currentStoryId = storyId
     }
     
-    func getStoryById(_ storyId: Int) -> Story? {
+    func moveCurrentStory(to direction: StoryMoveDirection) {
+        guard let currentStoryIndex = currentStoryIndex else {
+            return
+        }
+        
+        switch direction {
+        case .previous:
+            if currentStoryIndex - 1 >= 0 {
+                currentStoryId = currentStories[currentStoryIndex - 1].id
+            }
+        case .next:
+            if currentStoryIndex + 1 < currentStories.count {
+                currentStoryId = currentStories[currentStoryIndex + 1].id
+            }
+        }
+    }
+    
+    func getStory(by storyId: Int) -> Story? {
         stories.first(where: { $0.id == storyId })
     }
     

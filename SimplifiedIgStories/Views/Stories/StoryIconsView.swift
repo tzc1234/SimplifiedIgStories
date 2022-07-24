@@ -61,7 +61,7 @@ extension StoryIconsView {
     private func tapIconAction(storyId: Int) {
         onTapIconAction(storyIconFrames[storyId])
         
-        guard let story = vm.getStoryById(storyId) else {
+        guard let story = vm.getStory(by: storyId) else {
             return
         }
         
