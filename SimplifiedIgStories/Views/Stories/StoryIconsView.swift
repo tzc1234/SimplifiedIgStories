@@ -44,7 +44,7 @@ struct StoryIconsView: View {
 
 struct StoryIconsView_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = StoriesViewModel(localFileManager: LocalFileManager())
+        let vm = StoriesViewModel(fileManager: LocalFileManager())
         StoryIconsView(
             vm: vm,
             onTapIconAction: {_ in}

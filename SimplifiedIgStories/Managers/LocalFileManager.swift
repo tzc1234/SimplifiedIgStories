@@ -7,7 +7,15 @@
 
 import UIKit
 
-struct LocalFileManager {
+// MARK: - FileManager
+protocol FileManageable {
+    func saveImageToTemp(image: UIImage) -> URL?
+    func getImageBy(url: URL) -> UIImage?
+    func deleteFileBy(url: URL)
+}
+
+// MARK: - LocalFileManager
+struct LocalFileManager: FileManageable {
     func saveImageToTemp(image: UIImage) -> URL? {
         guard let data = image.jpegData(compressionQuality: 0.8) else {
             print("Error when getting image data.")

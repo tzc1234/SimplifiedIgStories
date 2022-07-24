@@ -17,11 +17,11 @@ final class StoriesViewModel: ObservableObject {
     private var storyIdBeforeDragged = 0
     
     private let dataService: DataService
-    private let localFileManager: LocalFileManager
+    private let fileManager: FileManageable
     
-    init(dataService: DataService = AppDataService(), localFileManager: LocalFileManager) {
+    init(dataService: DataService = AppDataService(), fileManager: FileManageable) {
         self.dataService = dataService
-        self.localFileManager = localFileManager
+        self.fileManager = fileManager
     }
 }
 
@@ -96,7 +96,7 @@ extension StoriesViewModel {
     
     func postStoryPortion(image: UIImage) {
         guard let yourStoryIdx = yourStoryIdx,
-              let imageUrl = localFileManager.saveImageToTemp(image: image)
+              let imageUrl = fileManager.saveImageToTemp(image: image)
         else {
             return
         }

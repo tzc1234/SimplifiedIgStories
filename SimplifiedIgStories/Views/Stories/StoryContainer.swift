@@ -50,7 +50,7 @@ struct StoryContainer: View {
 
 struct StoryContainer_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = StoriesViewModel(localFileManager: LocalFileManager())
+        let vm = StoriesViewModel(fileManager: LocalFileManager())
         StoryContainer(vm: vm)
             .environmentObject(HomeUIActionHandler())
             .task {
@@ -71,7 +71,8 @@ extension StoryContainer {
     private func endDraggingStoryContainer(withOffset offset: CGFloat) {
         // Imitate the close behaviour of IG story when dragging right in the first story,
         // or dragging left in the last story, close the container.
-        if (vm.isNowAtFirstStory && offset > 0.2) || (vm.isNowAtLastStory && offset < -0.2) {
+        let threshold: CGFloat = 0.2
+        if (vm.isNowAtFirstStory && offset > threshold) || (vm.isNowAtLastStory && offset < -threshold) {
             homeUIActionHandler.closeStoryContainer()
         } else { // Go to previous or next.
             guard let currentStoryIndex = vm.currentStoryIndex else {
@@ -79,8 +80,8 @@ extension StoryContainer {
             }
             
             let nextIdx = Int((CGFloat(currentStoryIndex) - offset).rounded())
-            // Make sure within the boundary.
-            vm.setCurrentStoryId(vm.currentStories[min(nextIdx, vm.stories.count - 1)].id)
+            let validIdx = min(nextIdx, vm.stories.count - 1) // Make sure within the boundary.
+            vm.setCurrentStoryId(vm.currentStories[validIdx].id)
         }
         
         vm.isDragging = false

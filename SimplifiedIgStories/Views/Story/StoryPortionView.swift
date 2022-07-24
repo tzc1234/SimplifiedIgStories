@@ -57,7 +57,7 @@ struct StoryPortionView: View {
 
 struct StoryPortionView_Previews: PreviewProvider {
     static var previews: some View {
-        let storiesViewModel = StoriesViewModel(localFileManager: LocalFileManager())
+        let storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
         let story = storiesViewModel.currentStories[0]
         let portion = story.portions[0]
         StoryPortionView(

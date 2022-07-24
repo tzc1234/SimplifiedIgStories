@@ -230,9 +230,8 @@
 			isa = PBXGroup;
 			children = (
 				BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */,
-				BE8C498C27C62B3C000541E0 /* StoryIconTitleView.swift */,
-				BE090B6627B9568700B6F906 /* StoryIcon.swift */,
 				BE8C498E27C674FD000541E0 /* StoryContainer.swift */,
+				BE501446288D4C210043DF62 /* StoryIcon */,
 			);
 			path = Stories;
 			sourceTree = "<group>";
@@ -253,6 +252,15 @@
 				BE91AA5327BFD96700BB9846 /* StoryPortionView.swift */,
 			);
 			path = Story;
+			sourceTree = "<group>";
+		};
+		BE501446288D4C210043DF62 /* StoryIcon */ = {
+			isa = PBXGroup;
+			children = (
+				BE8C498C27C62B3C000541E0 /* StoryIconTitleView.swift */,
+				BE090B6627B9568700B6F906 /* StoryIcon.swift */,
+			);
+			path = StoryIcon;
 			sourceTree = "<group>";
 		};
 		BE59BF58288803950050EB21 /* StoryCamViewModel */ = {

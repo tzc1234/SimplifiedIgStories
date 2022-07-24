@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject private var handler = HomeUIActionHandler()
-    @StateObject private var storiesViewModel = StoriesViewModel(localFileManager: LocalFileManager())
+    @StateObject private var storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
     @State private var containerAnimationBeginningFrame: CGRect?
     
     var body: some View {
