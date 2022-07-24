@@ -11,7 +11,7 @@ import UIKit
 final class StoriesViewModel: ObservableObject {
     @Published var stories: [Story] = []
     
-    @Published private(set) var currentStoryId = 0
+    @Published private(set) var currentStoryId = -1
     @Published var shouldCubicRotation = false
     @Published var isDragging = false
     private var storyIdBeforeDragged = 0

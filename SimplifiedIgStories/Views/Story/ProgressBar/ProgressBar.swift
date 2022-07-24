@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ProgressBar: View {
     @Environment(\.scenePhase) private var scenePhase
+    @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     
     let storyId: Int
     @ObservedObject private var vm: StoryViewModel
@@ -34,11 +35,10 @@ struct ProgressBar: View {
             }
         }
         .padding(.horizontal, 10)
-        .onChange(of: vm.portionTransitionDirection) { newDirection in
-            vm.performProgressBarTransition(to: newDirection)
-        }
-        .onChange(of: vm.currentPortionAnimationStatus) { newStatus in
-            vm.performNextProgressBarPortionAnimationWhenFinished(newStatus)
+        .onChange(of: vm.currentPortionAnimationStatus) { _ in
+            vm.performNextBarPortionAnimationWhenCurrentPortionFinished {
+                homeUIActionHandler.closeStoryContainer(storyId: storyId)
+            }
         }
         .onChange(of: vm.storiesViewModel.isDragging) { isDragging in
             vm.performProgressBarTransitionWhen(isDragging: isDragging)

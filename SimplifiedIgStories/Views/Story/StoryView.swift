@@ -106,7 +106,7 @@ extension StoryView {
     private var storyPortionViews: some View {
         ZStack {
             ForEach(vm.story.portions) { portion in
-                if portion.id == vm.currentStoryPortionId {
+                if portion.id == vm.currentPortionId {
                     StoryPortionView(
                         portion: portion,
                         storyViewModel: vm
