@@ -8,7 +8,7 @@
 import SwiftUI
 
 final class HomeUIActionHandler: ObservableObject {
-    @Published var showContainer = false
+    @Published private(set) var showContainer = false
     @Published var showStoryCamView = false
     
     func showStoryContainer() {

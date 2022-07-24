@@ -11,7 +11,7 @@ struct StoryContainer: View {
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     @GestureState private var translation: CGFloat = 0
     
-    @ObservedObject var vm: StoriesViewModel
+    @ObservedObject var vm: StoriesViewModel // Injected from HomeView
     
     var body: some View {
         GeometryReader { geo in
@@ -50,7 +50,7 @@ struct StoryContainer: View {
 
 struct StoryContainer_Previews: PreviewProvider {
     static var previews: some View {
-        StoryContainer(vm: StoriesViewModel())
+        StoryContainer(vm: StoriesViewModel(localFileManager: LocalFileManager()))
     }
 }
 

@@ -7,11 +7,7 @@
 
 import UIKit
 
-class LocalFileManager {
-    static let shared = LocalFileManager()
-    
-    private init() {}
-    
+struct LocalFileManager {
     func saveImageToTemp(image: UIImage) -> URL? {
         guard let data = image.jpegData(compressionQuality: 0.8) else {
             print("Error when getting image data.")

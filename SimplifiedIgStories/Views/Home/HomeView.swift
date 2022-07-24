@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject private var handler = HomeUIActionHandler()
-    @StateObject private var storiesViewModel = StoriesViewModel()
+    @StateObject private var storiesViewModel = StoriesViewModel(localFileManager: LocalFileManager())
     @State private var containerAnimationBeginningFrame: CGRect?
     
     var body: some View {
@@ -48,13 +48,13 @@ extension HomeView {
         ZStack {
             if handler.showStoryCamView {
                 StoryCamView { image in
-                    // TODO:
+                    storiesViewModel.postStoryPortion(image: image)
+                    showHideStoryCamView()
                 } postVideoAction: { url in
-                    // TODO:
+                    storiesViewModel.postStoryPortion(videoUrl: url)
+                    showHideStoryCamView()
                 } tapCloseAction: {
-                    withAnimation(.default) {
-                        handler.showStoryCamView.toggle()
-                    }
+                    showHideStoryCamView()
                 }
                 .frame(width: .screenWidth)
             }
@@ -72,6 +72,15 @@ extension HomeView {
                     .frame(maxHeight: .infinity, alignment: .top)
                     .openAppLikeTransition(sacle: iconFrame.height / .screenHeight, offestX: offsetX, offsetY: offsetY)
             }
+        }
+    }
+}
+
+// MARK: helper functions
+extension HomeView {
+    private func showHideStoryCamView() {
+        withAnimation(.default) {
+            handler.showStoryCamView.toggle()
         }
     }
 }

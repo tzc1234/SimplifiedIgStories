@@ -91,7 +91,7 @@ struct StoryView: View {
 
 struct StoryView_Previews: PreviewProvider {
     static var previews: some View {
-        let storiesViewModel = StoriesViewModel()
+        let storiesViewModel = StoriesViewModel(localFileManager: LocalFileManager())
         let story = storiesViewModel.currentStories[0]
         StoryView(
             storyId: story.id,

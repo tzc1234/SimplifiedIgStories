@@ -51,17 +51,17 @@ struct StoryCamView: View {
             .padding(.vertical, 20)
             
             if vm.showPhotoPreview, let uiImage = vm.lastTakenImage {
-                StoryPreview(uiImage: uiImage, backBtnAction: {
+                StoryPreview(uiImage: uiImage) {
                     vm.showPhotoPreview = false
-                }, postBtnAction: {
+                } postBtnAction: {
                     postImageAction(uiImage)
-                })
+                }
             } else if vm.showVideoPreview, let url = vm.lastVideoUrl {
-                StoryPreview(videoUrl: url, backBtnAction: {
+                StoryPreview(videoUrl: url) {
                     vm.showVideoPreview = false
-                }, postBtnAction: {
+                } postBtnAction: {
                     postVideoAction(url)
-                })
+                }
             }
         }
         .statusBar(hidden: true)

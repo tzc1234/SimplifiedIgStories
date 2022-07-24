@@ -5,7 +5,8 @@
 //  Created by Tsz-Lung on 7/3/2022.
 //
 
-import Foundation
+import AVKit
+import UIKit
 
 final class StoriesViewModel: ObservableObject {
     @Published var stories: [Story] = []
@@ -16,9 +17,11 @@ final class StoriesViewModel: ObservableObject {
     private var storyIdBeforeDragged = 0
     
     private let dataService: DataService
+    private let localFileManager: LocalFileManager
     
-    init(dataService: DataService = AppDataService()) {
+    init(dataService: DataService = AppDataService(), localFileManager: LocalFileManager) {
         self.dataService = dataService
+        self.localFileManager = localFileManager
     }
 }
 
@@ -85,5 +88,39 @@ extension StoriesViewModel {
     
     func getStoryById(_ storyId: Int) -> Story? {
         stories.first(where: { $0.id == storyId })
+    }
+    
+    // MARK: Post StoryPortion
+    // *** In real environment, the photo or video should be uploaded to server side.
+    // This is a demo app, however, stores them into temp directory.
+    
+    func postStoryPortion(image: UIImage) {
+        guard let yourStoryIdx = yourStoryIdx,
+              let imageUrl = localFileManager.saveImageToTemp(image: image)
+        else {
+            return
+        }
+
+        var portions = stories[yourStoryIdx].portions
+        // Just append a new Portion instance to current user's potion array.
+        portions.append(Portion(id: lastPortionId + 1, imageUrl: imageUrl))
+        stories[yourStoryIdx].portions = portions
+        stories[yourStoryIdx].lastUpdate = Date().timeIntervalSince1970
+    }
+    
+    func postStoryPortion(videoUrl: URL) {
+        guard let yourStoryIdx = yourStoryIdx else {
+            return
+        }
+
+        var portions = stories[yourStoryIdx].portions
+        let asset = AVAsset(url: videoUrl)
+        let duration = asset.duration
+        let durationSeconds = CMTimeGetSeconds(duration)
+
+        // Similar to image case.
+        portions.append(Portion(id: lastPortionId + 1, videoDuration: durationSeconds, videoUrlFromCam: videoUrl))
+        stories[yourStoryIdx].portions = portions
+        stories[yourStoryIdx].lastUpdate = Date().timeIntervalSince1970
     }
 }

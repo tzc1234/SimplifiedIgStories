@@ -13,7 +13,6 @@ struct StoryPreview: View {
     @State private var showNoticeLabel = false
     @State private var showAlert = false
     @State private var noticeMsg = ""
-    
     @State private var player: AVPlayer?
     
     let uiImage: UIImage?
@@ -22,12 +21,22 @@ struct StoryPreview: View {
     let postBtnAction: (() -> Void)
     
     init(
-        uiImage: UIImage? = nil,
-        videoUrl: URL? = nil,
+        uiImage: UIImage,
         backBtnAction: @escaping (() -> Void),
         postBtnAction: @escaping (() -> Void)
     ) {
         self.uiImage = uiImage
+        self.videoUrl = nil
+        self.backBtnAction = backBtnAction
+        self.postBtnAction = postBtnAction
+    }
+    
+    init(
+        videoUrl: URL,
+        backBtnAction: @escaping (() -> Void),
+        postBtnAction: @escaping (() -> Void)
+    ) {
+        self.uiImage = nil
         self.videoUrl = videoUrl
         self.backBtnAction = backBtnAction
         self.postBtnAction = postBtnAction
@@ -74,7 +83,7 @@ struct StoryPreview: View {
 
 struct StoryPreview_Previews: PreviewProvider {
     static var previews: some View {
-        StoryPreview(backBtnAction: {}, postBtnAction: {})
+        StoryPreview(uiImage: UIImage(), backBtnAction: {}, postBtnAction: {})
     }
 }
 
@@ -161,7 +170,7 @@ extension StoryPreview {
     }
 }
 
-// MARK: functions
+// MARK: helper functions
 extension StoryPreview {
     private func showNoticeMsg(_ msg: String) {
         noticeMsg = msg
@@ -196,35 +205,4 @@ extension StoryPreview {
             }
         }
     }
-    
-//    private func postStoryPortion() {
-//        guard let yourStoryIdx = vm.yourStoryIdx else { return }
-//        
-//        var portions = vm.stories[yourStoryIdx].portions
-//        
-//        // *** In real environment, the photo or video recorded should be uploaded to server side,
-//        // this is a demo app, however, storing them into temp directory for displaying IG story animation.
-//        if let uiImage = uiImage,
-//            let imageUrl = LocalFileManager.shared.saveImageToTemp(image: uiImage)
-//        {
-//            // Just append a new Portion instance to current user's potion array.
-//            portions.append(
-//                Portion(id: vm.lastPortionId + 1, imageUrl: imageUrl)
-//            )
-//            vm.stories[yourStoryIdx].portions = portions
-//            vm.stories[yourStoryIdx].lastUpdate = Date().timeIntervalSince1970
-//        } else if let videoUrl = videoUrl { // Similar process in video case.
-//            let asset = AVAsset(url: videoUrl)
-//            let duration = asset.duration
-//            let durationSeconds = CMTimeGetSeconds(duration)
-//            
-//            portions.append(
-//                Portion(id: vm.lastPortionId + 1, videoDuration: durationSeconds, videoUrlFromCam: videoUrl)
-//            )
-//            vm.stories[yourStoryIdx].portions = portions
-//            vm.stories[yourStoryIdx].lastUpdate = Date().timeIntervalSince1970
-//        }
-//        
-//        vm.toggleStoryCamView()
-//    }
 }

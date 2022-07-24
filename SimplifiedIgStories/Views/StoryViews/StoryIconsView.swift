@@ -44,7 +44,10 @@ struct StoryIconsView: View {
 
 struct StoryIconsView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryIconsView(vm: StoriesViewModel(), onTapIconAction: {_ in})
+        StoryIconsView(
+            vm: StoriesViewModel(localFileManager: LocalFileManager()),
+            onTapIconAction: {_ in}
+        )
     }
 }
 
