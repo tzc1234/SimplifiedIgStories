@@ -11,8 +11,11 @@ final class HomeUIActionHandler: ObservableObject {
     @Published private(set) var showContainer = false
     @Published var showStoryCamView = false
     
-    var storyIconFrames: [Int: CGRect] = [:]
-    @Published private(set) var currentIconFrame: CGRect = .zero
+    typealias StoryId = Int
+    typealias IconFrame = CGRect
+    
+    var storyIconFrameDict: [StoryId: IconFrame] = [:]
+    @Published private(set) var currentIconFrame: IconFrame = .zero
     
     func showStoryContainer(storyId: Int?) {
         updateCurrentIconFrame(storyId: storyId)
@@ -37,7 +40,7 @@ final class HomeUIActionHandler: ObservableObject {
     }
     
     private func updateCurrentIconFrame(storyId: Int?) {
-        guard let storyId = storyId, let iconFrame = storyIconFrames[storyId] else {
+        guard let storyId = storyId, let iconFrame = storyIconFrameDict[storyId] else {
             return
         }
         currentIconFrame = iconFrame

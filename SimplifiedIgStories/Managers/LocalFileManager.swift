@@ -7,7 +7,7 @@
 
 import UIKit
 
-// MARK: - FileManager
+// MARK: - FileManageable
 protocol FileManageable {
     func saveImageToTemp(image: UIImage) -> URL?
     func getImageBy(url: URL) -> UIImage?

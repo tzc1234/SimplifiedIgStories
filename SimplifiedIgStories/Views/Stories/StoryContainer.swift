@@ -20,7 +20,11 @@ struct StoryContainer: View {
                 ForEach(vm.currentStories) { story in
                     StoryView(
                         storyId: story.id,
-                        vm: StoryViewModel(storyId: story.id, storiesViewModel: vm)
+                        vm: StoryViewModel(
+                            storyId: story.id,
+                            storiesViewModel: vm,
+                            fileManager: LocalFileManager()
+                        )
                     )
                     .opacity(story.id != vm.currentStoryId && !vm.shouldCubicRotation ? 0.0 : 1.0)
                     .frame(width: .screenWidth, height: geo.size.height)

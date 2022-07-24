@@ -20,7 +20,7 @@ struct HomeView: View {
                     VStack {
                         StoryIconsView(vm: storiesViewModel)
                             .onPreferenceChange(IdFramePreferenceKey.self) { idFrameDict in
-                                handler.storyIconFrames = idFrameDict
+                                handler.storyIconFrameDict = idFrameDict
                             }
                         
                         Spacer()

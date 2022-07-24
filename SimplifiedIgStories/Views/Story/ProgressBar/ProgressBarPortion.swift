@@ -41,10 +41,10 @@ struct ProgressBarPortion: View {
                     // Finished
                     if currentEndX >= geo.size.width {
                         tracingEndX.updateCurrentEndX(0)
-                        vm.barPortionAnimationStatuses[portionId] = .finish
+                        vm.barPortionAnimationStatusDict[portionId] = .finish
                     }
                 }
-                .onChange(of: vm.barPortionAnimationStatuses[portionId]) { newValue in
+                .onChange(of: vm.barPortionAnimationStatusDict[portionId]) { newValue in
                     if let portionAnimationStatus = newValue {
                         switch portionAnimationStatus {
                         case .inital:
@@ -75,7 +75,11 @@ struct ProgressBarPortion_Previews: PreviewProvider {
             portionId: story.portions[0].id,
             duration: .defaultStoryDuration,
             storyId: story.id,
-            storyViewModel: StoryViewModel(storyId: story.id, storiesViewModel: storiesViewModel)
+            storyViewModel: StoryViewModel(
+                storyId: story.id,
+                storiesViewModel: storiesViewModel,
+                fileManager: LocalFileManager()
+            )
         )
     }
 }

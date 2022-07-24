@@ -9,7 +9,7 @@ import SwiftUI
 import AVKit
 
 // *** In real enironment, images are loaded through internet.
-// The case of failure should be considered.
+// The failure case should be considered.
 struct StoryPortionView: View {
     @State private var player: AVPlayer?
     
@@ -32,9 +32,10 @@ struct StoryPortionView: View {
                 player = AVPlayer(url: videoUrl)
             }
         }
-        .onChange(of: vm.barPortionAnimationStatuses[portion.id]) { animationStatus in
-            guard let player = player else { return }
-            guard let animationStatus = animationStatus else { return }
+        .onChange(of: vm.barPortionAnimationStatusDict[portion.id]) { animationStatus in
+            guard let player = player, let animationStatus = animationStatus else {
+                return
+            }
             
             switch animationStatus {
             case .inital:
@@ -62,7 +63,11 @@ struct StoryPortionView_Previews: PreviewProvider {
         let portion = story.portions[0]
         StoryPortionView(
             portion: portion,
-            storyViewModel: StoryViewModel(storyId: story.id, storiesViewModel: storiesViewModel)
+            storyViewModel: StoryViewModel(
+                storyId: story.id,
+                storiesViewModel: storiesViewModel,
+                fileManager: LocalFileManager()
+            )
         )
     }
 }
@@ -71,14 +76,14 @@ struct StoryPortionView_Previews: PreviewProvider {
 extension StoryPortionView {
     @ViewBuilder private var photoView: some View {
         GeometryReader { geo in
-            getImage()?
+            vm.getImage(by: portion.id)?
                 .resizable()
                 .scaledToFill()
                 .overlay(.ultraThinMaterial)
                 .clipShape(Rectangle())
         }
         
-        getImage()?
+        vm.getImage(by: portion.id)?
             .resizable()
             .scaledToFit()
     }
@@ -90,18 +95,5 @@ extension StoryPortionView {
                 player: player
             )
         }
-    }
-}
-
-// MARK: functions
-extension StoryPortionView {
-    private func getImage() -> Image? {
-        if let imageName = portion.imageName {
-            return Image(imageName)
-        } else if let imageUrl = portion.imageUrl,
-                  let uiImage = LocalFileManager().getImageBy(url: imageUrl) {
-            return Image(uiImage: uiImage)
-        }
-        return nil
     }
 }

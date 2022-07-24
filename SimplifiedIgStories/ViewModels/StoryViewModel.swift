@@ -17,11 +17,12 @@ enum BarPortionAnimationStatus {
 }
 
 final class StoryViewModel: ObservableObject {
-    @Published private(set) var currentStoryPortionId: Int = -1
+    typealias PortionId = Int
+    
+    @Published private(set) var currentStoryPortionId: PortionId = -1
     @Published private(set) var portionTransitionDirection: PortionTransitionDirection = .none
     
-    // The key is portionId.
-    @Published var barPortionAnimationStatuses: [Int: BarPortionAnimationStatus] = [:]
+    @Published var barPortionAnimationStatusDict: [PortionId: BarPortionAnimationStatus] = [:]
     
     @Published var showConfirmationDialog = false
     @Published private(set) var isLoading = false
@@ -32,11 +33,15 @@ final class StoryViewModel: ObservableObject {
     
     let storyId: Int
     let storiesViewModel: StoriesViewModel // parent ViewModel
+    let fileManager: FileManageable
     
-    init(storyId: Int, storiesViewModel: StoriesViewModel) {
+    init(storyId: Int, storiesViewModel: StoriesViewModel, fileManager: FileManageable) {
         self.storyId = storyId
         self.storiesViewModel = storiesViewModel
-        self.initCurrentStoryPortionId()
+        self.fileManager = fileManager
+        
+        initCurrentStoryPortionId()
+        subscribePublishersForPauseResumePortion()
         
         // Reference: https://stackoverflow.com/a/58406402
         // Trigger current ViewModel objectWillChange when parent's published property changed.
@@ -60,7 +65,7 @@ extension StoryViewModel {
     }
     
     var currentPortionAnimationStatus: BarPortionAnimationStatus? {
-        barPortionAnimationStatuses[currentStoryPortionId]
+        barPortionAnimationStatusDict[currentStoryPortionId]
     }
     
     var isCurrentPortionAnimating: Bool {
@@ -69,12 +74,24 @@ extension StoryViewModel {
         currentPortionAnimationStatus == .resume
     }
     
-    var firstPortionId: Int? {
+    var firstPortionId: PortionId? {
         story.portions.first?.id
+    }
+    
+    private var currentStoryPortionIndex: Int? {
+        story.portions.firstIndex(where: { $0.id == currentStoryPortionId })
+    }
+    
+    private var currentStoryIndex: Int? {
+        storiesViewModel.stories.firstIndex(where: { $0.id == storyId })
+    }
+    
+    private var currentPortion: Portion? {
+        story.portions.first(where: { $0.id == currentStoryPortionId })
     }
 }
 
-// MARK: functions
+// MARK: private functions
 extension StoryViewModel {
     private func initCurrentStoryPortionId() {
         guard let firstPortionId = firstPortionId else { return }
@@ -82,7 +99,19 @@ extension StoryViewModel {
     }
     
     private func setCurrentBarPortionAnimationStatus(to status: BarPortionAnimationStatus) {
-        barPortionAnimationStatuses[currentStoryPortionId] = status
+        barPortionAnimationStatusDict[currentStoryPortionId] = status
+    }
+    
+    private func subscribePublishersForPauseResumePortion() {
+        $showConfirmationDialog.combineLatest($showNoticeLabel).sink
+        { [weak self] (isConfirmationDialogShown, isNoticeLabelShown) in
+            if isConfirmationDialogShown || isNoticeLabelShown {
+                self?.pausePortionAnimation()
+            } else {
+                self?.resumePortionAnimation()
+            }
+        }
+        .store(in: &subscriptions)
     }
 }
 
@@ -90,62 +119,50 @@ extension StoryViewModel {
 extension StoryViewModel {
     func initStoryAnimation(by storyId: Int) {
         if storiesViewModel.currentStoryId == storyId && portionTransitionDirection == .none {
-            print("StoryId: \(storyId) animation Init!!")
+            print("StoryId: \(storyId) animation init!!")
             portionTransitionDirection = .start
         }
     }
     
-    func decidePortionTransitionDirection(by point: CGPoint) {
-        portionTransitionDirection = point.x <= .screenWidth / 2 ? .backward : .forward
+    func decidePortionTransitionDirection(by pointX: CGFloat) {
+        portionTransitionDirection = pointX <= .screenWidth / 2 ? .backward : .forward
     }
     
-    func deleteCurrentPortion() {
-        guard
-            let portionIdx =
-                story.portions.firstIndex(where: { $0.id == currentStoryPortionId })
-        else {
+    func deleteCurrentPortion(withoutNextPortionAction: () -> Void) {
+        guard let currentStoryPortionIndex = currentStoryPortionIndex else {
             return
         }
         
         let portions = story.portions
 
-        // If next portionIdx within the portions, go next
-        if portionIdx + 1 < portions.count {
-            deletePortionFromStory(by: portionIdx)
-            
-            currentStoryPortionId = portions[portionIdx + 1].id
+        // If next portion exists, go next.
+        if currentStoryPortionIndex + 1 < portions.count {
+            deletePortionFromStory(by: currentStoryPortionIndex)
+            currentStoryPortionId = portions[currentStoryPortionIndex + 1].id
             setCurrentBarPortionAnimationStatus(to: .start)
         } else {
-            // TODO:
-//            storiesViewModel.closeStoryContainer()
-            deletePortionFromStory(by: portionIdx)
+            withoutNextPortionAction()
+            deletePortionFromStory(by: currentStoryPortionIndex)
         }
     }
     
-    // *** In real environment, the photo or video should be deleted in server side,
+    // *** In real environment, the photo or video should be deleted by API call,
     // this is a demo app, however, deleting them from temp directory.
     private func deletePortionFromStory(by portionIdx: Int) {
-        guard
-            let storyIdx =
-                storiesViewModel.stories.firstIndex(where: { $0.id == storyId })
-        else {
+        guard let currentStoryIndex = currentStoryIndex else {
             return
         }
         
         let portion = story.portions[portionIdx]
         if let fileUrl = portion.imageUrl ?? portion.videoUrl {
-            LocalFileManager().deleteFileBy(url: fileUrl)
+            fileManager.deleteFileBy(url: fileUrl)
         }
         
-        storiesViewModel.stories[storyIdx].portions.remove(at: portionIdx)
+        storiesViewModel.stories[currentStoryIndex].portions.remove(at: portionIdx)
     }
     
-    @MainActor
-    func savePortionImageVideo() async {
-        guard
-            let portion =
-                story.portions.first(where: { $0.id == currentStoryPortionId })
-        else {
+    @MainActor func savePortionImageVideo() async {
+        guard let currentPortion = currentPortion else {
             return
         }
         
@@ -153,25 +170,26 @@ extension StoryViewModel {
             isLoading = true
             
             var successMsg: String?
-            if let imageUrl = portion.imageUrl, let uiImage = LocalFileManager().getImageBy(url: imageUrl) {
+            if let imageUrl = currentPortion.imageUrl, let uiImage = fileManager.getImageBy(url: imageUrl) {
                 successMsg = try await ImageSaver().saveToAlbum(uiImage)
-            } else if let videoUrl = portion.videoUrlFromCam {
+            } else if let videoUrl = currentPortion.videoUrlFromCam {
                 successMsg = try await VideoSaver().saveToAlbum(videoUrl)
             }
             
             isLoading = false
+            
             if let successMsg = successMsg {
-                showNotice(withMsg: successMsg)
+                showNotice(errMsg: successMsg)
             }
         } catch {
             isLoading = false
             let errMsg = (error as? ImageVideoSaveError)?.errMsg ?? error.localizedDescription
-            showNotice(withMsg: errMsg)
+            showNotice(errMsg: errMsg)
         }
     }
     
-    func showNotice(withMsg msg: String) {
-        noticeMsg = msg
+    private func showNotice(errMsg: String) {
+        noticeMsg = errMsg
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
             self?.showNoticeLabel = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
@@ -180,16 +198,27 @@ extension StoryViewModel {
         }
     }
     
-    func pauseAndResumePortion(shouldPause: Bool) {
-        if shouldPause {
-            if isCurrentPortionAnimating {
-                setCurrentBarPortionAnimationStatus(to: .pause)
-            }
-        } else {
-            if currentPortionAnimationStatus == .pause {
-                setCurrentBarPortionAnimationStatus(to: .resume)
-            }
+    private func pausePortionAnimation() {
+        if isCurrentPortionAnimating {
+            setCurrentBarPortionAnimationStatus(to: .pause)
         }
+    }
+    
+    private func resumePortionAnimation() {
+        if currentPortionAnimationStatus == .pause {
+            setCurrentBarPortionAnimationStatus(to: .resume)
+        }
+    }
+    
+    func getImage(by portionId: PortionId) -> Image? {
+        let portion = story.portions.first(where: { $0.id == portionId })
+        if let imageName = portion?.imageName {
+            return Image(imageName)
+        } else if let imageUrl = portion?.imageUrl,
+                  let uiImage = LocalFileManager().getImageBy(url: imageUrl) {
+            return Image(uiImage: uiImage)
+        }
+        return nil
     }
 }
 

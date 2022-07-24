@@ -32,16 +32,18 @@ struct StoryView: View {
                     
                     Spacer()
                     
-                    DetectableTapGesturePositionView(
-                        tapCallback: vm.decidePortionTransitionDirection(by:)
-                    )
+                    DetectableTapGesturePositionView { point in
+                        vm.decidePortionTransitionDirection(by: point.x)
+                    }
                     
                     Spacer()
                     
                     moreButton
                         .confirmationDialog("", isPresented: $vm.showConfirmationDialog, titleVisibility: .hidden) {
                             Button("Delete", role: .destructive) {
-                                vm.deleteCurrentPortion()
+                                vm.deleteCurrentPortion {
+                                    homeUIActionHandler.closeStoryContainer(storyId: storyId)
+                                }
                             }
                             Button("Save", role: .none) {
                                 Task {
@@ -70,12 +72,6 @@ struct StoryView: View {
             .onAppear {
                 vm.initStoryAnimation(by: storyId)
             }
-            .onChange(of: vm.showConfirmationDialog) { newValue in
-                vm.pauseAndResumePortion(shouldPause: newValue)
-            }
-            .onChange(of: vm.showNoticeLabel) { newValue in
-                vm.pauseAndResumePortion(shouldPause: newValue)
-            }
             .cubicTransition(
                 shouldRotate: vm.storiesViewModel.shouldCubicRotation,
                 offsetX: geo.frame(in: .global).minX
@@ -84,7 +80,7 @@ struct StoryView: View {
                 print("storyId: \(storyId) view onDisappear.")
             }
         }
-        .cornerRadius(20.0)
+        
     }
     
 }
@@ -95,7 +91,11 @@ struct StoryView_Previews: PreviewProvider {
         let story = storiesViewModel.currentStories[0]
         StoryView(
             storyId: story.id,
-            vm: StoryViewModel(storyId: story.id, storiesViewModel: storiesViewModel)
+            vm: StoryViewModel(
+                storyId: story.id,
+                storiesViewModel: storiesViewModel,
+                fileManager: LocalFileManager()
+            )
         )
     }
 }
