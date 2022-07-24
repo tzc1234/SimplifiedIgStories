@@ -125,11 +125,11 @@ class StoryViewModelTests: XCTestCase {
         }
         
         while let nextPortionId = nextPortionId {
-            let currentPortionId = sut.currentPortionId
+            let savedCurrentPortionId = sut.currentPortionId
             sut.barPortionAnimationStatusDict[sut.currentPortionId] = .finish
             sut.performNextBarPortionAnimationWhenCurrentPortionFinished(withoutNextStoryAction: withoutNextStoryAction)
             
-            XCTAssertNotEqual(sut.currentPortionId, currentPortionId, "sut.currentPortionId != currentPortionId")
+            XCTAssertNotEqual(sut.currentPortionId, savedCurrentPortionId, "sut.currentPortionId != savedCurrentPortionId")
             XCTAssertEqual(sut.currentPortionId, nextPortionId, "sut.currentPortionId == nextPortionId")
             XCTAssertEqual(sut.barPortionAnimationStatusDict[nextPortionId], .start, "barPortionAnimationStatus")
             
@@ -145,10 +145,56 @@ class StoryViewModelTests: XCTestCase {
         XCTAssertEqual(sut.storiesViewModel.currentStoryId, nextStoryId, "storiesViewModel.currentStoryId == nextStoryId")
         XCTAssertEqual(callCount, 0, "callCount")
     }
+    
+    func test_performNextBarPortionAnimationWhenCurrentPortionFinished_theCompleteFlowToTheLastPortionOfTheLastStory() {
+        let storyCount = hasPortionStories.count
+        var savedCurrentStoryId = sut.storiesViewModel.currentStoryId
+        var callCount = 0
+        let withoutNextStoryAction: () -> Void = {
+            callCount += 1
+        }
+        
+        for i in 0..<storyCount {
+            while let nextPortionId = nextPortionId {
+                let savedCurrentPortionId = sut.currentPortionId
+                sut.barPortionAnimationStatusDict[sut.currentPortionId] = .finish
+                sut.performNextBarPortionAnimationWhenCurrentPortionFinished(withoutNextStoryAction: withoutNextStoryAction)
+                
+                XCTAssertNotEqual(sut.currentPortionId, savedCurrentPortionId, "sut.currentPortionId != savedCurrentPortionId")
+                XCTAssertEqual(sut.currentPortionId, nextPortionId, "sut.currentPortionId == nextPortionId")
+                XCTAssertEqual(sut.barPortionAnimationStatusDict[nextPortionId], .start, "barPortionAnimationStatus")
+                
+                XCTAssertEqual(sut.storiesViewModel.currentStoryId, savedCurrentStoryId, "currentStoryId")
+                XCTAssertEqual(callCount, 0, "callCount")
+            }
+            
+            if i < storyCount - 1 {
+                sut.barPortionAnimationStatusDict[sut.currentPortionId] = .finish
+                sut.performNextBarPortionAnimationWhenCurrentPortionFinished(withoutNextStoryAction: withoutNextStoryAction)
+                
+                XCTAssertNotEqual(sut.storiesViewModel.currentStoryId, savedCurrentStoryId, "storiesViewModel.currentStoryId != savedCurrentStoryId")
+                XCTAssertNotNil(nextStoryId, "nextStoryId")
+                XCTAssertEqual(sut.storiesViewModel.currentStoryId, nextStoryId, "storiesViewModel.currentStoryId == nextStoryId")
+                XCTAssertEqual(callCount, 0, "callCount")
+                
+                savedCurrentStoryId = sut.storiesViewModel.currentStoryId
+            } else {
+                sut.barPortionAnimationStatusDict[sut.currentPortionId] = .finish
+                sut.performNextBarPortionAnimationWhenCurrentPortionFinished(withoutNextStoryAction: withoutNextStoryAction)
+                
+                XCTAssertEqual(callCount, 1, "callCount")
+            }
+        }
+        
+    }
 }
 
 // MARK: helpers
 extension StoryViewModelTests {
+    private var hasPortionStories: [Story] {
+        sut.storiesViewModel.stories.filter{ $0.hasPortion }
+    }
+    
     private var nextPortionId: Int? {
         let currentPortionIdx = sut.portions.firstIndex { $0.id == sut.currentPortionId }
         let nextPortionIdx = currentPortionIdx! + 1
@@ -156,8 +202,9 @@ extension StoryViewModelTests {
     }
     
     private var nextStoryId: Int? {
+        let storyCount = sut.storiesViewModel.stories.count
         let currentStoryIdx = sut.storiesViewModel.currentStoryIndex
         let nextStoryIdx = currentStoryIdx! + 1
-        return nextStoryIdx < sut.storiesViewModel.stories.count ? sut.portions[nextStoryIdx].id : nil
+        return nextStoryIdx < storyCount ? sut.storiesViewModel.stories[nextStoryIdx].id : nil
     }
 }
