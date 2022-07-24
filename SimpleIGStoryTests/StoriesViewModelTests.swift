@@ -13,130 +13,52 @@ class StoriesViewModelTests: XCTestCase {
     var vm: StoriesViewModel!
     
     override func setUpWithError() throws {
-        vm = StoriesViewModel()
+        vm = StoriesViewModel(localFileManager: LocalFileManager())
         
-        let expectation = XCTestExpectation(description: "wait 3s for async fetchStories")
+        let expectation = XCTestExpectation(description: "wait async fetchStories")
         
         Task {
-            await vm!.fetchStories()
+            await vm.fetchStories()
             expectation.fulfill()
         }
         
-        wait(for: [expectation], timeout: 3)
+        wait(for: [expectation], timeout: 0.5)
     }
 
     override func tearDownWithError() throws {
         vm = nil
     }
 
-    func test_StoriesViewModel_stories_oneAndOnlyOneBelongsToCurrentUser() {
+    func test_stories_ensureOneCurrentUserInStories() {
         let stories = vm.stories
         let currentUserStory = stories.first(where: { $0.user.isCurrentUser })
         let currentUserStoryIdx = stories.firstIndex(where: { $0.user.isCurrentUser })
         
-        XCTAssertGreaterThan(stories.count, 0)
-        XCTAssertNotNil(currentUserStory)
-        XCTAssertNotNil(currentUserStoryIdx)
-        XCTAssertEqual(vm.yourStoryId, currentUserStory?.id)
-        XCTAssertEqual(vm.yourStoryIdx, currentUserStoryIdx)
-        XCTAssertEqual(stories.filter({ $0.user.isCurrentUser }).count, 1)
+        XCTAssertNotNil(currentUserStory, "currentUserStory")
+        XCTAssertNotNil(currentUserStoryIdx, "currentUserStoryIdx")
+        XCTAssertEqual(vm.yourStoryId, currentUserStory?.id, "yourStoryId == currentUserStory")
+        XCTAssertEqual(vm.yourStoryIdx, currentUserStoryIdx, "yourStoryIdx == currentUserStoryIdx")
     }
     
-    func test_StoriesViewModel_currentStories_shouldContainOnlyOneCurrentUserStory_whenCurrentStoryIdIsSetToCurrentUserStoryId() {
-        let currentUserStory = vm.stories.first(where: { $0.user.isCurrentUser })
-        XCTAssertNotNil(currentUserStory)
-        
-        vm.currentStoryId = currentUserStory!.id
-        
-        XCTAssertEqual(vm.currentStories.count, 1)
-        XCTAssertEqual(vm.currentStories.first?.id, currentUserStory?.id)
-    }
-    
-    func test_StoriesViewModel_currentStories_shouldNotContainCurrentUserStory_whenCurrentStoryIdIsNotCurrentUserStoryId() {
+    func test_currentStories_shouldContainOnlyOneCurrentUserStory_whenCurrentStoryIdIsSetToCurrentUserStoryId() {
         let currentUserStoryId = vm.stories.first(where: { $0.user.isCurrentUser })?.id
-        XCTAssertNotNil(currentUserStoryId)
+        XCTAssertNotNil(currentUserStoryId, "currentUserStoryId")
         
-        vm.currentStoryId = currentUserStoryId! + 1
-        XCTAssertNil(vm.currentStories.first(where: { $0.user.isCurrentUser }))
+        vm.setCurrentStoryId(currentUserStoryId!)
+        
+        XCTAssertEqual(vm.currentStoryId, currentUserStoryId!, "currentStoryId == currentUserStoryId")
+        XCTAssertEqual(vm.currentStories.count, 1, "currentStories.count == 1")
+        XCTAssertEqual(vm.currentStories.first?.id, currentUserStoryId, "currentStories.first.id == currentUserStoryId")
     }
     
-    func test_StoriesViewModel_toggleStoryCamView_setShowStoryCamViewProperly() {
-        XCTAssertFalse(vm.showStoryCamView)
+    func test_currentStories_shouldNotContainCurrentUserStory_whenCurrentStoryIdIsNotCurrentUserStoryId() {
+        let nonCurrentUserStroyId = vm.stories.first(where: { !$0.user.isCurrentUser })?.id
+        XCTAssertNotNil(nonCurrentUserStroyId, "nonCurrentUserStroyId")
         
-        vm.toggleStoryCamView()
+        vm.setCurrentStoryId(nonCurrentUserStroyId!)
         
-        XCTAssertTrue(vm.showStoryCamView)
-        
-        vm.toggleStoryCamView()
-        
-        XCTAssertFalse(vm.showStoryCamView)
+        XCTAssertEqual(vm.currentStoryId, nonCurrentUserStroyId!, "currentStoryId == nonCurrentUserStroyId")
+        XCTAssertEqual(vm.currentStories.filter { $0.user.isCurrentUser }.count, 0, "currentStories")
     }
     
-    func test_StoriesViewModel_showStoryContainer_showContainerShouldBeTrue() {
-        guard let firstStoryId = vm.stories.first?.id else {
-            XCTFail("Should be at least a current user story in stories array.")
-            return
-        }
-        
-        XCTAssertFalse(vm.showContainer)
-        
-        vm.showStoryContainer(by: firstStoryId)
-        
-        XCTAssertEqual(vm.currentStoryId, firstStoryId)
-        XCTAssertTrue(vm.showContainer)
-    }
-    
-    func test_StoriesViewModel_closeStoryContainer_showContainerShouldBeFalse() {
-        guard let firstStoryId = vm.stories.first?.id else {
-            XCTFail("Should be at least a current user story in stories array.")
-            return
-        }
-        
-        vm.showStoryContainer(by: firstStoryId)
-        
-        XCTAssertTrue(vm.showContainer)
-        
-        vm.closeStoryContainer()
-        
-        XCTAssertFalse(vm.showContainer)
-    }
-    
-    func test_StoriesViewModel_tapStoryIcon_toggleStoryCamViewIfStoryNoPortionAndBelongsToCurrentUser() {
-        guard let currentUserStory = vm.stories.first(where: { $0.user.isCurrentUser && !$0.hasPortion }) else {
-            XCTFail("Should be at least a current user story in stories array.")
-            return
-        }
-        
-        XCTAssertFalse(currentUserStory.hasPortion)
-        
-        let showStoryCamView = vm.showStoryCamView
-        vm.tapStoryIcon(with: currentUserStory.id)
-        
-        XCTAssertNotEqual(vm.showStoryCamView, showStoryCamView)
-    }
-    
-    func test_StoriesViewModel_tapStoryIcon_showStoryContainerIfStoryHasPortion() {
-        guard let hasPortionStory = vm.stories.first(where: { $0.hasPortion }) else {
-            XCTFail("Make sure one story has portion in testing data.")
-            return
-        }
-        
-        vm.tapStoryIcon(with: hasPortionStory.id)
-        
-        XCTAssertEqual(vm.currentStoryId, hasPortionStory.id)
-        XCTAssertTrue(vm.showContainer)
-    }
-    
-    func test_StoriesViewModel_dragStoryContainer_isDraggingShouldBeTrue_storyIdBeforeDraggedShouldEqualCurrentStoryId() {
-        let tempCurrentStoryId = vm.currentStoryId
-        vm.currentStoryId = tempCurrentStoryId + 1
-        
-        XCTAssertFalse(vm.isDragging)
-        
-        vm.dragStoryContainer()
-        
-        XCTAssertTrue(vm.isDragging)
-        XCTAssertEqual(vm.storyIdBeforeDragged, tempCurrentStoryId + 1)
-        XCTAssertNotEqual(vm.storyIdBeforeDragged, tempCurrentStoryId)
-    }
 }
