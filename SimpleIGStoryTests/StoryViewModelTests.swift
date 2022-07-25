@@ -65,12 +65,6 @@ class StoryViewModelTests: XCTestCase {
         XCTAssertEqual(sut.currentPortionIndex, index)
     }
     
-    func test_storyIndex_ensureStoryIndexIsValid() {
-        let index = sut.storiesViewModel.stories.firstIndex { $0.id == sut.storyId }
-        XCTAssertNotNil(index)
-        XCTAssertEqual(sut.storyIndex, index)
-    }
-    
     func test_currentPortion_ensureCurrentPortionIsValid() {
         XCTAssertEqual(sut.currentPortion?.id, sut.currentPortionId)
     }

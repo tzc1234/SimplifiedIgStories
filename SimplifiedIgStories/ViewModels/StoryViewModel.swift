@@ -96,10 +96,6 @@ extension StoryViewModel {
         portions.firstIndex(where: { $0.id == currentPortionId })
     }
     
-    var storyIndex: Int? {
-        storiesViewModel.stories.firstIndex(where: { $0.id == storyId })
-    }
-    
     var currentPortion: Portion? {
         portions.first(where: { $0.id == currentPortionId })
     }
@@ -296,15 +292,15 @@ extension StoryViewModel {
     func pasuseOrResumeProgressBarAnimationDepends(on scenePhase: ScenePhase) {
         guard currentStoryId == storyId else { return }
         
-        if scenePhase == .active && currentPortionAnimationStatus == .pause {
-            setCurrentBarPortionAnimationStatus(to: .resume)
-        } else if scenePhase == .inactive && isCurrentPortionAnimating {
-            setCurrentBarPortionAnimationStatus(to: .pause)
+        if scenePhase == .active {
+            resumePortionAnimation()
+        } else if scenePhase == .inactive {
+            pausePortionAnimation()
         }
     }
 }
 
-// MARK: File manage
+// MARK: File management
 extension StoryViewModel {
     @MainActor func savePortionImageVideo() async {
         guard let currentPortion = currentPortion else {
@@ -346,7 +342,9 @@ extension StoryViewModel {
     // *** In real environment, the photo or video should be deleted by API call,
     // this is a demo app, however, deleting them from temp directory.
     private func deletePortionFromStory(by portionIndex: Int) {
-        guard let currentStoryIndex = storyIndex else {
+        guard
+            let currentStoryIndex = storiesViewModel.stories.firstIndex(where: { $0.id == storyId })
+        else {
             return
         }
         
