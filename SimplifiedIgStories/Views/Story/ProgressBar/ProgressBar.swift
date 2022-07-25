@@ -35,6 +35,7 @@ struct ProgressBar: View {
             }
         }
         .padding(.horizontal, 10)
+        // TODO: refactor
         .onChange(of: vm.currentPortionAnimationStatus) { _ in
             vm.performNextBarPortionAnimationWhenCurrentPortionFinished {
                 homeUIActionHandler.closeStoryContainer(storyId: storyId)

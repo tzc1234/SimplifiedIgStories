@@ -33,7 +33,7 @@ struct StoryView: View {
                     Spacer()
                     
                     DetectableTapGesturePositionView { point in
-                        vm.decidePortionTransitionDirection(by: point.x)
+                        vm.setPortionTransitionDirection(by: point.x)
                     }
                     
                     Spacer()
@@ -70,7 +70,7 @@ struct StoryView: View {
                 }
             )
             .onAppear {
-                vm.initStoryAnimation(by: storyId)
+                vm.initStoryAnimation()
             }
             .cubicTransition(
                 shouldRotate: vm.storiesViewModel.shouldCubicRotation,

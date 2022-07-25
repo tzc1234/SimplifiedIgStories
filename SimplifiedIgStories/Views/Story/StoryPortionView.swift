@@ -76,14 +76,14 @@ struct StoryPortionView_Previews: PreviewProvider {
 extension StoryPortionView {
     @ViewBuilder private var photoView: some View {
         GeometryReader { geo in
-            vm.getImage(by: portion.id)?
+            image?
                 .resizable()
                 .scaledToFill()
                 .overlay(.ultraThinMaterial)
                 .clipShape(Rectangle())
         }
         
-        vm.getImage(by: portion.id)?
+        image?
             .resizable()
             .scaledToFit()
     }
@@ -95,5 +95,18 @@ extension StoryPortionView {
                 player: player
             )
         }
+    }
+}
+
+// MARK: helpers
+extension StoryPortionView {
+    private var image: Image? {
+        if let imageName = portion.imageName {
+            return Image(imageName)
+        } else if let imageUrl = portion.imageUrl,
+                  let uiImage = vm.getImageBy(url: imageUrl) {
+            return Image(uiImage: uiImage)
+        }
+        return nil
     }
 }

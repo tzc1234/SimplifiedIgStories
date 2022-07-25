@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 enum PortionTransitionDirection {
-    case none, start, forward, backward
+    case forward, backward
 }
 
 enum BarPortionAnimationStatus: CaseIterable {
@@ -24,7 +24,7 @@ final class StoryViewModel: ObservableObject {
     }
     
     @Published private(set) var currentPortionId: PortionId = -1
-    @Published private(set) var portionTransitionDirection: PortionTransitionDirection = .none
+    @Published private(set) var portionTransitionDirection: PortionTransitionDirection = .forward
     
     @Published var barPortionAnimationStatusDict: [PortionId: BarPortionAnimationStatus] = [:]
     
@@ -36,7 +36,7 @@ final class StoryViewModel: ObservableObject {
     private var subscriptions = Set<AnyCancellable>()
     
     let storyId: Int
-    let storiesViewModel: StoriesViewModel // parent ViewModel
+    let storiesViewModel: StoriesViewModel
     let fileManager: FileManageable
     
     init(storyId: Int, storiesViewModel: StoriesViewModel, fileManager: FileManageable) {
@@ -45,6 +45,7 @@ final class StoryViewModel: ObservableObject {
         self.fileManager = fileManager
         
         initCurrentStoryPortionId()
+        initBarPortionAnimationStatus()
         subscribeSelfPublishers()
         
         // Reference: https://stackoverflow.com/a/58406402
@@ -86,6 +87,10 @@ extension StoryViewModel {
         portions.first?.id
     }
     
+    var lastPortionId: PortionId? {
+        portions.last?.id
+    }
+    
     var currentPortionIndex: Int? {
         portions.firstIndex(where: { $0.id == currentPortionId })
     }
@@ -97,6 +102,10 @@ extension StoryViewModel {
     var currentPortion: Portion? {
         portions.first(where: { $0.id == currentPortionId })
     }
+    
+    var currentStoryId: Int {
+        storiesViewModel.currentStoryId
+    }
 }
 
 // MARK: helper functions
@@ -104,6 +113,10 @@ extension StoryViewModel {
     private func initCurrentStoryPortionId() {
         guard let firstPortionId = firstPortionId else { return }
         currentPortionId = firstPortionId
+    }
+    
+    private func initBarPortionAnimationStatus() {
+        setCurrentBarPortionAnimationStatus(to: .inital)
     }
     
     func setCurrentBarPortionAnimationStatus(to status: BarPortionAnimationStatus) {
@@ -123,38 +136,13 @@ extension StoryViewModel {
             .store(in: &subscriptions)
         
         $portionTransitionDirection
-            .removeDuplicates()
+            .dropFirst()
             .sink { [weak self] transitionDirection in
                 guard let self = self else { return }
                 print("storyId:\(self.storyId) | transitionDirection: \(transitionDirection)")
-                self.performProgressBarTransition(to: transitionDirection)
+                self.performProgressBarAnimation(by: transitionDirection)
             }
             .store(in: &subscriptions)
-    }
-    
-    // *** In real environment, the photo or video should be deleted by API call,
-    // this is a demo app, however, deleting them from temp directory.
-    private func deletePortionFromStory(by portionIdx: Int) {
-        guard let currentStoryIndex = storyIndex else {
-            return
-        }
-        
-        let portion = portions[portionIdx]
-        if let fileUrl = portion.imageUrl ?? portion.videoUrl {
-            fileManager.deleteFileBy(url: fileUrl)
-        }
-        
-        storiesViewModel.stories[currentStoryIndex].portions.remove(at: portionIdx)
-    }
-    
-    private func showNotice(errMsg: String) {
-        noticeMsg = errMsg
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            self?.showNoticeLabel = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
-                self?.showNoticeLabel = false
-            }
-        }
     }
     
     private func pausePortionAnimation() {
@@ -189,32 +177,121 @@ extension StoryViewModel {
 
 // MARK: functions for StoyView
 extension StoryViewModel {
-    func initStoryAnimation(by storyId: Int) {
-        if storiesViewModel.currentStoryId == storyId && portionTransitionDirection == .none {
-            portionTransitionDirection = .start
+    func initStoryAnimation() {
+        if currentStoryId == storyId && currentPortionAnimationStatus == .inital {
+            setCurrentBarPortionAnimationStatus(to: .start)
         }
     }
     
-    func decidePortionTransitionDirection(by pointX: CGFloat) {
+    func setPortionTransitionDirection(by pointX: CGFloat) {
         portionTransitionDirection = pointX <= .screenWidth / 2 ? .backward : .forward
     }
     
     func deleteCurrentPortion(withoutNextPortionAction: () -> Void) {
-        guard let currentStoryPortionIndex = currentPortionIndex else {
+        guard let currentPortionIndex = currentPortionIndex else {
             return
         }
 
         // If next portion exists, go next.
-        if currentStoryPortionIndex + 1 < portions.count {
-            deletePortionFromStory(by: currentStoryPortionIndex)
-            currentPortionId = portions[currentStoryPortionIndex + 1].id
+        if currentPortionIndex + 1 < portions.count {
+            deletePortionFromStory(by: currentPortionIndex)
+            currentPortionId = portions[currentPortionIndex + 1].id
             setCurrentBarPortionAnimationStatus(to: .start)
         } else {
             withoutNextPortionAction()
-            deletePortionFromStory(by: currentStoryPortionIndex)
+            deletePortionFromStory(by: currentPortionIndex)
+        }
+    }
+}
+
+// MARK: functions for animations
+extension StoryViewModel {
+    private func performProgressBarAnimation(by transitionDirection: PortionTransitionDirection) {
+        switch transitionDirection {
+        case .forward:
+            setCurrentBarPortionAnimationStatus(to: .finish)
+            // Will trigger the onChange of currentPortionAnimationStatus in ProgressBar.
+        case .backward:
+            // At the first portion and
+            if currentPortionId == firstPortionId {
+                // at the first story,
+                if storyId == storiesViewModel.firstCurrentStoryId {
+                    // just start the animation.
+                    setCurrentBarPortionAnimationStatus(to: currentPortionAnimationStatus == .start ? .restart : .start)
+                } else { // Not at the first story (that means previous story must exist.),
+                    // set current portion animation status back to inital,
+                    setCurrentBarPortionAnimationStatus(to: .inital)
+                    // and then go to previous story.
+                    storiesViewModel.moveCurrentStory(to: .previous)
+                }
+            } else { // Not at the first portion,
+                // set current portion animation status to inital,
+                setCurrentBarPortionAnimationStatus(to: .inital)
+                // go back to previous portion normally,
+                moveCurrentPortion(to: .previous)
+                // and start the previous portion animation (is now the current portion).
+                setCurrentBarPortionAnimationStatus(to: .start)
+            }
         }
     }
     
+    // Start next bar portion's animation when current bar portion finished.
+    func performNextBarPortionAnimationWhenCurrentPortionFinished(withoutNextStoryAction: () -> Void) {
+        guard currentPortionAnimationStatus == .finish else {
+            return
+        }
+        
+        // At last portion now.
+        if currentPortionId == lastPortionId {
+            // It's the last story now, withoutNextStoryAction perform.
+            if storiesViewModel.isNowAtLastStory {
+                withoutNextStoryAction()
+            } else { // Not the last stroy now, go to next story.
+                storiesViewModel.moveCurrentStory(to: .next)
+            }
+        } else { // Not the last portion, go to next portion.
+            moveCurrentPortion(to: .next)
+            setCurrentBarPortionAnimationStatus(to: .start)
+        }
+    }
+    
+    func performProgressBarTransitionWhen(isDragging: Bool) {
+        guard currentStoryId == storyId else { return }
+            
+        if isDragging {
+            // Pause the animation when dragging.
+            if isCurrentPortionAnimating {
+                setCurrentBarPortionAnimationStatus(to: .pause)
+            }
+        } else { // Dragged.
+            if !isCurrentPortionAnimating && !storiesViewModel.isSameStoryAfterDragged {
+                setCurrentBarPortionAnimationStatus(to: .start)
+            } else if currentPortionAnimationStatus == .pause {
+                setCurrentBarPortionAnimationStatus(to: .resume)
+            }
+        }
+    }
+    
+    func startProgressBarAnimation() {
+        guard currentStoryId == storyId && !isCurrentPortionAnimating else {
+            return
+        }
+        setCurrentBarPortionAnimationStatus(to: .start)
+    }
+    
+    func pasuseOrResumeProgressBarAnimationDepends(on scenePhase: ScenePhase) {
+        guard currentStoryId == storyId else { return }
+        
+        if scenePhase == .active && currentPortionAnimationStatus == .pause {
+            setCurrentBarPortionAnimationStatus(to: .resume)
+        } else if scenePhase == .inactive && isCurrentPortionAnimating {
+            setCurrentBarPortionAnimationStatus(to: .pause)
+        }
+    }
+}
+
+// MARK: File manage
+extension StoryViewModel {
     @MainActor func savePortionImageVideo() async {
         guard let currentPortion = currentPortion else {
             return
@@ -242,140 +319,32 @@ extension StoryViewModel {
         }
     }
     
-    func getImage(by portionId: PortionId) -> Image? {
-        let portion = portions.first(where: { $0.id == portionId })
-        if let imageName = portion?.imageName {
-            return Image(imageName)
-        } else if let imageUrl = portion?.imageUrl,
-                  let uiImage = fileManager.getImageBy(url: imageUrl) {
-            return Image(uiImage: uiImage)
-        }
-        return nil
-    }
-}
-
-// MARK: functions for ProgressBar
-extension StoryViewModel {
-    private func performProgressBarTransition(to transitionDirection: PortionTransitionDirection) {
-        switch transitionDirection {
-        case .none: // For continue tap forward/backward to trigger onChange.
-            break
-        case .start:
-            // No first portion, should not be happened.
-            guard let firstPortionId = firstPortionId else { return }
-            
-            currentPortionId = firstPortionId
-            setCurrentBarPortionAnimationStatus(to: .start)
-        case .forward:
-            setCurrentBarPortionAnimationStatus(to: .finish)
-            // Will trigger the onChange of currentPortionAnimationStatus in ProgressBar.
-        case .backward:
-            // No first portion, should not happen.
-            guard let firstPortionId = firstPortionId else { return }
-            
-            // At the first portion and
-            if currentPortionId == firstPortionId {
-                // at the first story,
-                if story.id == storiesViewModel.currentStories.first?.id {
-                    // just start the animation.
-                    setCurrentBarPortionAnimationStatus(to: currentPortionAnimationStatus == .start ? .restart : .start)
-                } else { // Not at the first story (that means previous story must exist.),
-                    // go to previous story.
-                    setCurrentBarPortionAnimationStatus(to: .inital)
-                    
-                    let currentStories = storiesViewModel.currentStories
-                    guard
-                        let currentStoryIdx =
-                            currentStories.firstIndex(where: { $0.id == story.id })
-                    else {
-                        return
-                    }
-                    
-                    let prevStoryIdx = currentStoryIdx - 1
-                    if prevStoryIdx >= 0 { // If within the boundary,
-                        // go previous.
-                        storiesViewModel.setCurrentStoryId(currentStories[prevStoryIdx].id)
-                    }
-                }
-            } else { // Not at the first story,
-                // go back to previous portion normally.
-                setCurrentBarPortionAnimationStatus(to: .inital)
-                
-                guard let currentStoryPortionIdx = currentPortionIndex else {
-                    return
-                }
-                
-                let prevStoryPortionIdx = currentStoryPortionIdx - 1
-                if prevStoryPortionIdx >= 0 {
-                    currentPortionId = portions[prevStoryPortionIdx].id
-                }
-                
-                setCurrentBarPortionAnimationStatus(to: .start)
+    private func showNotice(errMsg: String) {
+        noticeMsg = errMsg
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            self?.showNoticeLabel = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+                self?.showNoticeLabel = false
             }
-            
-            portionTransitionDirection = .none // reset
         }
     }
     
-    // Start next bar portion's animation when current bar portion finished.
-    func performNextBarPortionAnimationWhenCurrentPortionFinished(withoutNextStoryAction: () -> Void) {
-        guard currentPortionAnimationStatus == .finish else {
+    // *** In real environment, the photo or video should be deleted by API call,
+    // this is a demo app, however, deleting them from temp directory.
+    private func deletePortionFromStory(by portionIndex: Int) {
+        guard let currentStoryIndex = storyIndex else {
             return
         }
         
-        guard let currentPortionIndex = currentPortionIndex else {
-            return
+        let portion = portions[portionIndex]
+        if let fileUrl = portion.imageUrl ?? portion.videoUrl {
+            fileManager.deleteFileBy(url: fileUrl)
         }
         
-        // At last portion now.
-        if currentPortionIndex >= portions.count - 1 {
-            // It's the last story now, withoutNextStoryAction perform.
-            if storiesViewModel.isNowAtLastStory {
-                withoutNextStoryAction()
-            } else { // Not the last stroy now, go to next story.
-                storiesViewModel.moveCurrentStory(to: .next)
-            }
-        } else { // Not the last portion, go to next portion.
-            moveCurrentPortion(to: .next)
-            setCurrentBarPortionAnimationStatus(to: .start)
-        }
-        
-        portionTransitionDirection = .none // reset
+        storiesViewModel.stories[currentStoryIndex].portions.remove(at: portionIndex)
     }
     
-    func performProgressBarTransitionWhen(isDragging: Bool) {
-        guard storiesViewModel.currentStoryId == story.id else { return }
-            
-        if isDragging {
-            // Pause the animation when dragging.
-            if isCurrentPortionAnimating {
-                setCurrentBarPortionAnimationStatus(to: .pause)
-            }
-        } else { // Dragged.
-            if !isCurrentPortionAnimating && !storiesViewModel.isSameStoryAfterDragged {
-                setCurrentBarPortionAnimationStatus(to: .start)
-            } else if currentPortionAnimationStatus == .pause {
-                setCurrentBarPortionAnimationStatus(to: .resume)
-            }
-        }
-    }
-    
-    func startProgressBarAnimation() {
-        guard storiesViewModel.currentStoryId == story.id else { return }
-            
-        // After went to the next story, start its animation.
-        if !isCurrentPortionAnimating {
-            setCurrentBarPortionAnimationStatus(to: .start)
-        }
-    }
-    
-    func pasuseOrResumeProgressBarAnimationDepends(on scenePhase: ScenePhase) {
-        guard storiesViewModel.currentStoryId == story.id else { return }
-        
-        if scenePhase == .active && currentPortionAnimationStatus == .pause {
-            setCurrentBarPortionAnimationStatus(to: .resume)
-        } else if scenePhase == .inactive && isCurrentPortionAnimating {
-            setCurrentBarPortionAnimationStatus(to: .pause)
-        }
+    func getImageBy(url: URL) -> UIImage? {
+        fileManager.getImageBy(url: url)
     }
 }

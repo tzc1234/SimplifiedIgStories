@@ -12,9 +12,10 @@ import Combine
 class StoryViewModelTests: XCTestCase {
     
     var sut: StoryViewModel!
+    var storiesViewModel: StoriesViewModel!
     
     override func setUpWithError() throws {
-        let storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
+        storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
         
         let expectation = XCTestExpectation(description: "wait async fetchStories")
         Task {
@@ -35,11 +36,12 @@ class StoryViewModelTests: XCTestCase {
         
         XCTAssertIdentical(sut.storiesViewModel, storiesViewModel, "storiesViewModel")
         XCTAssertEqual(sut.storyId, firstHasPortionStory!.id, "storyId")
-        XCTAssertNotEqual(sut.currentPortionIndex, -1, "currentPortionIndex")
+        XCTAssertNotEqual(sut.currentPortionId, -1, "currentPortionId")
     }
 
     override func tearDownWithError() throws {
         sut = nil
+        storiesViewModel = nil
     }
     
     func test_story_ensureStoryIsIdenticalWithStoryId() {
@@ -75,10 +77,10 @@ class StoryViewModelTests: XCTestCase {
     
     func test_barPortionAnimationStatusDict_ensureTheValuesAreValid() {
         let currentPortionId = sut.currentPortionId
-        XCTAssertNil(sut.currentPortionAnimationStatus, "currentPortionAnimationStatus")
-        XCTAssertNil(sut.barPortionAnimationStatusDict[currentPortionId], "barPortionAnimationStatusDict")
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .inital, "currentPortionAnimationStatus")
+        XCTAssertEqual(sut.barPortionAnimationStatusDict[currentPortionId], .inital, "barPortionAnimationStatusDict")
         
-        for _ in 1...50 {
+        for _ in 1...30 {
             let status = BarPortionAnimationStatus.allCases.randomElement() ?? .inital
             sut.barPortionAnimationStatusDict[currentPortionId] = status
             
@@ -146,7 +148,7 @@ class StoryViewModelTests: XCTestCase {
         XCTAssertEqual(callCount, 0, "callCount")
     }
     
-    func test_performNextBarPortionAnimationWhenCurrentPortionFinished_theCompleteFlowToTheLastPortionOfTheLastStory() {
+    func test_performNextBarPortionAnimationWhenCurrentPortionFinished_theCompleteFlowFromBeginningToTheLastPortionOfTheLastStory() {
         let storyCount = hasPortionStories.count
         var savedCurrentStoryId = sut.storiesViewModel.currentStoryId
         var callCount = 0
@@ -185,8 +187,65 @@ class StoryViewModelTests: XCTestCase {
                 XCTAssertEqual(callCount, 1, "callCount")
             }
         }
-        
     }
+    
+    func test_currentStoryId_ensureItIsEqualToStoriesViewModelCurrentStoryId() {
+        XCTAssertEqual(sut.currentStoryId, sut.storiesViewModel.currentStoryId)
+    }
+    
+    func test_performProgressBarAnimation_setPortionTransitionDirectionToForward_currentBarPortionAnimationStatusWillBeFinish() {
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .inital)
+        setPortionTransitionDirectionForward()
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .finish)
+    }
+    
+    func test_performProgressBarAnimation_setPortionTransitionDirectionToBackward_firstStoryFirstPortion_startCurrentPortionAnimation() {
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .inital, "currentPortionAnimationStatus")
+        XCTAssertEqual(sut.currentPortionId, sut.firstPortionId, "currentPortionId == firstPortionId")
+        
+        setPortionTransitionDirectionBackward()
+        
+        XCTAssertEqual(sut.currentPortionId, sut.firstPortionId, "currentPortionId == firstPortionId")
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .start, "currentPortionAnimationStatus")
+        
+        setPortionTransitionDirectionBackward()
+        
+        XCTAssertEqual(sut.currentPortionId, sut.firstPortionId, "currentPortionId == firstPortionId")
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .restart, "currentPortionAnimationStatus")
+    }
+    
+    func test_performProgressBarAnimation_setTransitionDirectionToBackward_firstPortionNotFirstStory_backToPreviousStory() {
+        sut = make2ndStorySUT()
+        
+        let previousCurrentStoryId = sut.currentStoryId
+        sut.storiesViewModel.moveCurrentStory(to: .next)
+        sut.setCurrentBarPortionAnimationStatus(to: .start)
+        
+        XCTAssertNotEqual(sut.currentStoryId, previousCurrentStoryId, "currentStoryId != previousCurrentStoryId")
+        let firstPortionId = sut.firstPortionId!
+        XCTAssertEqual(sut.currentPortionId, firstPortionId, "currentPortionId == firstPortionId")
+        
+        setPortionTransitionDirectionBackward()
+        
+        XCTAssertEqual(sut.barPortionAnimationStatusDict[firstPortionId], .inital)
+        XCTAssertEqual(sut.currentStoryId, previousCurrentStoryId, "currentStoryId == previousCurrentStoryId")
+    }
+    
+    func test_performProgressBarAnimation_setTransitionDirectionToBackward_notFirstPortion_backToPreviousPortion() {
+        let previousPortionId = sut.currentPortionId
+        sut.setCurrentBarPortionAnimationStatus(to: .finish)
+        sut.performNextBarPortionAnimationWhenCurrentPortionFinished(withoutNextStoryAction: {})
+        XCTAssertEqual(sut.barPortionAnimationStatusDict[previousPortionId], .finish)
+        XCTAssertNotEqual(sut.currentPortionId, previousPortionId, "currentPortionId != previousPortionId")
+        
+        let portionId = sut.currentPortionId
+        setPortionTransitionDirectionBackward()
+        
+        XCTAssertEqual(sut.barPortionAnimationStatusDict[portionId], .inital)
+        XCTAssertEqual(sut.currentPortionId, previousPortionId, "currentPortionId == previousPortionId")
+        XCTAssertEqual(sut.barPortionAnimationStatusDict[previousPortionId], .start, "currentBarPortionAnimationStatus")
+    }
+    
 }
 
 // MARK: helpers
@@ -206,5 +265,18 @@ extension StoryViewModelTests {
         let currentStoryIdx = sut.storiesViewModel.currentStoryIndex
         let nextStoryIdx = currentStoryIdx! + 1
         return nextStoryIdx < storyCount ? sut.storiesViewModel.stories[nextStoryIdx].id : nil
+    }
+    
+    private func setPortionTransitionDirectionForward() {
+        sut.setPortionTransitionDirection(by: (.screenWidth / 2) + 40)
+    }
+    
+    private func setPortionTransitionDirectionBackward() {
+        sut.setPortionTransitionDirection(by: (.screenWidth / 2) - 40)
+    }
+    
+    private func make2ndStorySUT() -> StoryViewModel {
+        let secondStory = hasPortionStories[1]
+        return StoryViewModel(storyId: secondStory.id, storiesViewModel: storiesViewModel, fileManager: LocalFileManager())
     }
 }
