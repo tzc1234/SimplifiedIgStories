@@ -308,6 +308,37 @@ class StoryViewModelTests: XCTestCase {
         XCTAssertEqual(sut.currentPortionAnimationStatus, .resume, "currentPortionAnimationStatus")
     }
     
+    func test_startProgressBarAnimation_currentStory_andCurrentPortionIsAnimating_ignore() {
+        sut.setCurrentBarPortionAnimationStatus(to: .resume)
+        
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .resume, "currentPortionAnimationStatus")
+        
+        sut.startProgressBarAnimation()
+        
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .resume, "currentPortionAnimationStatus")
+    }
+    
+    func test_startProgressBarAnimation_currentStory_andCurrentPortionIsNotAnimating_startAnmation() {
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .inital, "currentPortionAnimationStatus")
+        XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
+        
+        sut.startProgressBarAnimation()
+        
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .start, "currentPortionAnimationStatus")
+        XCTAssertTrue(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
+    }
+    
+    func test_startProgressBarAnimation_currentStory_andCurrentPortionIsNotAnimating_butNotCurrentStory_ignore() {
+        sut.setCurrentBarPortionAnimationStatus(to: .pause)
+        storiesViewModel.moveCurrentStory(to: .next)
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .pause, "currentPortionAnimationStatus")
+        XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
+        
+        sut.startProgressBarAnimation()
+        
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .pause, "currentPortionAnimationStatus")
+        XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
+    }
 }
 
 // MARK: helpers
