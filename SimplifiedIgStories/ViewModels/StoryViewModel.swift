@@ -46,6 +46,7 @@ final class StoryViewModel: ObservableObject {
         
         initCurrentStoryPortionId()
         initBarPortionAnimationStatus()
+        subscribeStoriesViewModelPublishers()
         subscribeSelfPublishers()
         
         // Reference: https://stackoverflow.com/a/58406402
@@ -121,6 +122,16 @@ extension StoryViewModel {
     
     func setCurrentBarPortionAnimationStatus(to status: BarPortionAnimationStatus) {
         barPortionAnimationStatusDict[currentPortionId] = status
+    }
+    
+    private func subscribeStoriesViewModelPublishers() {
+        storiesViewModel.$isDragging
+            .dropFirst()
+            .removeDuplicates()
+            .sink { [weak self] isDragging in
+                self?.updateBarPortionAnimationStatusWhenDrag(isDragging)
+            }
+            .store(in: &subscriptions)
     }
     
     private func subscribeSelfPublishers() {
@@ -255,7 +266,7 @@ extension StoryViewModel {
         }
     }
     
-    func performProgressBarTransitionWhen(isDragging: Bool) {
+    private func updateBarPortionAnimationStatusWhenDrag(_ isDragging: Bool) {
         guard currentStoryId == storyId else { return }
             
         if isDragging {

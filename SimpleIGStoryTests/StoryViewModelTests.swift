@@ -246,6 +246,68 @@ class StoryViewModelTests: XCTestCase {
         XCTAssertEqual(sut.barPortionAnimationStatusDict[previousPortionId], .start, "currentBarPortionAnimationStatus")
     }
     
+    func test_updateBarPortionAnimationStatusWhenDrag_isDragging_andAnimationStatusIsStart_pauseAnimation() {
+        sut.setCurrentBarPortionAnimationStatus(to: .start)
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .start, "currentPortionAnimationStatus")
+        XCTAssertTrue(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
+        
+        storiesViewModel.isDragging = true
+        
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .pause, "currentPortionAnimationStatus")
+        XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
+    }
+    
+    func test_updateBarPortionAnimationStatusWhenDrag_isDragging_andAnimationStatusIsInital_ignore() {
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .inital, "currentPortionAnimationStatus")
+        XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
+        
+        storiesViewModel.isDragging = true
+        
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .inital, "currentPortionAnimationStatus")
+        XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
+    }
+    
+    func test_updateBarPortionAnimationStatusWhenDrag_dragged_notSameStoryAndCurrentPortionNotAnimated_startAnimation() {
+        let secondSUT = make2ndStorySUT()
+        sut.setCurrentBarPortionAnimationStatus(to: .start)
+        XCTAssertNotIdentical(sut, secondSUT)
+        
+        XCTAssertTrue(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
+        XCTAssertEqual(storiesViewModel.currentStoryId, sut.storyId, "sut is current")
+        
+        storiesViewModel.isDragging = true
+        
+        XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .pause, "currentPortionAnimationStatus")
+        
+        // simulate dragged from the 1st story to the 2nd story.
+        storiesViewModel.moveCurrentStory(to: .next)
+        storiesViewModel.isDragging = false
+        
+        XCTAssertEqual(storiesViewModel.currentStoryId, secondSUT.storyId, "secondSUT is now current")
+        XCTAssertFalse(sut.isCurrentPortionAnimating, "1st story isCurrentPortionAnimating")
+        XCTAssertEqual(secondSUT.currentPortionAnimationStatus, .start, "2nd story currentPortionAnimationStatus")
+    }
+    
+    func test_updateBarPortionAnimationStatusWhenDrag_dragged_sameStory_resumeAnimation() {
+        XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
+        
+        sut.setCurrentBarPortionAnimationStatus(to: .start)
+        
+        XCTAssertTrue(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .start, "currentPortionAnimationStatus")
+        
+        storiesViewModel.isDragging = true
+        
+        XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .pause, "currentPortionAnimationStatus")
+        
+        storiesViewModel.isDragging = false
+        
+        XCTAssertTrue(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .resume, "currentPortionAnimationStatus")
+    }
+    
 }
 
 // MARK: helpers

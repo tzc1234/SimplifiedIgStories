@@ -41,9 +41,6 @@ struct ProgressBar: View {
                 homeUIActionHandler.closeStoryContainer(storyId: storyId)
             }
         }
-        .onChange(of: vm.storiesViewModel.isDragging) { isDragging in
-            vm.performProgressBarTransitionWhen(isDragging: isDragging)
-        }
         .onChange(of: vm.storiesViewModel.currentStoryId) { _ in
             vm.startProgressBarAnimation()
         }

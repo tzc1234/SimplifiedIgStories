@@ -14,7 +14,7 @@ final class StoriesViewModel: ObservableObject {
     @Published private(set) var currentStoryId = -1
     @Published var shouldCubicRotation = false
     @Published var isDragging = false
-    private var storyIdBeforeDragged = 0
+    private(set) var storyIdBeforeDragged = 0
     
     enum StoryMoveDirection {
         case previous, next
