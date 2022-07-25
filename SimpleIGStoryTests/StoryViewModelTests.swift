@@ -285,7 +285,7 @@ class StoryViewModelTests: XCTestCase {
         storiesViewModel.isDragging = false
         
         XCTAssertEqual(storiesViewModel.currentStoryId, secondSUT.storyId, "secondSUT is now current")
-        XCTAssertFalse(sut.isCurrentPortionAnimating, "1st story isCurrentPortionAnimating")
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .inital, "1st story currentPortionAnimationStatus")
         XCTAssertEqual(secondSUT.currentPortionAnimationStatus, .start, "2nd story currentPortionAnimationStatus")
     }
     

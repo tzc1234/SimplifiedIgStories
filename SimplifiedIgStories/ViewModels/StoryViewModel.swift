@@ -128,8 +128,8 @@ extension StoryViewModel {
         storiesViewModel.$isDragging
             .dropFirst()
             .removeDuplicates()
-            .sink { [weak self] isDragging in
-                self?.updateBarPortionAnimationStatusWhenDrag(isDragging)
+            .sink { [weak self] dragging in
+                self?.updateBarPortionAnimationStatusWhenDrag(dragging)
             }
             .store(in: &subscriptions)
     }
@@ -267,18 +267,21 @@ extension StoryViewModel {
     }
     
     private func updateBarPortionAnimationStatusWhenDrag(_ isDragging: Bool) {
-        guard currentStoryId == storyId else { return }
-            
         if isDragging {
-            // Pause the animation when dragging.
-            if isCurrentPortionAnimating {
-                setCurrentBarPortionAnimationStatus(to: .pause)
+            if currentStoryId == storyId {
+                pausePortionAnimation()
             }
         } else { // Dragged.
-            if !isCurrentPortionAnimating && !storiesViewModel.isSameStoryAfterDragged {
-                setCurrentBarPortionAnimationStatus(to: .start)
-            } else if currentPortionAnimationStatus == .pause {
-                setCurrentBarPortionAnimationStatus(to: .resume)
+            if storiesViewModel.isSameStoryAfterDragged {
+                resumePortionAnimation()
+            } else {
+                if currentStoryId == storyId {
+                    setCurrentBarPortionAnimationStatus(to: .start)
+                }
+                
+                if storiesViewModel.storyIdBeforeDragged == storyId {
+                    setCurrentBarPortionAnimationStatus(to: .inital)
+                }
             }
         }
     }
