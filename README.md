@@ -13,6 +13,10 @@ A simple version of IG story, this demo app is my **SwiftUI** study record.
 6. Async/await
 
 ## Update History
+#### 25/07/2022:
+1. Refactored some animation logic.
+2. More tests.
+
 #### 19/06/2022:
 1. Use my own AVFoundation manager class instead of SwiftyCam package.
 
