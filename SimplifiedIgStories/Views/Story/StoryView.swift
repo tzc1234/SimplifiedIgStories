@@ -58,22 +58,12 @@ struct StoryView: View {
                 
                 noticeLabel
             }
-            .background(
-                Group {
-                    let frame = geo.frame(in: .global)
-                    storyPortionViews
-                        .preference(key: FramePreferenceKey.self, value: frame)
-                        .onPreferenceChange(FramePreferenceKey.self) { preferenceFrame in
-                            vm.storiesViewModel.shouldCubicRotation =
-                            preferenceFrame.width == .screenWidth
-                        }
-                }
-            )
+            .background(storyPortionViews)
             .onAppear {
                 vm.initStoryAnimation()
             }
             .cubicTransition(
-                shouldRotate: vm.storiesViewModel.shouldCubicRotation,
+                shouldRotate: vm.shouldCubicRotation,
                 offsetX: geo.frame(in: .global).minX
             )
             .onDisappear {
@@ -87,14 +77,13 @@ struct StoryView: View {
 
 struct StoryView_Previews: PreviewProvider {
     static var previews: some View {
-        let storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
+        let storiesViewModel = StoriesViewModel()
         let story = storiesViewModel.currentStories[0]
         StoryView(
             storyId: story.id,
             vm: StoryViewModel(
                 storyId: story.id,
-                storiesViewModel: storiesViewModel,
-                fileManager: LocalFileManager()
+                storiesViewModel: storiesViewModel
             )
         )
     }

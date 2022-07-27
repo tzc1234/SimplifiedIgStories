@@ -23,7 +23,7 @@ final class StoriesViewModel: ObservableObject {
     private let dataService: DataService
     private let fileManager: FileManageable
     
-    init(dataService: DataService = AppDataService(), fileManager: FileManageable) {
+    init(dataService: DataService = AppDataService(), fileManager: FileManageable = LocalFileManager()) {
         self.dataService = dataService
         self.fileManager = fileManager
     }

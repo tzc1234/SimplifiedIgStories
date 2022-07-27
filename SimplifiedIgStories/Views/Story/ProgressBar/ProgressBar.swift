@@ -40,11 +40,15 @@ struct ProgressBar: View {
                 homeUIActionHandler.closeStoryContainer(storyId: storyId)
             }
         }
-        .onChange(of: vm.storiesViewModel.currentStoryId) { _ in
+        .onChange(of: vm.currentStoryId) { _ in
             vm.startProgressBarAnimation()
         }
         .onChange(of: scenePhase) { newPhase in
-            vm.pasuseOrResumeProgressBarAnimationDepends(on: newPhase)
+            if newPhase == .active {
+                vm.resumePortionAnimation()
+            } else if newPhase == .inactive {
+                vm.pausePortionAnimation()
+            }
         }
     }
     
@@ -52,14 +56,13 @@ struct ProgressBar: View {
 
 struct ProgressBar_Previews: PreviewProvider {
     static var previews: some View {
-        let storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
+        let storiesViewModel = StoriesViewModel()
         let story = storiesViewModel.stories[1]
         ProgressBar(
             storyId: story.id,
             storyViewModel: StoryViewModel(
                 storyId: story.id,
-                storiesViewModel: storiesViewModel,
-                fileManager: LocalFileManager()
+                storiesViewModel: storiesViewModel
             )
         )
     }

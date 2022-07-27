@@ -13,7 +13,7 @@ class StoriesViewModelTests: XCTestCase {
     var vm: StoriesViewModel!
     
     override func setUpWithError() throws {
-        vm = StoriesViewModel(fileManager: LocalFileManager())
+        vm = StoriesViewModel()
         
         let expectation = XCTestExpectation(description: "wait async fetchStories")
         

@@ -58,15 +58,14 @@ struct StoryPortionView: View {
 
 struct StoryPortionView_Previews: PreviewProvider {
     static var previews: some View {
-        let storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
+        let storiesViewModel = StoriesViewModel()
         let story = storiesViewModel.currentStories[0]
         let portion = story.portions[0]
         StoryPortionView(
             portion: portion,
             storyViewModel: StoryViewModel(
                 storyId: story.id,
-                storiesViewModel: storiesViewModel,
-                fileManager: LocalFileManager()
+                storiesViewModel: storiesViewModel
             )
         )
     }
@@ -104,7 +103,7 @@ extension StoryPortionView {
         if let imageName = portion.imageName {
             return Image(imageName)
         } else if let imageUrl = portion.imageUrl,
-                  let uiImage = vm.getImageBy(url: imageUrl) {
+                  let uiImage = vm.fileManager.getImageBy(url: imageUrl) {
             return Image(uiImage: uiImage)
         }
         return nil

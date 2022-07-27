@@ -22,12 +22,15 @@ struct StoryContainer: View {
                         storyId: story.id,
                         vm: StoryViewModel(
                             storyId: story.id,
-                            storiesViewModel: vm,
-                            fileManager: LocalFileManager()
+                            storiesViewModel: vm
                         )
                     )
                     .opacity(story.id != vm.currentStoryId && !vm.shouldCubicRotation ? 0.0 : 1.0)
                     .frame(width: .screenWidth, height: geo.size.height)
+                    .preference(key: FramePreferenceKey.self, value: geo.frame(in: .global))
+                    .onPreferenceChange(FramePreferenceKey.self) { preferenceFrame in
+                        vm.shouldCubicRotation = preferenceFrame.width == .screenWidth
+                    }
                 }
             }
         }
@@ -54,7 +57,7 @@ struct StoryContainer: View {
 
 struct StoryContainer_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = StoriesViewModel(fileManager: LocalFileManager())
+        let vm = StoriesViewModel()
         StoryContainer(vm: vm)
             .environmentObject(HomeUIActionHandler())
             .task {
