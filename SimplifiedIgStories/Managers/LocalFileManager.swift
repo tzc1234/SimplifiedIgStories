@@ -10,8 +10,8 @@ import UIKit
 // MARK: - FileManageable
 protocol FileManageable {
     func saveImageToTemp(image: UIImage) -> URL?
-    func getImageBy(url: URL) -> UIImage?
-    func deleteFileBy(url: URL)
+    func getImage(by url: URL) -> UIImage?
+    func deleteFile(by url: URL)
 }
 
 // MARK: - LocalFileManager
@@ -36,12 +36,12 @@ struct LocalFileManager: FileManageable {
         }
     }
     
-    func getImageBy(url: URL) -> UIImage? {
+    func getImage(by url: URL) -> UIImage? {
         guard FileManager.default.fileExists(atPath: url.path) else { return nil }
         return UIImage(contentsOfFile: url.path)
     }
     
-    func deleteFileBy(url: URL) {
+    func deleteFile(by url: URL) {
         guard FileManager.default.fileExists(atPath: url.path) else { return }
         
         do {

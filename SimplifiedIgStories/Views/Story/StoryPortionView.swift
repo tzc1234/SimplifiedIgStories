@@ -66,7 +66,8 @@ struct StoryPortionView_Previews: PreviewProvider {
             storyViewModel: StoryViewModel(
                 storyId: story.id,
                 storiesViewModel: storiesViewModel,
-                fileManager: LocalFileManager()
+                fileManager: LocalFileManager(),
+                mediaSaver: MediaFileSaver()
             )
         )
     }
@@ -104,7 +105,7 @@ extension StoryPortionView {
         if let imageName = portion.imageName {
             return Image(imageName)
         } else if let imageUrl = portion.imageUrl,
-                  let uiImage = vm.getImageBy(url: imageUrl) {
+                  let uiImage = vm.getImage(by: imageUrl) {
             return Image(uiImage: uiImage)
         }
         return nil

@@ -37,12 +37,19 @@ final class StoryViewModel: ObservableObject {
     
     let storyId: Int
     private let storiesViewModel: StoriesViewModel
-    let fileManager: FileManageable
+    private let fileManager: FileManageable
+    private let mediaSaver: MediaSaver
     
-    init(storyId: Int, storiesViewModel: StoriesViewModel, fileManager: FileManageable) {
+    init(
+        storyId: Int,
+        storiesViewModel: StoriesViewModel,
+        fileManager: FileManageable,
+        mediaSaver: MediaSaver
+    ) {
         self.storyId = storyId
         self.storiesViewModel = storiesViewModel
         self.fileManager = fileManager
+        self.mediaSaver = mediaSaver
         
         initCurrentStoryPortionId()
         initBarPortionAnimationStatus()
@@ -308,10 +315,10 @@ extension StoryViewModel {
             isLoading = true
             
             var successMsg: String?
-            if let imageUrl = currentPortion.imageUrl, let uiImage = fileManager.getImageBy(url: imageUrl) {
-                successMsg = try await ImageSaver().saveToAlbum(uiImage)
+            if let imageUrl = currentPortion.imageUrl, let uiImage = fileManager.getImage(by: imageUrl) {
+                successMsg = try await mediaSaver.saveToAlbum(uiImage)
             } else if let videoUrl = currentPortion.videoUrlFromCam {
-                successMsg = try await VideoSaver().saveToAlbum(videoUrl)
+                successMsg = try await mediaSaver.saveToAlbum(videoUrl)
             }
             
             isLoading = false
@@ -321,7 +328,7 @@ extension StoryViewModel {
             }
         } catch {
             isLoading = false
-            let errMsg = (error as? ImageVideoSaveError)?.errMsg ?? error.localizedDescription
+            let errMsg = (error as? MediaSavingError)?.errMsg ?? error.localizedDescription
             showNotice(errMsg: errMsg)
         }
     }
@@ -347,13 +354,13 @@ extension StoryViewModel {
         
         let portion = portions[portionIndex]
         if let fileUrl = portion.imageUrl ?? portion.videoUrl {
-            fileManager.deleteFileBy(url: fileUrl)
+            fileManager.deleteFile(by: fileUrl)
         }
         
         storiesViewModel.stories[currentStoryIndex].portions.remove(at: portionIndex)
     }
     
-    func getImageBy(url: URL) -> UIImage? {
-        fileManager.getImageBy(url: url)
+    func getImage(by url: URL) -> UIImage? {
+        fileManager.getImage(by: url)
     }
 }

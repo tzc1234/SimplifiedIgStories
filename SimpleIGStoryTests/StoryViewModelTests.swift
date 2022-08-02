@@ -31,7 +31,12 @@ class StoryViewModelTests: XCTestCase {
         
         XCTAssertEqual(storiesViewModel.currentStoryId, firstHasPortionStory!.id, "currentStoryId")
         
-        sut = StoryViewModel(storyId: firstHasPortionStory!.id, storiesViewModel: storiesViewModel, fileManager: LocalFileManager())
+        sut = StoryViewModel(
+            storyId: firstHasPortionStory!.id,
+            storiesViewModel: storiesViewModel,
+            fileManager: LocalFileManager(),
+            mediaSaver: MediaFileSaver()
+        )
         
         XCTAssertIdentical(storiesViewModel, storiesViewModel, "storiesViewModel")
         XCTAssertEqual(sut.storyId, firstHasPortionStory!.id, "storyId")
@@ -363,6 +368,11 @@ extension StoryViewModelTests {
     
     private func make2ndStorySUT() -> StoryViewModel {
         let secondStory = hasPortionStories[1]
-        return StoryViewModel(storyId: secondStory.id, storiesViewModel: storiesViewModel, fileManager: LocalFileManager())
+        return StoryViewModel(
+            storyId: secondStory.id,
+            storiesViewModel: storiesViewModel,
+            fileManager: LocalFileManager(),
+            mediaSaver: MediaFileSaver()
+        )
     }
 }

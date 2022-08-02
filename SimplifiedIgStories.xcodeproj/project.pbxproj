@@ -47,9 +47,8 @@
 		BE9336C227D21811009E5370 /* AVPlayerControllerRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9336C127D21811009E5370 /* AVPlayerControllerRepresentable.swift */; };
 		BE9336C427D22162009E5370 /* StoryPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9336C327D22162009E5370 /* StoryPreview.swift */; };
 		BE9336C727D22628009E5370 /* Color+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9336C627D22628009E5370 /* Color+Additions.swift */; };
-		BE9336CA27D24491009E5370 /* ImageSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9336C927D24491009E5370 /* ImageSaver.swift */; };
 		BE9336CC27D24CC1009E5370 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9336CB27D24CC1009E5370 /* LoadingView.swift */; };
-		BE9336CE27D2690E009E5370 /* VideoSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9336CD27D2690E009E5370 /* VideoSaver.swift */; };
+		BE9336CE27D2690E009E5370 /* MediaSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9336CD27D2690E009E5370 /* MediaSaver.swift */; };
 		BE93B8C127C8D96900B97C40 /* TraceableRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE93B8C027C8D96900B97C40 /* TraceableRectangle.swift */; };
 		BE9EF6C527E3673600942976 /* Configs.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9EF6C427E3673600942976 /* Configs.swift */; };
 		BE9EF6C727E36F7D00942976 /* CGFloat+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9EF6C627E36F7D00942976 /* CGFloat+Additions.swift */; };
@@ -118,9 +117,8 @@
 		BE9336C127D21811009E5370 /* AVPlayerControllerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPlayerControllerRepresentable.swift; sourceTree = "<group>"; };
 		BE9336C327D22162009E5370 /* StoryPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPreview.swift; sourceTree = "<group>"; };
 		BE9336C627D22628009E5370 /* Color+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Additions.swift"; sourceTree = "<group>"; };
-		BE9336C927D24491009E5370 /* ImageSaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSaver.swift; sourceTree = "<group>"; };
 		BE9336CB27D24CC1009E5370 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
-		BE9336CD27D2690E009E5370 /* VideoSaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoSaver.swift; sourceTree = "<group>"; };
+		BE9336CD27D2690E009E5370 /* MediaSaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSaver.swift; sourceTree = "<group>"; };
 		BE93B8C027C8D96900B97C40 /* TraceableRectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TraceableRectangle.swift; sourceTree = "<group>"; };
 		BE9EF6C427E3673600942976 /* Configs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configs.swift; sourceTree = "<group>"; };
 		BE9EF6C627E36F7D00942976 /* CGFloat+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGFloat+Additions.swift"; sourceTree = "<group>"; };
@@ -359,8 +357,7 @@
 		BE9336C827D24468009E5370 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
-				BE9336C927D24491009E5370 /* ImageSaver.swift */,
-				BE9336CD27D2690E009E5370 /* VideoSaver.swift */,
+				BE9336CD27D2690E009E5370 /* MediaSaver.swift */,
 				BEB8752827DA120300D60110 /* LocalFileManager.swift */,
 				BE2D7790285F761F00DBD924 /* CamManager */,
 			);
@@ -525,7 +522,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BE9336CE27D2690E009E5370 /* VideoSaver.swift in Sources */,
+				BE9336CE27D2690E009E5370 /* MediaSaver.swift in Sources */,
 				BEA7D9FF27C6DFFC00DA81E6 /* TraceableArc.swift in Sources */,
 				BE5CDC2D27DF4AAA00352A60 /* NoticeLabel.swift in Sources */,
 				BE93B8C127C8D96900B97C40 /* TraceableRectangle.swift in Sources */,
@@ -552,7 +549,6 @@
 				BE91AA5427BFD96800BB9846 /* StoryPortionView.swift in Sources */,
 				BE9336CC27D24CC1009E5370 /* LoadingView.swift in Sources */,
 				BE463A2D285F05AE00599929 /* AVCamManager.swift in Sources */,
-				BE9336CA27D24491009E5370 /* ImageSaver.swift in Sources */,
 				BE2C557427C0197B0087EE7F /* DetectableTapGesturePositionView.swift in Sources */,
 				BEAED9E427D36F7D00A98F3A /* IdFramePreferenceKey.swift in Sources */,
 				BE8AEF9327DBDE8100D7EAA1 /* CubicTransitionModifier.swift in Sources */,

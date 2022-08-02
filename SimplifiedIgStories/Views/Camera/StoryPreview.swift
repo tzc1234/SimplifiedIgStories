@@ -189,9 +189,9 @@ extension StoryPreview {
                 
                 var successMsg: String?
                 if let uiImage = uiImage {
-                    successMsg = try await ImageSaver().saveToAlbum(uiImage)
+                    successMsg = try await MediaFileSaver().saveToAlbum(uiImage)
                 } else if let videoUrl = videoUrl {
-                    successMsg = try await VideoSaver().saveToAlbum(videoUrl)
+                    successMsg = try await MediaFileSaver().saveToAlbum(videoUrl)
                 }
                 
                 isLoading = false
@@ -200,7 +200,7 @@ extension StoryPreview {
                 }
             } catch {
                 isLoading = false
-                let errMsg = (error as? ImageVideoSaveError)?.errMsg ?? error.localizedDescription
+                let errMsg = (error as? MediaSavingError)?.errMsg ?? error.localizedDescription
                 showNoticeMsg("ERROR: \(errMsg)")
             }
         }

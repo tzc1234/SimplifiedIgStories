@@ -63,7 +63,8 @@ struct ProgressBar_Previews: PreviewProvider {
             storyViewModel: StoryViewModel(
                 storyId: story.id,
                 storiesViewModel: storiesViewModel,
-                fileManager: LocalFileManager()
+                fileManager: LocalFileManager(),
+                mediaSaver: MediaFileSaver()
             )
         )
     }

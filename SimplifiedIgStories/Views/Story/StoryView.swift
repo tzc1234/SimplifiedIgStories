@@ -84,7 +84,8 @@ struct StoryView_Previews: PreviewProvider {
             vm: StoryViewModel(
                 storyId: story.id,
                 storiesViewModel: storiesViewModel,
-                fileManager: LocalFileManager()
+                fileManager: LocalFileManager(),
+                mediaSaver: MediaFileSaver()
             )
         )
     }
