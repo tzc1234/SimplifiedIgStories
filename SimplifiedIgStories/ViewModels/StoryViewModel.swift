@@ -5,12 +5,8 @@
 //  Created by Tsz-Lung on 08/03/2022.
 //
 
-import SwiftUI
 import Combine
-
-enum PortionTransitionDirection {
-    case forward, backward
-}
+import UIKit
 
 enum BarPortionAnimationStatus: CaseIterable {
     case inital, start, restart, pause, resume, finish
@@ -18,6 +14,10 @@ enum BarPortionAnimationStatus: CaseIterable {
 
 final class StoryViewModel: ObservableObject {
     typealias PortionId = Int
+    
+    enum PortionTransitionDirection {
+        case forward, backward
+    }
     
     enum PortionMoveDirection {
         case previous, next
@@ -36,7 +36,7 @@ final class StoryViewModel: ObservableObject {
     private var subscriptions = Set<AnyCancellable>()
     
     let storyId: Int
-    let storiesViewModel: StoriesViewModel
+    private let storiesViewModel: StoriesViewModel
     let fileManager: FileManageable
     
     init(storyId: Int, storiesViewModel: StoriesViewModel, fileManager: FileManageable) {
@@ -103,6 +103,14 @@ extension StoryViewModel {
     var currentStoryId: Int {
         storiesViewModel.currentStoryId
     }
+    
+    var isCurrentStory: Bool {
+        currentStoryId == storyId
+    }
+    
+    var shouldCubicRotation: Bool {
+        storiesViewModel.shouldCubicRotation
+    }
 }
 
 // MARK: helper functions
@@ -152,14 +160,14 @@ extension StoryViewModel {
             .store(in: &subscriptions)
     }
     
-    private func pausePortionAnimation() {
-        if isCurrentPortionAnimating {
+    func pausePortionAnimation() {
+        if isCurrentStory && isCurrentPortionAnimating {
             setCurrentBarPortionAnimationStatus(to: .pause)
         }
     }
     
-    private func resumePortionAnimation() {
-        if currentPortionAnimationStatus == .pause {
+    func resumePortionAnimation() {
+        if isCurrentStory && currentPortionAnimationStatus == .pause {
             setCurrentBarPortionAnimationStatus(to: .resume)
         }
     }
@@ -185,7 +193,7 @@ extension StoryViewModel {
 // MARK: functions for StoyView
 extension StoryViewModel {
     func initStoryAnimation() {
-        if currentStoryId == storyId && currentPortionAnimationStatus == .inital {
+        if isCurrentStory && currentPortionAnimationStatus == .inital {
             setCurrentBarPortionAnimationStatus(to: .start)
         }
     }
@@ -209,6 +217,7 @@ extension StoryViewModel {
             deletePortionFromStory(by: currentPortionIndex)
         }
     }
+    
 }
 
 // MARK: functions for animations
@@ -264,14 +273,12 @@ extension StoryViewModel {
     
     private func updateBarPortionAnimationStatusWhenDrag(_ isDragging: Bool) {
         if isDragging {
-            if currentStoryId == storyId {
-                pausePortionAnimation()
-            }
+            pausePortionAnimation()
         } else { // Dragged.
             if storiesViewModel.isSameStoryAfterDragged {
                 resumePortionAnimation()
             } else {
-                if currentStoryId == storyId {
+                if isCurrentStory {
                     setCurrentBarPortionAnimationStatus(to: .start)
                 }
                 
@@ -283,20 +290,10 @@ extension StoryViewModel {
     }
     
     func startProgressBarAnimation() {
-        guard currentStoryId == storyId && !isCurrentPortionAnimating else {
+        guard isCurrentStory && !isCurrentPortionAnimating else {
             return
         }
         setCurrentBarPortionAnimationStatus(to: .start)
-    }
-    
-    func pasuseOrResumeProgressBarAnimationDepends(on scenePhase: ScenePhase) {
-        guard currentStoryId == storyId else { return }
-        
-        if scenePhase == .active {
-            resumePortionAnimation()
-        } else if scenePhase == .inactive {
-            pausePortionAnimation()
-        }
     }
 }
 

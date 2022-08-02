@@ -58,22 +58,12 @@ struct StoryView: View {
                 
                 noticeLabel
             }
-            .background(
-                Group {
-                    let frame = geo.frame(in: .global)
-                    storyPortionViews
-                        .preference(key: FramePreferenceKey.self, value: frame)
-                        .onPreferenceChange(FramePreferenceKey.self) { preferenceFrame in
-                            vm.storiesViewModel.shouldCubicRotation =
-                            preferenceFrame.width == .screenWidth
-                        }
-                }
-            )
+            .background(storyPortionViews)
             .onAppear {
                 vm.initStoryAnimation()
             }
             .cubicTransition(
-                shouldRotate: vm.storiesViewModel.shouldCubicRotation,
+                shouldRotate: vm.shouldCubicRotation,
                 offsetX: geo.frame(in: .global).minX
             )
             .onDisappear {

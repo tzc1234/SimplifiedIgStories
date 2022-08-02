@@ -40,11 +40,15 @@ struct ProgressBar: View {
                 homeUIActionHandler.closeStoryContainer(storyId: storyId)
             }
         }
-        .onChange(of: vm.storiesViewModel.currentStoryId) { _ in
+        .onChange(of: vm.currentStoryId) { _ in
             vm.startProgressBarAnimation()
         }
         .onChange(of: scenePhase) { newPhase in
-            vm.pasuseOrResumeProgressBarAnimationDepends(on: newPhase)
+            if newPhase == .active {
+                vm.resumePortionAnimation()
+            } else if newPhase == .inactive {
+                vm.pausePortionAnimation()
+            }
         }
     }
     

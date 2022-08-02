@@ -28,6 +28,10 @@ struct StoryContainer: View {
                     )
                     .opacity(story.id != vm.currentStoryId && !vm.shouldCubicRotation ? 0.0 : 1.0)
                     .frame(width: .screenWidth, height: geo.size.height)
+                    .preference(key: FramePreferenceKey.self, value: geo.frame(in: .global))
+                    .onPreferenceChange(FramePreferenceKey.self) { preferenceFrame in
+                        vm.shouldCubicRotation = preferenceFrame.width == .screenWidth
+                    }
                 }
             }
         }
