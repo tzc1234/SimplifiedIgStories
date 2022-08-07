@@ -18,7 +18,7 @@
 		BE2D7794285F797400DBD924 /* CamStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2D7793285F797400DBD924 /* CamStatus.swift */; };
 		BE2D7796285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2D7795285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift */; };
 		BE463A2D285F05AE00599929 /* AVCamManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE463A2C285F05AE00599929 /* AVCamManager.swift */; };
-		BE482F042886C0C30094E54C /* FakeCamManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5F521B2882F74C001CB2B1 /* FakeCamManager.swift */; };
+		BE482F042886C0C30094E54C /* MockCamManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5F521B2882F74C001CB2B1 /* MockCamManager.swift */; };
 		BE50144A288DC7410043DF62 /* StoryViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE501449288DC7410043DF62 /* StoryViewModelTests.swift */; };
 		BE5CDC2D27DF4AAA00352A60 /* NoticeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5CDC2C27DF4AAA00352A60 /* NoticeLabel.swift */; };
 		BE5F521E28832923001CB2B1 /* StoryCamViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5F521D28832923001CB2B1 /* StoryCamViewModelTests.swift */; };
@@ -89,7 +89,7 @@
 		BE463A2C285F05AE00599929 /* AVCamManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVCamManager.swift; sourceTree = "<group>"; };
 		BE501449288DC7410043DF62 /* StoryViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryViewModelTests.swift; sourceTree = "<group>"; };
 		BE5CDC2C27DF4AAA00352A60 /* NoticeLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoticeLabel.swift; sourceTree = "<group>"; };
-		BE5F521B2882F74C001CB2B1 /* FakeCamManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeCamManager.swift; sourceTree = "<group>"; };
+		BE5F521B2882F74C001CB2B1 /* MockCamManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCamManager.swift; sourceTree = "<group>"; };
 		BE5F521D28832923001CB2B1 /* StoryCamViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCamViewModelTests.swift; sourceTree = "<group>"; };
 		BE69F503281973B3001BA4EC /* SimpleIGStoryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SimpleIGStoryTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE69F50C281974E5001BA4EC /* StoriesViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesViewModelTests.swift; sourceTree = "<group>"; };
@@ -239,7 +239,7 @@
 		BE482F032886C0960094E54C /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				BE5F521B2882F74C001CB2B1 /* FakeCamManager.swift */,
+				BE5F521B2882F74C001CB2B1 /* MockCamManager.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -576,7 +576,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE50144A288DC7410043DF62 /* StoryViewModelTests.swift in Sources */,
-				BE482F042886C0C30094E54C /* FakeCamManager.swift in Sources */,
+				BE482F042886C0C30094E54C /* MockCamManager.swift in Sources */,
 				BE5F521E28832923001CB2B1 /* StoryCamViewModelTests.swift in Sources */,
 				BE69F50D281974E5001BA4EC /* StoriesViewModelTests.swift in Sources */,
 			);

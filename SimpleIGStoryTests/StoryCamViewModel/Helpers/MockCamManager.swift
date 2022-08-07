@@ -1,5 +1,5 @@
 //
-//  FakeCamManager.swift
+//  MockCamManager.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 16/07/2022.
@@ -10,7 +10,7 @@ import Combine
 import UIKit
 @testable import Simple_IG_Story
 
-final class FakeCamManager: CamManager {
+final class MockCamManager: CamManager {
     var camPermPublisher = CurrentValueSubject<Bool, Never>(false)
     var microphonePermPublisher = CurrentValueSubject<Bool, Never>(false)
     var camStatusPublisher = PassthroughSubject<CamStatus, Never>()
@@ -37,7 +37,7 @@ final class FakeCamManager: CamManager {
 }
 
 // MARK: internal functions
-extension FakeCamManager {
+extension MockCamManager {
     func setupAndStartSession() {
         setupAndStartSessionCallCount += 1
         camStatusPublisher.send(.sessionStarted)
