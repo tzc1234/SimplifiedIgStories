@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-// MARK: - TraceableArc
 struct TraceableArc: InsettableShape {
     let startAngle: Double
     var endAngle: Double
@@ -18,7 +17,9 @@ struct TraceableArc: InsettableShape {
     var animatableData: Double {
         get { endAngle }
         set {
-            traceEndAngle.updateEndAngle(newValue)
+            Task { @MainActor [weak traceEndAngle] in
+                traceEndAngle?.updateEndAngle(newValue)
+            }
             endAngle = newValue
         }
     }
@@ -50,17 +51,15 @@ struct TraceableArc: InsettableShape {
     }
 }
 
-// MARK: - TracingEndAngle
+@MainActor
 final class TracingEndAngle: ObservableObject {
-    @Published var currentEndAngle: Double
+    @Published private(set) var currentEndAngle: Double
     
     init(currentEndAngle: Double) {
         self.currentEndAngle = currentEndAngle
     }
     
     func updateEndAngle(_ endAngle: Double) {
-        DispatchQueue.main.async { [weak self] in
-            self?.currentEndAngle = endAngle
-        }
+        currentEndAngle = endAngle
     }
 }
