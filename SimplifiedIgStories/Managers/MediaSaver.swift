@@ -7,7 +7,6 @@
 
 import PhotosUI
 
-// MARK: - MediaSaveError
 enum MediaSavingError: Error {
     case noAddPhotoPermission
     
@@ -19,29 +18,27 @@ enum MediaSavingError: Error {
     }
 }
 
-// MARK: - MediaSaver
 protocol MediaSaver {
-    typealias SuccessMsgStr = String
+    typealias SuccessMessage = String
     
-    func saveToAlbum(_ image: UIImage) async throws -> SuccessMsgStr
-    func saveToAlbum(_ videoUrl: URL) async throws -> SuccessMsgStr
+    func saveToAlbum(_ image: UIImage) async throws -> SuccessMessage
+    func saveToAlbum(_ videoURL: URL) async throws -> SuccessMessage
 }
 
-// MARK: - MediaFileSaver
 struct MediaFileSaver: MediaSaver {
-    func saveToAlbum(_ image: UIImage) async throws -> SuccessMsgStr {
+    func saveToAlbum(_ image: UIImage) async throws -> SuccessMessage {
         try await save {
             PHAssetChangeRequest.creationRequestForAsset(from: image)
         }
     }
     
-    func saveToAlbum(_ videoUrl: URL) async throws -> SuccessMsgStr {
+    func saveToAlbum(_ videoURL: URL) async throws -> SuccessMessage {
         try await save {
-            PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: videoUrl)
+            PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: videoURL)
         }
     }
     
-    private func save(changeRequest: @escaping () -> Void) async throws -> SuccessMsgStr {
+    private func save(changeRequest: @escaping () -> Void) async throws -> SuccessMessage {
         guard await PHPhotoLibrary.requestAuthorization(for: .addOnly) == .authorized else {
             throw MediaSavingError.noAddPhotoPermission
         }
