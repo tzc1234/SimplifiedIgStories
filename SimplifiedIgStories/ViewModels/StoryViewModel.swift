@@ -9,7 +9,7 @@ import Combine
 import UIKit
 
 enum BarPortionAnimationStatus: CaseIterable {
-    case inital, start, restart, pause, resume, finish
+    case initial, start, restart, pause, resume, finish
 }
 
 final class StoryViewModel: ObservableObject {
@@ -72,7 +72,7 @@ final class StoryViewModel: ObservableObject {
 // MARK: computed variables
 extension StoryViewModel {
     // *** All the stories are from local JSON, not from API,
-    // so force unwarp here. Don't do this in real environment!
+    // so force unwrap here. Don't do this in real environment!
     var story: Story {
         storiesViewModel.stories.first(where: { $0.id == storyId })!
     }
@@ -128,7 +128,7 @@ extension StoryViewModel {
     }
     
     private func initBarPortionAnimationStatus() {
-        setCurrentBarPortionAnimationStatus(to: .inital)
+        setCurrentBarPortionAnimationStatus(to: .initial)
     }
     
     func setCurrentBarPortionAnimationStatus(to status: BarPortionAnimationStatus) {
@@ -200,7 +200,7 @@ extension StoryViewModel {
 // MARK: functions for StoyView
 extension StoryViewModel {
     func initStoryAnimation() {
-        if isCurrentStory && currentPortionAnimationStatus == .inital {
+        if isCurrentStory && currentPortionAnimationStatus == .initial {
             setCurrentBarPortionAnimationStatus(to: .start)
         }
     }
@@ -242,14 +242,14 @@ extension StoryViewModel {
                     // just start the animation.
                     setCurrentBarPortionAnimationStatus(to: currentPortionAnimationStatus == .start ? .restart : .start)
                 } else { // Not at the first story (that means previous story must exist.),
-                    // set current portion animation status back to inital,
-                    setCurrentBarPortionAnimationStatus(to: .inital)
+                    // set current portion animation status back to initial,
+                    setCurrentBarPortionAnimationStatus(to: .initial)
                     // and then go to previous story.
                     storiesViewModel.moveCurrentStory(to: .previous)
                 }
             } else { // Not at the first portion,
-                // set current portion animation status to inital,
-                setCurrentBarPortionAnimationStatus(to: .inital)
+                // set current portion animation status to initial,
+                setCurrentBarPortionAnimationStatus(to: .initial)
                 // go back to previous portion normally,
                 moveCurrentPortion(to: .previous)
                 // and start the previous portion animation (is now the current portion).
@@ -269,7 +269,7 @@ extension StoryViewModel {
             // It's the last story now, withoutNextStoryAction perform.
             if storiesViewModel.isNowAtLastStory {
                 withoutNextStoryAction()
-            } else { // Not the last stroy now, go to next story.
+            } else { // Not the last story now, go to next story.
                 storiesViewModel.moveCurrentStory(to: .next)
             }
         } else { // Not the last portion, go to next portion.
@@ -290,7 +290,7 @@ extension StoryViewModel {
                 }
                 
                 if storiesViewModel.storyIdBeforeDragged == storyId {
-                    setCurrentBarPortionAnimationStatus(to: .inital)
+                    setCurrentBarPortionAnimationStatus(to: .initial)
                 }
             }
         }

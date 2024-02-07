@@ -12,7 +12,7 @@ struct ProgressBarPortion: View {
     @State private var endX = 0.0
     
     // ProgressBarPortion will frequently be recreate,
-    // TracingEndX must be a @StateObject to keep it unchange.
+    // TracingEndX must be a @StateObject to keep it unchanged.
     @StateObject private var tracingEndX = TracingEndX(currentEndX: 0.0)
     
     // For reset animation!
@@ -47,7 +47,7 @@ struct ProgressBarPortion: View {
                 .onChange(of: vm.barPortionAnimationStatusDict[portionId]) { newValue in
                     if let portionAnimationStatus = newValue {
                         switch portionAnimationStatus {
-                        case .inital:
+                        case .initial:
                             initializeAnimation()
                         case .start:
                             startAnimation(maxWidth: geo.size.width)

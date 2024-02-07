@@ -38,7 +38,7 @@ struct StoryPortionView: View {
             }
             
             switch animationStatus {
-            case .inital:
+            case .initial:
                 player.reset()
             case .start:
                 player.replay()
