@@ -74,6 +74,7 @@ extension StoryContainer {
         guard let index = vm.currentStoryIndex else {
             return 0.0
         }
+        
         return -CGFloat(index) * width
     }
     

@@ -42,7 +42,7 @@ struct AVCaptureVideoPreviewRepresentable: UIViewRepresentable {
         Coordinator(parent: self)
     }
     
-    class Coordinator {
+    final class Coordinator {
         private let parent: AVCaptureVideoPreviewRepresentable
         
         init(parent: AVCaptureVideoPreviewRepresentable) {

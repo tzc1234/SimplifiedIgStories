@@ -66,6 +66,19 @@ struct StoryCamPermissionView: View {
         )
         
     }
+    
+    private func gotoSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString),
+              UIApplication.shared.canOpenURL(url) else {
+            return
+        }
+        
+        UIApplication.shared.open(url) { isSuccess in
+            if isSuccess {
+                print("Goto settings success.")
+            }
+        }
+    }
 }
 
 struct PermissionView_Previews: PreviewProvider {
@@ -73,21 +86,5 @@ struct PermissionView_Previews: PreviewProvider {
         StoryCamPermissionView(
             storyCamViewModel: StoryCamViewModel(camManager: AVCamManager())
         )
-    }
-}
-
-// MARK: functions
-extension StoryCamPermissionView {
-    private func gotoSettings() {
-        guard
-            let url = URL(string: UIApplication.openSettingsURLString),
-                UIApplication.shared.canOpenURL(url)
-        else {
-            return
-        }
-        
-        UIApplication.shared.open(url) { isSuccess in
-            if isSuccess { print("Goto settings success.") }
-        }
     }
 }

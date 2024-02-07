@@ -28,6 +28,7 @@ struct Portion: Codable, Identifiable {
         guard let videoDuration = videoDuration else {
             return .defaultStoryDuration
         }
+        
         return videoDuration
     }
     

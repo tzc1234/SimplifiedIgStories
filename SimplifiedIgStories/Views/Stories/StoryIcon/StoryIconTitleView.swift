@@ -35,22 +35,19 @@ struct StoryIconTitleView: View {
             titleText
         }
     }
-}
-
-struct StoryIconTitleView_Previews: PreviewProvider {
-    static var previews: some View {
-        StoryIconTitleView(story: PreviewData.stories[0])
-            .previewLayout(.sizeThatFits)
-    }
-}
-
-// MARK: computed variables
-extension StoryIconTitleView {
+    
     var titleText: some View {
         Text(story.user.title)
             .font(.caption)
             .lineLimit(1)
             .foregroundColor(colorScheme == .light ? .black : .white)
             .padding(.horizontal, 4)
+    }
+}
+
+struct StoryIconTitleView_Previews: PreviewProvider {
+    static var previews: some View {
+        StoryIconTitleView(story: PreviewData.stories[0])
+            .previewLayout(.sizeThatFits)
     }
 }

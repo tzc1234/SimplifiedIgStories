@@ -8,7 +8,7 @@
 import SwiftUI
 import AVKit
 
-// *** In real enironment, images are loaded through internet.
+// *** In real environment, images are loaded through internet.
 // The failure case should be considered.
 struct StoryPortionView: View {
     @State private var player: AVPlayer?

@@ -35,21 +35,7 @@ struct StoryIconsView: View {
             await vm.fetchStories()
         }
     }
-}
-
-struct StoryIconsView_Previews: PreviewProvider {
-    static var previews: some View {
-        let vm = StoriesViewModel(fileManager: LocalFileManager())
-        StoryIconsView(vm: vm)
-            .environmentObject(HomeUIActionHandler())
-            .task {
-                await vm.fetchStories()
-            }
-    }
-}
-
-// MARK: helper functions
-extension StoryIconsView {
+    
     private func tapIconAction(storyId: Int) {
         guard let story = vm.getStory(by: storyId) else {
             return
@@ -61,5 +47,16 @@ extension StoryIconsView {
         } else if story.user.isCurrentUser {
             homeUIActionHandler.toggleStoryCamView()
         }
+    }
+}
+
+struct StoryIconsView_Previews: PreviewProvider {
+    static var previews: some View {
+        let vm = StoriesViewModel(fileManager: LocalFileManager())
+        StoryIconsView(vm: vm)
+            .environmentObject(HomeUIActionHandler())
+            .task {
+                await vm.fetchStories()
+            }
     }
 }

@@ -136,8 +136,7 @@ extension AVCamManager {
         sessionQueue.async { [weak self] in
             guard let self = self,
                     let movieFileOutput = self.movieFileOutput,
-                    !movieFileOutput.isRecording
-            else {
+                    !movieFileOutput.isRecording else {
                 return
             }
             
@@ -164,8 +163,7 @@ extension AVCamManager {
         sessionQueue.async { [weak self] in
             guard let self = self,
                     let movieFileOutput = self.movieFileOutput,
-                    movieFileOutput.isRecording
-            else {
+                    movieFileOutput.isRecording else {
                 return
             }
             
