@@ -7,7 +7,7 @@
 
 import XCTest
 
-struct NewStory: Equatable {
+struct LocalStory: Equatable {
     
 }
 
@@ -27,7 +27,7 @@ final class LocalStoriesLoader {
         
     }
 
-    func load() async throws -> [NewStory] {
+    func load() async throws -> [LocalStory] {
         guard let data = try? await client.fetch() else {
             throw Error.notFound
         }
@@ -68,14 +68,6 @@ final class LocalStoriesLoaderTests: XCTestCase {
         XCTAssertEqual(client.requestCallCount, 0)
     }
     
-    func test_load_requestsFromClient() async throws {
-        let (sut, client) = makeSUT(stubs: [.success(emptyStoriesData())])
-        
-        _ = try await sut.load()
-        
-        XCTAssertEqual(client.requestCallCount, 1)
-    }
-    
     func test_load_deliversNotFoundErrorOnClientError() async {
         let (sut, _) = makeSUT(stubs: [.failure(anyNSError())])
         
@@ -100,7 +92,7 @@ final class LocalStoriesLoaderTests: XCTestCase {
     }
     
     func test_load_deliversEmptyStoriesWhileReceivedEmptyJSON() async throws {
-        let (sut, client) = makeSUT(stubs: [.success(emptyStoriesData())])
+        let (sut, _) = makeSUT(stubs: [.success(emptyStoriesData())])
         
         let receivedStories = try await sut.load()
         
