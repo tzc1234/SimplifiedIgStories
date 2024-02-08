@@ -175,10 +175,10 @@
 			children = (
 				BE090B5727B9562B00B6F906 /* SimplifiedIgStoriesApp.swift */,
 				BE9EF6C427E3673600942976 /* Configs.swift */,
+				BE8F57FF27D60E7D00F9DB92 /* DataServices */,
 				BE9336C827D24468009E5370 /* Managers */,
 				BE8F580827D668C700F9DB92 /* ViewModels */,
 				BE090B6527B9566D00B6F906 /* Views */,
-				BE8F57FF27D60E7D00F9DB92 /* DataServices */,
 				BEA1D95C27C3DA3000D0A67A /* Models */,
 				BEA1D95627C3C71B00D0A67A /* Extensions */,
 				BEA1D95927C3D9EB00D0A67A /* Resources */,
@@ -192,6 +192,7 @@
 			isa = PBXGroup;
 			children = (
 				BE090B5E27B9562D00B6F906 /* Preview Assets.xcassets */,
+				BE77C89928895CF000E1FA0A /* PreviewData.swift */,
 			);
 			path = "Preview Content";
 			sourceTree = "<group>";
@@ -327,7 +328,6 @@
 			isa = PBXGroup;
 			children = (
 				BE8F580627D6668000F9DB92 /* AppDataService.swift */,
-				BE77C89928895CF000E1FA0A /* PreviewData.swift */,
 			);
 			path = DataServices;
 			sourceTree = "<group>";
@@ -463,7 +463,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1330;
-				LastUpgradeCheck = 1320;
+				LastUpgradeCheck = 1520;
 				TargetAttributes = {
 					BE090B5327B9562B00B6F906 = {
 						CreatedOnToolsVersion = 13.2.1;
@@ -630,6 +630,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -691,6 +692,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
