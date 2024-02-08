@@ -33,19 +33,13 @@ final class FileDataClientTests: XCTestCase {
     func test_fetch_deliversErrorWhenInvalidURL() async {
         let sut = FileDataClient(url: invalidURL())
         
-        do {
-            _ = try await sut.fetch()
-            XCTFail("Should be an error")
-        } catch {}
+        await assertThrowsError(_ = try await sut.fetch())
     }
     
     func test_fetch_deliversErrorWhenEmptyFile() async {
         let sut = FileDataClient(url: emptyFileURL())
         
-        do {
-            _ = try await sut.fetch()
-            XCTFail("Should be an error")
-        } catch {}
+        await assertThrowsError(_ = try await sut.fetch())
     }
     
     func test_fetch_deliversDataWhenValidFile() async throws {
