@@ -64,6 +64,7 @@
 		BEBF32322B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF32312B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift */; };
 		BEBF32382B7512BF00DCD624 /* LocalStory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF32372B7512BF00DCD624 /* LocalStory.swift */; };
 		BEBF323A2B7512EF00DCD624 /* DataClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF32392B7512EF00DCD624 /* DataClient.swift */; };
+		BEBF323C2B75133700DCD624 /* LocalStoriesLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF323B2B75133700DCD624 /* LocalStoriesLoader.swift */; };
 		BEC3B4C427DE585F00B44BDF /* StoryCamViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */; };
 		BED0F60D27BBF64B00D93F15 /* StoryIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */; };
 /* End PBXBuildFile section */
@@ -138,6 +139,7 @@
 		BEBF32312B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+MemoryLeakTracking.swift"; sourceTree = "<group>"; };
 		BEBF32372B7512BF00DCD624 /* LocalStory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStory.swift; sourceTree = "<group>"; };
 		BEBF32392B7512EF00DCD624 /* DataClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataClient.swift; sourceTree = "<group>"; };
+		BEBF323B2B75133700DCD624 /* LocalStoriesLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStoriesLoader.swift; sourceTree = "<group>"; };
 		BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCamViewModel.swift; sourceTree = "<group>"; };
 		BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIconsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -340,6 +342,7 @@
 				BE8F580627D6668000F9DB92 /* AppDataService.swift */,
 				BEBF32372B7512BF00DCD624 /* LocalStory.swift */,
 				BEBF32392B7512EF00DCD624 /* DataClient.swift */,
+				BEBF323B2B75133700DCD624 /* LocalStoriesLoader.swift */,
 			);
 			path = DataServices;
 			sourceTree = "<group>";
@@ -543,6 +546,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE9336CE27D2690E009E5370 /* MediaSaver.swift in Sources */,
+				BEBF323C2B75133700DCD624 /* LocalStoriesLoader.swift in Sources */,
 				BEA7D9FF27C6DFFC00DA81E6 /* TraceableArc.swift in Sources */,
 				BE5CDC2D27DF4AAA00352A60 /* NoticeLabel.swift in Sources */,
 				BE93B8C127C8D96900B97C40 /* TraceableRectangle.swift in Sources */,
