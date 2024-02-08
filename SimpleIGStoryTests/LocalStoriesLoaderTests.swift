@@ -16,33 +16,42 @@ final class LocalStoriesLoader {
     
     enum Error: Swift.Error {
         case notFound
+        case invalidData
+    }
+    
+    private struct DecodableStory: Decodable {
+        
     }
 
     func load() async throws {
-        do {
-            try await client.fetch()
-        } catch {
+        guard let data = try? await client.fetch() else {
             throw Error.notFound
+        }
+        
+        guard let _ = try? JSONDecoder().decode(DecodableStory.self, from: data) else {
+            throw Error.invalidData
         }
     }
 }
 
 protocol DataClient {
-    func fetch() async throws
+    func fetch() async throws -> Data
 }
 
 final class DataClientSpy: DataClient {
+    typealias Stub = Result<Data, Error>
+    
     private(set) var requestCallCount = 0
     
-    private var stubs = [Result<Void, Error>]()
+    private var stubs = [Stub]()
     
-    init(stubs: [Result<Void, Error>]) {
+    init(stubs: [Stub]) {
         self.stubs = stubs
     }
     
-    func fetch() async throws {
+    func fetch() async throws -> Data {
         requestCallCount += 1
-        try stubs.removeLast().get()
+        return try stubs.removeLast().get()
     }
 }
 
@@ -54,7 +63,9 @@ final class LocalStoriesLoaderTests: XCTestCase {
     }
     
     func test_load_requestsFromClient() async throws {
-        let (sut, client) = makeSUT(stubs: [.success(())])
+        let json: [[String: Any]] = []
+        let emptyData = try! JSONSerialization.data(withJSONObject: json)
+        let (sut, client) = makeSUT(stubs: [.success(emptyData)])
         
         try await sut.load()
         
@@ -62,7 +73,7 @@ final class LocalStoriesLoaderTests: XCTestCase {
     }
     
     func test_load_deliversNotFoundErrorOnClientError() async {
-        let (sut, client) = makeSUT(stubs: [.failure(anyNSError())])
+        let (sut, _) = makeSUT(stubs: [.failure(anyNSError())])
         
         do {
             try await sut.load()
@@ -72,9 +83,21 @@ final class LocalStoriesLoaderTests: XCTestCase {
         }
     }
     
+    func test_load_deliversInvalidDataErrorWhileReceivedInvalidData() async {
+        let invalidData = Data("invalid".utf8)
+        let (sut, _) = makeSUT(stubs: [.success(invalidData)])
+        
+        do {
+            try await sut.load()
+            XCTFail("Should be an error")
+        } catch {
+            XCTAssertEqual(error as? LocalStoriesLoader.Error, .invalidData)
+        }
+    }
+    
     // MAKE: - Helpers
     
-    private func makeSUT(stubs: [Result<Void, Error>] = [],
+    private func makeSUT(stubs: [DataClientSpy.Stub] = [],
                          file: StaticString = #filePath,
                          line: UInt = #line) -> (sut: LocalStoriesLoader, client: DataClientSpy) {
         let client = DataClientSpy(stubs: stubs)
