@@ -157,19 +157,13 @@ final class LocalStoriesLoaderTests: XCTestCase {
             makeStory(
                 id: 0,
                 lastUpdate: nil,
-                userId: 0,
-                userName: "user0",
-                avatar: "avatar0",
-                isCurrentUser: true, 
+                user: .init(id: 0, name: "user0", avatar: "avatar0", isCurrentUser: true),
                 portions: []
             ),
             makeStory(
                 id: 1,
                 lastUpdate: 1645401600,
-                userId: 1,
-                userName: "user1",
-                avatar: "avatar1",
-                isCurrentUser: true, 
+                user: .init(id: 1, name: "user1", avatar: "avatar1", isCurrentUser: false),
                 portions: [
                     .init(id: 0, resource: "resource0", duration: nil, type: "image"),
                     .init(id: 1, resource: "resource1", duration: 999, type: "video"),
@@ -177,12 +171,12 @@ final class LocalStoriesLoaderTests: XCTestCase {
             )
         ]
         let data = stories.map(\.json).toData()
-        let local = stories.map(\.local)
         let sut = makeSUT(stubs: [.success(data)])
         
         let receivedStories = try await sut.load()
         
-        XCTAssertEqual(receivedStories, local)
+        let models = stories.map(\.model)
+        XCTAssertEqual(receivedStories, models)
     }
     
     // MAKE: - Helpers
@@ -208,56 +202,68 @@ final class LocalStoriesLoaderTests: XCTestCase {
     
     private func makeStory(id: Int,
                            lastUpdate: TimeInterval?,
-                           userId: Int,
-                           userName: String,
-                           avatar: String,
-                           isCurrentUser: Bool,
-                           portions: [PortionInput]) -> (json: [String: Any], local: LocalStory) {
-        let portionsJSON = portions.map {
-            [
-                "id": $0.id,
-                "resource": $0.resource,
-                "duration": $0.duration as Any?,
-                "type": $0.type
-            ].compactMapValues { $0 } as [String: Any]
-
-        }
+                           user: UserInput,
+                           portions: [PortionInput]) -> (json: [String: Any], model: LocalStory) {
         let json: [String: Any] = [
             "id": id,
-            "lastUpdate": lastUpdate,
-            "portions": portionsJSON,
-            "user": [
-                "id": userId,
-                "name": userName,
+            "lastUpdate": lastUpdate as Any?,
+            "user": user.json,
+            "portions": portions.map(\.json)
+        ].compactMapValues { $0 }
+        
+        let model = LocalStory(
+            id: id,
+            lastUpdate: lastUpdate.map(Date.init(timeIntervalSince1970:)),
+            user: user.model,
+            portions: portions.map(\.model)
+        )
+        
+        return (json, model)
+    }
+    
+    private struct UserInput {
+        let id: Int
+        let name: String
+        let avatar: String
+        let isCurrentUser: Bool
+        
+        var json: [String: Any] {
+            [
+                "id": id,
+                "name": name,
                 "avatar": avatar,
                 "isCurrentUser": isCurrentUser
             ]
-        ].compactMapValues { $0 }
-        
-        let localUser = LocalUser(id: userId, name: userName, avatar: avatar, isCurrentUser: isCurrentUser)
-        let localPortions = portions.map {
-            LocalPortion(
-                id: $0.id,
-                resource: $0.resource,
-                duration: $0.duration ?? .defaultStoryDuration,
-                type: .init(rawValue: $0.type) ?? .image
-            )
         }
-        let local = LocalStory(
-            id: id, 
-            lastUpdate: lastUpdate.map(Date.init(timeIntervalSince1970:)),
-            user: localUser,
-            portions: localPortions
-        )
         
-        return (json, local)
+        var model: LocalUser {
+            .init(id: id, name: name, avatar: avatar, isCurrentUser: isCurrentUser)
+        }
     }
     
-    struct PortionInput {
+    private struct PortionInput {
         let id: Int
         let resource: String
         let duration: Double?
         let type: String
+        
+        var json: [String: Any] {
+            [
+                "id": id,
+                "resource": resource,
+                "duration": duration as Any?,
+                "type": type
+            ].compactMapValues { $0 }
+        }
+        
+        var model: LocalPortion {
+            .init(
+                id: id,
+                resource: resource,
+                duration: duration ?? .defaultStoryDuration,
+                type: .init(rawValue: type) ?? .image
+            )
+        }
     }
 }
 
