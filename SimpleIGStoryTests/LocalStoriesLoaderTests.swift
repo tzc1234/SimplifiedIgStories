@@ -6,11 +6,13 @@
 //
 
 import XCTest
+@testable import Simple_IG_Story
 
 struct LocalStory: Equatable {
     let id: Int
     let lastUpdate: Date?
     let user: LocalUser
+    let portions: [LocalPortion]
 }
 
 struct LocalUser: Equatable {
@@ -18,6 +20,18 @@ struct LocalUser: Equatable {
     let name: String
     let avatar: String
     let isCurrentUser: Bool
+}
+
+struct LocalPortion: Equatable {
+    let id: Int
+    let resource: String
+    let duration: Double
+    let type: ResourceType
+}
+
+enum ResourceType: String {
+    case image
+    case video
 }
 
 final class LocalStoriesLoader {
@@ -36,9 +50,15 @@ final class LocalStoriesLoader {
         let id: Int
         let lastUpdate: TimeInterval?
         let user: User
+        let portions: [Portion]
         
         var local: LocalStory {
-            .init(id: id, lastUpdate: lastUpdate.map(Date.init(timeIntervalSince1970:)), user: user.local)
+            .init(
+                id: id,
+                lastUpdate: lastUpdate.map(Date.init(timeIntervalSince1970:)),
+                user: user.local,
+                portions: portions.map(\.local)
+            )
         }
         
         struct User: Decodable {
@@ -49,6 +69,22 @@ final class LocalStoriesLoader {
             
             var local: LocalUser {
                 .init(id: id, name: name, avatar: avatar, isCurrentUser: isCurrentUser)
+            }
+        }
+        
+        struct Portion: Decodable {
+            let id: Int
+            let resource: String
+            let duration: Double?
+            let type: String
+            
+            var local: LocalPortion {
+                .init(
+                    id: id,
+                    resource: resource,
+                    duration: duration ?? .defaultStoryDuration,
+                    type: .init(rawValue: type) ?? .image
+                )
             }
         }
     }
@@ -124,7 +160,8 @@ final class LocalStoriesLoaderTests: XCTestCase {
                 userId: 0,
                 userName: "user0",
                 avatar: "avatar0",
-                isCurrentUser: true
+                isCurrentUser: true, 
+                portions: []
             ),
             makeStory(
                 id: 1,
@@ -132,7 +169,11 @@ final class LocalStoriesLoaderTests: XCTestCase {
                 userId: 1,
                 userName: "user1",
                 avatar: "avatar1",
-                isCurrentUser: true
+                isCurrentUser: true, 
+                portions: [
+                    .init(id: 0, resource: "resource0", duration: nil, type: "image"),
+                    .init(id: 1, resource: "resource1", duration: 999, type: "video"),
+                ]
             )
         ]
         let data = stories.map(\.json).toData()
@@ -170,10 +211,21 @@ final class LocalStoriesLoaderTests: XCTestCase {
                            userId: Int,
                            userName: String,
                            avatar: String,
-                           isCurrentUser: Bool) -> (json: [String: Any], local: LocalStory) {
+                           isCurrentUser: Bool,
+                           portions: [PortionInput]) -> (json: [String: Any], local: LocalStory) {
+        let portionsJSON = portions.map {
+            [
+                "id": $0.id,
+                "resource": $0.resource,
+                "duration": $0.duration as Any?,
+                "type": $0.type
+            ].compactMapValues { $0 } as [String: Any]
+
+        }
         let json: [String: Any] = [
             "id": id,
             "lastUpdate": lastUpdate,
+            "portions": portionsJSON,
             "user": [
                 "id": userId,
                 "name": userName,
@@ -182,10 +234,30 @@ final class LocalStoriesLoaderTests: XCTestCase {
             ]
         ].compactMapValues { $0 }
         
-        let user = LocalUser(id: userId, name: userName, avatar: avatar, isCurrentUser: isCurrentUser)
-        let local = LocalStory(id: id, lastUpdate: lastUpdate.map(Date.init(timeIntervalSince1970:)), user: user)
+        let localUser = LocalUser(id: userId, name: userName, avatar: avatar, isCurrentUser: isCurrentUser)
+        let localPortions = portions.map {
+            LocalPortion(
+                id: $0.id,
+                resource: $0.resource,
+                duration: $0.duration ?? .defaultStoryDuration,
+                type: .init(rawValue: $0.type) ?? .image
+            )
+        }
+        let local = LocalStory(
+            id: id, 
+            lastUpdate: lastUpdate.map(Date.init(timeIntervalSince1970:)),
+            user: localUser,
+            portions: localPortions
+        )
         
         return (json, local)
+    }
+    
+    struct PortionInput {
+        let id: Int
+        let resource: String
+        let duration: Double?
+        let type: String
     }
 }
 
