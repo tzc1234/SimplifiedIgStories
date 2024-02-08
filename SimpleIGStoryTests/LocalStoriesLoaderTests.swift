@@ -55,6 +55,7 @@ final class LocalStoriesLoaderTests: XCTestCase {
                 portions: [
                     .init(id: 0, resource: "resource0", duration: nil, type: "image"),
                     .init(id: 1, resource: "resource1", duration: 999, type: "video"),
+                    .init(id: 2, resource: "resource2", duration: nil, type: "unknown"),
                 ]
             )
         ]
