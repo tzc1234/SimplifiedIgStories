@@ -72,6 +72,7 @@
 		BEEEBBED2B752E4200EC85C7 /* empty.json in Resources */ = {isa = PBXBuildFile; fileRef = BEEEBBEC2B752E4200EC85C7 /* empty.json */; };
 		BEEEBBEF2B7531FE00EC85C7 /* valid.json in Resources */ = {isa = PBXBuildFile; fileRef = BEEEBBEE2B7531FE00EC85C7 /* valid.json */; };
 		BEEEBBF12B75345400EC85C7 /* XCTestCase+AssertThrows.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEEBBF02B75345400EC85C7 /* XCTestCase+AssertThrows.swift */; };
+		BEEEBBF42B75357500EC85C7 /* FileDataClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEEBBF32B75357500EC85C7 /* FileDataClient.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -152,6 +153,7 @@
 		BEEEBBEC2B752E4200EC85C7 /* empty.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = empty.json; sourceTree = "<group>"; };
 		BEEEBBEE2B7531FE00EC85C7 /* valid.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = valid.json; sourceTree = "<group>"; };
 		BEEEBBF02B75345400EC85C7 /* XCTestCase+AssertThrows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+AssertThrows.swift"; sourceTree = "<group>"; };
+		BEEEBBF32B75357500EC85C7 /* FileDataClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDataClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -355,6 +357,7 @@
 				BEBF32372B7512BF00DCD624 /* LocalStory.swift */,
 				BEBF323D2B75149300DCD624 /* LocalStoriesMapper.swift */,
 				BEBF323B2B75133700DCD624 /* LocalStoriesLoader.swift */,
+				BEEEBBF32B75357500EC85C7 /* FileDataClient.swift */,
 			);
 			path = DataServices;
 			sourceTree = "<group>";
@@ -591,6 +594,7 @@
 				BEB8752927DA120300D60110 /* LocalFileManager.swift in Sources */,
 				BE77C89A28895CF000E1FA0A /* PreviewData.swift in Sources */,
 				BE8A758127BC107000E9F745 /* HomeView.swift in Sources */,
+				BEEEBBF42B75357500EC85C7 /* FileDataClient.swift in Sources */,
 				BEBF323A2B7512EF00DCD624 /* DataClient.swift in Sources */,
 				BE9336C227D21811009E5370 /* AVPlayerControllerRepresentable.swift in Sources */,
 				BE2D7792285F765F00DBD924 /* CamSetupError.swift in Sources */,

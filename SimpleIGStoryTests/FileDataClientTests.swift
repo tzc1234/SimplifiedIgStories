@@ -8,27 +8,6 @@
 import XCTest
 @testable import Simple_IG_Story
 
-final class FileDataClient: DataClient {
-    private let url: URL
-    
-    init(url: URL) {
-        self.url = url
-    }
-    
-    enum Error: Swift.Error {
-        case empty
-    }
-    
-    func fetch() async throws -> Data {
-        let data = try Data(contentsOf: url)
-        guard !data.isEmpty else {
-            throw Error.empty
-        }
-        
-        return data
-    }
-}
-
 final class FileDataClientTests: XCTestCase {
     func test_fetch_deliversErrorWhenInvalidURL() async {
         let sut = FileDataClient(url: invalidURL())
