@@ -28,9 +28,22 @@ final class FileDataClientTests: XCTestCase {
         } catch {}
     }
     
+    func test_fetch_deliversErrorWhenEmptyFile() async {
+        let sut = FileDataClient(url: emptyFileURL())
+        
+        do {
+            _ = try await sut.fetch()
+            XCTFail("Should be an error")
+        } catch {}
+    }
+    
     // MARK: - Helpers
     
     private func invalidURL(file: StaticString = #filePath) -> URL {
         URL(fileURLWithPath: String(describing: file)).deletingLastPathComponent()
+    }
+    
+    private func emptyFileURL() -> URL {
+        Bundle(for: Self.self).url(forResource: "empty.json", withExtension: nil)!
     }
 }
