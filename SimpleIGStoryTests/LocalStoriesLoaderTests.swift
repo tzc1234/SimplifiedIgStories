@@ -13,21 +13,36 @@ final class LocalStoriesLoader {
     init(client: DataClient) {
         self.client = client
     }
+    
+    enum Error: Swift.Error {
+        case notFound
+    }
 
-    func load() {
-        client.fetch()
+    func load() async throws {
+        do {
+            try await client.fetch()
+        } catch {
+            throw Error.notFound
+        }
     }
 }
 
 protocol DataClient {
-    func fetch()
+    func fetch() async throws
 }
 
 final class DataClientSpy: DataClient {
     private(set) var requestCallCount = 0
     
-    func fetch() {
+    private var stubs = [Result<Void, Error>]()
+    
+    init(stubs: [Result<Void, Error>]) {
+        self.stubs = stubs
+    }
+    
+    func fetch() async throws {
         requestCallCount += 1
+        try stubs.removeLast().get()
     }
 }
 
@@ -38,22 +53,38 @@ final class LocalStoriesLoaderTests: XCTestCase {
         XCTAssertEqual(client.requestCallCount, 0)
     }
     
-    func test_load_requestsFromClient() {
-        let (sut, client) = makeSUT()
+    func test_load_requestsFromClient() async throws {
+        let (sut, client) = makeSUT(stubs: [.success(())])
         
-        sut.load()
+        try await sut.load()
         
         XCTAssertEqual(client.requestCallCount, 1)
     }
     
+    func test_load_deliversNotFoundErrorOnClientError() async {
+        let (sut, client) = makeSUT(stubs: [.failure(anyNSError())])
+        
+        do {
+            try await sut.load()
+            XCTFail("Should be an error")
+        } catch {
+            XCTAssertEqual(error as? LocalStoriesLoader.Error, .notFound)
+        }
+    }
+    
     // MAKE: - Helpers
     
-    private func makeSUT(file: StaticString = #filePath,
+    private func makeSUT(stubs: [Result<Void, Error>] = [],
+                         file: StaticString = #filePath,
                          line: UInt = #line) -> (sut: LocalStoriesLoader, client: DataClientSpy) {
-        let client = DataClientSpy()
+        let client = DataClientSpy(stubs: stubs)
         let sut = LocalStoriesLoader(client: client)
         trackForMemoryLeaks(client, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
         return (sut, client)
+    }
+    
+    private func anyNSError() -> NSError {
+        NSError(domain: "any", code: 0)
     }
 }
