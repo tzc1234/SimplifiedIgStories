@@ -1,1 +1,42 @@
-{}
+[
+    {
+        "id": 0,
+        "lastUpdate": null,
+        "portions": [],
+        "user": {
+            "id": 0,
+            "name": "user0",
+            "avatar": "avatar0",
+            "isCurrentUser": true
+        }
+    },
+    {
+        "id": 1,
+        "lastUpdate": 1645401600,
+        "portions": [
+            {
+                "id": 0,
+                "resource": "resource0",
+                "type": "image"
+            },
+            {
+                "id": 1,
+                "resource": "resource1",
+                "duration": 999,
+                "type": "video"
+            },
+            {
+                "id": 2,
+                "resource": "resource2",
+                "duration": 1,
+                "type": "any"
+            }
+        ],
+        "user": {
+            "id": 1,
+            "name": "user1",
+            "avatar": "avatar1",
+            "isCurrentUser": false
+        }
+    }
+]

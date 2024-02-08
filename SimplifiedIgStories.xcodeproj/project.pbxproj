@@ -73,6 +73,7 @@
 		BEEEBBEF2B7531FE00EC85C7 /* valid.json in Resources */ = {isa = PBXBuildFile; fileRef = BEEEBBEE2B7531FE00EC85C7 /* valid.json */; };
 		BEEEBBF12B75345400EC85C7 /* XCTestCase+AssertThrows.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEEBBF02B75345400EC85C7 /* XCTestCase+AssertThrows.swift */; };
 		BEEEBBF42B75357500EC85C7 /* FileDataClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEEBBF32B75357500EC85C7 /* FileDataClient.swift */; };
+		BEEEBBF82B75418800EC85C7 /* LocalStoriesLoaderIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEEBBF72B75418800EC85C7 /* LocalStoriesLoaderIntegrationTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -154,6 +155,7 @@
 		BEEEBBEE2B7531FE00EC85C7 /* valid.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = valid.json; sourceTree = "<group>"; };
 		BEEEBBF02B75345400EC85C7 /* XCTestCase+AssertThrows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+AssertThrows.swift"; sourceTree = "<group>"; };
 		BEEEBBF32B75357500EC85C7 /* FileDataClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDataClient.swift; sourceTree = "<group>"; };
+		BEEEBBF72B75418800EC85C7 /* LocalStoriesLoaderIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStoriesLoaderIntegrationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -468,6 +470,7 @@
 				BEEEBBF22B7534E600EC85C7 /* json */,
 				BEBF322E2B74D5DD00DCD624 /* LocalStoriesLoaderTests.swift */,
 				BEEEBBEA2B75287100EC85C7 /* FileDataClientTests.swift */,
+				BEEEBBF72B75418800EC85C7 /* LocalStoriesLoaderIntegrationTests.swift */,
 			);
 			path = DataServices;
 			sourceTree = "<group>";
@@ -646,6 +649,7 @@
 				BE5F521E28832923001CB2B1 /* StoryCamViewModelTests.swift in Sources */,
 				BE69F50D281974E5001BA4EC /* StoriesViewModelTests.swift in Sources */,
 				BEBF322F2B74D5DD00DCD624 /* LocalStoriesLoaderTests.swift in Sources */,
+				BEEEBBF82B75418800EC85C7 /* LocalStoriesLoaderIntegrationTests.swift in Sources */,
 				BEBF32322B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
