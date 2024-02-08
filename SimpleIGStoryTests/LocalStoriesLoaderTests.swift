@@ -7,6 +7,10 @@
 
 import XCTest
 
+struct NewStory: Equatable {
+    
+}
+
 final class LocalStoriesLoader {
     private let client: DataClient
     
@@ -23,14 +27,16 @@ final class LocalStoriesLoader {
         
     }
 
-    func load() async throws {
+    func load() async throws -> [NewStory] {
         guard let data = try? await client.fetch() else {
             throw Error.notFound
         }
         
-        guard let _ = try? JSONDecoder().decode(DecodableStory.self, from: data) else {
+        guard let _ = try? JSONDecoder().decode([DecodableStory].self, from: data) else {
             throw Error.invalidData
         }
+        
+        return []
     }
 }
 
@@ -63,11 +69,9 @@ final class LocalStoriesLoaderTests: XCTestCase {
     }
     
     func test_load_requestsFromClient() async throws {
-        let json: [[String: Any]] = []
-        let emptyData = try! JSONSerialization.data(withJSONObject: json)
-        let (sut, client) = makeSUT(stubs: [.success(emptyData)])
+        let (sut, client) = makeSUT(stubs: [.success(emptyStoriesData())])
         
-        try await sut.load()
+        _ = try await sut.load()
         
         XCTAssertEqual(client.requestCallCount, 1)
     }
@@ -76,7 +80,7 @@ final class LocalStoriesLoaderTests: XCTestCase {
         let (sut, _) = makeSUT(stubs: [.failure(anyNSError())])
         
         do {
-            try await sut.load()
+            _ = try await sut.load()
             XCTFail("Should be an error")
         } catch {
             XCTAssertEqual(error as? LocalStoriesLoader.Error, .notFound)
@@ -88,11 +92,19 @@ final class LocalStoriesLoaderTests: XCTestCase {
         let (sut, _) = makeSUT(stubs: [.success(invalidData)])
         
         do {
-            try await sut.load()
+            _ = try await sut.load()
             XCTFail("Should be an error")
         } catch {
             XCTAssertEqual(error as? LocalStoriesLoader.Error, .invalidData)
         }
+    }
+    
+    func test_load_deliversEmptyStoriesWhileReceivedEmptyJSON() async throws {
+        let (sut, client) = makeSUT(stubs: [.success(emptyStoriesData())])
+        
+        let receivedStories = try await sut.load()
+        
+        XCTAssertEqual(receivedStories, [])
     }
     
     // MAKE: - Helpers
@@ -109,5 +121,10 @@ final class LocalStoriesLoaderTests: XCTestCase {
     
     private func anyNSError() -> NSError {
         NSError(domain: "any", code: 0)
+    }
+    
+    private func emptyStoriesData() -> Data {
+        let json: [[String: Any]] = []
+        return try! JSONSerialization.data(withJSONObject: json)
     }
 }
