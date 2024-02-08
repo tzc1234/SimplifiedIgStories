@@ -21,9 +21,19 @@ final class DataClientSpy: DataClient {
 
 final class LocalDataServiceTests: XCTestCase {
     func test_init_doesNotNotifyClient() {
-        let client = DataClientSpy()
-        let _ = LocalDataService(client: client)
+        let (_, client) = makeSUT()
         
         XCTAssertTrue(client.messages.isEmpty)
+    }
+    
+    // MAKE: - Helpers
+    
+    private func makeSUT(file: StaticString = #filePath,
+                         line: UInt = #line) -> (sut: LocalDataService, client: DataClientSpy) {
+        let client = DataClientSpy()
+        let sut = LocalDataService(client: client)
+        trackForMemoryLeaks(client, file: file, line: line)
+        trackForMemoryLeaks(sut, file: file, line: line)
+        return (sut, client)
     }
 }
