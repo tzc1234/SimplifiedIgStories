@@ -10,7 +10,7 @@ import XCTest
 
 final class LocalStoriesLoaderIntegrationTests: XCTestCase {
     func test_load_deliversDataCorrectly() async throws {
-        let client = FileDataClient(url: validURL())
+        let client = FileDataClient(url: validJsonURL(currentClass: Self.self))
         let sut = LocalStoriesLoader(client: client)
         
         let receivedStories = try await sut.load()
@@ -19,14 +19,6 @@ final class LocalStoriesLoaderIntegrationTests: XCTestCase {
     }
     
     // MARK: - Helpers
-    
-    private func validURL(file: StaticString = #filePath) -> URL {
-        bundle().url(forResource: "valid.json", withExtension: nil)!
-    }
-    
-    private func bundle() -> Bundle {
-        Bundle(for: Self.self)
-    }
     
     private func expectedStories() -> [LocalStory] {
         [expectedStory0(), expectedStory1()]

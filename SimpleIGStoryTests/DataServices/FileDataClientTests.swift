@@ -10,7 +10,7 @@ import XCTest
 
 final class FileDataClientTests: XCTestCase {
     func test_fetch_deliversErrorWhenInvalidURL() async {
-        let sut = FileDataClient(url: invalidURL())
+        let sut = FileDataClient(url: invalidJsonURL())
         
         await assertThrowsError(_ = try await sut.fetch())
     }
@@ -22,7 +22,7 @@ final class FileDataClientTests: XCTestCase {
     }
     
     func test_fetch_deliversDataWhenValidFile() async throws {
-        let sut = FileDataClient(url: validURL())
+        let sut = FileDataClient(url: validJsonURL(currentClass: Self.self))
         
         let receivedData = try await sut.fetch()
         
@@ -31,19 +31,11 @@ final class FileDataClientTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func invalidURL(file: StaticString = #filePath) -> URL {
+    private func invalidJsonURL(file: StaticString = #filePath) -> URL {
         FileManager.default.temporaryDirectory
     }
     
     private func emptyFileURL() -> URL {
-        bundle().url(forResource: "empty.json", withExtension: nil)!
-    }
-    
-    private func validURL(file: StaticString = #filePath) -> URL {
-        bundle().url(forResource: "valid.json", withExtension: nil)!
-    }
-    
-    private func bundle() -> Bundle {
-        Bundle(for: Self.self)
+        bundle(currentClass: Self.self).url(forResource: "empty.json", withExtension: nil)!
     }
 }
