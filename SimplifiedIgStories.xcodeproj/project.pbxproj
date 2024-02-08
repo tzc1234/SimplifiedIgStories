@@ -445,12 +445,20 @@
 		BEBF32302B74D86600DCD624 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				BEEEBBF22B7534E600EC85C7 /* json */,
 				BEBF32312B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift */,
-				BEEEBBEC2B752E4200EC85C7 /* empty.json */,
-				BEEEBBEE2B7531FE00EC85C7 /* valid.json */,
 				BEEEBBF02B75345400EC85C7 /* XCTestCase+AssertThrows.swift */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		BEEEBBF22B7534E600EC85C7 /* json */ = {
+			isa = PBXGroup;
+			children = (
+				BEEEBBEC2B752E4200EC85C7 /* empty.json */,
+				BEEEBBEE2B7531FE00EC85C7 /* valid.json */,
+			);
+			path = json;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
