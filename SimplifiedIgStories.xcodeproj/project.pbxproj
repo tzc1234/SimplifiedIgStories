@@ -63,6 +63,7 @@
 		BEBF322F2B74D5DD00DCD624 /* LocalStoriesLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF322E2B74D5DD00DCD624 /* LocalStoriesLoaderTests.swift */; };
 		BEBF32322B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF32312B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift */; };
 		BEBF32382B7512BF00DCD624 /* LocalStory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF32372B7512BF00DCD624 /* LocalStory.swift */; };
+		BEBF323A2B7512EF00DCD624 /* DataClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF32392B7512EF00DCD624 /* DataClient.swift */; };
 		BEC3B4C427DE585F00B44BDF /* StoryCamViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */; };
 		BED0F60D27BBF64B00D93F15 /* StoryIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */; };
 /* End PBXBuildFile section */
@@ -136,6 +137,7 @@
 		BEBF322E2B74D5DD00DCD624 /* LocalStoriesLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStoriesLoaderTests.swift; sourceTree = "<group>"; };
 		BEBF32312B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+MemoryLeakTracking.swift"; sourceTree = "<group>"; };
 		BEBF32372B7512BF00DCD624 /* LocalStory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStory.swift; sourceTree = "<group>"; };
+		BEBF32392B7512EF00DCD624 /* DataClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataClient.swift; sourceTree = "<group>"; };
 		BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCamViewModel.swift; sourceTree = "<group>"; };
 		BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIconsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -337,6 +339,7 @@
 			children = (
 				BE8F580627D6668000F9DB92 /* AppDataService.swift */,
 				BEBF32372B7512BF00DCD624 /* LocalStory.swift */,
+				BEBF32392B7512EF00DCD624 /* DataClient.swift */,
 			);
 			path = DataServices;
 			sourceTree = "<group>";
@@ -559,6 +562,7 @@
 				BEB8752927DA120300D60110 /* LocalFileManager.swift in Sources */,
 				BE77C89A28895CF000E1FA0A /* PreviewData.swift in Sources */,
 				BE8A758127BC107000E9F745 /* HomeView.swift in Sources */,
+				BEBF323A2B7512EF00DCD624 /* DataClient.swift in Sources */,
 				BE9336C227D21811009E5370 /* AVPlayerControllerRepresentable.swift in Sources */,
 				BE2D7792285F765F00DBD924 /* CamSetupError.swift in Sources */,
 				BE8C498F27C674FD000541E0 /* StoryContainer.swift in Sources */,

@@ -76,24 +76,6 @@ final class LocalStoriesLoader {
     }
 }
 
-protocol DataClient {
-    func fetch() async throws -> Data
-}
-
-final class DataClientStub: DataClient {
-    typealias Stub = Result<Data, Error>
-    
-    private var stubs = [Stub]()
-    
-    init(stubs: [Stub]) {
-        self.stubs = stubs
-    }
-    
-    func fetch() async throws -> Data {
-        return try stubs.removeLast().get()
-    }
-}
-
 final class LocalStoriesLoaderTests: XCTestCase {
     func test_load_deliversNotFoundErrorOnClientError() async {
         let sut = makeSUT(stubs: [.failure(anyNSError())])
@@ -237,6 +219,20 @@ final class LocalStoriesLoaderTests: XCTestCase {
                 duration: duration ?? .defaultStoryDuration,
                 type: .init(rawValue: type) ?? .image
             )
+        }
+    }
+    
+    final private class DataClientStub: DataClient {
+        typealias Stub = Result<Data, Error>
+        
+        private var stubs = [Stub]()
+        
+        init(stubs: [Stub]) {
+            self.stubs = stubs
+        }
+        
+        func fetch() async throws -> Data {
+            return try stubs.removeLast().get()
         }
     }
 }
