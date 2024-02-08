@@ -8,32 +8,6 @@
 import XCTest
 @testable import Simple_IG_Story
 
-struct LocalStory: Equatable {
-    let id: Int
-    let lastUpdate: Date?
-    let user: LocalUser
-    let portions: [LocalPortion]
-}
-
-struct LocalUser: Equatable {
-    let id: Int
-    let name: String
-    let avatar: String
-    let isCurrentUser: Bool
-}
-
-struct LocalPortion: Equatable {
-    let id: Int
-    let resource: String
-    let duration: Double
-    let type: ResourceType
-}
-
-enum ResourceType: String {
-    case image
-    case video
-}
-
 final class LocalStoriesLoader {
     private let client: DataClient
     
