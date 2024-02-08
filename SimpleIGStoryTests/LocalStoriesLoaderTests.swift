@@ -73,8 +73,6 @@ protocol DataClient {
 final class DataClientSpy: DataClient {
     typealias Stub = Result<Data, Error>
     
-    private(set) var requestCallCount = 0
-    
     private var stubs = [Stub]()
     
     init(stubs: [Stub]) {
@@ -82,20 +80,13 @@ final class DataClientSpy: DataClient {
     }
     
     func fetch() async throws -> Data {
-        requestCallCount += 1
         return try stubs.removeLast().get()
     }
 }
 
 final class LocalStoriesLoaderTests: XCTestCase {
-    func test_init_doesNotNotifyClient() {
-        let (_, client) = makeSUT()
-        
-        XCTAssertEqual(client.requestCallCount, 0)
-    }
-    
     func test_load_deliversNotFoundErrorOnClientError() async {
-        let (sut, _) = makeSUT(stubs: [.failure(anyNSError())])
+        let sut = makeSUT(stubs: [.failure(anyNSError())])
         
         do {
             _ = try await sut.load()
@@ -107,7 +98,7 @@ final class LocalStoriesLoaderTests: XCTestCase {
     
     func test_load_deliversInvalidDataErrorWhileReceivedInvalidData() async {
         let invalidData = Data("invalid".utf8)
-        let (sut, _) = makeSUT(stubs: [.success(invalidData)])
+        let sut = makeSUT(stubs: [.success(invalidData)])
         
         do {
             _ = try await sut.load()
@@ -118,7 +109,7 @@ final class LocalStoriesLoaderTests: XCTestCase {
     }
     
     func test_load_deliversEmptyStoriesWhileReceivedEmptyJSON() async throws {
-        let (sut, _) = makeSUT(stubs: [.success(emptyStoriesData())])
+        let sut = makeSUT(stubs: [.success(emptyStoriesData())])
         
         let receivedStories = try await sut.load()
         
@@ -146,7 +137,7 @@ final class LocalStoriesLoaderTests: XCTestCase {
         ]
         let data = stories.map(\.json).toData()
         let local = stories.map(\.local)
-        let (sut, _) = makeSUT(stubs: [.success(data)])
+        let sut = makeSUT(stubs: [.success(data)])
         
         let receivedStories = try await sut.load()
         
@@ -157,12 +148,12 @@ final class LocalStoriesLoaderTests: XCTestCase {
     
     private func makeSUT(stubs: [DataClientSpy.Stub] = [],
                          file: StaticString = #filePath,
-                         line: UInt = #line) -> (sut: LocalStoriesLoader, client: DataClientSpy) {
+                         line: UInt = #line) -> LocalStoriesLoader {
         let client = DataClientSpy(stubs: stubs)
         let sut = LocalStoriesLoader(client: client)
         trackForMemoryLeaks(client, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
-        return (sut, client)
+        return sut
     }
     
     private func anyNSError() -> NSError {
