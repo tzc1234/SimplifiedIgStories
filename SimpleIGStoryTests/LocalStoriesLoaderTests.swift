@@ -8,7 +8,16 @@
 import XCTest
 
 struct LocalStory: Equatable {
-    
+    let id: Int
+    let lastUpdate: Date?
+    let user: LocalUser
+}
+
+struct LocalUser: Equatable {
+    let id: Int
+    let name: String
+    let avatar: String
+    let isCurrentUser: Bool
 }
 
 final class LocalStoriesLoader {
@@ -24,7 +33,24 @@ final class LocalStoriesLoader {
     }
     
     private struct DecodableStory: Decodable {
+        let id: Int
+        let lastUpdate: TimeInterval?
+        let user: User
         
+        var local: LocalStory {
+            .init(id: id, lastUpdate: lastUpdate.map(Date.init(timeIntervalSince1970:)), user: user.local)
+        }
+        
+        struct User: Decodable {
+            let id: Int
+            let name: String
+            let avatar: String
+            let isCurrentUser: Bool
+            
+            var local: LocalUser {
+                .init(id: id, name: name, avatar: avatar, isCurrentUser: isCurrentUser)
+            }
+        }
     }
 
     func load() async throws -> [LocalStory] {
@@ -32,11 +58,11 @@ final class LocalStoriesLoader {
             throw Error.notFound
         }
         
-        guard let _ = try? JSONDecoder().decode([DecodableStory].self, from: data) else {
+        guard let stories = try? JSONDecoder().decode([DecodableStory].self, from: data) else {
             throw Error.invalidData
         }
         
-        return []
+        return stories.map(\.local)
     }
 }
 
@@ -99,6 +125,34 @@ final class LocalStoriesLoaderTests: XCTestCase {
         XCTAssertEqual(receivedStories, [])
     }
     
+    func test_load_deliversStoriesWhileReceivedValidJSON() async throws {
+        let stories = [
+            makeStory(
+                id: 0,
+                lastUpdate: nil,
+                userId: 0,
+                userName: "user0",
+                avatar: "avatar0",
+                isCurrentUser: true
+            ),
+            makeStory(
+                id: 1,
+                lastUpdate: 1645401600,
+                userId: 1,
+                userName: "user1",
+                avatar: "avatar1",
+                isCurrentUser: true
+            )
+        ]
+        let data = stories.map(\.json).toData()
+        let local = stories.map(\.local)
+        let (sut, _) = makeSUT(stubs: [.success(data)])
+        
+        let receivedStories = try await sut.load()
+        
+        XCTAssertEqual(receivedStories, local)
+    }
+    
     // MAKE: - Helpers
     
     private func makeSUT(stubs: [DataClientSpy.Stub] = [],
@@ -117,6 +171,35 @@ final class LocalStoriesLoaderTests: XCTestCase {
     
     private func emptyStoriesData() -> Data {
         let json: [[String: Any]] = []
-        return try! JSONSerialization.data(withJSONObject: json)
+        return json.toData()
+    }
+    
+    private func makeStory(id: Int,
+                           lastUpdate: TimeInterval?,
+                           userId: Int,
+                           userName: String,
+                           avatar: String,
+                           isCurrentUser: Bool) -> (json: [String: Any], local: LocalStory) {
+        let json: [String: Any] = [
+            "id": id,
+            "lastUpdate": lastUpdate,
+            "user": [
+                "id": userId,
+                "name": userName,
+                "avatar": avatar,
+                "isCurrentUser": isCurrentUser
+            ]
+        ].compactMapValues { $0 }
+        
+        let user = LocalUser(id: userId, name: userName, avatar: avatar, isCurrentUser: isCurrentUser)
+        let local = LocalStory(id: id, lastUpdate: lastUpdate.map(Date.init(timeIntervalSince1970:)), user: user)
+        
+        return (json, local)
+    }
+}
+
+extension [[String: Any]] {
+    func toData() -> Data {
+        try! JSONSerialization.data(withJSONObject: self)
     }
 }
