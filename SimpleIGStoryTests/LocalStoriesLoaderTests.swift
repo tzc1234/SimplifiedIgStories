@@ -70,7 +70,7 @@ protocol DataClient {
     func fetch() async throws -> Data
 }
 
-final class DataClientSpy: DataClient {
+final class DataClientStub: DataClient {
     typealias Stub = Result<Data, Error>
     
     private var stubs = [Stub]()
@@ -146,10 +146,10 @@ final class LocalStoriesLoaderTests: XCTestCase {
     
     // MAKE: - Helpers
     
-    private func makeSUT(stubs: [DataClientSpy.Stub] = [],
+    private func makeSUT(stubs: [DataClientStub.Stub] = [],
                          file: StaticString = #filePath,
                          line: UInt = #line) -> LocalStoriesLoader {
-        let client = DataClientSpy(stubs: stubs)
+        let client = DataClientStub(stubs: stubs)
         let sut = LocalStoriesLoader(client: client)
         trackForMemoryLeaks(client, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
