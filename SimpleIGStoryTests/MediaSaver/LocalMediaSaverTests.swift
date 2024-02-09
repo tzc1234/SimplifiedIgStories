@@ -47,12 +47,23 @@ final class MediaStoreStub: MediaStore {
 
 final class LocalMediaSaverTests: XCTestCase {
     func test_saveImage_deliversNoPermissionErrorOnStoreNoPermissionError() async {
-        let store = MediaStoreStub(stubs: [.failure(.noPermission)])
-        let sut = LocalMediaSaver(store: store)
+        let (sut, _) = makeSUT(stubs: [.failure(.noPermission)])
         let anyImage = UIImage.make(withColor: .red)
         
         await assertThrowsError(try await sut.saveImage(anyImage)) { error in
             XCTAssertEqual(error as? LocalMediaSaver.Error, .noPermission)
         }
+    }
+    
+    // MARK: - Helpers
+    
+    private func makeSUT(stubs: [MediaStoreStub.Stub],
+                         file: StaticString = #filePath,
+                         line: UInt = #line) -> (sut: LocalMediaSaver, store: MediaStoreStub) {
+        let store = MediaStoreStub(stubs: stubs)
+        let sut = LocalMediaSaver(store: store)
+        trackForMemoryLeaks(store, file: file, line: line)
+        trackForMemoryLeaks(sut, file: file, line: line)
+        return (sut, store)
     }
 }
