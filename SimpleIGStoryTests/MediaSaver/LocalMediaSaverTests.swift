@@ -16,13 +16,16 @@ final class LocalMediaSaver {
     
     enum Error: Swift.Error {
         case noPermission
+        case failed
     }
     
     func saveImage(_ image: UIImage) async throws {
         do {
             try await store.saveImage(image)
-        } catch {
+        } catch MediaStoreError.noPermission {
             throw Error.noPermission
+        } catch {
+            throw Error.failed
         }
     }
 }
@@ -33,6 +36,7 @@ protocol MediaStore {
 
 enum MediaStoreError: Error {
     case noPermission
+    case failed
 }
 
 final class MediaStoreStub: MediaStore {
@@ -58,6 +62,14 @@ final class LocalMediaSaverTests: XCTestCase {
         
         await assertThrowsError(try await sut.saveImage(anyImage())) { error in
             XCTAssertEqual(error as? LocalMediaSaver.Error, .noPermission)
+        }
+    }
+    
+    func test_saveImage_deliversFailedErrorWhenStoreFailedOnSave() async {
+        let (sut, _) = makeSUT(stubs: [.failure(.failed)])
+        
+        await assertThrowsError(try await sut.saveImage(anyImage())) { error in
+            XCTAssertEqual(error as? LocalMediaSaver.Error, .failed)
         }
     }
     
