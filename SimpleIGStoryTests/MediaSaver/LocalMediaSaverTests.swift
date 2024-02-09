@@ -6,6 +6,7 @@
 //
 
 import XCTest
+@testable import Simple_IG_Story
 
 final class LocalMediaSaver {
     private let store: MediaStore
@@ -38,16 +39,6 @@ final class LocalMediaSaver {
             throw Error.failed
         }
     }
-}
-
-protocol MediaStore {
-    func saveImageData(_ data: Data) async throws
-    func saveVideo(by: URL) async throws
-}
-
-enum MediaStoreError: Error {
-    case noPermission
-    case failed
 }
 
 final class MediaStoreSpy: MediaStore {
