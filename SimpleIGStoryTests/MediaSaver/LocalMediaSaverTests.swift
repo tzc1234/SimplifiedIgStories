@@ -50,7 +50,7 @@ enum MediaStoreError: Error {
     case failed
 }
 
-final class MediaStoreStub: MediaStore {
+final class MediaStoreSpy: MediaStore {
     typealias Stub = Result<Void, MediaStoreError>
     
     private(set) var savedImages = [UIImage]()
@@ -126,10 +126,10 @@ final class LocalMediaSaverTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func makeSUT(stubs: [MediaStoreStub.Stub],
+    private func makeSUT(stubs: [MediaStoreSpy.Stub],
                          file: StaticString = #filePath,
-                         line: UInt = #line) -> (sut: LocalMediaSaver, store: MediaStoreStub) {
-        let store = MediaStoreStub(stubs: stubs)
+                         line: UInt = #line) -> (sut: LocalMediaSaver, store: MediaStoreSpy) {
+        let store = MediaStoreSpy(stubs: stubs)
         let sut = LocalMediaSaver(store: store)
         trackForMemoryLeaks(store, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
