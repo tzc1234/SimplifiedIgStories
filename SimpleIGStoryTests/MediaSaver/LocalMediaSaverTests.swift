@@ -30,12 +30,19 @@ final class LocalMediaSaver {
     }
     
     func saveVideo(by url: URL) async throws {
-        throw Error.noPermission
+        do {
+            try await store.saveVideo(by: url)
+        } catch MediaStoreError.noPermission {
+            throw Error.noPermission
+        } catch {
+            throw Error.failed
+        }
     }
 }
 
 protocol MediaStore {
     func saveImage(_ image: UIImage) async throws
+    func saveVideo(by: URL) async throws
 }
 
 enum MediaStoreError: Error {
@@ -56,6 +63,10 @@ final class MediaStoreStub: MediaStore {
 
     func saveImage(_ image: UIImage) async throws {
         savedImages.append(image)
+        try stubs.removeLast().get()
+    }
+    
+    func saveVideo(by: URL) async throws {
         try stubs.removeLast().get()
     }
 }
@@ -88,10 +99,17 @@ final class LocalMediaSaverTests: XCTestCase {
     
     func test_saveVideo_deliversNoPermissionErrorOnStoreNoPermissionError() async {
         let (sut, _) = makeSUT(stubs: [.failure(.noPermission)])
-        let url = URL(string: "file://video.mp4")!
         
-        await assertThrowsError(try await sut.saveVideo(by: url)) { error in
+        await assertThrowsError(try await sut.saveVideo(by: anyVideoURL())) { error in
             XCTAssertEqual(error as? LocalMediaSaver.Error, .noPermission)
+        }
+    }
+    
+    func test_saveVideo_deliversFailedErrorWhenStoreFailedOnSave() async {
+        let (sut, _) = makeSUT(stubs: [.failure(.failed)])
+        
+        await assertThrowsError(try await sut.saveVideo(by: anyVideoURL())) { error in
+            XCTAssertEqual(error as? LocalMediaSaver.Error, .failed)
         }
     }
     
@@ -109,5 +127,9 @@ final class LocalMediaSaverTests: XCTestCase {
     
     private func anyImage() -> UIImage {
         .make(withColor: .gray)
+    }
+    
+    private func anyVideoURL() -> URL {
+        URL(string: "file://any-video.mp4")!
     }
 }
