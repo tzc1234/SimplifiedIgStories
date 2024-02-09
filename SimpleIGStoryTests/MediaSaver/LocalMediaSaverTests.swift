@@ -54,6 +54,7 @@ final class MediaStoreStub: MediaStore {
     typealias Stub = Result<Void, MediaStoreError>
     
     private(set) var savedImages = [UIImage]()
+    private(set) var savedVideoURLs = [URL]()
     
     private var stubs: [Stub]
     
@@ -66,7 +67,8 @@ final class MediaStoreStub: MediaStore {
         try stubs.removeLast().get()
     }
     
-    func saveVideo(by: URL) async throws {
+    func saveVideo(by url: URL) async throws {
+        savedVideoURLs.append(url)
         try stubs.removeLast().get()
     }
 }
@@ -111,6 +113,15 @@ final class LocalMediaSaverTests: XCTestCase {
         await assertThrowsError(try await sut.saveVideo(by: anyVideoURL())) { error in
             XCTAssertEqual(error as? LocalMediaSaver.Error, .failed)
         }
+    }
+    
+    func test_saveVideo_saveSuccessfullyIntoStore() async throws {
+        let (sut, store) = makeSUT(stubs: [.success(())])
+        let videoURL = URL(string: "file://video.mp4")!
+        
+        try await sut.saveVideo(by: videoURL)
+        
+        XCTAssertEqual(store.savedVideoURLs, [videoURL])
     }
     
     // MARK: - Helpers
