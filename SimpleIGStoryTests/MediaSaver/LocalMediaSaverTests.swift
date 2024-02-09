@@ -19,7 +19,11 @@ final class LocalMediaSaver {
     }
     
     func saveImage(_ image: UIImage) async throws {
-        throw Error.noPermission
+        do {
+            try await store.saveImage(image)
+        } catch {
+            throw Error.noPermission
+        }
     }
 }
 
@@ -34,6 +38,8 @@ enum MediaStoreError: Error {
 final class MediaStoreStub: MediaStore {
     typealias Stub = Result<Void, MediaStoreError>
     
+    private(set) var savedImages = [UIImage]()
+    
     private var stubs: [Stub]
     
     init(stubs: [Stub]) {
@@ -41,6 +47,7 @@ final class MediaStoreStub: MediaStore {
     }
 
     func saveImage(_ image: UIImage) async throws {
+        savedImages.append(image)
         try stubs.removeLast().get()
     }
 }
@@ -48,11 +55,19 @@ final class MediaStoreStub: MediaStore {
 final class LocalMediaSaverTests: XCTestCase {
     func test_saveImage_deliversNoPermissionErrorOnStoreNoPermissionError() async {
         let (sut, _) = makeSUT(stubs: [.failure(.noPermission)])
-        let anyImage = UIImage.make(withColor: .red)
         
-        await assertThrowsError(try await sut.saveImage(anyImage)) { error in
+        await assertThrowsError(try await sut.saveImage(anyImage())) { error in
             XCTAssertEqual(error as? LocalMediaSaver.Error, .noPermission)
         }
+    }
+    
+    func test_saveImage_saveSuccessfullyIntoStore() async throws {
+        let (sut, store) = makeSUT(stubs: [.success(())])
+        let image = UIImage.make(withColor: .red)
+        
+        try await sut.saveImage(image)
+        
+        XCTAssertEqual(store.savedImages, [image])
     }
     
     // MARK: - Helpers
@@ -65,5 +80,9 @@ final class LocalMediaSaverTests: XCTestCase {
         trackForMemoryLeaks(store, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
         return (sut, store)
+    }
+    
+    private func anyImage() -> UIImage {
+        .make(withColor: .gray)
     }
 }
