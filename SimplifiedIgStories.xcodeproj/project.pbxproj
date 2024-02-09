@@ -35,6 +35,7 @@
 		BE8B71AB2B76516D0055C354 /* UIImage+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8B71AA2B76516D0055C354 /* UIImage+Helpers.swift */; };
 		BE8B71B22B765ED80055C354 /* MediaStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8B71B12B765ED80055C354 /* MediaStore.swift */; };
 		BE8B71B42B765F220055C354 /* LocalMediaSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8B71B32B765F220055C354 /* LocalMediaSaver.swift */; };
+		BE8B71B62B765F9F0055C354 /* PHPPhotoMediaStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8B71B52B765F9F0055C354 /* PHPPhotoMediaStore.swift */; };
 		BE8B973827DAAC6600A59292 /* FramePreferenceKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8B973727DAAC6600A59292 /* FramePreferenceKey.swift */; };
 		BE8C498D27C62B3C000541E0 /* StoryIconTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8C498C27C62B3C000541E0 /* StoryIconTitleView.swift */; };
 		BE8C498F27C674FD000541E0 /* StoryContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8C498E27C674FD000541E0 /* StoryContainer.swift */; };
@@ -122,6 +123,7 @@
 		BE8B71AA2B76516D0055C354 /* UIImage+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Helpers.swift"; sourceTree = "<group>"; };
 		BE8B71B12B765ED80055C354 /* MediaStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaStore.swift; sourceTree = "<group>"; };
 		BE8B71B32B765F220055C354 /* LocalMediaSaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalMediaSaver.swift; sourceTree = "<group>"; };
+		BE8B71B52B765F9F0055C354 /* PHPPhotoMediaStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PHPPhotoMediaStore.swift; sourceTree = "<group>"; };
 		BE8B973727DAAC6600A59292 /* FramePreferenceKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FramePreferenceKey.swift; sourceTree = "<group>"; };
 		BE8C498C27C62B3C000541E0 /* StoryIconTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIconTitleView.swift; sourceTree = "<group>"; };
 		BE8C498E27C674FD000541E0 /* StoryContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContainer.swift; sourceTree = "<group>"; };
@@ -367,6 +369,7 @@
 			isa = PBXGroup;
 			children = (
 				BE8B71B12B765ED80055C354 /* MediaStore.swift */,
+				BE8B71B52B765F9F0055C354 /* PHPPhotoMediaStore.swift */,
 				BE8B71B32B765F220055C354 /* LocalMediaSaver.swift */,
 			);
 			name = MediaSaver;
@@ -658,6 +661,7 @@
 				BE8B71B42B765F220055C354 /* LocalMediaSaver.swift in Sources */,
 				BE9336C227D21811009E5370 /* AVPlayerControllerRepresentable.swift in Sources */,
 				BE2D7792285F765F00DBD924 /* CamSetupError.swift in Sources */,
+				BE8B71B62B765F9F0055C354 /* PHPPhotoMediaStore.swift in Sources */,
 				BE8C498F27C674FD000541E0 /* StoryContainer.swift in Sources */,
 				BE925CF427D8B06D005D8107 /* AVPlayer+Additions.swift in Sources */,
 				BE91AA5427BFD96800BB9846 /* StoryPortionView.swift in Sources */,
