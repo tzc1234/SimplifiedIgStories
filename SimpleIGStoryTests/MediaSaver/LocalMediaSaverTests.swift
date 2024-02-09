@@ -8,62 +8,6 @@
 import XCTest
 @testable import Simple_IG_Story
 
-final class LocalMediaSaver {
-    private let store: MediaStore
-    
-    init(store: MediaStore) {
-        self.store = store
-    }
-    
-    enum Error: Swift.Error {
-        case noPermission
-        case failed
-    }
-    
-    func saveImageData(_ data: Data) async throws {
-        do {
-            try await store.saveImageData(data)
-        } catch MediaStoreError.noPermission {
-            throw Error.noPermission
-        } catch {
-            throw Error.failed
-        }
-    }
-    
-    func saveVideo(by url: URL) async throws {
-        do {
-            try await store.saveVideo(by: url)
-        } catch MediaStoreError.noPermission {
-            throw Error.noPermission
-        } catch {
-            throw Error.failed
-        }
-    }
-}
-
-final class MediaStoreSpy: MediaStore {
-    typealias Stub = Result<Void, MediaStoreError>
-    
-    private(set) var savedImageData = [Data]()
-    private(set) var savedVideoURLs = [URL]()
-    
-    private var stubs: [Stub]
-    
-    init(stubs: [Stub]) {
-        self.stubs = stubs
-    }
-
-    func saveImageData(_ data: Data) async throws {
-        savedImageData.append(data)
-        try stubs.removeLast().get()
-    }
-    
-    func saveVideo(by url: URL) async throws {
-        savedVideoURLs.append(url)
-        try stubs.removeLast().get()
-    }
-}
-
 final class LocalMediaSaverTests: XCTestCase {
     func test_saveImageData_deliversNoPermissionErrorOnStoreNoPermissionError() async {
         let (sut, _) = makeSUT(stubs: [.failure(.noPermission)])
@@ -133,5 +77,28 @@ final class LocalMediaSaverTests: XCTestCase {
     
     private func anyVideoURL() -> URL {
         URL(string: "file://any-video.mp4")!
+    }
+    
+    final private class MediaStoreSpy: MediaStore {
+        typealias Stub = Result<Void, MediaStoreError>
+        
+        private(set) var savedImageData = [Data]()
+        private(set) var savedVideoURLs = [URL]()
+        
+        private var stubs: [Stub]
+        
+        init(stubs: [Stub]) {
+            self.stubs = stubs
+        }
+
+        func saveImageData(_ data: Data) async throws {
+            savedImageData.append(data)
+            try stubs.removeLast().get()
+        }
+        
+        func saveVideo(by url: URL) async throws {
+            savedVideoURLs.append(url)
+            try stubs.removeLast().get()
+        }
     }
 }
