@@ -38,13 +38,13 @@ final class StoryViewModel: ObservableObject {
     let storyId: Int
     private let storiesViewModel: StoriesViewModel
     private let fileManager: FileManageable
-    private let mediaSaver: MediaSaver
+    private let mediaSaver: _MediaSaver
     
     init(
         storyId: Int,
         storiesViewModel: StoriesViewModel,
         fileManager: FileManageable,
-        mediaSaver: MediaSaver
+        mediaSaver: _MediaSaver
     ) {
         self.storyId = storyId
         self.storiesViewModel = storiesViewModel

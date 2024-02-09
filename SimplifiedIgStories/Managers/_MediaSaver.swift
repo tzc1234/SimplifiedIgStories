@@ -1,5 +1,5 @@
 //
-//  MediaSaver.swift
+//  _MediaSaver.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 4/3/2022.
@@ -18,14 +18,14 @@ enum MediaSavingError: Error {
     }
 }
 
-protocol MediaSaver {
+protocol _MediaSaver {
     typealias SuccessMessage = String
     
     func saveToAlbum(_ image: UIImage) async throws -> SuccessMessage
     func saveToAlbum(_ videoURL: URL) async throws -> SuccessMessage
 }
 
-struct MediaFileSaver: MediaSaver {
+struct MediaFileSaver: _MediaSaver {
     func saveToAlbum(_ image: UIImage) async throws -> SuccessMessage {
         try await save {
             PHAssetChangeRequest.creationRequestForAsset(from: image)
