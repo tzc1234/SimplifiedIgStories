@@ -18,6 +18,7 @@
 		BE2D7792285F765F00DBD924 /* CamSetupError.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2D7791285F765F00DBD924 /* CamSetupError.swift */; };
 		BE2D7794285F797400DBD924 /* CameraStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2D7793285F797400DBD924 /* CameraStatus.swift */; };
 		BE2D7796285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2D7795285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift */; };
+		BE35051B2B7ABB4800348B4B /* PhotoTaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE35051A2B7ABB4800348B4B /* PhotoTaker.swift */; };
 		BE463A2D285F05AE00599929 /* AVCamManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE463A2C285F05AE00599929 /* AVCamManager.swift */; };
 		BE482F042886C0C30094E54C /* MockCamManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5F521B2882F74C001CB2B1 /* MockCamManager.swift */; };
 		BE50144A288DC7410043DF62 /* StoryViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE501449288DC7410043DF62 /* StoryViewModelTests.swift */; };
@@ -106,6 +107,7 @@
 		BE2D7791285F765F00DBD924 /* CamSetupError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CamSetupError.swift; sourceTree = "<group>"; };
 		BE2D7793285F797400DBD924 /* CameraStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraStatus.swift; sourceTree = "<group>"; };
 		BE2D7795285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVCaptureVideoPreviewRepresentable.swift; sourceTree = "<group>"; };
+		BE35051A2B7ABB4800348B4B /* PhotoTaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoTaker.swift; sourceTree = "<group>"; };
 		BE463A2C285F05AE00599929 /* AVCamManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVCamManager.swift; sourceTree = "<group>"; };
 		BE501449288DC7410043DF62 /* StoryViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryViewModelTests.swift; sourceTree = "<group>"; };
 		BE5CDC2C27DF4AAA00352A60 /* NoticeLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoticeLabel.swift; sourceTree = "<group>"; };
@@ -263,6 +265,7 @@
 				BE2D7791285F765F00DBD924 /* CamSetupError.swift */,
 				BE2D7793285F797400DBD924 /* CameraStatus.swift */,
 				BE287A292B7A47FB00119674 /* CameraAuthorizationHandler.swift */,
+				BE35051A2B7ABB4800348B4B /* PhotoTaker.swift */,
 			);
 			path = CamManager;
 			sourceTree = "<group>";
@@ -690,6 +693,7 @@
 				BE9336C727D22628009E5370 /* Color+Additions.swift in Sources */,
 				BE2D7796285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift in Sources */,
 				BE9EF6C527E3673600942976 /* Configs.swift in Sources */,
+				BE35051B2B7ABB4800348B4B /* PhotoTaker.swift in Sources */,
 				BEAFE90E2817F81C004C4D43 /* Double+Additions.swift in Sources */,
 				BEA1D95827C3C74D00D0A67A /* Date+Additions.swift in Sources */,
 				BEA1D95E27C3DA7100D0A67A /* User.swift in Sources */,
