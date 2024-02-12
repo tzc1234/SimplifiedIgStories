@@ -9,7 +9,6 @@ import AVFoundation
 import Combine
 import UIKit
 
-// MARK: - CamManager
 protocol CamManager: AnyObject {
     var camPermPublisher: CurrentValueSubject<Bool, Never> { get }
     var microphonePermPublisher: CurrentValueSubject<Bool, Never> { get }
@@ -31,10 +30,9 @@ protocol CamManager: AnyObject {
     func zoom(to factor: CGFloat)
 }
 
-// MARK: - AVCamManager
 final class AVCamManager: NSObject, CamManager {
-    private(set) var camPermPublisher = CurrentValueSubject<Bool, Never>(false)
-    private(set) var microphonePermPublisher = CurrentValueSubject<Bool, Never>(false)
+    let camPermPublisher = CurrentValueSubject<Bool, Never>(false)
+    let microphonePermPublisher = CurrentValueSubject<Bool, Never>(false)
     let camStatusPublisher = PassthroughSubject<CamStatus, Never>()
     
     private(set) var camPosition: AVCaptureDevice.Position = .back
@@ -48,127 +46,142 @@ final class AVCamManager: NSObject, CamManager {
     
     private let session = AVCaptureSession()
     private let sessionQueue = DispatchQueue(label: "AVCamSessionQueue")
+    
     private var videoDevice: AVCaptureDevice?
     private var videoDeviceInput: AVCaptureDeviceInput?
+    
     private var movieFileOutput: AVCaptureMovieFileOutput?
     private var photoOutput: AVCapturePhotoOutput?
-    private var backgroundRecordingID: UIBackgroundTaskIdentifier?
+    
+    private var backgroundRecordingID = UIBackgroundTaskIdentifier.invalid
     private var subscriptions = Set<AnyCancellable>()
 }
 
-// MARK: internal functions
 extension AVCamManager {
     func setupAndStartSession() {
         sessionQueue.async { [weak self] in
-            guard let self = self, !self.session.isRunning else { return }
+            guard let self, !session.isRunning else { return }
             
-            self.session.beginConfiguration()
-            self.session.sessionPreset = .high
-            
-            do {
-                try self.addVideoInput()
-                try self.setupFocusAndExposure()
-                try self.addAudioInput()
-                try self.setBackgroundAudioPreference()
-                try self.addVideoOutput()
-                try self.addPhotoOutput()
-            } catch {
-                let errMsg = (error as? CamSetupError)?.errMsg ?? error.localizedDescription
-                print(errMsg)
+            configureSession { manager in
+                try manager.addInputs()
+                try manager.setBackgroundAudioPreference()
+                try manager.addVideoOutput()
+                try manager.addPhotoOutput()
             }
             
-            self.session.commitConfiguration()
-            self.subscribeCaptureSessionNotifications()
-            self.session.startRunning()
+            subscribeCaptureSessionNotifications()
+            session.startRunning()
         }
     }
     
-    func startSession() {
-        self.session.startRunning()
+    private func configureSession(action: (AVCamManager) throws -> Void) {
+        session.beginConfiguration()
+        session.sessionPreset = .high
+        
+        do {
+            try action(self)
+        } catch {
+            let errMsg = (error as? CamSetupError)?.errMsg ?? error.localizedDescription
+            print(errMsg)
+        }
+        
+        session.commitConfiguration()
     }
     
-    func stopSession() {
-        self.session.stopRunning()
+    private func addInputs() throws {
+        try addVideoInput()
+        try setupFocusAndExposure()
+        try addAudioInput()
     }
     
     func switchCamera() {
         sessionQueue.async { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             
-            self.camPosition = self.camPosition == .back ? .front : .back
+            switchCameraPosition()
+            removeAllCaptureInputs()
+            reAddInputs()
             
-            // Remove all inputs first.
-            for input in self.session.inputs {
-                self.session.removeInput(input)
-            }
-
-            self.session.beginConfiguration()
-            self.session.sessionPreset = .high
-            
-            // Re-add inputs.
-            do {
-                try self.addVideoInput()
-                try self.setupFocusAndExposure()
-                try self.addAudioInput()
-            } catch {
-                let errMsg = (error as? CamSetupError)?.errMsg ?? error.localizedDescription
-                print(errMsg)
-            }
-            
-            self.session.commitConfiguration()
-            self.camStatusPublisher.send(.cameraSwitched(camPosition: self.camPosition))
+            camStatusPublisher.send(.cameraSwitched(camPosition: camPosition))
         }
+    }
+    
+    private func switchCameraPosition() {
+        camPosition = camPosition == .back ? .front : .back
+    }
+    
+    private func reAddInputs() {
+        configureSession { manager in
+            try manager.addInputs()
+        }
+    }
+    
+    private func removeAllCaptureInputs() {
+        for input in session.inputs {
+            session.removeInput(input)
+        }
+    }
+    
+    func startSession() {
+        session.startRunning()
+    }
+    
+    func stopSession() {
+        session.stopRunning()
     }
     
     func takePhoto() {
         sessionQueue.async { [weak self] in
-            guard let self = self, let photoOutput = self.photoOutput else {
+            guard let self, let photoOutput else {
                 return
             }
             
             let settings = AVCapturePhotoSettings()
-            settings.flashMode = self.flashMode
+            settings.flashMode = flashMode
             photoOutput.capturePhoto(with: settings, delegate: self)
         }
     }
     
     func startVideoRecording() {
         sessionQueue.async { [weak self] in
-            guard let self = self,
-                    let movieFileOutput = self.movieFileOutput,
-                    !movieFileOutput.isRecording else {
+            guard let self, let movieFileOutput, !movieFileOutput.isRecording else {
                 return
             }
             
-            self.backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
+            backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
             
-            let movieFileOutputConnection = movieFileOutput.connection(with: .video)
-            movieFileOutputConnection?.videoOrientation = .portrait
-            movieFileOutputConnection?.isVideoMirrored = self.camPosition == .front
-            
-            let availableVideoCodecTypes = movieFileOutput.availableVideoCodecTypes
-            if availableVideoCodecTypes.contains(.hevc) {
-                movieFileOutput.setOutputSettings([AVVideoCodecKey: AVVideoCodecType.hevc], for: movieFileOutputConnection!)
+            guard let outputConnection = movieFileOutput.connection(with: .video) else {
+                return
             }
             
-            let outputFileName = UUID().uuidString
-            let outputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("mov")!)
-            movieFileOutput.startRecording(to: URL(fileURLWithPath: outputFilePath), recordingDelegate: self)
+            outputConnection.videoOrientation = .portrait
+            outputConnection.isVideoMirrored = camPosition == .front
             
-            self.camStatusPublisher.send(.recordingVideoBegun)
+            if movieFileOutput.availableVideoCodecTypes.contains(.hevc) {
+                movieFileOutput.setOutputSettings([AVVideoCodecKey: AVVideoCodecType.hevc], for: outputConnection)
+            }
+            
+            movieFileOutput.startRecording(to: getVideoOutputPath(), recordingDelegate: self)
+            
+            camStatusPublisher.send(.recordingVideoBegun)
         }
+    }
+    
+    private func getVideoOutputPath() -> URL {
+        let fileName = UUID().uuidString
+        return FileManager.default.temporaryDirectory
+            .appendingPathComponent(fileName)
+            .appendingPathExtension("mov")
     }
     
     func stopVideoRecording() {
         sessionQueue.async { [weak self] in
-            guard let self = self,
-                    let movieFileOutput = self.movieFileOutput,
-                    movieFileOutput.isRecording else {
+            guard let self, let movieFileOutput, movieFileOutput.isRecording else {
                 return
             }
             
             movieFileOutput.stopRecording()
-            self.camStatusPublisher.send(.recordingVideoFinished)
+            camStatusPublisher.send(.recordingVideoFinished)
         }
     }
     
@@ -183,22 +196,19 @@ extension AVCamManager {
         let focusPoint = CGPoint(x: x, y: y)
 
         sessionQueue.async { [weak self] in
-            guard let videoDevice = self?.videoDevice else { return }
-            
             do {
-                try videoDevice.lockForConfiguration()
-
-                if videoDevice.isFocusPointOfInterestSupported && videoDevice.isFocusModeSupported(.continuousAutoFocus) {
-                    videoDevice.focusPointOfInterest = focusPoint
-                    videoDevice.focusMode = .autoFocus
+                try self?.configureVideoDevice { device in
+                    if device.isFocusPointOfInterestSupported && device.isFocusModeSupported(.continuousAutoFocus) {
+                        device.focusPointOfInterest = focusPoint
+                        device.focusMode = .autoFocus
+                    }
+                    
+                    if device.isExposurePointOfInterestSupported && 
+                        device.isExposureModeSupported(.continuousAutoExposure) {
+                        device.exposurePointOfInterest = focusPoint
+                        device.exposureMode = .continuousAutoExposure
+                    }
                 }
-                
-                if videoDevice.isExposurePointOfInterestSupported && videoDevice.isExposureModeSupported(.continuousAutoExposure) {
-                    videoDevice.exposurePointOfInterest = focusPoint
-                    videoDevice.exposureMode = .continuousAutoExposure
-                }
-                
-                videoDevice.unlockForConfiguration()
             } catch {
                 print("Cannot lock device for configuration: \(error)")
             }
@@ -207,107 +217,106 @@ extension AVCamManager {
     
     func zoom(to factor: CGFloat) {
         sessionQueue.async { [weak self] in
-            guard let videoDevice = self?.videoDevice else { return }
-            
             do {
-                try videoDevice.lockForConfiguration()
-                
-                let maxZoomFactor = videoDevice.activeFormat.videoMaxZoomFactor
-                // Reference: https://stackoverflow.com/a/43278702
-                videoDevice.videoZoomFactor = max(1.0, min(videoDevice.videoZoomFactor + factor, maxZoomFactor))
-                
-                videoDevice.unlockForConfiguration()
+                try self?.configureVideoDevice { device in
+                    // Reference: https://stackoverflow.com/a/43278702
+                    let maxZoomFactor = device.activeFormat.videoMaxZoomFactor
+                    device.videoZoomFactor = max(1.0, min(device.videoZoomFactor + factor, maxZoomFactor))
+                }
             } catch {
                 print("Cannot lock device for configuration: \(error)")
             }
         }
     }
+    
+    private func configureVideoDevice(action: (AVCaptureDevice) -> Void) throws {
+        guard let videoDevice else {
+            throw CamSetupError.videoDeviceNotFound
+        }
+        
+        try videoDevice.lockForConfiguration()
+        action(videoDevice)
+        videoDevice.unlockForConfiguration()
+    }
 }
 
-// MARK: private functions
 extension AVCamManager {
     private func addVideoInput() throws {
-        guard let videoDevice =
-                AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: camPosition)
-        else {
+        guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: camPosition) else {
             throw CamSetupError.defaultVideoDeviceUnavailable
         }
         
-        self.videoDevice = videoDevice
+        videoDevice = device
 
         do {
-            let videoDeviceInput = try AVCaptureDeviceInput(device: videoDevice)
-            if session.canAddInput(videoDeviceInput) {
-                session.addInput(videoDeviceInput)
-                self.videoDeviceInput = videoDeviceInput
-            } else {
+            let input = try AVCaptureDeviceInput(device: device)
+            guard session.canAddInput(input) else {
                 throw CamSetupError.addVideoDeviceInputFailure
             }
+            
+            session.addInput(input)
+            videoDeviceInput = input
+        } catch CamSetupError.addVideoDeviceInputFailure {
+            throw CamSetupError.addVideoDeviceInputFailure
         } catch {
             throw CamSetupError.createVideoDeviceInputFailure(err: error)
         }
     }
     
     private func setupFocusAndExposure() throws {
-        guard let videoDevice = videoDevice else {
-            throw CamSetupError.videoDeviceNotFound
-        }
-        
-        try videoDevice.lockForConfiguration()
-        
-        if videoDevice.isFocusModeSupported(.continuousAutoFocus) {
-            videoDevice.focusMode = .continuousAutoFocus
-        }
+        try configureVideoDevice { device in
+            if device.isFocusModeSupported(.continuousAutoFocus) {
+                device.focusMode = .continuousAutoFocus
+            }
 
-        if videoDevice.isExposureModeSupported(.continuousAutoExposure) {
-            videoDevice.exposureMode = .continuousAutoExposure
+            if device.isExposureModeSupported(.continuousAutoExposure) {
+                device.exposureMode = .continuousAutoExposure
+            }
         }
-        
-        videoDevice.unlockForConfiguration()
     }
     
     private func addAudioInput() throws {
-        guard let audioDevice = AVCaptureDevice.default(for: .audio) else {
+        guard let device = AVCaptureDevice.default(for: .audio) else {
             throw CamSetupError.defaultAudioDeviceUnavailable
         }
         
         do {
-            let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice)
-            if session.canAddInput(audioDeviceInput) {
-                session.addInput(audioDeviceInput)
-            } else {
+            let input = try AVCaptureDeviceInput(device: device)
+            guard session.canAddInput(input) else {
                 throw CamSetupError.addAudioDeviceInputFailure
             }
+            
+            session.addInput(input)
+        } catch CamSetupError.addAudioDeviceInputFailure {
+            throw CamSetupError.addAudioDeviceInputFailure
         } catch {
             throw CamSetupError.createAudioDeviceInputFailure(err: error)
         }
     }
     
     private func addVideoOutput() throws {
-        let movieFileOutput = AVCaptureMovieFileOutput()
-        if session.canAddOutput(movieFileOutput) {
-            session.addOutput(movieFileOutput)
-            
-            if let connection = movieFileOutput.connection(with: .video) {
-                if connection.isVideoStabilizationSupported {
-                    connection.preferredVideoStabilizationMode = .auto
-                }
-            }
-            
-            self.movieFileOutput = movieFileOutput
-        } else {
+        let output = AVCaptureMovieFileOutput()
+        guard session.canAddOutput(output) else {
             throw CamSetupError.addMovieFileOutputFailure
         }
+        
+        session.addOutput(output)
+
+        if let connection = output.connection(with: .video), connection.isVideoStabilizationSupported {
+            connection.preferredVideoStabilizationMode = .auto
+        }
+        
+        movieFileOutput = output
     }
     
     private func addPhotoOutput() throws {
-        let photoOutput = AVCapturePhotoOutput()
-        if session.canAddOutput(photoOutput) {
-            session.addOutput(photoOutput)
-            self.photoOutput = photoOutput
-        } else {
+        let output = AVCapturePhotoOutput()
+        guard session.canAddOutput(output) else {
             throw CamSetupError.addPhotoOutputFailure
         }
+        
+        session.addOutput(output)
+        photoOutput = output
     }
     
     private func setBackgroundAudioPreference() throws {
@@ -322,8 +331,8 @@ extension AVCamManager {
     private func checkCameraPermission() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .notDetermined:
-            AVCaptureDevice.requestAccess(for: .video) { [weak self] isGranted in
-                self?.camPermPublisher.send(isGranted)
+            AVCaptureDevice.requestAccess(for: .video) { [weak camPermPublisher] isGranted in
+                camPermPublisher?.send(isGranted)
             }
         case .restricted:
             break
@@ -339,8 +348,8 @@ extension AVCamManager {
     private func checkMicrophonePermission() {
         switch AVCaptureDevice.authorizationStatus(for: .audio) {
         case .notDetermined:
-            AVCaptureDevice.requestAccess(for: .audio) { [weak self] isGranted in
-                self?.microphonePermPublisher.send(isGranted)
+            AVCaptureDevice.requestAccess(for: .audio) { [weak microphonePermPublisher] isGranted in
+                microphonePermPublisher?.send(isGranted)
             }
         case .restricted:
             break
@@ -357,25 +366,24 @@ extension AVCamManager {
         NotificationCenter
             .default
             .publisher(for: .AVCaptureSessionDidStartRunning, object: nil)
-            .sink { [weak self] _ in
-                self?.camStatusPublisher.send(.sessionStarted)
+            .sink { [weak camStatusPublisher] _ in
+                camStatusPublisher?.send(.sessionStarted)
             }
             .store(in: &subscriptions)
 
         NotificationCenter
             .default
             .publisher(for: .AVCaptureSessionDidStopRunning, object: nil)
-            .sink { [weak self] _ in
-                self?.camStatusPublisher.send(.sessionStopped)
+            .sink { [weak camStatusPublisher] _ in
+                camStatusPublisher?.send(.sessionStopped)
             }
             .store(in: &subscriptions)
     }
 }
 
-// MARK: AVCapturePhotoCaptureDelegate
 extension AVCamManager: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-        if let error = error {
+        if let error {
             camStatusPublisher.send(.processingPhotoFailure(err: error))
             return
         }
@@ -385,35 +393,44 @@ extension AVCamManager: AVCapturePhotoCaptureDelegate {
             return
         }
         
-        guard let image = UIImage(data: imageData, scale: 1.0) else {
+        guard let image = makeImage(from: imageData) else {
             camStatusPublisher.send(.convertToUIImageFailure)
             return
         }
         
-        if camPosition == .front, let cgImage = image.cgImage {
-            let flippedImage = UIImage(cgImage: cgImage, scale: image.scale, orientation: .leftMirrored)
-            camStatusPublisher.send(.photoTaken(photo: flippedImage))
-        } else {
-            camStatusPublisher.send(.photoTaken(photo: image))
+        camStatusPublisher.send(.photoTaken(photo: image))
+    }
+    
+    private func makeImage(from data: Data) -> UIImage? {
+        guard let image = UIImage(data: data, scale: 1.0) else {
+            return nil
         }
+        
+        guard camPosition == .front, let cgImage = image.cgImage else {
+            return image
+        }
+        
+        let flippedImage = UIImage(cgImage: cgImage, scale: image.scale, orientation: .leftMirrored)
+        return flippedImage
     }
 }
 
-// MARK: AVCaptureFileOutputRecordingDelegate
 extension AVCamManager: AVCaptureFileOutputRecordingDelegate {
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
-        if let currentBackgroundRecordingID = backgroundRecordingID {
-            backgroundRecordingID = UIBackgroundTaskIdentifier.invalid
-
-            if currentBackgroundRecordingID != UIBackgroundTaskIdentifier.invalid {
-                UIApplication.shared.endBackgroundTask(currentBackgroundRecordingID)
-            }
+        invalidateBackgroundRecordingTask()
+        
+        if let error {
+            camStatusPublisher.send(.processingVideoFailure(err: error))
+            return
         }
         
-        if let error = error {
-            camStatusPublisher.send(.processingVideoFailure(err: error))
-        } else {
-            camStatusPublisher.send(.processingVideoFinished(videoUrl: outputFileURL))
+        camStatusPublisher.send(.processingVideoFinished(videoUrl: outputFileURL))
+    }
+    
+    private func invalidateBackgroundRecordingTask() {
+        if backgroundRecordingID != UIBackgroundTaskIdentifier.invalid {
+            UIApplication.shared.endBackgroundTask(backgroundRecordingID)
+            backgroundRecordingID = UIBackgroundTaskIdentifier.invalid
         }
     }
 }
