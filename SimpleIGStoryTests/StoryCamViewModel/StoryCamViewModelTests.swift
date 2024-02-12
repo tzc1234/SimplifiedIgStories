@@ -34,6 +34,13 @@ import Combine
     }
     
     func test_checkPermissions_permissionGranted_afterFunctionCalled() {
+        let cameraAuthorizationTrackerStub = DeviceAuthorizationTrackerStub()
+        let microphoneAuthorizationTrackerStub = DeviceAuthorizationTrackerStub()
+        let sut = makeSUT(
+            cameraAuthorizationTracker: cameraAuthorizationTrackerStub,
+            microphoneAuthorizationTracker: microphoneAuthorizationTrackerStub
+        )
+        
         let expectation = XCTestExpectation(description: "should receive permissions from publishers")
         
         sut.$isCamPermGranted.zip(sut.$isMicrophonePermGranted)
@@ -44,12 +51,14 @@ import Combine
             .store(in: &subscriptions)
         
         sut.checkPermissions()
+        cameraAuthorizationTrackerStub.setAuthorized(true)
+        microphoneAuthorizationTrackerStub.setAuthorized(true)
         
         wait(for: [expectation], timeout: 0.1)
         
         XCTAssertTrue(sut.isCamPermGranted, "camera permission")
         XCTAssertTrue(sut.isMicrophonePermGranted, "microphone permission")
-        XCTAssertTrue(sut.arePermissionsGranted, "both permission")
+        XCTAssertTrue(sut.arePermissionsGranted, "both permissions")
     }
     
     func test_videoPreviewLayer_returnTheSameLayerAsCamManagerVideoPreviewLayer() {
@@ -256,5 +265,33 @@ import Combine
         
         XCTAssertEqual(sut.videoPreviewPinchFactor, factor, "videoPreviewPinchFactor")
         XCTAssertEqual(sut.videoPreviewPinchFactor, camManager.zoomFactor, "vm.videoPreviewPinchFactor == camManager.zoomFactor")
+    }
+    
+    // MARK: Helpers
+    
+    private func makeSUT(cameraAuthorizationTracker: DeviceAuthorizationTracker = DeviceAuthorizationTrackerStub(),
+                         microphoneAuthorizationTracker: DeviceAuthorizationTracker = DeviceAuthorizationTrackerStub()) 
+    -> StoryCamViewModel {
+        let camManager = MockCamManager()
+        let sut = StoryCamViewModel(
+            camManager: camManager,
+            cameraAuthorizationTracker: cameraAuthorizationTracker,
+            microphoneAuthorizationTracker: microphoneAuthorizationTracker
+        )
+        return sut
+    }
+    
+    private class DeviceAuthorizationTrackerStub: DeviceAuthorizationTracker {
+        private let publisher = CurrentValueSubject<Bool, Never>(false)
+        
+        func getPublisher() -> AnyPublisher<Bool, Never> {
+            publisher.eraseToAnyPublisher()
+        }
+        
+        func startTracking() {}
+        
+        func setAuthorized(_ authorized: Bool) {
+            publisher.send(authorized)
+        }
     }
 }

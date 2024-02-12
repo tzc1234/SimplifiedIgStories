@@ -10,8 +10,6 @@ import Combine
 import UIKit
 
 protocol CamManager: AnyObject {
-    var camPermPublisher: CurrentValueSubject<Bool, Never> { get }
-    var microphonePermPublisher: CurrentValueSubject<Bool, Never> { get }
     var camStatusPublisher: PassthroughSubject<CamStatus, Never> { get }
     
     var camPosition: AVCaptureDevice.Position { get }
@@ -25,14 +23,12 @@ protocol CamManager: AnyObject {
     func takePhoto()
     func startVideoRecording()
     func stopVideoRecording()
-    func checkPermissions()
+    
     func focus(on point: CGPoint)
     func zoom(to factor: CGFloat)
 }
 
 final class AVCamManager: NSObject, CamManager {
-    let camPermPublisher = CurrentValueSubject<Bool, Never>(false)
-    let microphonePermPublisher = CurrentValueSubject<Bool, Never>(false)
     let camStatusPublisher = PassthroughSubject<CamStatus, Never>()
     
     private(set) var camPosition: AVCaptureDevice.Position = .back
@@ -185,11 +181,6 @@ extension AVCamManager {
         }
     }
     
-    func checkPermissions() {
-        checkCameraPermission()
-        checkMicrophonePermission()
-    }
-    
     func focus(on point: CGPoint) {
         let x = point.y / .screenHeight
         let y = 1.0 - point.x / .screenWidth
@@ -325,40 +316,6 @@ extension AVCamManager {
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
             throw CamSetupError.backgroundAudioPreferenceSetupFailure
-        }
-    }
-    
-    private func checkCameraPermission() {
-        switch AVCaptureDevice.authorizationStatus(for: .video) {
-        case .notDetermined:
-            AVCaptureDevice.requestAccess(for: .video) { [weak camPermPublisher] isGranted in
-                camPermPublisher?.send(isGranted)
-            }
-        case .restricted:
-            break
-        case .denied:
-            camPermPublisher.send(false)
-        case .authorized:
-            camPermPublisher.send(true)
-        @unknown default:
-            break
-        }
-    }
-    
-    private func checkMicrophonePermission() {
-        switch AVCaptureDevice.authorizationStatus(for: .audio) {
-        case .notDetermined:
-            AVCaptureDevice.requestAccess(for: .audio) { [weak microphonePermPublisher] isGranted in
-                microphonePermPublisher?.send(isGranted)
-            }
-        case .restricted:
-            break
-        case .denied:
-            microphonePermPublisher.send(false)
-        case .authorized:
-            microphonePermPublisher.send(true)
-        @unknown default:
-            break
         }
     }
     

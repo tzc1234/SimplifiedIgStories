@@ -11,8 +11,6 @@ import UIKit
 @testable import Simple_IG_Story
 
 final class MockCamManager: CamManager {
-    var camPermPublisher = CurrentValueSubject<Bool, Never>(false)
-    var microphonePermPublisher = CurrentValueSubject<Bool, Never>(false)
     var camStatusPublisher = PassthroughSubject<CamStatus, Never>()
     
     var camPosition: AVCaptureDevice.Position = .back
@@ -78,11 +76,6 @@ extension MockCamManager {
     func finishVideoProcessing() {
         lastVideoUrl = URL(string: "videoUrl")
         camStatusPublisher.send(.processingVideoFinished(videoUrl: lastVideoUrl!))
-    }
-    
-    func checkPermissions() {
-        camPermPublisher.send(true)
-        microphonePermPublisher.send(true)
     }
     
     func focus(on point: CGPoint) {

@@ -80,9 +80,16 @@ import Combine
     }
     
     private let camManager: CamManager
+    private let cameraAuthorizationTracker: DeviceAuthorizationTracker
+    private let microphoneAuthorizationTracker: DeviceAuthorizationTracker
 
-    init(camManager: CamManager) {
+    init(camManager: CamManager,
+         cameraAuthorizationTracker: DeviceAuthorizationTracker = AVCaptureDeviceAuthorizationTracker(mediaType: .video),
+         microphoneAuthorizationTracker: DeviceAuthorizationTracker = AVCaptureDeviceAuthorizationTracker(mediaType: .audio)) {
         self.camManager = camManager
+        self.cameraAuthorizationTracker = cameraAuthorizationTracker
+        self.microphoneAuthorizationTracker = microphoneAuthorizationTracker
+        
         subscribeCamMangerPublishers()
     }
 }
@@ -101,7 +108,8 @@ extension StoryCamViewModel {
 // MARK: internal functions
 extension StoryCamViewModel {
     func checkPermissions() {
-        camManager.checkPermissions()
+        cameraAuthorizationTracker.startTracking()
+        microphoneAuthorizationTracker.startTracking()
     }
     
     func setupAndStartSession() {
@@ -116,14 +124,16 @@ extension StoryCamViewModel {
 // MARK: private functions
 extension StoryCamViewModel {
     private func subscribeCamMangerPublishers() {
-        camManager.camPermPublisher
+        cameraAuthorizationTracker
+            .getPublisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isGranted in
                 self?.isCamPermGranted = isGranted
             }
             .store(in: &subscriptions)
         
-        camManager.microphonePermPublisher
+        microphoneAuthorizationTracker
+            .getPublisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isGranted in
                 self?.isMicrophonePermGranted = isGranted
