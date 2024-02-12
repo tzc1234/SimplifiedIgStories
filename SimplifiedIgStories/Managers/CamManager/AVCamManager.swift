@@ -74,11 +74,11 @@ extension AVCamManager {
         sessionQueue.async { [weak self] in
             guard let self, !session.isRunning else { return }
             
-            configureSession { manager in
-                try manager.addInputs()
-                try manager.setBackgroundAudioPreference()
-                try manager.addVideoOutput()
-                try manager.addPhotoOutput()
+            configureSession { camera in
+                try camera.addInputs()
+                try camera.setBackgroundAudioPreference()
+                try camera.addVideoOutput()
+                try camera.addPhotoOutput()
             }
             
             subscribeCaptureSessionNotifications()
@@ -102,7 +102,6 @@ extension AVCamManager {
     
     private func addInputs() throws {
         try addVideoInput()
-        try setupFocusAndExposure()
         try addAudioInput()
     }
     
@@ -254,6 +253,7 @@ extension AVCamManager {
                 throw CamSetupError.defaultVideoDeviceUnavailable
         }
         
+        try setupFocusAndExposure(for: device)
         videoDevice = device
 
         do {
@@ -271,16 +271,18 @@ extension AVCamManager {
         }
     }
     
-    private func setupFocusAndExposure() throws {
-        try configureVideoDevice { device in
-            if device.isFocusModeSupported(.continuousAutoFocus) {
-                device.focusMode = .continuousAutoFocus
-            }
-
-            if device.isExposureModeSupported(.continuousAutoExposure) {
-                device.exposureMode = .continuousAutoExposure
-            }
+    private func setupFocusAndExposure(for device: AVCaptureDevice) throws {
+        try device.lockForConfiguration()
+        
+        if device.isFocusModeSupported(.continuousAutoFocus) {
+            device.focusMode = .continuousAutoFocus
         }
+        
+        if device.isExposureModeSupported(.continuousAutoExposure) {
+            device.exposureMode = .continuousAutoExposure
+        }
+        
+        device.unlockForConfiguration()
     }
     
     private func addAudioInput() throws {
