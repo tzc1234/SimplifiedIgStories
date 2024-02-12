@@ -78,7 +78,7 @@ class StoryCamViewModelTests: XCTestCase {
         
         let camStatusPublisherExpectation = XCTestExpectation(description: "should receive status from camStatusPublisher")
         let enableVideoRecordBtnExpectation = XCTestExpectation(description: "should receive enableVideoRecordBtn value")
-        camManager.camStatusPublisher
+        camManager.getStatusPublisher()
             .sink { status in
                 switch status {
                 case .sessionStarted:
@@ -115,7 +115,7 @@ class StoryCamViewModelTests: XCTestCase {
     func test_switchCamera_shouldReceiveCameraSwitchedStatus_afterFunctionCalled() {
         let (sut, camManager) = makeSUT()
         
-        camManager.camStatusPublisher
+        camManager.getStatusPublisher()
             .sink { status in
                 switch status {
                 case .cameraSwitched:

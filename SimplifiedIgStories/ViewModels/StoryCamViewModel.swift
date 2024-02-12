@@ -136,7 +136,8 @@ extension StoryCamViewModel {
             }
             .store(in: &subscriptions)
         
-        camManager.camStatusPublisher
+        camManager
+            .getStatusPublisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] camStatus in
                 switch camStatus {
