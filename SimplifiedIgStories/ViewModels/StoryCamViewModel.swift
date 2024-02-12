@@ -75,11 +75,11 @@ import Combine
         }
     }
     
-    private let camManager: CamManager
+    private let camManager: Camera
     private let cameraAuthorizationTracker: DeviceAuthorizationTracker
     private let microphoneAuthorizationTracker: DeviceAuthorizationTracker
 
-    init(camManager: CamManager,
+    init(camManager: Camera,
          cameraAuthorizationTracker: DeviceAuthorizationTracker = AVCaptureDeviceAuthorizationTracker(mediaType: .video),
          microphoneAuthorizationTracker: DeviceAuthorizationTracker = AVCaptureDeviceAuthorizationTracker(mediaType: .audio)) {
         self.camManager = camManager

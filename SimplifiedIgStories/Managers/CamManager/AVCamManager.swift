@@ -20,7 +20,7 @@ enum CameraFlashMode {
     case auto
 }
 
-protocol CamManager {
+protocol Camera {
     var cameraPosition: CameraPosition { get }
     var videoPreviewLayer: CALayer { get }
     
@@ -37,7 +37,7 @@ protocol CamManager {
     func zoom(to factor: CGFloat)
 }
 
-final class AVCamManager: NSObject, CamManager {
+final class AVCamManager: NSObject, Camera {
     private let statusPublisher = PassthroughSubject<CameraStatus, Never>()
     
     private(set) var cameraPosition: CameraPosition = .back

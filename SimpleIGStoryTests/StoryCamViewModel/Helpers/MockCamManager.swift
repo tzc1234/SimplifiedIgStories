@@ -10,7 +10,7 @@ import Combine
 import UIKit
 @testable import Simple_IG_Story
 
-final class MockCamManager: CamManager {
+final class MockCamManager: Camera {
     private let camStatusPublisher = PassthroughSubject<CameraStatus, Never>()
     
     var cameraPosition: CameraPosition = .back
