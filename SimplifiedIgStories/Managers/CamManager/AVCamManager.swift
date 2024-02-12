@@ -20,18 +20,16 @@ enum CameraFlashMode {
     case auto
 }
 
-protocol CamManager: AnyObject {
+protocol CamManager {
     var camStatusPublisher: AnyPublisher<CamStatus, Never> { get }
-    
     var cameraPosition: CameraPosition { get }
-    var flashMode: CameraFlashMode { get set }
     var videoPreviewLayer: CALayer { get }
     
     func setupAndStartSession()
     func startSession()
     func stopSession()
     func switchCamera()
-    func takePhoto()
+    func takePhoto(on mode: CameraFlashMode)
     func startVideoRecording()
     func stopVideoRecording()
     
@@ -46,7 +44,6 @@ final class AVCamManager: NSObject, CamManager {
     }
     
     private(set) var cameraPosition: CameraPosition = .back
-    var flashMode: CameraFlashMode = .off
     
     private(set) lazy var videoPreviewLayer: CALayer = {
         let layer = AVCaptureVideoPreviewLayer(session: session)
@@ -66,9 +63,6 @@ final class AVCamManager: NSObject, CamManager {
     private var backgroundRecordingID = UIBackgroundTaskIdentifier.invalid
     private var subscriptions = Set<AnyCancellable>()
     
-    private var captureDeviceFlashMode: AVCaptureDevice.FlashMode {
-        convertToCaptureDeviceFlashMode(from: flashMode)
-    }
     private var captureDevicePosition: AVCaptureDevice.Position {
         convertToCaptureDevicePosition(from: cameraPosition)
     }
@@ -147,14 +141,14 @@ extension AVCamManager {
         session.stopRunning()
     }
     
-    func takePhoto() {
+    func takePhoto(on mode: CameraFlashMode) {
         sessionQueue.async { [weak self] in
             guard let self, let photoOutput else {
                 return
             }
             
             let settings = AVCapturePhotoSettings()
-            settings.flashMode = captureDeviceFlashMode
+            settings.flashMode = convertToCaptureDeviceFlashMode(from: mode)
             photoOutput.capturePhoto(with: settings, delegate: self)
         }
     }

@@ -17,7 +17,6 @@ final class MockCamManager: CamManager {
     }
     
     var cameraPosition: CameraPosition = .back
-    var flashMode: CameraFlashMode = .off
     
     lazy var videoPreviewLayer: CALayer = {
         AVCaptureVideoPreviewLayer()
@@ -60,7 +59,7 @@ extension MockCamManager {
         _camStatusPublisher.send(.cameraSwitched(camPosition: cameraPosition))
     }
     
-    func takePhoto() {
+    func takePhoto(on: CameraFlashMode) {
         takePhotoCallCount += 1
         lastPhoto = UIImage()
         _camStatusPublisher.send(.photoTaken(photo: lastPhoto!))

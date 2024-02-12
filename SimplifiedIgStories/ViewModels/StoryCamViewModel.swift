@@ -10,18 +10,14 @@ import AVKit
 import Combine
 
 @MainActor final class StoryCamViewModel: ObservableObject {
-    @Published var flashMode: CameraFlashMode = .off {
-        willSet {
-            camManager.flashMode = newValue
-        }
-    }
+    @Published var flashMode: CameraFlashMode = .off
     
     @Published private(set) var enableVideoRecordBtn = false
     
     @Published var shouldPhotoTake = false {
         willSet {
             if newValue {
-                camManager.takePhoto()
+                camManager.takePhoto(on: flashMode)
             }
         }
     }

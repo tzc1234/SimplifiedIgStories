@@ -132,32 +132,6 @@ class StoryCamViewModelTests: XCTestCase {
         XCTAssertEqual(camManager.cameraPosition, .front, "camPosition")
     }
     
-    func test_flashMode_flashModeShouldBeOff_afterInitial() {
-        let (sut, camManager) = makeSUT()
-        
-        XCTAssertEqual(sut.flashMode, .off, "vm.flashMode")
-        XCTAssertEqual(sut.flashMode, camManager.flashMode, "vm.flashMode == camManager.flashMode")
-    }
-    
-    func test_flashMode_flashModeValueShouldBeChanged_afterAssignNewValueToFlashMode() {
-        let (sut, camManager) = makeSUT()
-        
-        sut.flashMode = .on
-        
-        XCTAssertEqual(sut.flashMode, .on, "vm.flashMode")
-        XCTAssertEqual(sut.flashMode, camManager.flashMode, "vm.flashMode == camManager.flashMode")
-        
-        sut.flashMode = .auto
-        
-        XCTAssertEqual(sut.flashMode, .auto, "vm.flashMode")
-        XCTAssertEqual(sut.flashMode, camManager.flashMode, "vm.flashMode == camManager.flashMode")
-        
-        sut.flashMode = .off
-        
-        XCTAssertEqual(sut.flashMode, .off, "vm.flashMode")
-        XCTAssertEqual(sut.flashMode, camManager.flashMode, "vm.flashMode == camManager.flashMode")
-    }
-    
     func test_shouldPhotoTake_shouldPhotoTakeShouldBeFalse_afterInitial() {
         let (sut, _) = makeSUT()
         
