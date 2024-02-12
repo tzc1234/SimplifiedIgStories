@@ -111,7 +111,6 @@ extension AVCamManager {
             guard let self else { return }
             
             switchCameraPosition()
-            removeAllCaptureInputs()
             reAddInputs()
             
             statusPublisher.send(.cameraSwitched(camPosition: cameraPosition))
@@ -123,6 +122,7 @@ extension AVCamManager {
     }
     
     private func reAddInputs() {
+        removeAllCaptureInputs()
         configureSession { manager in
             try manager.addInputs()
         }
