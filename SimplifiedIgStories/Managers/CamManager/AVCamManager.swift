@@ -21,7 +21,7 @@ enum CameraFlashMode {
 }
 
 protocol CamManager: AnyObject {
-    var camStatusPublisher: PassthroughSubject<CamStatus, Never> { get }
+    var camStatusPublisher: AnyPublisher<CamStatus, Never> { get }
     
     var cameraPosition: CameraPosition { get }
     var flashMode: CameraFlashMode { get set }
@@ -40,7 +40,10 @@ protocol CamManager: AnyObject {
 }
 
 final class AVCamManager: NSObject, CamManager {
-    let camStatusPublisher = PassthroughSubject<CamStatus, Never>()
+    private let _camStatusPublisher = PassthroughSubject<CamStatus, Never>()
+    var camStatusPublisher: AnyPublisher<CamStatus, Never> {
+        _camStatusPublisher.eraseToAnyPublisher()
+    }
     
     private(set) var cameraPosition: CameraPosition = .back
     var flashMode: CameraFlashMode = .off
@@ -116,7 +119,7 @@ extension AVCamManager {
             removeAllCaptureInputs()
             reAddInputs()
             
-            camStatusPublisher.send(.cameraSwitched(camPosition: cameraPosition))
+            _camStatusPublisher.send(.cameraSwitched(camPosition: cameraPosition))
         }
     }
     
@@ -177,7 +180,7 @@ extension AVCamManager {
             
             movieFileOutput.startRecording(to: getVideoOutputPath(), recordingDelegate: self)
             
-            camStatusPublisher.send(.recordingVideoBegun)
+            _camStatusPublisher.send(.recordingVideoBegun)
         }
     }
     
@@ -195,7 +198,7 @@ extension AVCamManager {
             }
             
             movieFileOutput.stopRecording()
-            camStatusPublisher.send(.recordingVideoFinished)
+            _camStatusPublisher.send(.recordingVideoFinished)
         }
     }
     
@@ -342,16 +345,16 @@ extension AVCamManager {
         NotificationCenter
             .default
             .publisher(for: .AVCaptureSessionDidStartRunning, object: nil)
-            .sink { [weak camStatusPublisher] _ in
-                camStatusPublisher?.send(.sessionStarted)
+            .sink { [weak _camStatusPublisher] _ in
+                _camStatusPublisher?.send(.sessionStarted)
             }
             .store(in: &subscriptions)
 
         NotificationCenter
             .default
             .publisher(for: .AVCaptureSessionDidStopRunning, object: nil)
-            .sink { [weak camStatusPublisher] _ in
-                camStatusPublisher?.send(.sessionStopped)
+            .sink { [weak _camStatusPublisher] _ in
+                _camStatusPublisher?.send(.sessionStopped)
             }
             .store(in: &subscriptions)
     }
@@ -375,21 +378,21 @@ extension AVCamManager {
 extension AVCamManager: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         if let error {
-            camStatusPublisher.send(.processingPhotoFailure(err: error))
+            _camStatusPublisher.send(.processingPhotoFailure(err: error))
             return
         }
         
         guard let imageData = photo.fileDataRepresentation() else {
-            camStatusPublisher.send(.processingPhotoDataFailure)
+            _camStatusPublisher.send(.processingPhotoDataFailure)
             return
         }
         
         guard let image = makeImage(from: imageData) else {
-            camStatusPublisher.send(.convertToUIImageFailure)
+            _camStatusPublisher.send(.convertToUIImageFailure)
             return
         }
         
-        camStatusPublisher.send(.photoTaken(photo: image))
+        _camStatusPublisher.send(.photoTaken(photo: image))
     }
     
     private func makeImage(from data: Data) -> UIImage? {
@@ -411,11 +414,11 @@ extension AVCamManager: AVCaptureFileOutputRecordingDelegate {
         invalidateBackgroundRecordingTask()
         
         if let error {
-            camStatusPublisher.send(.processingVideoFailure(err: error))
+            _camStatusPublisher.send(.processingVideoFailure(err: error))
             return
         }
         
-        camStatusPublisher.send(.processingVideoFinished(videoUrl: outputFileURL))
+        _camStatusPublisher.send(.processingVideoFinished(videoUrl: outputFileURL))
     }
     
     private func invalidateBackgroundRecordingTask() {

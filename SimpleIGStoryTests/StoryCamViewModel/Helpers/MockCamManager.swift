@@ -11,7 +11,10 @@ import UIKit
 @testable import Simple_IG_Story
 
 final class MockCamManager: CamManager {
-    var camStatusPublisher = PassthroughSubject<CamStatus, Never>()
+    private let _camStatusPublisher = PassthroughSubject<CamStatus, Never>()
+    var camStatusPublisher: AnyPublisher<CamStatus, Never> {
+        _camStatusPublisher.eraseToAnyPublisher()
+    }
     
     var cameraPosition: CameraPosition = .back
     var flashMode: CameraFlashMode = .off
@@ -38,44 +41,44 @@ final class MockCamManager: CamManager {
 extension MockCamManager {
     func setupAndStartSession() {
         setupAndStartSessionCallCount += 1
-        camStatusPublisher.send(.sessionStarted)
+        _camStatusPublisher.send(.sessionStarted)
     }
     
     func startSession() {
         startSessionCallCount += 1
-        camStatusPublisher.send(.sessionStarted)
+        _camStatusPublisher.send(.sessionStarted)
     }
     
     func stopSession() {
         stopSessionCallCount += 1
-        camStatusPublisher.send(.sessionStopped)
+        _camStatusPublisher.send(.sessionStopped)
     }
     
     func switchCamera() {
         switchCameraCallCount += 1
         cameraPosition = cameraPosition == .back ? .front : .back
-        camStatusPublisher.send(.cameraSwitched(camPosition: cameraPosition))
+        _camStatusPublisher.send(.cameraSwitched(camPosition: cameraPosition))
     }
     
     func takePhoto() {
         takePhotoCallCount += 1
         lastPhoto = UIImage()
-        camStatusPublisher.send(.photoTaken(photo: lastPhoto!))
+        _camStatusPublisher.send(.photoTaken(photo: lastPhoto!))
     }
     
     func startVideoRecording() {
         startVideoRecordingCallCount += 1
-        camStatusPublisher.send(.recordingVideoBegun)
+        _camStatusPublisher.send(.recordingVideoBegun)
     }
     
     func stopVideoRecording() {
         stopVideoRecordingCallCount += 1
-        camStatusPublisher.send(.recordingVideoFinished)
+        _camStatusPublisher.send(.recordingVideoFinished)
     }
     
     func finishVideoProcessing() {
-        lastVideoUrl = URL(string: "videoUrl")
-        camStatusPublisher.send(.processingVideoFinished(videoUrl: lastVideoUrl!))
+        lastVideoUrl = URL(string: "videoURL")
+        _camStatusPublisher.send(.processingVideoFinished(videoUrl: lastVideoUrl!))
     }
     
     func focus(on point: CGPoint) {
