@@ -9,12 +9,23 @@ import AVFoundation
 import Combine
 import UIKit
 
+enum CameraPosition {
+    case back
+    case front
+}
+
+enum CameraFlashMode {
+    case on
+    case off
+    case auto
+}
+
 protocol CamManager: AnyObject {
     var camStatusPublisher: PassthroughSubject<CamStatus, Never> { get }
     
-    var camPosition: AVCaptureDevice.Position { get }
-    var flashMode: AVCaptureDevice.FlashMode { get set }
-    var videoPreviewLayer: AVCaptureVideoPreviewLayer { get }
+    var cameraPosition: CameraPosition { get }
+    var flashMode: CameraFlashMode { get set }
+    var videoPreviewLayer: CALayer { get }
     
     func setupAndStartSession()
     func startSession()
@@ -31,16 +42,16 @@ protocol CamManager: AnyObject {
 final class AVCamManager: NSObject, CamManager {
     let camStatusPublisher = PassthroughSubject<CamStatus, Never>()
     
-    private(set) var camPosition: AVCaptureDevice.Position = .back
-    var flashMode: AVCaptureDevice.FlashMode = .off
+    private(set) var cameraPosition: CameraPosition = .back
+    var flashMode: CameraFlashMode = .off
     
-    private(set) lazy var videoPreviewLayer: AVCaptureVideoPreviewLayer = {
+    private(set) lazy var videoPreviewLayer: CALayer = {
         let layer = AVCaptureVideoPreviewLayer(session: session)
         layer.videoGravity = .resizeAspectFill
         return layer
     }()
     
-    private let session = AVCaptureSession()
+    private lazy var session = AVCaptureSession()
     private let sessionQueue = DispatchQueue(label: "AVCamSessionQueue")
     
     private var videoDevice: AVCaptureDevice?
@@ -51,6 +62,13 @@ final class AVCamManager: NSObject, CamManager {
     
     private var backgroundRecordingID = UIBackgroundTaskIdentifier.invalid
     private var subscriptions = Set<AnyCancellable>()
+    
+    private var captureDeviceFlashMode: AVCaptureDevice.FlashMode {
+        convertToCaptureDeviceFlashMode(from: flashMode)
+    }
+    private var captureDevicePosition: AVCaptureDevice.Position {
+        convertToCaptureDevicePosition(from: cameraPosition)
+    }
 }
 
 extension AVCamManager {
@@ -98,12 +116,12 @@ extension AVCamManager {
             removeAllCaptureInputs()
             reAddInputs()
             
-            camStatusPublisher.send(.cameraSwitched(camPosition: camPosition))
+            camStatusPublisher.send(.cameraSwitched(camPosition: cameraPosition))
         }
     }
     
     private func switchCameraPosition() {
-        camPosition = camPosition == .back ? .front : .back
+        cameraPosition = cameraPosition == .back ? .front : .back
     }
     
     private func reAddInputs() {
@@ -133,7 +151,7 @@ extension AVCamManager {
             }
             
             let settings = AVCapturePhotoSettings()
-            settings.flashMode = flashMode
+            settings.flashMode = captureDeviceFlashMode
             photoOutput.capturePhoto(with: settings, delegate: self)
         }
     }
@@ -151,7 +169,7 @@ extension AVCamManager {
             }
             
             outputConnection.videoOrientation = .portrait
-            outputConnection.isVideoMirrored = camPosition == .front
+            outputConnection.isVideoMirrored = cameraPosition == .front
             
             if movieFileOutput.availableVideoCodecTypes.contains(.hevc) {
                 movieFileOutput.setOutputSettings([AVVideoCodecKey: AVVideoCodecType.hevc], for: outputConnection)
@@ -233,8 +251,9 @@ extension AVCamManager {
 
 extension AVCamManager {
     private func addVideoInput() throws {
-        guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: camPosition) else {
-            throw CamSetupError.defaultVideoDeviceUnavailable
+        guard let device = AVCaptureDevice
+            .default(.builtInWideAngleCamera, for: .video, position: captureDevicePosition) else {
+                throw CamSetupError.defaultVideoDeviceUnavailable
         }
         
         videoDevice = device
@@ -336,6 +355,21 @@ extension AVCamManager {
             }
             .store(in: &subscriptions)
     }
+    
+    private func convertToCaptureDeviceFlashMode(from flashMode: CameraFlashMode) -> AVCaptureDevice.FlashMode {
+        switch flashMode {
+        case .on: return .on
+        case .off: return .off
+        case .auto: return .auto
+        }
+    }
+    
+    private func convertToCaptureDevicePosition(from position: CameraPosition) -> AVCaptureDevice.Position {
+        switch position {
+        case .back: return .back
+        case .front: return .front
+        }
+    }
 }
 
 extension AVCamManager: AVCapturePhotoCaptureDelegate {
@@ -363,7 +397,7 @@ extension AVCamManager: AVCapturePhotoCaptureDelegate {
             return nil
         }
         
-        guard camPosition == .front, let cgImage = image.cgImage else {
+        guard cameraPosition == .front, let cgImage = image.cgImage else {
             return image
         }
         

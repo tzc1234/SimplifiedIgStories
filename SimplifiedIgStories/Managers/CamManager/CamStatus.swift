@@ -22,5 +22,5 @@ enum CamStatus {
     
     case processingVideoFailure(err: Error)
     case processingVideoFinished(videoUrl: URL)
-    case cameraSwitched(camPosition: AVCaptureDevice.Position)
+    case cameraSwitched(camPosition: CameraPosition)
 }

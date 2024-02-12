@@ -13,10 +13,10 @@ import UIKit
 final class MockCamManager: CamManager {
     var camStatusPublisher = PassthroughSubject<CamStatus, Never>()
     
-    var camPosition: AVCaptureDevice.Position = .back
-    var flashMode: AVCaptureDevice.FlashMode = .off
+    var cameraPosition: CameraPosition = .back
+    var flashMode: CameraFlashMode = .off
     
-    lazy var videoPreviewLayer: AVCaptureVideoPreviewLayer = {
+    lazy var videoPreviewLayer: CALayer = {
         AVCaptureVideoPreviewLayer()
     }()
     
@@ -53,8 +53,8 @@ extension MockCamManager {
     
     func switchCamera() {
         switchCameraCallCount += 1
-        camPosition = camPosition == .back ? .front : .back
-        camStatusPublisher.send(.cameraSwitched(camPosition: camPosition))
+        cameraPosition = cameraPosition == .back ? .front : .back
+        camStatusPublisher.send(.cameraSwitched(camPosition: cameraPosition))
     }
     
     func takePhoto() {

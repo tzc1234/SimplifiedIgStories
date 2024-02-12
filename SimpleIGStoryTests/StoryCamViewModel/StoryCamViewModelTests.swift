@@ -109,7 +109,7 @@ class StoryCamViewModelTests: XCTestCase {
         let (_, camManager) = makeSUT()
         
         XCTAssertEqual(camManager.switchCameraCallCount, 0, "switchCameraCallCount")
-        XCTAssertEqual(camManager.camPosition, .back, "camPosition")
+        XCTAssertEqual(camManager.cameraPosition, .back, "camPosition")
     }
     
     func test_switchCamera_shouldReceiveCameraSwitchedStatus_afterFunctionCalled() {
@@ -129,10 +129,10 @@ class StoryCamViewModelTests: XCTestCase {
         sut.switchCamera()
         
         XCTAssertEqual(camManager.switchCameraCallCount, 1, "switchCameraCallCount")
-        XCTAssertEqual(camManager.camPosition, .front, "camPosition")
+        XCTAssertEqual(camManager.cameraPosition, .front, "camPosition")
     }
     
-    func test_flashMode_flashModeShouldBeOff_afterInital() {
+    func test_flashMode_flashModeShouldBeOff_afterInitial() {
         let (sut, camManager) = makeSUT()
         
         XCTAssertEqual(sut.flashMode, .off, "vm.flashMode")

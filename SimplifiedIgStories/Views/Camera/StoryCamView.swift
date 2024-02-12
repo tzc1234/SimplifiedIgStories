@@ -76,7 +76,6 @@ struct StoryCamView: View {
         .onDisappear {
             print("StoryCamView disappear")
         }
-        
     }
 }
 
@@ -162,7 +161,6 @@ extension StoryCamView {
         case .auto: return "bolt.badge.a.fill"
         case .on:   return "bolt.fill"
         case .off:  return "bolt.slash.fill"
-        @unknown default: return ""
         }
     }
 }
@@ -171,14 +169,9 @@ extension StoryCamView {
 extension StoryCamView {
     private func toggleFlashMode() {
         switch vm.flashMode {
-        case .auto:
-            vm.flashMode = .off
-        case .on:
-            vm.flashMode = .auto
-        case .off:
-            vm.flashMode = .on
-        @unknown default:
-            break
+        case .auto: vm.flashMode = .off
+        case .on:   vm.flashMode = .auto
+        case .off:  vm.flashMode = .on
         }
     }
 }

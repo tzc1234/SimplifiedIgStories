@@ -10,7 +10,7 @@ import AVKit
 import Combine
 
 @MainActor final class StoryCamViewModel: ObservableObject {
-    @Published var flashMode: AVCaptureDevice.FlashMode = .off {
+    @Published var flashMode: CameraFlashMode = .off {
         willSet {
             camManager.flashMode = newValue
         }
@@ -100,7 +100,7 @@ extension StoryCamViewModel {
         isCamPermGranted && isMicrophonePermGranted
     }
     
-    var videoPreviewLayer: AVCaptureVideoPreviewLayer {
+    var videoPreviewLayer: CALayer {
         camManager.videoPreviewLayer
     }
 }
