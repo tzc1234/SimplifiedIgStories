@@ -1,11 +1,11 @@
 //
-//  CamSetupError.swift
+//  CameraSetupError.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 19/06/2022.
 //
 
-enum CamSetupError: Error {
+enum CameraSetupError: Error {
     case defaultVideoDeviceUnavailable
     case createVideoDeviceInputFailure(err: Error)
     case addVideoDeviceInputFailure

@@ -88,7 +88,7 @@ extension AVCaptureCamera {
         do {
             try action(self)
         } catch {
-            let errMsg = (error as? CamSetupError)?.errMsg ?? error.localizedDescription
+            let errMsg = (error as? CameraSetupError)?.errMsg ?? error.localizedDescription
             print(errMsg)
         }
         
@@ -137,7 +137,7 @@ extension AVCaptureCamera {
     private func addVideoInput() throws {
         guard let device = AVCaptureDevice
             .default(.builtInWideAngleCamera, for: .video, position: captureDevicePosition) else {
-                throw CamSetupError.defaultVideoDeviceUnavailable
+                throw CameraSetupError.defaultVideoDeviceUnavailable
         }
         
         try setupFocusAndExposure(for: device)
@@ -146,14 +146,14 @@ extension AVCaptureCamera {
         do {
             let input = try AVCaptureDeviceInput(device: device)
             guard session.canAddInput(input) else {
-                throw CamSetupError.addVideoDeviceInputFailure
+                throw CameraSetupError.addVideoDeviceInputFailure
             }
             
             session.addInput(input)
-        } catch CamSetupError.addVideoDeviceInputFailure {
-            throw CamSetupError.addVideoDeviceInputFailure
+        } catch CameraSetupError.addVideoDeviceInputFailure {
+            throw CameraSetupError.addVideoDeviceInputFailure
         } catch {
-            throw CamSetupError.createVideoDeviceInputFailure(err: error)
+            throw CameraSetupError.createVideoDeviceInputFailure(err: error)
         }
     }
     
@@ -173,27 +173,27 @@ extension AVCaptureCamera {
     
     private func addAudioInput() throws {
         guard let device = AVCaptureDevice.default(for: .audio) else {
-            throw CamSetupError.defaultAudioDeviceUnavailable
+            throw CameraSetupError.defaultAudioDeviceUnavailable
         }
         
         do {
             let input = try AVCaptureDeviceInput(device: device)
             guard session.canAddInput(input) else {
-                throw CamSetupError.addAudioDeviceInputFailure
+                throw CameraSetupError.addAudioDeviceInputFailure
             }
             
             session.addInput(input)
-        } catch CamSetupError.addAudioDeviceInputFailure {
-            throw CamSetupError.addAudioDeviceInputFailure
+        } catch CameraSetupError.addAudioDeviceInputFailure {
+            throw CameraSetupError.addAudioDeviceInputFailure
         } catch {
-            throw CamSetupError.createAudioDeviceInputFailure(err: error)
+            throw CameraSetupError.createAudioDeviceInputFailure(err: error)
         }
     }
     
     private func addVideoOutput() throws {
         let output = AVCaptureMovieFileOutput()
         guard session.canAddOutput(output) else {
-            throw CamSetupError.addMovieFileOutputFailure
+            throw CameraSetupError.addMovieFileOutputFailure
         }
         
         session.addOutput(output)
@@ -208,7 +208,7 @@ extension AVCaptureCamera {
     private func addPhotoOutput() throws {
         let output = AVCapturePhotoOutput()
         guard session.canAddOutput(output) else {
-            throw CamSetupError.addPhotoOutputFailure
+            throw CameraSetupError.addPhotoOutputFailure
         }
         
         session.addOutput(output)
@@ -220,7 +220,7 @@ extension AVCaptureCamera {
             try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .default)
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
-            throw CamSetupError.backgroundAudioPreferenceSetupFailure
+            throw CameraSetupError.backgroundAudioPreferenceSetupFailure
         }
     }
     
