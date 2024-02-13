@@ -5,9 +5,8 @@
 //  Created by Tsz-Lung on 19/06/2022.
 //
 
-import AVFoundation
+import AVKit
 import Combine
-import UIKit
 
 enum CameraPosition {
     case back
@@ -25,7 +24,6 @@ protocol Camera {
     var videoPreviewLayer: CALayer { get }
     
     func getStatusPublisher() -> AnyPublisher<CameraStatus, Never>
-    func setupAndStartSession()
     func startSession()
     func stopSession()
     func switchCamera()
@@ -70,10 +68,17 @@ extension AVCamManager {
         statusPublisher.eraseToAnyPublisher()
     }
     
-    func setupAndStartSession() {
+    func startSession() {
         sessionQueue.async { [weak self] in
             guard let self, !session.isRunning else { return }
             
+            setupSessionIfNeeded()
+            session.startRunning()
+        }
+    }
+    
+    private func setupSessionIfNeeded() {
+        if session.inputs.isEmpty {
             configureSession { camera in
                 try camera.addInputs()
                 try camera.setBackgroundAudioPreference()
@@ -82,7 +87,6 @@ extension AVCamManager {
             }
             
             subscribeCaptureSessionNotifications()
-            session.startRunning()
         }
     }
     
@@ -131,10 +135,6 @@ extension AVCamManager {
         for input in session.inputs {
             session.removeInput(input)
         }
-    }
-    
-    func startSession() {
-        session.startRunning()
     }
     
     func stopSession() {

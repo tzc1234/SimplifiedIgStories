@@ -88,8 +88,7 @@ import Combine
         self.photoTaker = photoTaker
         self.cameraAuthorizationTracker = cameraAuthorizationTracker
         self.microphoneAuthorizationTracker = microphoneAuthorizationTracker
-        
-        subscribeCamMangerPublishers()
+        self.subscribeCamMangerPublishers()
     }
 }
 
@@ -111,8 +110,8 @@ extension StoryCamViewModel {
         microphoneAuthorizationTracker.startTracking()
     }
     
-    func setupAndStartSession() {
-        camera.setupAndStartSession()
+    func startSession() {
+        camera.startSession()
     }
     
     func switchCamera() {

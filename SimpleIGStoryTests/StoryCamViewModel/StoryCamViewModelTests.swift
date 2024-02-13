@@ -70,7 +70,7 @@ class StoryCamViewModelTests: XCTestCase {
         let (sut, camManager) = makeSUT()
         
         XCTAssertFalse(sut.enableVideoRecordBtn, "enableVideoRecordBtn")
-        XCTAssertEqual(camManager.setupAndStartSessionCallCount, 0, "setupAndStartSessionCallCount")
+        XCTAssertEqual(camManager.startSessionCallCount, 0, "setupAndStartSessionCallCount")
     }
     
     func test_setupAndStartSession_enableVideoRecordBtnShouldBeTrueAndSessionShouldBeStarted_afterFunctionCalled() {
@@ -98,11 +98,11 @@ class StoryCamViewModelTests: XCTestCase {
             }
             .store(in: &subscriptions)
         
-        sut.setupAndStartSession()
+        sut.startSession()
         wait(for: [camStatusPublisherExpectation, enableVideoRecordBtnExpectation], timeout: 0.1)
         
         XCTAssertTrue(sut.enableVideoRecordBtn, "enableVideoRecordBtn")
-        XCTAssertEqual(camManager.setupAndStartSessionCallCount, 1, "setupAndStartSessionCallCount")
+        XCTAssertEqual(camManager.startSessionCallCount, 1, "setupAndStartSessionCallCount")
     }
     
     func test_switchCamera_camPositionShouldBeBack_beforeFunctionCalled() {

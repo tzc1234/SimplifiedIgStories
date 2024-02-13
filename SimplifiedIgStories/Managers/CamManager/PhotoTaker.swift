@@ -5,9 +5,8 @@
 //  Created by Tsz-Lung on 12/02/2024.
 //
 
-import AVFoundation
+import AVKit
 import Combine
-import UIKit
 
 enum PhotoTakerStatus {
     case photoTaken(photo: UIImage)

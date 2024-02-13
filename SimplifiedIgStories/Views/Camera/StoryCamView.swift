@@ -83,7 +83,7 @@ struct StoryCamView: View {
         }
         .onChange(of: vm.arePermissionsGranted) { isGranted in
             if isGranted {
-                vm.setupAndStartSession()
+                vm.startSession()
             }
         }
         .onDisappear {

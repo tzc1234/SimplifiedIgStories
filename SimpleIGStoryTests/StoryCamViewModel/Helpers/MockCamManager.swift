@@ -20,7 +20,6 @@ final class MockCamManager: Camera {
     }()
     
     // Additional variables for testings.
-    private(set) var setupAndStartSessionCallCount = 0
     private(set) var startSessionCallCount = 0
     private(set) var stopSessionCallCount = 0
     private(set) var switchCameraCallCount = 0
@@ -35,11 +34,6 @@ final class MockCamManager: Camera {
 extension MockCamManager {
     func getStatusPublisher() -> AnyPublisher<CameraStatus, Never> {
         camStatusPublisher.eraseToAnyPublisher()
-    }
-    
-    func setupAndStartSession() {
-        setupAndStartSessionCallCount += 1
-        camStatusPublisher.send(.sessionStarted)
     }
     
     func startSession() {
