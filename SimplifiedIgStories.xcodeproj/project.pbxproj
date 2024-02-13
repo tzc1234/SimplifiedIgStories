@@ -260,7 +260,7 @@
 			path = Home;
 			sourceTree = "<group>";
 		};
-		BE2D7790285F761F00DBD924 /* CamManager */ = {
+		BE2D7790285F761F00DBD924 /* Camera */ = {
 			isa = PBXGroup;
 			children = (
 				BE463A2C285F05AE00599929 /* AVCamManager.swift */,
@@ -270,7 +270,7 @@
 				BE35051A2B7ABB4800348B4B /* PhotoTaker.swift */,
 				BE42A3372B7B8053004BC257 /* VideoRecorder.swift */,
 			);
-			path = CamManager;
+			path = Camera;
 			sourceTree = "<group>";
 		};
 		BE47195027D6CFCC004500F2 /* Stories */ = {
@@ -441,7 +441,7 @@
 			children = (
 				BE9336CD27D2690E009E5370 /* _MediaSaver.swift */,
 				BEB8752827DA120300D60110 /* LocalFileManager.swift */,
-				BE2D7790285F761F00DBD924 /* CamManager */,
+				BE2D7790285F761F00DBD924 /* Camera */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
