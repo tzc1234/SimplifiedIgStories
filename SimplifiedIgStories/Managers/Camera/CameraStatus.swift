@@ -5,7 +5,6 @@
 //  Created by Tsz-Lung on 19/06/2022.
 //
 
-import AVFoundation
 import AVKit
 
 enum CameraStatus {

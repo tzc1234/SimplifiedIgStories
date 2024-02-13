@@ -100,12 +100,18 @@ struct PermissionView_Previews: PreviewProvider {
         func stopRecording() {}
     }
     
+    class DummyCameraAuxiliary: CameraAuxiliary {
+        func focus(on point: CGPoint) {}
+        func zoom(to factor: CGFloat) {}
+    }
+    
     static var previews: some View {
         StoryCamPermissionView(
             storyCamViewModel: StoryCamViewModel(
                 camera: AVCamManager(),
                 photoTaker: DummyPhotoTaker(),
-                videoRecorder: DummyVideoRecorder()
+                videoRecorder: DummyVideoRecorder(), 
+                cameraAuxiliary: DummyCameraAuxiliary()
             )
         )
     }

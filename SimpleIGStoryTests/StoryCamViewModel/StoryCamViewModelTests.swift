@@ -182,7 +182,7 @@ class StoryCamViewModelTests: XCTestCase {
     
     func test_videoRecordingStatus_videoRecordingStatusChanges() {
         let videoRecorder = VideoRecorderSpy()
-        let (sut, camManager) = makeSUT(videoRecorder: videoRecorder)
+        let (sut, _) = makeSUT(videoRecorder: videoRecorder)
         
         let startVideoRecordingStatusExpectation = XCTestExpectation(description: "Should received VideoRecordingStatus.start")
         let stopVideoRecordingStatusExpectation = XCTestExpectation(description: "Should received VideoRecordingStatus.stop")
@@ -246,13 +246,14 @@ class StoryCamViewModelTests: XCTestCase {
     }
     
     func test_videoPreviewTapPoint_videoPreviewTapPointChanged_afterNewPointAssigned() {
-        let (sut, camManager) = makeSUT()
+        let cameraAuxiliary = CameraAuxiliarySpy()
+        let (sut, camManager) = makeSUT(cameraAuxiliary: cameraAuxiliary)
         
         let point = CGPoint(x: CGFloat.random(in: 1...99), y: CGFloat.random(in: 1...99))
         sut.videoPreviewTapPoint = point
         
         XCTAssertEqual(sut.videoPreviewTapPoint, point, "videoPreviewTapPoint")
-        XCTAssertEqual(sut.videoPreviewTapPoint, camManager.focusPoint, "vm.videoPreviewTapPoint == camManager.focusPoint")
+        XCTAssertEqual(sut.videoPreviewTapPoint, cameraAuxiliary.focusPoint, "vm.videoPreviewTapPoint == camManager.focusPoint")
     }
     
     func test_videoPreviewPinchFactor_videoPreviewPinchFactorShouldBeZero_afterInital() {
@@ -262,19 +263,21 @@ class StoryCamViewModelTests: XCTestCase {
     }
     
     func test_videoPreviewPinchFactor_videoPreviewPinchFactorChanged_afterNewFactorAssigned() {
-        let (sut, camManager) = makeSUT()
+        let cameraAuxiliary = CameraAuxiliarySpy()
+        let (sut, camManager) = makeSUT(cameraAuxiliary: cameraAuxiliary)
         
         let factor = CGFloat.random(in: 1...99)
         sut.videoPreviewPinchFactor = factor
         
         XCTAssertEqual(sut.videoPreviewPinchFactor, factor, "videoPreviewPinchFactor")
-        XCTAssertEqual(sut.videoPreviewPinchFactor, camManager.zoomFactor, "vm.videoPreviewPinchFactor == camManager.zoomFactor")
+        XCTAssertEqual(sut.videoPreviewPinchFactor, cameraAuxiliary.zoomFactor, "vm.videoPreviewPinchFactor == camManager.zoomFactor")
     }
     
     // MARK: - Helpers
     
     private func makeSUT(photoTaker: PhotoTakerSpy = PhotoTakerSpy(),
                          videoRecorder: VideoRecorderSpy = VideoRecorderSpy(),
+                         cameraAuxiliary: CameraAuxiliarySpy = CameraAuxiliarySpy(),
                          cameraAuthorizationTracker: DeviceAuthorizationTracker = DeviceAuthorizationTrackerStub(),
                          microphoneAuthorizationTracker: DeviceAuthorizationTracker = DeviceAuthorizationTrackerStub())
     -> (sut: StoryCamViewModel, camManager: MockCamManager) {
@@ -283,6 +286,7 @@ class StoryCamViewModelTests: XCTestCase {
             camera: camManager,
             photoTaker: photoTaker,
             videoRecorder: videoRecorder,
+            cameraAuxiliary: cameraAuxiliary,
             cameraAuthorizationTracker: cameraAuthorizationTracker,
             microphoneAuthorizationTracker: microphoneAuthorizationTracker
         )
@@ -332,6 +336,19 @@ class StoryCamViewModelTests: XCTestCase {
             let lastVideoUrl = URL(string: "videoURL")!
             self.lastVideoUrl = lastVideoUrl
             publisher.send(.processedVideo(videoURL: lastVideoUrl))
+        }
+    }
+    
+    private class CameraAuxiliarySpy: CameraAuxiliary {
+        private(set) var focusPoint: CGPoint?
+        private(set) var zoomFactor: CGFloat?
+        
+        func focus(on point: CGPoint) {
+            focusPoint = point
+        }
+        
+        func zoom(to factor: CGFloat) {
+            zoomFactor = factor
         }
     }
     

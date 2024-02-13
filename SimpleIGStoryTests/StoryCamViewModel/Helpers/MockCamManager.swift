@@ -23,9 +23,6 @@ final class MockCamManager: Camera {
     private(set) var startSessionCallCount = 0
     private(set) var stopSessionCallCount = 0
     private(set) var switchCameraCallCount = 0
-    
-    private(set) var focusPoint: CGPoint?
-    private(set) var zoomFactor: CGFloat?
 }
 
 // MARK: internal functions
@@ -48,13 +45,5 @@ extension MockCamManager {
         switchCameraCallCount += 1
         cameraPosition = cameraPosition == .back ? .front : .back
         camStatusPublisher.send(.cameraSwitched(camPosition: cameraPosition))
-    }
-    
-    func focus(on point: CGPoint) {
-        focusPoint = point
-    }
-    
-    func zoom(to factor: CGFloat) {
-        zoomFactor = factor
     }
 }

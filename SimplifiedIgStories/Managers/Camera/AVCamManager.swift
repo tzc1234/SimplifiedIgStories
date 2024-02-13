@@ -27,12 +27,9 @@ protocol Camera {
     func startSession()
     func stopSession()
     func switchCamera()
-    
-    func focus(on point: CGPoint)
-    func zoom(to factor: CGFloat)
 }
 
-final class AVCamManager: NSObject, Camera, PhotoCaptureDevice, VideoRecordDevice {
+final class AVCamManager: NSObject, Camera, PhotoCaptureDevice, VideoRecordDevice, AuxiliarySupportedCamera {
     private let statusPublisher = PassthroughSubject<CameraStatus, Never>()
     
     private(set) var cameraPosition: CameraPosition = .back
@@ -46,9 +43,7 @@ final class AVCamManager: NSObject, Camera, PhotoCaptureDevice, VideoRecordDevic
     private let session = AVCaptureSession()
     let sessionQueue = DispatchQueue(label: "AVCamSessionQueue")
     
-    private var videoDevice: AVCaptureDevice?
-    private var videoDeviceInput: AVCaptureDeviceInput?
-    
+    private(set) var captureDevice: AVCaptureDevice?
     private(set) var movieFileOutput: AVCaptureMovieFileOutput?
     private(set) var photoOutput: AVCapturePhotoOutput?
     
@@ -136,55 +131,6 @@ extension AVCamManager {
     func stopSession() {
         session.stopRunning()
     }
-    
-    func focus(on point: CGPoint) {
-        let x = point.y / .screenHeight
-        let y = 1.0 - point.x / .screenWidth
-        let focusPoint = CGPoint(x: x, y: y)
-
-        sessionQueue.async { [weak self] in
-            do {
-                try self?.configureVideoDevice { device in
-                    if device.isFocusPointOfInterestSupported && device.isFocusModeSupported(.continuousAutoFocus) {
-                        device.focusPointOfInterest = focusPoint
-                        device.focusMode = .autoFocus
-                    }
-                    
-                    if device.isExposurePointOfInterestSupported && 
-                        device.isExposureModeSupported(.continuousAutoExposure) {
-                        device.exposurePointOfInterest = focusPoint
-                        device.exposureMode = .continuousAutoExposure
-                    }
-                }
-            } catch {
-                print("Cannot lock device for configuration: \(error)")
-            }
-        }
-    }
-    
-    func zoom(to factor: CGFloat) {
-        sessionQueue.async { [weak self] in
-            do {
-                try self?.configureVideoDevice { device in
-                    // Reference: https://stackoverflow.com/a/43278702
-                    let maxZoomFactor = device.activeFormat.videoMaxZoomFactor
-                    device.videoZoomFactor = max(1.0, min(device.videoZoomFactor + factor, maxZoomFactor))
-                }
-            } catch {
-                print("Cannot lock device for configuration: \(error)")
-            }
-        }
-    }
-    
-    private func configureVideoDevice(action: (AVCaptureDevice) -> Void) throws {
-        guard let videoDevice else {
-            throw CamSetupError.videoDeviceNotFound
-        }
-        
-        try videoDevice.lockForConfiguration()
-        action(videoDevice)
-        videoDevice.unlockForConfiguration()
-    }
 }
 
 extension AVCamManager {
@@ -195,7 +141,7 @@ extension AVCamManager {
         }
         
         try setupFocusAndExposure(for: device)
-        videoDevice = device
+        captureDevice = device
 
         do {
             let input = try AVCaptureDeviceInput(device: device)
@@ -204,7 +150,6 @@ extension AVCamManager {
             }
             
             session.addInput(input)
-            videoDeviceInput = input
         } catch CamSetupError.addVideoDeviceInputFailure {
             throw CamSetupError.addVideoDeviceInputFailure
         } catch {

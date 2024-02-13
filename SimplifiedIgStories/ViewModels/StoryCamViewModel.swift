@@ -65,30 +65,33 @@ import Combine
     
     var videoPreviewTapPoint: CGPoint = .zero {
         didSet {
-            camera.focus(on: videoPreviewTapPoint)
+            cameraAuxiliary.focus(on: videoPreviewTapPoint)
         }
     }
     
     var videoPreviewPinchFactor: CGFloat = .zero {
         didSet {
-            camera.zoom(to: videoPreviewPinchFactor)
+            cameraAuxiliary.zoom(to: videoPreviewPinchFactor)
         }
     }
     
     private let camera: Camera
     private let photoTaker: PhotoTaker
     private let videoRecorder: VideoRecorder
+    private let cameraAuxiliary: CameraAuxiliary
     private let cameraAuthorizationTracker: DeviceAuthorizationTracker
     private let microphoneAuthorizationTracker: DeviceAuthorizationTracker
 
     init(camera: Camera,
          photoTaker: PhotoTaker,
          videoRecorder: VideoRecorder,
+         cameraAuxiliary: CameraAuxiliary,
          cameraAuthorizationTracker: DeviceAuthorizationTracker = AVCaptureDeviceAuthorizationTracker(mediaType: .video),
          microphoneAuthorizationTracker: DeviceAuthorizationTracker = AVCaptureDeviceAuthorizationTracker(mediaType: .audio)) {
         self.camera = camera
         self.photoTaker = photoTaker
         self.videoRecorder = videoRecorder
+        self.cameraAuxiliary = cameraAuxiliary
         self.cameraAuthorizationTracker = cameraAuthorizationTracker
         self.microphoneAuthorizationTracker = microphoneAuthorizationTracker
         self.subscribeCamMangerPublishers()
