@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct StoryCamPermissionView: View {
     @ObservedObject private var vm: StoryCamViewModel
@@ -82,9 +83,17 @@ struct StoryCamPermissionView: View {
 }
 
 struct PermissionView_Previews: PreviewProvider {
+    class DummyPhotoTaker: PhotoTaker {
+        func getStatusPublisher() -> AnyPublisher<PhotoTakerStatus, Never> {
+            Empty<PhotoTakerStatus, Never>().eraseToAnyPublisher()
+        }
+        
+        func takePhoto(on mode: CameraFlashMode) {}
+    }
+    
     static var previews: some View {
         StoryCamPermissionView(
-            storyCamViewModel: StoryCamViewModel(camManager: AVCamManager())
+            storyCamViewModel: StoryCamViewModel(camera: AVCamManager(), photoTaker: DummyPhotoTaker())
         )
     }
 }

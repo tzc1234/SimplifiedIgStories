@@ -16,28 +16,22 @@ enum PhotoTakerStatus {
 
 protocol PhotoTaker {
     func getStatusPublisher() -> AnyPublisher<PhotoTakerStatus, Never>
-    func takePhoto(on mode: CameraFlashMode, cameraPosition: CameraPosition)
+    func takePhoto(on mode: CameraFlashMode)
+}
+
+protocol PhotoCaptureDevice {
+    var cameraPosition: CameraPosition { get }
+    var photoOutput: AVCapturePhotoOutput? { get }
+    var sessionQueue: DispatchQueue { get }
 }
 
 final class AVCapturePhotoTaker: NSObject, PhotoTaker {
     private let statusPublisher = PassthroughSubject<PhotoTakerStatus, Never>()
-    private var shouldFlipImage = false
     
-    private let output: AVCapturePhotoOutput
-    private let session: AVCaptureSession
-    private let sessionQueue: DispatchQueue
+    private let device: PhotoCaptureDevice
     
-    init?(session: AVCaptureSession, sessionQueue: DispatchQueue) {
-        let output = AVCapturePhotoOutput()
-        guard session.canAddOutput(output) else {
-            return nil
-        }
-        
-        session.addOutput(output)
-        
-        self.output = output
-        self.session = session
-        self.sessionQueue = sessionQueue
+    init(device: PhotoCaptureDevice) {
+        self.device = device
         super.init()
     }
     
@@ -45,14 +39,13 @@ final class AVCapturePhotoTaker: NSObject, PhotoTaker {
         statusPublisher.eraseToAnyPublisher()
     }
     
-    func takePhoto(on mode: CameraFlashMode, cameraPosition: CameraPosition) {
-        sessionQueue.async { [weak self] in
+    func takePhoto(on mode: CameraFlashMode) {
+        device.sessionQueue.async { [weak self] in
             guard let self else { return }
             
-            shouldFlipImage = cameraPosition == .front
             let settings = AVCapturePhotoSettings()
             settings.flashMode = convertToCaptureDeviceFlashMode(from: mode)
-            output.capturePhoto(with: settings, delegate: self)
+            device.photoOutput?.capturePhoto(with: settings, delegate: self)
         }
     }
     
@@ -63,15 +56,11 @@ final class AVCapturePhotoTaker: NSObject, PhotoTaker {
         case .auto: return .auto
         }
     }
-    
-    deinit {
-        session.removeOutput(output)
-    }
 }
 
 extension AVCapturePhotoTaker: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-        guard error != nil, let data = photo.fileDataRepresentation(), let image = makeImage(from: data) else {
+        guard error == nil, let data = photo.fileDataRepresentation(), let image = makeImage(from: data) else {
             statusPublisher.send(.imageConvertingFailure)
             return
         }
@@ -84,7 +73,7 @@ extension AVCapturePhotoTaker: AVCapturePhotoCaptureDelegate {
             return nil
         }
         
-        guard shouldFlipImage, let cgImage = image.cgImage else {
+        guard device.cameraPosition == .front, let cgImage = image.cgImage else {
             return image
         }
         

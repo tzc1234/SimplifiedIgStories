@@ -24,8 +24,6 @@ final class MockCamManager: Camera {
     private(set) var startSessionCallCount = 0
     private(set) var stopSessionCallCount = 0
     private(set) var switchCameraCallCount = 0
-    private(set) var takePhotoCallCount = 0
-    private(set) var lastPhoto: UIImage?
     private(set) var startVideoRecordingCallCount = 0
     private(set) var stopVideoRecordingCallCount = 0
     private(set) var lastVideoUrl: URL?
@@ -58,12 +56,6 @@ extension MockCamManager {
         switchCameraCallCount += 1
         cameraPosition = cameraPosition == .back ? .front : .back
         camStatusPublisher.send(.cameraSwitched(camPosition: cameraPosition))
-    }
-    
-    func takePhoto(on: CameraFlashMode) {
-        takePhotoCallCount += 1
-        lastPhoto = UIImage()
-        camStatusPublisher.send(.photoTaken(photo: lastPhoto!))
     }
     
     func startVideoRecording() {

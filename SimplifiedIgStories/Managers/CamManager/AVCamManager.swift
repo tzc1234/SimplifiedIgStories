@@ -29,7 +29,7 @@ protocol Camera {
     func startSession()
     func stopSession()
     func switchCamera()
-    func takePhoto(on mode: CameraFlashMode)
+    
     func startVideoRecording()
     func stopVideoRecording()
     
@@ -37,7 +37,7 @@ protocol Camera {
     func zoom(to factor: CGFloat)
 }
 
-final class AVCamManager: NSObject, Camera {
+final class AVCamManager: NSObject, Camera, PhotoCaptureDevice {
     private let statusPublisher = PassthroughSubject<CameraStatus, Never>()
     
     private(set) var cameraPosition: CameraPosition = .back
@@ -48,14 +48,14 @@ final class AVCamManager: NSObject, Camera {
         return layer
     }()
     
-    private lazy var session = AVCaptureSession()
-    private let sessionQueue = DispatchQueue(label: "AVCamSessionQueue")
+    private let session = AVCaptureSession()
+    let sessionQueue = DispatchQueue(label: "AVCamSessionQueue")
     
     private var videoDevice: AVCaptureDevice?
     private var videoDeviceInput: AVCaptureDeviceInput?
     
     private var movieFileOutput: AVCaptureMovieFileOutput?
-    private var photoOutput: AVCapturePhotoOutput?
+    private(set) var photoOutput: AVCapturePhotoOutput?
     
     private var backgroundRecordingID = UIBackgroundTaskIdentifier.invalid
     private var subscriptions = Set<AnyCancellable>()
@@ -139,18 +139,6 @@ extension AVCamManager {
     
     func stopSession() {
         session.stopRunning()
-    }
-    
-    func takePhoto(on mode: CameraFlashMode) {
-        sessionQueue.async { [weak self] in
-            guard let self, let photoOutput else {
-                return
-            }
-            
-            let settings = AVCapturePhotoSettings()
-            settings.flashMode = convertToCaptureDeviceFlashMode(from: mode)
-            photoOutput.capturePhoto(with: settings, delegate: self)
-        }
     }
     
     func startVideoRecording() {
@@ -356,53 +344,11 @@ extension AVCamManager {
             .store(in: &subscriptions)
     }
     
-    private func convertToCaptureDeviceFlashMode(from flashMode: CameraFlashMode) -> AVCaptureDevice.FlashMode {
-        switch flashMode {
-        case .on: return .on
-        case .off: return .off
-        case .auto: return .auto
-        }
-    }
-    
     private func convertToCaptureDevicePosition(from position: CameraPosition) -> AVCaptureDevice.Position {
         switch position {
         case .back: return .back
         case .front: return .front
         }
-    }
-}
-
-extension AVCamManager: AVCapturePhotoCaptureDelegate {
-    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-        if let error {
-            statusPublisher.send(.processingPhotoFailure(err: error))
-            return
-        }
-        
-        guard let imageData = photo.fileDataRepresentation() else {
-            statusPublisher.send(.processingPhotoDataFailure)
-            return
-        }
-        
-        guard let image = makeImage(from: imageData) else {
-            statusPublisher.send(.convertToUIImageFailure)
-            return
-        }
-        
-        statusPublisher.send(.photoTaken(photo: image))
-    }
-    
-    private func makeImage(from data: Data) -> UIImage? {
-        guard let image = UIImage(data: data, scale: 1.0) else {
-            return nil
-        }
-        
-        guard cameraPosition == .front, let cgImage = image.cgImage else {
-            return image
-        }
-        
-        let flippedImage = UIImage(cgImage: cgImage, scale: image.scale, orientation: .leftMirrored)
-        return flippedImage
     }
 }
 

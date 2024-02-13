@@ -12,11 +12,6 @@ enum CameraStatus {
     case sessionStarted
     case sessionStopped
     
-    case photoTaken(photo: UIImage)
-    case processingPhotoFailure(err: Error)
-    case processingPhotoDataFailure
-    case convertToUIImageFailure
-    
     case recordingVideoBegun
     case recordingVideoFinished
     

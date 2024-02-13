@@ -8,11 +8,24 @@
 import SwiftUI
 
 struct StoryCamView: View {
-    @StateObject private var vm = StoryCamViewModel(camManager: AVCamManager())
+    @StateObject private var vm: StoryCamViewModel
     
     let postImageAction: ((UIImage) -> Void)
     let postVideoAction: ((URL) -> Void)
     let tapCloseAction: (() -> Void)
+    
+    init(postImageAction: @escaping (UIImage) -> Void,
+         postVideoAction: @escaping (URL) -> Void,
+         tapCloseAction: @escaping () -> Void) {
+        let camera = AVCamManager()
+        let photoTaker = AVCapturePhotoTaker(device: camera)
+        let vm = StoryCamViewModel(camera: camera, photoTaker: photoTaker)
+        self._vm = StateObject(wrappedValue: vm)
+        
+        self.postImageAction = postImageAction
+        self.postVideoAction = postVideoAction
+        self.tapCloseAction = tapCloseAction
+    }
     
     var body: some View {
         ZStack {

@@ -141,7 +141,8 @@ class StoryCamViewModelTests: XCTestCase {
     }
     
     func test_shouldPhotoTake_showPhotoPreviewShouldBeTrueAndLastTakenImageNotNil_afterShouldPhotoTakeSetToTrue() {
-        let (sut, camManager) = makeSUT()
+        let photoTaker = PhotoTakerStub()
+        let (sut, camManager) = makeSUT(photoTaker: photoTaker)
         
         let exp = XCTestExpectation(description: "should received showPhotoPreview")
         sut.$showPhotoPreview
@@ -156,10 +157,10 @@ class StoryCamViewModelTests: XCTestCase {
         
         XCTAssertTrue(sut.shouldPhotoTake, "shouldPhotoTake")
         XCTAssertTrue(sut.showPhotoPreview, "showPhotoPreview")
-        XCTAssertEqual(camManager.takePhotoCallCount, 1, "takePhotoCallCount")
+        XCTAssertEqual(photoTaker.takePhotoCallCount, 1, "takePhotoCallCount")
         XCTAssertEqual(camManager.stopSessionCallCount, 1, "stopSessionCallCount")
         XCTAssertNotNil(sut.lastTakenImage, "lastTakenImage")
-        XCTAssertEqual(sut.lastTakenImage, camManager.lastPhoto, "vm.lastTakenImage == camManager.lastPhoto")
+        XCTAssertEqual(sut.lastTakenImage, photoTaker.lastPhoto, "vm.lastTakenImage == camManager.lastPhoto")
     }
     
     func test_showPhotoPreview_startSessionShouldBeCalled_whenShowPhotoPreviewSetToFalse() {
@@ -271,16 +272,36 @@ class StoryCamViewModelTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func makeSUT(cameraAuthorizationTracker: DeviceAuthorizationTracker = DeviceAuthorizationTrackerStub(),
-                         microphoneAuthorizationTracker: DeviceAuthorizationTracker = DeviceAuthorizationTrackerStub()) 
+    private func makeSUT(photoTaker: PhotoTakerStub = PhotoTakerStub(),
+                         cameraAuthorizationTracker: DeviceAuthorizationTracker = DeviceAuthorizationTrackerStub(),
+                         microphoneAuthorizationTracker: DeviceAuthorizationTracker = DeviceAuthorizationTrackerStub())
     -> (sut: StoryCamViewModel, camManager: MockCamManager) {
         let camManager = MockCamManager()
         let sut = StoryCamViewModel(
-            camManager: camManager,
+            camera: camManager,
+            photoTaker: photoTaker,
             cameraAuthorizationTracker: cameraAuthorizationTracker,
             microphoneAuthorizationTracker: microphoneAuthorizationTracker
         )
         return (sut, camManager)
+    }
+    
+    private class PhotoTakerStub: PhotoTaker {
+        private(set) var takePhotoCallCount = 0
+        private(set) var lastPhoto: UIImage?
+        
+        private let publisher = PassthroughSubject<PhotoTakerStatus, Never>()
+        
+        func getStatusPublisher() -> AnyPublisher<PhotoTakerStatus, Never> {
+            publisher.eraseToAnyPublisher()
+        }
+        
+        func takePhoto(on mode: CameraFlashMode) {
+            takePhotoCallCount += 1
+            let lastPhoto = UIImage()
+            self.lastPhoto = lastPhoto
+            publisher.send(.photoTaken(photo: lastPhoto))
+        }
     }
     
     private class DeviceAuthorizationTrackerStub: DeviceAuthorizationTracker {
