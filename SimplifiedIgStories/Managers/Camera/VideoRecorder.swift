@@ -24,7 +24,7 @@ protocol VideoRecorder {
 protocol VideoRecordDevice {
     var cameraPosition: CameraPosition { get }
     var movieFileOutput: AVCaptureMovieFileOutput? { get }
-    var sessionQueue: DispatchQueue { get }
+    func performOnSessionQueue(action: @escaping () -> Void)
 }
 
 final class AVCaptureVideoRecorder: NSObject, VideoRecorder {
@@ -42,7 +42,7 @@ final class AVCaptureVideoRecorder: NSObject, VideoRecorder {
     }
     
     func startRecording() {
-        device.sessionQueue.async { [weak self] in
+        device.performOnSessionQueue { [weak self] in
             guard let self, let output = device.movieFileOutput, !output.isRecording else {
                 return
             }
@@ -74,7 +74,7 @@ final class AVCaptureVideoRecorder: NSObject, VideoRecorder {
     }
     
     func stopRecording() {
-        device.sessionQueue.async { [weak self] in
+        device.performOnSessionQueue { [weak self] in
             guard let self, let output = device.movieFileOutput, output.isRecording else {
                 return
             }

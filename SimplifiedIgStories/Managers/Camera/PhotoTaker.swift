@@ -21,7 +21,7 @@ protocol PhotoTaker {
 protocol PhotoCaptureDevice {
     var cameraPosition: CameraPosition { get }
     var photoOutput: AVCapturePhotoOutput? { get }
-    var sessionQueue: DispatchQueue { get }
+    func performOnSessionQueue(action: @escaping () -> Void)
 }
 
 final class AVCapturePhotoTaker: NSObject, PhotoTaker {
@@ -38,7 +38,7 @@ final class AVCapturePhotoTaker: NSObject, PhotoTaker {
     }
     
     func takePhoto(on mode: CameraFlashMode) {
-        device.sessionQueue.async { [weak self] in
+        device.performOnSessionQueue { [weak self] in
             guard let self else { return }
             
             let settings = AVCapturePhotoSettings()

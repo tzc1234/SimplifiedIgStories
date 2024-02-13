@@ -41,7 +41,7 @@ final class AVCaptureCamera: NSObject, Camera, PhotoCaptureDevice, VideoRecordDe
     }()
     
     private let session = AVCaptureSession()
-    let sessionQueue = DispatchQueue(label: "AVCamSessionQueue")
+    private let sessionQueue = DispatchQueue(label: "AVCamSessionQueue")
     
     private(set) var captureDevice: AVCaptureDevice?
     private(set) var movieFileOutput: AVCaptureMovieFileOutput?
@@ -55,6 +55,10 @@ final class AVCaptureCamera: NSObject, Camera, PhotoCaptureDevice, VideoRecordDe
 }
 
 extension AVCaptureCamera {
+    func performOnSessionQueue(action: @escaping () -> Void) {
+        sessionQueue.async { action() }
+    }
+    
     func getStatusPublisher() -> AnyPublisher<CameraStatus, Never> {
         statusPublisher.eraseToAnyPublisher()
     }

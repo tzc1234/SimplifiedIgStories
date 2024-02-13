@@ -14,7 +14,7 @@ protocol CameraAuxiliary {
 
 protocol AuxiliarySupportedCamera {
     var captureDevice: AVCaptureDevice? { get }
-    var sessionQueue: DispatchQueue { get }
+    func performOnSessionQueue(action: @escaping () -> Void)
 }
 
 final class AVCaptureDeviceAuxiliary: CameraAuxiliary {
@@ -33,7 +33,7 @@ final class AVCaptureDeviceAuxiliary: CameraAuxiliary {
         let y = 1.0 - point.x / .screenWidth
         let focusPoint = CGPoint(x: x, y: y)
 
-        camera.sessionQueue.async { [weak self] in
+        camera.performOnSessionQueue { [weak self] in
             do {
                 try self?.configureVideoDevice { device in
                     if device.isFocusPointOfInterestSupported && device.isFocusModeSupported(.continuousAutoFocus) {
@@ -54,7 +54,7 @@ final class AVCaptureDeviceAuxiliary: CameraAuxiliary {
     }
     
     func zoom(to factor: CGFloat) {
-        camera.sessionQueue.async { [weak self] in
+        camera.performOnSessionQueue { [weak self] in
             do {
                 try self?.configureVideoDevice { device in
                     // Reference: https://stackoverflow.com/a/43278702
