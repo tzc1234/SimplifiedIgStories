@@ -31,7 +31,6 @@ final class AVCapturePhotoTaker: NSObject, PhotoTaker {
     
     init(device: PhotoCaptureDevice) {
         self.device = device
-        super.init()
     }
     
     func getStatusPublisher() -> AnyPublisher<PhotoTakerStatus, Never> {

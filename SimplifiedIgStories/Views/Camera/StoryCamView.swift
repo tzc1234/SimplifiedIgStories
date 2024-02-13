@@ -19,7 +19,8 @@ struct StoryCamView: View {
          tapCloseAction: @escaping () -> Void) {
         let camera = AVCamManager()
         let photoTaker = AVCapturePhotoTaker(device: camera)
-        let vm = StoryCamViewModel(camera: camera, photoTaker: photoTaker)
+        let videoRecorder = AVCaptureVideoRecorder(device: camera)
+        let vm = StoryCamViewModel(camera: camera, photoTaker: photoTaker, videoRecorder: videoRecorder)
         self._vm = StateObject(wrappedValue: vm)
         
         self.postImageAction = postImageAction

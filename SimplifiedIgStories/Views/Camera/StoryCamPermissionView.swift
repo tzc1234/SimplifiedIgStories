@@ -91,9 +91,22 @@ struct PermissionView_Previews: PreviewProvider {
         func takePhoto(on mode: CameraFlashMode) {}
     }
     
+    class DummyVideoRecorder: VideoRecorder {
+        func getStatusPublisher() -> AnyPublisher<VideoRecorderStatus, Never> {
+            Empty<VideoRecorderStatus, Never>().eraseToAnyPublisher()
+        }
+        
+        func startRecording() {}
+        func stopRecording() {}
+    }
+    
     static var previews: some View {
         StoryCamPermissionView(
-            storyCamViewModel: StoryCamViewModel(camera: AVCamManager(), photoTaker: DummyPhotoTaker())
+            storyCamViewModel: StoryCamViewModel(
+                camera: AVCamManager(),
+                photoTaker: DummyPhotoTaker(),
+                videoRecorder: DummyVideoRecorder()
+            )
         )
     }
 }

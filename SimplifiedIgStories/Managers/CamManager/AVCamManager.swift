@@ -28,14 +28,11 @@ protocol Camera {
     func stopSession()
     func switchCamera()
     
-    func startVideoRecording()
-    func stopVideoRecording()
-    
     func focus(on point: CGPoint)
     func zoom(to factor: CGFloat)
 }
 
-final class AVCamManager: NSObject, Camera, PhotoCaptureDevice {
+final class AVCamManager: NSObject, Camera, PhotoCaptureDevice, VideoRecordDevice {
     private let statusPublisher = PassthroughSubject<CameraStatus, Never>()
     
     private(set) var cameraPosition: CameraPosition = .back
@@ -52,10 +49,9 @@ final class AVCamManager: NSObject, Camera, PhotoCaptureDevice {
     private var videoDevice: AVCaptureDevice?
     private var videoDeviceInput: AVCaptureDeviceInput?
     
-    private var movieFileOutput: AVCaptureMovieFileOutput?
+    private(set) var movieFileOutput: AVCaptureMovieFileOutput?
     private(set) var photoOutput: AVCapturePhotoOutput?
     
-    private var backgroundRecordingID = UIBackgroundTaskIdentifier.invalid
     private var subscriptions = Set<AnyCancellable>()
     
     private var captureDevicePosition: AVCaptureDevice.Position {
@@ -139,49 +135,6 @@ extension AVCamManager {
     
     func stopSession() {
         session.stopRunning()
-    }
-    
-    func startVideoRecording() {
-        sessionQueue.async { [weak self] in
-            guard let self, let movieFileOutput, !movieFileOutput.isRecording else {
-                return
-            }
-            
-            backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
-            
-            guard let outputConnection = movieFileOutput.connection(with: .video) else {
-                return
-            }
-            
-            outputConnection.videoOrientation = .portrait
-            outputConnection.isVideoMirrored = cameraPosition == .front
-            
-            if movieFileOutput.availableVideoCodecTypes.contains(.hevc) {
-                movieFileOutput.setOutputSettings([AVVideoCodecKey: AVVideoCodecType.hevc], for: outputConnection)
-            }
-            
-            movieFileOutput.startRecording(to: getVideoOutputPath(), recordingDelegate: self)
-            
-            statusPublisher.send(.recordingVideoBegun)
-        }
-    }
-    
-    private func getVideoOutputPath() -> URL {
-        let fileName = UUID().uuidString
-        return FileManager.default.temporaryDirectory
-            .appendingPathComponent(fileName)
-            .appendingPathExtension("mov")
-    }
-    
-    func stopVideoRecording() {
-        sessionQueue.async { [weak self] in
-            guard let self, let movieFileOutput, movieFileOutput.isRecording else {
-                return
-            }
-            
-            movieFileOutput.stopRecording()
-            statusPublisher.send(.recordingVideoFinished)
-        }
     }
     
     func focus(on point: CGPoint) {
@@ -348,26 +301,6 @@ extension AVCamManager {
         switch position {
         case .back: return .back
         case .front: return .front
-        }
-    }
-}
-
-extension AVCamManager: AVCaptureFileOutputRecordingDelegate {
-    func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
-        invalidateBackgroundRecordingTask()
-        
-        if let error {
-            statusPublisher.send(.processingVideoFailure(err: error))
-            return
-        }
-        
-        statusPublisher.send(.processingVideoFinished(videoUrl: outputFileURL))
-    }
-    
-    private func invalidateBackgroundRecordingTask() {
-        if backgroundRecordingID != UIBackgroundTaskIdentifier.invalid {
-            UIApplication.shared.endBackgroundTask(backgroundRecordingID)
-            backgroundRecordingID = UIBackgroundTaskIdentifier.invalid
         }
     }
 }

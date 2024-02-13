@@ -11,11 +11,5 @@ import AVKit
 enum CameraStatus {
     case sessionStarted
     case sessionStopped
-    
-    case recordingVideoBegun
-    case recordingVideoFinished
-    
-    case processingVideoFailure(err: Error)
-    case processingVideoFinished(videoUrl: URL)
     case cameraSwitched(camPosition: CameraPosition)
 }

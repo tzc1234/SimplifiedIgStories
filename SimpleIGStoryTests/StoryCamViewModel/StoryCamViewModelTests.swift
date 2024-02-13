@@ -141,7 +141,7 @@ class StoryCamViewModelTests: XCTestCase {
     }
     
     func test_shouldPhotoTake_showPhotoPreviewShouldBeTrueAndLastTakenImageNotNil_afterShouldPhotoTakeSetToTrue() {
-        let photoTaker = PhotoTakerStub()
+        let photoTaker = PhotoTakerSpy()
         let (sut, camManager) = makeSUT(photoTaker: photoTaker)
         
         let exp = XCTestExpectation(description: "should received showPhotoPreview")
@@ -181,7 +181,8 @@ class StoryCamViewModelTests: XCTestCase {
     }
     
     func test_videoRecordingStatus_videoRecordingStatusChanges() {
-        let (sut, camManager) = makeSUT()
+        let videoRecorder = VideoRecorderSpy()
+        let (sut, camManager) = makeSUT(videoRecorder: videoRecorder)
         
         let startVideoRecordingStatusExpectation = XCTestExpectation(description: "Should received VideoRecordingStatus.start")
         let stopVideoRecordingStatusExpectation = XCTestExpectation(description: "Should received VideoRecordingStatus.stop")
@@ -216,17 +217,17 @@ class StoryCamViewModelTests: XCTestCase {
         XCTAssertNil(sut.lastVideoUrl, "lastVideoUrl")
         XCTAssertFalse(sut.showVideoPreview, "showVideoPreview")
         
-        camManager.finishVideoProcessing()
+        videoRecorder.finishVideoProcessing()
         
         wait(for: [noneVideoRecordingStatusExpectation], timeout: 0.1)
         
         XCTAssertEqual(sut.videoRecordingStatus, .none, "videoRecordingStatus")
         XCTAssertNotNil(sut.lastVideoUrl, "lastVideoUrl")
         XCTAssertTrue(sut.showVideoPreview, "showVideoPreview")
-        XCTAssertEqual(sut.lastVideoUrl, camManager.lastVideoUrl, "vm.lastVideoUrl == camManager.lastVideoUrl")
+        XCTAssertEqual(sut.lastVideoUrl, videoRecorder.lastVideoUrl, "vm.lastVideoUrl == camManager.lastVideoUrl")
         
-        XCTAssertEqual(camManager.startVideoRecordingCallCount, 1, "startVideoRecordingCallCount")
-        XCTAssertEqual(camManager.stopVideoRecordingCallCount, 1, "stopVideoRecordingCallCount")
+        XCTAssertEqual(videoRecorder.startVideoRecordingCallCount, 1, "startVideoRecordingCallCount")
+        XCTAssertEqual(videoRecorder.stopVideoRecordingCallCount, 1, "stopVideoRecordingCallCount")
     }
     
     func test_showVideoPreview_startSessionShouldBeCalled_whenShowVideoPreviewSetToFalse() {
@@ -272,7 +273,8 @@ class StoryCamViewModelTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func makeSUT(photoTaker: PhotoTakerStub = PhotoTakerStub(),
+    private func makeSUT(photoTaker: PhotoTakerSpy = PhotoTakerSpy(),
+                         videoRecorder: VideoRecorderSpy = VideoRecorderSpy(),
                          cameraAuthorizationTracker: DeviceAuthorizationTracker = DeviceAuthorizationTrackerStub(),
                          microphoneAuthorizationTracker: DeviceAuthorizationTracker = DeviceAuthorizationTrackerStub())
     -> (sut: StoryCamViewModel, camManager: MockCamManager) {
@@ -280,13 +282,14 @@ class StoryCamViewModelTests: XCTestCase {
         let sut = StoryCamViewModel(
             camera: camManager,
             photoTaker: photoTaker,
+            videoRecorder: videoRecorder,
             cameraAuthorizationTracker: cameraAuthorizationTracker,
             microphoneAuthorizationTracker: microphoneAuthorizationTracker
         )
         return (sut, camManager)
     }
     
-    private class PhotoTakerStub: PhotoTaker {
+    private class PhotoTakerSpy: PhotoTaker {
         private(set) var takePhotoCallCount = 0
         private(set) var lastPhoto: UIImage?
         
@@ -301,6 +304,34 @@ class StoryCamViewModelTests: XCTestCase {
             let lastPhoto = UIImage()
             self.lastPhoto = lastPhoto
             publisher.send(.photoTaken(photo: lastPhoto))
+        }
+    }
+    
+    private class VideoRecorderSpy: VideoRecorder {
+        private(set) var startVideoRecordingCallCount = 0
+        private(set) var stopVideoRecordingCallCount = 0
+        private(set) var lastVideoUrl: URL?
+        
+        private let publisher = PassthroughSubject<VideoRecorderStatus, Never>()
+        
+        func getStatusPublisher() -> AnyPublisher<VideoRecorderStatus, Never> {
+            publisher.eraseToAnyPublisher()
+        }
+        
+        func startRecording() {
+            startVideoRecordingCallCount += 1
+            publisher.send(.recordingBegun)
+        }
+        
+        func stopRecording() {
+            stopVideoRecordingCallCount += 1
+            publisher.send(.recordingFinished)
+        }
+        
+        func finishVideoProcessing() {
+            let lastVideoUrl = URL(string: "videoURL")!
+            self.lastVideoUrl = lastVideoUrl
+            publisher.send(.processedVideo(videoURL: lastVideoUrl))
         }
     }
     
