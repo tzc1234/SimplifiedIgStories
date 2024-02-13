@@ -1,5 +1,5 @@
 //
-//  AVCamManager.swift
+//  AVCaptureCamera.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 19/06/2022.
@@ -29,7 +29,7 @@ protocol Camera {
     func switchCamera()
 }
 
-final class AVCamManager: NSObject, Camera, PhotoCaptureDevice, VideoRecordDevice, AuxiliarySupportedCamera {
+final class AVCaptureCamera: NSObject, Camera, PhotoCaptureDevice, VideoRecordDevice, AuxiliarySupportedCamera {
     private let statusPublisher = PassthroughSubject<CameraStatus, Never>()
     
     private(set) var cameraPosition: CameraPosition = .back
@@ -54,7 +54,7 @@ final class AVCamManager: NSObject, Camera, PhotoCaptureDevice, VideoRecordDevic
     }
 }
 
-extension AVCamManager {
+extension AVCaptureCamera {
     func getStatusPublisher() -> AnyPublisher<CameraStatus, Never> {
         statusPublisher.eraseToAnyPublisher()
     }
@@ -81,7 +81,7 @@ extension AVCamManager {
         }
     }
     
-    private func configureSession(action: (AVCamManager) throws -> Void) {
+    private func configureSession(action: (AVCaptureCamera) throws -> Void) {
         session.beginConfiguration()
         session.sessionPreset = .high
         
@@ -133,7 +133,7 @@ extension AVCamManager {
     }
 }
 
-extension AVCamManager {
+extension AVCaptureCamera {
     private func addVideoInput() throws {
         guard let device = AVCaptureDevice
             .default(.builtInWideAngleCamera, for: .video, position: captureDevicePosition) else {

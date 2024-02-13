@@ -108,7 +108,7 @@ struct PermissionView_Previews: PreviewProvider {
     static var previews: some View {
         StoryCamPermissionView(
             storyCamViewModel: StoryCamViewModel(
-                camera: AVCamManager(),
+                camera: AVCaptureCamera(),
                 photoTaker: DummyPhotoTaker(),
                 videoRecorder: DummyVideoRecorder(), 
                 cameraAuxiliary: DummyCameraAuxiliary()

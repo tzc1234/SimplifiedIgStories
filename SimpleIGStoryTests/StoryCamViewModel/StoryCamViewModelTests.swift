@@ -61,24 +61,24 @@ class StoryCamViewModelTests: XCTestCase {
     }
     
     func test_videoPreviewLayer_returnTheSameLayerAsCamManagerVideoPreviewLayer() {
-        let (sut, camManager) = makeSUT()
+        let (sut, camera) = makeSUT()
         
-        XCTAssertIdentical(sut.videoPreviewLayer, camManager.videoPreviewLayer)
+        XCTAssertIdentical(sut.videoPreviewLayer, camera.videoPreviewLayer)
     }
 
     func test_setupAndStartSession_enableVideoRecordBtnShouldBeFalse_beforeFunctionCalled() {
-        let (sut, camManager) = makeSUT()
+        let (sut, camera) = makeSUT()
         
         XCTAssertFalse(sut.enableVideoRecordBtn, "enableVideoRecordBtn")
-        XCTAssertEqual(camManager.startSessionCallCount, 0, "setupAndStartSessionCallCount")
+        XCTAssertEqual(camera.startSessionCallCount, 0, "setupAndStartSessionCallCount")
     }
     
     func test_setupAndStartSession_enableVideoRecordBtnShouldBeTrueAndSessionShouldBeStarted_afterFunctionCalled() {
-        let (sut, camManager) = makeSUT()
+        let (sut, camera) = makeSUT()
         
         let camStatusPublisherExpectation = XCTestExpectation(description: "should receive status from camStatusPublisher")
         let enableVideoRecordBtnExpectation = XCTestExpectation(description: "should receive enableVideoRecordBtn value")
-        camManager.getStatusPublisher()
+        camera.getStatusPublisher()
             .sink { status in
                 switch status {
                 case .sessionStarted:
@@ -102,20 +102,20 @@ class StoryCamViewModelTests: XCTestCase {
         wait(for: [camStatusPublisherExpectation, enableVideoRecordBtnExpectation], timeout: 0.1)
         
         XCTAssertTrue(sut.enableVideoRecordBtn, "enableVideoRecordBtn")
-        XCTAssertEqual(camManager.startSessionCallCount, 1, "setupAndStartSessionCallCount")
+        XCTAssertEqual(camera.startSessionCallCount, 1, "setupAndStartSessionCallCount")
     }
     
     func test_switchCamera_camPositionShouldBeBack_beforeFunctionCalled() {
-        let (_, camManager) = makeSUT()
+        let (_, camera) = makeSUT()
         
-        XCTAssertEqual(camManager.switchCameraCallCount, 0, "switchCameraCallCount")
-        XCTAssertEqual(camManager.cameraPosition, .back, "camPosition")
+        XCTAssertEqual(camera.switchCameraCallCount, 0, "switchCameraCallCount")
+        XCTAssertEqual(camera.cameraPosition, .back, "camPosition")
     }
     
     func test_switchCamera_shouldReceiveCameraSwitchedStatus_afterFunctionCalled() {
-        let (sut, camManager) = makeSUT()
+        let (sut, camera) = makeSUT()
         
-        camManager.getStatusPublisher()
+        camera.getStatusPublisher()
             .sink { status in
                 switch status {
                 case .cameraSwitched:
@@ -128,8 +128,8 @@ class StoryCamViewModelTests: XCTestCase {
         
         sut.switchCamera()
         
-        XCTAssertEqual(camManager.switchCameraCallCount, 1, "switchCameraCallCount")
-        XCTAssertEqual(camManager.cameraPosition, .front, "camPosition")
+        XCTAssertEqual(camera.switchCameraCallCount, 1, "switchCameraCallCount")
+        XCTAssertEqual(camera.cameraPosition, .front, "camPosition")
     }
     
     func test_shouldPhotoTake_shouldPhotoTakeShouldBeFalse_afterInitial() {
@@ -142,7 +142,7 @@ class StoryCamViewModelTests: XCTestCase {
     
     func test_shouldPhotoTake_showPhotoPreviewShouldBeTrueAndLastTakenImageNotNil_afterShouldPhotoTakeSetToTrue() {
         let photoTaker = PhotoTakerSpy()
-        let (sut, camManager) = makeSUT(photoTaker: photoTaker)
+        let (sut, camera) = makeSUT(photoTaker: photoTaker)
         
         let exp = XCTestExpectation(description: "should received showPhotoPreview")
         sut.$showPhotoPreview
@@ -158,18 +158,18 @@ class StoryCamViewModelTests: XCTestCase {
         XCTAssertTrue(sut.shouldPhotoTake, "shouldPhotoTake")
         XCTAssertTrue(sut.showPhotoPreview, "showPhotoPreview")
         XCTAssertEqual(photoTaker.takePhotoCallCount, 1, "takePhotoCallCount")
-        XCTAssertEqual(camManager.stopSessionCallCount, 1, "stopSessionCallCount")
+        XCTAssertEqual(camera.stopSessionCallCount, 1, "stopSessionCallCount")
         XCTAssertNotNil(sut.lastTakenImage, "lastTakenImage")
-        XCTAssertEqual(sut.lastTakenImage, photoTaker.lastPhoto, "vm.lastTakenImage == camManager.lastPhoto")
+        XCTAssertEqual(sut.lastTakenImage, photoTaker.lastPhoto, "vm.lastTakenImage == camera.lastPhoto")
     }
     
     func test_showPhotoPreview_startSessionShouldBeCalled_whenShowPhotoPreviewSetToFalse() {
-        let (sut, camManager) = makeSUT()
+        let (sut, camera) = makeSUT()
         
         sut.showPhotoPreview = false
         
         XCTAssertFalse(sut.showPhotoPreview, "showPhotoPreview")
-        XCTAssertEqual(camManager.startSessionCallCount, 1, "startSessionCallCount")
+        XCTAssertEqual(camera.startSessionCallCount, 1, "startSessionCallCount")
     }
     
     func test_videoRecordingStatus_videoRecordingStatusShouldBeNone_afterInitial() {
@@ -224,19 +224,19 @@ class StoryCamViewModelTests: XCTestCase {
         XCTAssertEqual(sut.videoRecordingStatus, .none, "videoRecordingStatus")
         XCTAssertNotNil(sut.lastVideoUrl, "lastVideoUrl")
         XCTAssertTrue(sut.showVideoPreview, "showVideoPreview")
-        XCTAssertEqual(sut.lastVideoUrl, videoRecorder.lastVideoUrl, "vm.lastVideoUrl == camManager.lastVideoUrl")
+        XCTAssertEqual(sut.lastVideoUrl, videoRecorder.lastVideoUrl, "vm.lastVideoUrl == camera.lastVideoUrl")
         
         XCTAssertEqual(videoRecorder.startVideoRecordingCallCount, 1, "startVideoRecordingCallCount")
         XCTAssertEqual(videoRecorder.stopVideoRecordingCallCount, 1, "stopVideoRecordingCallCount")
     }
     
     func test_showVideoPreview_startSessionShouldBeCalled_whenShowVideoPreviewSetToFalse() {
-        let (sut, camManager) = makeSUT()
+        let (sut, camera) = makeSUT()
         
         sut.showVideoPreview = false
         
         XCTAssertFalse(sut.showVideoPreview, "showVideoPreview")
-        XCTAssertEqual(camManager.startSessionCallCount, 1, "startSessionCallCount")
+        XCTAssertEqual(camera.startSessionCallCount, 1, "startSessionCallCount")
     }
     
     func test_videoPreviewTapPoint_videoPreviewTapPointShouldBeZero_afterInitial() {
@@ -247,13 +247,13 @@ class StoryCamViewModelTests: XCTestCase {
     
     func test_videoPreviewTapPoint_videoPreviewTapPointChanged_afterNewPointAssigned() {
         let cameraAuxiliary = CameraAuxiliarySpy()
-        let (sut, camManager) = makeSUT(cameraAuxiliary: cameraAuxiliary)
+        let (sut, _) = makeSUT(cameraAuxiliary: cameraAuxiliary)
         
         let point = CGPoint(x: CGFloat.random(in: 1...99), y: CGFloat.random(in: 1...99))
         sut.videoPreviewTapPoint = point
         
         XCTAssertEqual(sut.videoPreviewTapPoint, point, "videoPreviewTapPoint")
-        XCTAssertEqual(sut.videoPreviewTapPoint, cameraAuxiliary.focusPoint, "vm.videoPreviewTapPoint == camManager.focusPoint")
+        XCTAssertEqual(sut.videoPreviewTapPoint, cameraAuxiliary.focusPoint, "vm.videoPreviewTapPoint == camera.focusPoint")
     }
     
     func test_videoPreviewPinchFactor_videoPreviewPinchFactorShouldBeZero_afterInital() {
@@ -264,13 +264,13 @@ class StoryCamViewModelTests: XCTestCase {
     
     func test_videoPreviewPinchFactor_videoPreviewPinchFactorChanged_afterNewFactorAssigned() {
         let cameraAuxiliary = CameraAuxiliarySpy()
-        let (sut, camManager) = makeSUT(cameraAuxiliary: cameraAuxiliary)
+        let (sut, _) = makeSUT(cameraAuxiliary: cameraAuxiliary)
         
         let factor = CGFloat.random(in: 1...99)
         sut.videoPreviewPinchFactor = factor
         
         XCTAssertEqual(sut.videoPreviewPinchFactor, factor, "videoPreviewPinchFactor")
-        XCTAssertEqual(sut.videoPreviewPinchFactor, cameraAuxiliary.zoomFactor, "vm.videoPreviewPinchFactor == camManager.zoomFactor")
+        XCTAssertEqual(sut.videoPreviewPinchFactor, cameraAuxiliary.zoomFactor, "vm.videoPreviewPinchFactor == camera.zoomFactor")
     }
     
     // MARK: - Helpers
@@ -280,17 +280,17 @@ class StoryCamViewModelTests: XCTestCase {
                          cameraAuxiliary: CameraAuxiliarySpy = CameraAuxiliarySpy(),
                          cameraAuthorizationTracker: DeviceAuthorizationTracker = DeviceAuthorizationTrackerStub(),
                          microphoneAuthorizationTracker: DeviceAuthorizationTracker = DeviceAuthorizationTrackerStub())
-    -> (sut: StoryCamViewModel, camManager: MockCamManager) {
-        let camManager = MockCamManager()
+    -> (sut: StoryCamViewModel, camera: CameraSpy) {
+        let camera = CameraSpy()
         let sut = StoryCamViewModel(
-            camera: camManager,
+            camera: camera,
             photoTaker: photoTaker,
             videoRecorder: videoRecorder,
             cameraAuxiliary: cameraAuxiliary,
             cameraAuthorizationTracker: cameraAuthorizationTracker,
             microphoneAuthorizationTracker: microphoneAuthorizationTracker
         )
-        return (sut, camManager)
+        return (sut, camera)
     }
     
     private class PhotoTakerSpy: PhotoTaker {

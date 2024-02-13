@@ -1,5 +1,5 @@
 //
-//  MockCamManager.swift
+//  CameraSpy.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 16/07/2022.
@@ -10,7 +10,7 @@ import Combine
 import UIKit
 @testable import Simple_IG_Story
 
-final class MockCamManager: Camera {
+final class CameraSpy: Camera {
     private let camStatusPublisher = PassthroughSubject<CameraStatus, Never>()
     
     var cameraPosition: CameraPosition = .back
@@ -26,7 +26,7 @@ final class MockCamManager: Camera {
 }
 
 // MARK: internal functions
-extension MockCamManager {
+extension CameraSpy {
     func getStatusPublisher() -> AnyPublisher<CameraStatus, Never> {
         camStatusPublisher.eraseToAnyPublisher()
     }
