@@ -7,8 +7,8 @@
 
 import AVKit
 
-enum CameraStatus {
+enum CameraStatus: Equatable {
     case sessionStarted
     case sessionStopped
-    case cameraSwitched(camPosition: CameraPosition)
+    case cameraSwitched(position: CameraPosition)
 }

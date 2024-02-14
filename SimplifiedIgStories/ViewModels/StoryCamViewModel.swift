@@ -155,7 +155,7 @@ extension StoryCamViewModel {
                 case .sessionStopped:
                     print("Camera session did stop running")
                     self?.enableVideoRecordBtn = false
-                case .cameraSwitched(camPosition: _):
+                case .cameraSwitched:
                     break
                 }
             }

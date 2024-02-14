@@ -44,6 +44,6 @@ extension CameraSpy {
     func switchCamera() {
         switchCameraCallCount += 1
         cameraPosition = cameraPosition == .back ? .front : .back
-        camStatusPublisher.send(.cameraSwitched(camPosition: cameraPosition))
+        camStatusPublisher.send(.cameraSwitched(position: cameraPosition))
     }
 }

@@ -1,5 +1,5 @@
 //
-//  AVCaptureCamera.swift
+//  AVCamera.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 19/06/2022.
@@ -29,7 +29,7 @@ protocol Camera {
     func switchCamera()
 }
 
-final class AVCaptureCamera: NSObject, Camera, PhotoCaptureDevice, VideoRecordDevice, AuxiliarySupportedCamera {
+final class AVCamera: NSObject, Camera, PhotoCaptureDevice, VideoRecordDevice, AuxiliarySupportedCamera {
     private let statusPublisher = PassthroughSubject<CameraStatus, Never>()
     private var subscriptions = Set<AnyCancellable>()
     
@@ -49,7 +49,7 @@ final class AVCaptureCamera: NSObject, Camera, PhotoCaptureDevice, VideoRecordDe
     private(set) var photoOutput: AVCapturePhotoOutput?
 }
 
-extension AVCaptureCamera {
+extension AVCamera {
     func performOnSessionQueue(action: @escaping () -> Void) {
         sessionQueue.async { action() }
     }
@@ -79,7 +79,7 @@ extension AVCaptureCamera {
         }
     }
     
-    private func configureSession(action: (AVCaptureCamera) throws -> Void) {
+    private func configureSession(action: (AVCamera) throws -> Void) {
         session.beginConfiguration()
         session.sessionPreset = .high
         
@@ -105,7 +105,7 @@ extension AVCaptureCamera {
             switchCameraPosition()
             reAddInputs()
             
-            statusPublisher.send(.cameraSwitched(camPosition: cameraPosition))
+            statusPublisher.send(.cameraSwitched(position: cameraPosition))
         }
     }
     
@@ -131,7 +131,7 @@ extension AVCaptureCamera {
     }
 }
 
-extension AVCaptureCamera {
+extension AVCamera {
     private func addVideoInput() throws {
         let position = convertToCaptureDevicePosition(from: cameraPosition)
         guard let device = AVCaptureDevice
