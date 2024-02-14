@@ -71,7 +71,6 @@ extension AVCaptureCamera {
         if session.inputs.isEmpty {
             configureSession { camera in
                 try camera.addInputs()
-                try camera.setBackgroundAudioPreference()
                 try camera.addVideoOutput()
                 try camera.addPhotoOutput()
             }
@@ -220,15 +219,6 @@ extension AVCaptureCamera {
         
         session.addOutput(output)
         photoOutput = output
-    }
-    
-    private func setBackgroundAudioPreference() throws {
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .default)
-            try AVAudioSession.sharedInstance().setActive(true)
-        } catch {
-            throw CameraSetupError.backgroundAudioPreferenceSetupFailure
-        }
     }
     
     private func subscribeCaptureSessionNotifications() {
