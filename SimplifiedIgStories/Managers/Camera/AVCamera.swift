@@ -41,17 +41,30 @@ final class AVCamera: NSObject, Camera, PhotoCaptureDevice, VideoRecordDevice, A
         return layer
     }()
     
-    private let session = AVCaptureSession()
-    private let sessionQueue = DispatchQueue(label: "AVCamSessionQueue")
-    
     private(set) var captureDevice: AVCaptureDevice?
     private(set) var movieFileOutput: AVCaptureMovieFileOutput?
     private(set) var photoOutput: AVCapturePhotoOutput?
+    
+    private let session: AVCaptureSession
+    private let performOnSessionQueue: (@escaping () -> Void) -> Void
+    private let makeCaptureDeviceInput: (AVCaptureDevice) throws -> AVCaptureInput
+    
+    init(session: AVCaptureSession = AVCaptureSession(),
+         makeCaptureDeviceInput: @escaping (AVCaptureDevice) throws -> AVCaptureInput =
+            AVCaptureDeviceInput.init(device:),
+         performOnSessionQueue: @escaping (@escaping () -> Void) -> Void = { action in
+            DispatchQueue(label: "AVCamSessionQueue").async { action() }
+         }
+    ) {
+        self.session = session
+        self.performOnSessionQueue = performOnSessionQueue
+        self.makeCaptureDeviceInput = makeCaptureDeviceInput
+    }
 }
 
 extension AVCamera {
     func performOnSessionQueue(action: @escaping () -> Void) {
-        sessionQueue.async { action() }
+        performOnSessionQueue(action)
     }
     
     func getStatusPublisher() -> AnyPublisher<CameraStatus, Never> {
@@ -59,7 +72,7 @@ extension AVCamera {
     }
     
     func startSession() {
-        sessionQueue.async { [weak self] in
+        performOnSessionQueue { [weak self] in
             guard let self, !session.isRunning else { return }
             
             setupSessionIfNeeded()
@@ -68,11 +81,14 @@ extension AVCamera {
     }
     
     private func setupSessionIfNeeded() {
-        if session.inputs.isEmpty {
-            configureSession { camera in
-                try camera.addInputs()
-                try camera.addVideoOutput()
-                try camera.addPhotoOutput()
+        if captureDevice == nil {
+            session.sessionPreset = .high
+            
+            do {
+                try addInputs()
+            } catch {
+                let errMsg = (error as? CameraSetupError)?.errMsg ?? error.localizedDescription
+                print(errMsg)
             }
             
             subscribeCaptureSessionNotifications()
@@ -99,7 +115,7 @@ extension AVCamera {
     }
     
     func switchCamera() {
-        sessionQueue.async { [weak self] in
+        performOnSessionQueue { [weak self] in
             guard let self else { return }
             
             switchCameraPosition()
@@ -134,16 +150,15 @@ extension AVCamera {
 extension AVCamera {
     private func addVideoInput() throws {
         let position = convertToCaptureDevicePosition(from: cameraPosition)
-        guard let device = AVCaptureDevice
-            .default(.builtInWideAngleCamera, for: .video, position: position) else {
-                throw CameraSetupError.defaultVideoDeviceUnavailable
+        guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position) else {
+            throw CameraSetupError.defaultVideoDeviceUnavailable
         }
         
         try setupFocusAndExposure(for: device)
         captureDevice = device
 
         do {
-            let input = try AVCaptureDeviceInput(device: device)
+            let input = try makeCaptureDeviceInput(device)
             guard session.canAddInput(input) else {
                 throw CameraSetupError.addVideoDeviceInputFailure
             }
@@ -183,7 +198,7 @@ extension AVCamera {
         }
         
         do {
-            let input = try AVCaptureDeviceInput(device: device)
+            let input = try makeCaptureDeviceInput(device)
             guard session.canAddInput(input) else {
                 throw CameraSetupError.addAudioDeviceInputFailure
             }
