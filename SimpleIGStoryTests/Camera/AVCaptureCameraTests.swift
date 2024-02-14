@@ -7,6 +7,7 @@
 
 import XCTest
 import Combine
+import AVFoundation
 @testable import Simple_IG_Story
 
 final class AVCaptureCameraTests: XCTestCase {
@@ -15,6 +16,14 @@ final class AVCaptureCameraTests: XCTestCase {
         let spy = CameraStatusSpy(publisher: sut.getStatusPublisher())
         
         XCTAssertEqual(spy.loggedStatuses, [])
+    }
+    
+    func test_videoPreviewLayer_returnPreviewLayerProperly() {
+        let sut = AVCamera()
+        
+        let previewLayer = sut.videoPreviewLayer
+        
+        XCTAssertNotNil(previewLayer as? AVCaptureVideoPreviewLayer)
     }
     
     // MARK: - Helpers
