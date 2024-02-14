@@ -31,6 +31,7 @@ protocol Camera {
 
 final class AVCaptureCamera: NSObject, Camera, PhotoCaptureDevice, VideoRecordDevice, AuxiliarySupportedCamera {
     private let statusPublisher = PassthroughSubject<CameraStatus, Never>()
+    private var subscriptions = Set<AnyCancellable>()
     
     private(set) var cameraPosition: CameraPosition = .back
     
@@ -46,12 +47,6 @@ final class AVCaptureCamera: NSObject, Camera, PhotoCaptureDevice, VideoRecordDe
     private(set) var captureDevice: AVCaptureDevice?
     private(set) var movieFileOutput: AVCaptureMovieFileOutput?
     private(set) var photoOutput: AVCapturePhotoOutput?
-    
-    private var subscriptions = Set<AnyCancellable>()
-    
-    private var captureDevicePosition: AVCaptureDevice.Position {
-        convertToCaptureDevicePosition(from: cameraPosition)
-    }
 }
 
 extension AVCaptureCamera {
@@ -139,8 +134,9 @@ extension AVCaptureCamera {
 
 extension AVCaptureCamera {
     private func addVideoInput() throws {
+        let position = convertToCaptureDevicePosition(from: cameraPosition)
         guard let device = AVCaptureDevice
-            .default(.builtInWideAngleCamera, for: .video, position: captureDevicePosition) else {
+            .default(.builtInWideAngleCamera, for: .video, position: position) else {
                 throw CameraSetupError.defaultVideoDeviceUnavailable
         }
         
@@ -158,6 +154,13 @@ extension AVCaptureCamera {
             throw CameraSetupError.addVideoDeviceInputFailure
         } catch {
             throw CameraSetupError.createVideoDeviceInputFailure(err: error)
+        }
+    }
+    
+    private func convertToCaptureDevicePosition(from position: CameraPosition) -> AVCaptureDevice.Position {
+        switch position {
+        case .back: return .back
+        case .front: return .front
         }
     }
     
@@ -244,12 +247,5 @@ extension AVCaptureCamera {
                 statusPublisher?.send(.sessionStopped)
             }
             .store(in: &subscriptions)
-    }
-    
-    private func convertToCaptureDevicePosition(from position: CameraPosition) -> AVCaptureDevice.Position {
-        switch position {
-        case .back: return .back
-        case .front: return .front
-        }
     }
 }
