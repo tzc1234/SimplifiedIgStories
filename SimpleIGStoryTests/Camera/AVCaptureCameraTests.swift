@@ -86,6 +86,7 @@ final class AVCaptureCameraTests: XCTestCase {
         let videoDevice = loggedDevices.first(where: { $0.type == .video })
         XCTAssertEqual(videoDevice?.focusMode, .continuousAutoFocus)
         XCTAssertEqual(videoDevice?.exposureMode, .continuousAutoExposure)
+        XCTAssertEqual(videoDevice?.position, sut.cameraPosition.toCaptureDevicePosition())
     }
     
     func test_startSession_deliversSessionStartedStatusAfterStartSession() {
@@ -183,12 +184,14 @@ extension AVCaptureDevice {
         fatalError("should not come to here, swizzled by NSObject.init")
     }
     
-    @objc static func makeVideoDevice() -> AVCaptureDevice? {
-        CaptureDeviceSpy(type: .video)
+    @objc static func makeVideoDevice(deviceType: AVCaptureDevice.DeviceType,
+                                      mediaType: AVMediaType?,
+                                      position: AVCaptureDevice.Position) -> AVCaptureDevice? {
+        mediaType.map { CaptureDeviceSpy(type: $0, position: position) }
     }
     
     @objc static func makeAudioDevice() -> AVCaptureDevice? {
-        CaptureDeviceSpy(type: .audio)
+        CaptureDeviceSpy(type: .audio, position: .unspecified)
     }
     
     var type: AVMediaType? {
@@ -208,7 +211,7 @@ extension AVCaptureDevice {
         [
             MethodPair(
                 from: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.default(_:for:position:))),
-                to: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.makeVideoDevice))
+                to: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.makeVideoDevice(deviceType:mediaType:position:)))
             ),
             MethodPair(
                 from: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.default(for:))),
@@ -253,10 +256,12 @@ extension AVCaptureDevice {
 final class CaptureDeviceSpy: AVCaptureDevice {
     private var _focusMode = FocusMode.locked
     private var _exposureMode = ExposureMode.locked
+    private var _position = AVCaptureDevice.Position.unspecified
     let mediaType: AVMediaType
     
-    init(type: AVMediaType) {
+    init(type: AVMediaType, position: AVCaptureDevice.Position) {
         self.mediaType = type
+        self._position = position
         super.init(type: type)
     }
     
@@ -268,6 +273,11 @@ final class CaptureDeviceSpy: AVCaptureDevice {
     override var exposureMode: ExposureMode {
         get { _exposureMode }
         set { _exposureMode = newValue }
+    }
+    
+    override var position: AVCaptureDevice.Position {
+        get { _position }
+        set { _position = newValue }
     }
     
     override func isFocusModeSupported(_ focusMode: FocusMode) -> Bool {
@@ -306,5 +316,14 @@ final class CaptureSessionSpy: AVCaptureSession {
     
     override func stopRunning() {
         NotificationCenter.default.post(name: .AVCaptureSessionDidStopRunning, object: nil)
+    }
+}
+
+extension CameraPosition {
+    func toCaptureDevicePosition() -> AVCaptureDevice.Position {
+        switch self {
+        case .back: return .back
+        case .front: return .front
+        }
     }
 }
