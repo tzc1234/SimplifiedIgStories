@@ -155,11 +155,11 @@ final class AVCaptureCameraTests: XCTestCase {
         let captureInput = makeCaptureInput()
         let exp = expectation(description: "Wait for session queue")
         exp.expectedFulfillmentCount = 2
-        var loggedDeviceTypes = [AVMediaType?]()
+        var loggedDeviceTypes = Set<AVMediaType?>()
         let (sut, session) = makeSUT(
             isSessionRunning: false,
             captureDeviceInput: { device in
-                loggedDeviceTypes.append(device.type)
+                loggedDeviceTypes.insert(device.type)
                 return captureInput
             },
             performOnSessionQueue: { action in
@@ -169,13 +169,14 @@ final class AVCaptureCameraTests: XCTestCase {
         )
         
         sut.startSession()
+        session.resetLoggedInputs()
+        loggedDeviceTypes.removeAll()
+        
         sut.switchCamera()
         wait(for: [exp], timeout: 1)
         
-        XCTAssertEqual(session.loggedInputs, [captureInput, captureInput, captureInput, captureInput])
-        XCTAssertEqual(loggedDeviceTypes.count, 4)
-        XCTAssertEqual(loggedDeviceTypes.filter { $0 == .video }.count, 2)
-        XCTAssertEqual(loggedDeviceTypes.filter { $0 == .audio }.count, 2)
+        XCTAssertEqual(session.loggedInputs, [captureInput, captureInput])
+        XCTAssertEqual(loggedDeviceTypes, [.video, .audio])
     }
     
     func test_switchCamera_deliversCameraSwitchedStatus() {
@@ -390,6 +391,10 @@ final class CaptureSessionSpy: AVCaptureSession {
     
     override func stopRunning() {
         NotificationCenter.default.post(name: .AVCaptureSessionDidStopRunning, object: nil)
+    }
+    
+    func resetLoggedInputs() {
+        loggedInputs.removeAll()
     }
 }
 
