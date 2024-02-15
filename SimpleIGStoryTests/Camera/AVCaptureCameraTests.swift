@@ -26,7 +26,7 @@ final class AVCaptureCameraTests: XCTestCase {
         XCTAssertNotNil(previewLayer as? AVCaptureVideoPreviewLayer)
     }
     
-    func test_startSession_ensuresInputsAreAddedToSessionProperlyWhenSessionIsNotRunning() throws {
+    func test_startSession_ensuresInputsAreAddedToSessionProperlyWhenSessionIsNotRunning() {
         let captureInput = makeCaptureInput()
         let exp = expectation(description: "Wait for session queue")
         var loggedDeviceTypes = Set<AVMediaType?>()
@@ -49,7 +49,7 @@ final class AVCaptureCameraTests: XCTestCase {
         XCTAssertEqual(loggedDeviceTypes, [.video, .audio])
     }
     
-    func test_startSession_doesNotAddInputsWhenSessionIsRunning() throws {
+    func test_startSession_doesNotAddInputsWhenSessionIsRunning() {
         let exp = expectation(description: "Wait for session queue")
         let (sut, session) = makeSUT(
             isSessionRunning: true,
@@ -65,7 +65,7 @@ final class AVCaptureCameraTests: XCTestCase {
         XCTAssertEqual(session.loggedInputs, [])
     }
     
-    func test_startSession_setsFocusModeAndExposureModeProperlyWhenSessionIsNotRunning() throws {
+    func test_startSession_setsFocusModeAndExposureModeProperlyWhenSessionIsNotRunning() {
         let exp = expectation(description: "Wait for session queue")
         var loggedDevices = Set<AVCaptureDevice>()
         let (sut, _) = makeSUT(
@@ -88,7 +88,7 @@ final class AVCaptureCameraTests: XCTestCase {
         XCTAssertEqual(videoDevice?.exposureMode, .continuousAutoExposure)
     }
     
-    func test_startSession_deliversSessionStartedStatus() {
+    func test_startSession_deliversSessionStartedStatusAfterStartSession() {
         let exp = expectation(description: "Wait for session queue")
         let (sut, _) = makeSUT(
             isSessionRunning: false,
@@ -97,15 +97,14 @@ final class AVCaptureCameraTests: XCTestCase {
                 exp.fulfill()
             }
         )
-        let spy = CameraStatusSpy(publisher: sut.getStatusPublisher())
         
-        sut.startSession()
+        expect(sut, deliverStatuses: [.sessionStarted], when: {
+            sut.startSession()
+        })
         wait(for: [exp], timeout: 1)
-        
-        XCTAssertEqual(spy.loggedStatuses, [.sessionStarted])
     }
     
-    func test_stopSession_deliversSessionStoppedStatus() {
+    func test_stopSession_deliversSessionStoppedStatusAfterStopSession() {
         let exp = expectation(description: "Wait for session queue")
         let (sut, _) = makeSUT(
             isSessionRunning: false,
@@ -114,13 +113,12 @@ final class AVCaptureCameraTests: XCTestCase {
                 exp.fulfill()
             }
         )
-        let statusSpy = CameraStatusSpy(publisher: sut.getStatusPublisher())
         
-        sut.startSession()
-        sut.stopSession()
+        expect(sut, deliverStatuses: [.sessionStarted, .sessionStopped], when: {
+            sut.startSession()
+            sut.stopSession()
+        })
         wait(for: [exp], timeout: 1)
-        
-        XCTAssertEqual(statusSpy.loggedStatuses, [.sessionStarted, .sessionStopped])
     }
     
     // MARK: - Helpers
@@ -131,16 +129,28 @@ final class AVCaptureCameraTests: XCTestCase {
                          performOnSessionQueue: @escaping (@escaping () -> Void) -> Void = { $0() })
     -> (sut: AVCamera, session: CaptureSessionSpy) {
         AVCaptureDevice.swizzled()
-        let sessionSpy = CaptureSessionSpy(isRunning: isSessionRunning)
+        let session = CaptureSessionSpy(isRunning: isSessionRunning)
         let sut = AVCamera(
-            session: sessionSpy,
+            session: session,
             makeCaptureDeviceInput: captureDeviceInput,
             performOnSessionQueue: performOnSessionQueue
         )
         addTeardownBlock {
             AVCaptureDevice.revertSwizzled()
         }
-        return (sut, sessionSpy)
+        return (sut, session)
+    }
+    
+    private func expect(_ sut: AVCamera,
+                        deliverStatuses expectedStatuses: [CameraStatus],
+                        when action: () -> Void,
+                        file: StaticString = #filePath,
+                        line: UInt = #line) {
+        let spy = CameraStatusSpy(publisher: sut.getStatusPublisher())
+        
+        action()
+        
+        XCTAssertEqual(spy.loggedStatuses, expectedStatuses, file: file, line: line)
     }
     
     private class CameraStatusSpy {
@@ -163,8 +173,10 @@ func makeCaptureInput() -> AVCaptureInput {
 
 extension AVCaptureDevice {
     struct MethodPair {
-        let from: (class: AnyClass, method: Selector)
-        let to: (class: AnyClass, method: Selector)
+        typealias Pair = (class: AnyClass, method: Selector)
+        
+        let from: Pair
+        let to: Pair
     }
     
     @objc convenience init(type: AVMediaType) {
