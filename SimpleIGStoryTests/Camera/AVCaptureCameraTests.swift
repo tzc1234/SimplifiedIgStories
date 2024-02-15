@@ -124,11 +124,12 @@ final class AVCaptureCameraTests: XCTestCase {
     
     func test_switchCamera_switchesCameraPosition() {
         let exp = expectation(description: "Wait for session queue")
-        var loggedDevices = Set<AVCaptureDevice>()
+        exp.expectedFulfillmentCount = 2
+        var loggedDevices = [AVCaptureDevice]()
         let (sut, session) = makeSUT(
             isSessionRunning: false,
             captureDeviceInput: { device in
-                loggedDevices.insert(device)
+                loggedDevices.append(device)
                 return makeCaptureInput()
             },
             performOnSessionQueue: { action in
@@ -139,14 +140,42 @@ final class AVCaptureCameraTests: XCTestCase {
         
         let initialCameraPosition = sut.cameraPosition
         
+        sut.startSession()
         sut.switchCamera()
         wait(for: [exp], timeout: 1)
         
-        let videoDevice = loggedDevices.first(where: { $0.type == .video })
+        let videoDevice = loggedDevices.last(where: { $0.type == .video })
         XCTAssertEqual(videoDevice?.focusMode, .continuousAutoFocus)
         XCTAssertEqual(videoDevice?.exposureMode, .continuousAutoExposure)
         XCTAssertEqual(videoDevice?.position, sut.cameraPosition.toCaptureDevicePosition())
         XCTAssertNotEqual(sut.cameraPosition, initialCameraPosition)
+    }
+    
+    func test_switchCamera_reAddsInputsToSession() {
+        let captureInput = makeCaptureInput()
+        let exp = expectation(description: "Wait for session queue")
+        exp.expectedFulfillmentCount = 2
+        var loggedDeviceTypes = [AVMediaType?]()
+        let (sut, session) = makeSUT(
+            isSessionRunning: false,
+            captureDeviceInput: { device in
+                loggedDeviceTypes.append(device.type)
+                return captureInput
+            },
+            performOnSessionQueue: { action in
+                action()
+                exp.fulfill()
+            }
+        )
+        
+        sut.startSession()
+        sut.switchCamera()
+        wait(for: [exp], timeout: 1)
+        
+        XCTAssertEqual(session.loggedInputs, [captureInput, captureInput, captureInput, captureInput])
+        XCTAssertEqual(loggedDeviceTypes.count, 4)
+        XCTAssertEqual(loggedDeviceTypes.filter { $0 == .video }.count, 2)
+        XCTAssertEqual(loggedDeviceTypes.filter { $0 == .audio }.count, 2)
     }
     
     // MARK: - Helpers
