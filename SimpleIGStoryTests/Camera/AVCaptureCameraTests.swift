@@ -122,6 +122,33 @@ final class AVCaptureCameraTests: XCTestCase {
         wait(for: [exp], timeout: 1)
     }
     
+    func test_switchCamera_switchesCameraPosition() {
+        let exp = expectation(description: "Wait for session queue")
+        var loggedDevices = Set<AVCaptureDevice>()
+        let (sut, session) = makeSUT(
+            isSessionRunning: false,
+            captureDeviceInput: { device in
+                loggedDevices.insert(device)
+                return makeCaptureInput()
+            },
+            performOnSessionQueue: { action in
+                action()
+                exp.fulfill()
+            }
+        )
+        
+        let initialCameraPosition = sut.cameraPosition
+        
+        sut.switchCamera()
+        wait(for: [exp], timeout: 1)
+        
+        let videoDevice = loggedDevices.first(where: { $0.type == .video })
+        XCTAssertEqual(videoDevice?.focusMode, .continuousAutoFocus)
+        XCTAssertEqual(videoDevice?.exposureMode, .continuousAutoExposure)
+        XCTAssertEqual(videoDevice?.position, sut.cameraPosition.toCaptureDevicePosition())
+        XCTAssertNotEqual(sut.cameraPosition, initialCameraPosition)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(isSessionRunning: Bool = false,
