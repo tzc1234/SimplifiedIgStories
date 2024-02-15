@@ -67,11 +67,11 @@ final class AVCaptureCameraTests: XCTestCase {
     
     func test_startSession_setsFocusModeAndExposureModeProperlyWhenSessionIsNotRunning() {
         let exp = expectation(description: "Wait for session queue")
-        var loggedDevices = Set<AVCaptureDevice>()
+        var loggedDevices = [AVCaptureDevice]()
         let (sut, _) = makeSUT(
             isSessionRunning: false,
             captureDeviceInput: { device in
-                loggedDevices.insert(device)
+                loggedDevices.append(device)
                 return makeCaptureInput()
             },
             performOnSessionQueue: { action in
@@ -83,7 +83,7 @@ final class AVCaptureCameraTests: XCTestCase {
         sut.startSession()
         wait(for: [exp], timeout: 1)
         
-        let videoDevice = loggedDevices.first(where: { $0.type == .video })
+        let videoDevice = loggedDevices.last(where: { $0.type == .video })
         XCTAssertEqual(videoDevice?.focusMode, .continuousAutoFocus)
         XCTAssertEqual(videoDevice?.exposureMode, .continuousAutoExposure)
         XCTAssertEqual(videoDevice?.position, sut.cameraPosition.toCaptureDevicePosition())
@@ -126,7 +126,7 @@ final class AVCaptureCameraTests: XCTestCase {
         let exp = expectation(description: "Wait for session queue")
         exp.expectedFulfillmentCount = 2
         var loggedDevices = [AVCaptureDevice]()
-        let (sut, session) = makeSUT(
+        let (sut, _) = makeSUT(
             isSessionRunning: false,
             captureDeviceInput: { device in
                 loggedDevices.append(device)
@@ -138,7 +138,7 @@ final class AVCaptureCameraTests: XCTestCase {
             }
         )
         
-        let initialCameraPosition = sut.cameraPosition
+        let initialPosition = sut.cameraPosition
         
         sut.startSession()
         sut.switchCamera()
@@ -148,7 +148,7 @@ final class AVCaptureCameraTests: XCTestCase {
         XCTAssertEqual(videoDevice?.focusMode, .continuousAutoFocus)
         XCTAssertEqual(videoDevice?.exposureMode, .continuousAutoExposure)
         XCTAssertEqual(videoDevice?.position, sut.cameraPosition.toCaptureDevicePosition())
-        XCTAssertNotEqual(sut.cameraPosition, initialCameraPosition)
+        XCTAssertNotEqual(sut.cameraPosition, initialPosition)
     }
     
     func test_switchCamera_reAddsInputsToSession() {
@@ -176,6 +176,24 @@ final class AVCaptureCameraTests: XCTestCase {
         XCTAssertEqual(loggedDeviceTypes.count, 4)
         XCTAssertEqual(loggedDeviceTypes.filter { $0 == .video }.count, 2)
         XCTAssertEqual(loggedDeviceTypes.filter { $0 == .audio }.count, 2)
+    }
+    
+    func test_switchCamera_deliversCameraSwitchedStatus() {
+        let exp = expectation(description: "Wait for session queue")
+        let (sut, _) = makeSUT(
+            isSessionRunning: false,
+            performOnSessionQueue: { action in
+                action()
+                exp.fulfill()
+            }
+        )
+        
+        let initialPosition = sut.cameraPosition
+        
+        expect(sut, deliverStatuses: [.cameraSwitched(position: initialPosition.toggle())], when: {
+            sut.switchCamera()
+        })
+        wait(for: [exp], timeout: 1)
     }
     
     // MARK: - Helpers
@@ -381,5 +399,9 @@ extension CameraPosition {
         case .back: return .back
         case .front: return .front
         }
+    }
+    
+    func toggle() -> CameraPosition {
+        self == .back ? .front : .back
     }
 }

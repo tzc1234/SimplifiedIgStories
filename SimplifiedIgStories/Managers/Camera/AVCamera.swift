@@ -95,19 +95,6 @@ extension AVCamera {
         }
     }
     
-    private func configureSession(action: (AVCamera) throws -> Void) {
-        session.beginConfiguration()
-        
-        do {
-            try action(self)
-        } catch {
-            let errMsg = (error as? CameraSetupError)?.errMsg ?? error.localizedDescription
-            print(errMsg)
-        }
-        
-        session.commitConfiguration()
-    }
-    
     private func addInputs() throws {
         try addVideoInput()
         try addAudioInput()
@@ -139,6 +126,19 @@ extension AVCamera {
         for input in session.inputs {
             session.removeInput(input)
         }
+    }
+    
+    private func configureSession(action: (AVCamera) throws -> Void) {
+        session.beginConfiguration()
+        
+        do {
+            try action(self)
+        } catch {
+            let errMsg = (error as? CameraSetupError)?.errMsg ?? error.localizedDescription
+            print(errMsg)
+        }
+        
+        session.commitConfiguration()
     }
     
     func stopSession() {
