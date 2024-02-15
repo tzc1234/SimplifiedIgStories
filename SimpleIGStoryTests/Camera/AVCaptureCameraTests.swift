@@ -76,6 +76,32 @@ final class AVCaptureCameraTests: XCTestCase {
         AVCaptureDevice.revertSwizzled()
     }
     
+    func test_startSession_setsFocusModeAndExposureModeProperlyWhenSessionIsNotRunning() throws {
+        AVCaptureDevice.swizzled()
+        let sessionSpy = CaptureSessionSpy(isRunning: false)
+        let exp = expectation(description: "Wait for session queue")
+        var loggedDevices = Set<AVCaptureDevice>()
+        let sut = AVCamera(
+            session: sessionSpy,
+            makeCaptureDeviceInput: { device in
+                loggedDevices.insert(device)
+                return self.makeCaptureInput()
+            },
+            performOnSessionQueue: { action in
+                action()
+                exp.fulfill()
+            }
+        )
+        
+        sut.startSession()
+        wait(for: [exp], timeout: 1)
+        
+        let videoDevice = loggedDevices.first(where: { $0.type == .video })
+        XCTAssertEqual(videoDevice?.focusMode, .continuousAutoFocus)
+        XCTAssertEqual(videoDevice?.exposureMode, .continuousAutoExposure)
+        AVCaptureDevice.revertSwizzled()
+    }
+    
     // MARK: - Helpers
     
     private func makeCaptureInput() -> AVCaptureInput {
@@ -170,11 +196,31 @@ extension AVCaptureDevice {
 }
 
 final class CaptureDeviceSpy: AVCaptureDevice {
+    private var _focusMode = FocusMode.locked
+    private var _exposureMode = ExposureMode.locked
     let mediaType: AVMediaType
     
     init(type: AVMediaType) {
         self.mediaType = type
         super.init(type: type)
+    }
+    
+    override var focusMode: FocusMode {
+        get { _focusMode }
+        set { _focusMode = newValue }
+    }
+    
+    override var exposureMode: ExposureMode {
+        get { _exposureMode }
+        set { _exposureMode = newValue }
+    }
+    
+    override func isFocusModeSupported(_ focusMode: FocusMode) -> Bool {
+        true
+    }
+    
+    override func isExposureModeSupported(_ exposureMode: ExposureMode) -> Bool {
+        true
     }
 }
 
