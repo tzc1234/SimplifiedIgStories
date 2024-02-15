@@ -176,6 +176,7 @@ final class AVCaptureCameraTests: XCTestCase {
         wait(for: [exp], timeout: 1)
         
         XCTAssertEqual(session.loggedInputs, [captureInput, captureInput])
+        XCTAssertEqual(session.loggedConfigurationStatus, [.begin, .commit])
         XCTAssertEqual(loggedDeviceTypes, [.video, .audio])
     }
     
@@ -365,6 +366,12 @@ final class CaptureDeviceSpy: AVCaptureDevice {
 }
 
 final class CaptureSessionSpy: AVCaptureSession {
+    enum ConfigurationStatus {
+        case begin
+        case commit
+    }
+    
+    private(set) var loggedConfigurationStatus = [ConfigurationStatus]()
     private(set) var loggedInputs = [AVCaptureInput]()
     
     private var _isRunning = false
@@ -382,15 +389,33 @@ final class CaptureSessionSpy: AVCaptureSession {
     }
     
     override func addInput(_ input: AVCaptureInput) {
+        if isRunning, loggedConfigurationStatus.last != .begin {
+            return
+        }
+        
         loggedInputs.append(input)
     }
     
     override func startRunning() {
+        _isRunning = true
         NotificationCenter.default.post(name: .AVCaptureSessionDidStartRunning, object: nil)
     }
     
     override func stopRunning() {
+        _isRunning = false
         NotificationCenter.default.post(name: .AVCaptureSessionDidStopRunning, object: nil)
+    }
+    
+    override func beginConfiguration() {
+        super.beginConfiguration()
+        
+        loggedConfigurationStatus.append(.begin)
+    }
+    
+    override func commitConfiguration() {
+        super.commitConfiguration()
+        
+        loggedConfigurationStatus.append(.commit)
     }
     
     func resetLoggedInputs() {
