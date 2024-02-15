@@ -50,6 +50,30 @@ final class AVCaptureCameraTests: XCTestCase {
         XCTAssertEqual(sessionSpy.loggedInputs, [captureInput, captureInput])
         XCTAssertEqual(loggedDeviceTypes, [.video, .audio])
         XCTAssertEqual(sessionSpy.startRunningCallCount, 1)
+        AVCaptureDevice.revertSwizzled()
+    }
+    
+    func test_startSession_doesNotAddInputsWhenSessionIsRunning() throws {
+        AVCaptureDevice.swizzled()
+        let sessionSpy = CaptureSessionSpy(isRunning: true)
+        let captureInput = makeCaptureInput()
+        let exp = expectation(description: "Wait for session queue")
+        let sut = AVCamera(
+            session: sessionSpy,
+            makeCaptureDeviceInput: { _ in
+                captureInput
+            },
+            performOnSessionQueue: { action in
+                action()
+                exp.fulfill()
+            }
+        )
+        
+        sut.startSession()
+        wait(for: [exp], timeout: 1)
+        
+        XCTAssertEqual(sessionSpy.loggedInputs, [])
+        AVCaptureDevice.revertSwizzled()
     }
     
     // MARK: - Helpers
@@ -69,6 +93,11 @@ final class AVCaptureCameraTests: XCTestCase {
 }
 
 extension AVCaptureDevice {
+    struct MethodPair {
+        let from: (class: AnyClass, method: Selector)
+        let to: (class: AnyClass, method: Selector)
+    }
+    
     @objc convenience init(type: AVMediaType) {
         fatalError("should not come to here, swizzled by NSObject.init")
     }
@@ -85,21 +114,58 @@ extension AVCaptureDevice {
         (self as? CaptureDeviceSpy)?.mediaType
     }
     
+    static var instanceMethodPairs: [MethodPair] {
+        [
+            MethodPair(
+                from: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.init(type:))),
+                to: (class: AVCaptureDevice.self, method: #selector(NSObject.init))
+            )
+        ]
+    }
+    
+    static var classMethodPairs: [MethodPair] {
+        [
+            MethodPair(
+                from: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.default(_:for:position:))),
+                to: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.makeVideoDevice))
+            ),
+            MethodPair(
+                from: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.default(for:))),
+                to: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.makeAudioDevice))
+            )
+        ]
+    }
+    
     static func swizzled() {
-        method_exchangeImplementations(
-            class_getInstanceMethod(AVCaptureDevice.self, #selector(AVCaptureDevice.init(type:)))!,
-            class_getInstanceMethod(AVCaptureDevice.self, #selector(NSObject.init))!
-        )
+        instanceMethodPairs.forEach { pair in
+            method_exchangeImplementations(
+                class_getInstanceMethod(pair.from.class, pair.from.method)!,
+                class_getInstanceMethod(pair.to.class, pair.to.method)!
+            )
+        }
         
-        method_exchangeImplementations(
-            class_getClassMethod(AVCaptureDevice.self, #selector(AVCaptureDevice.default(_:for:position:)))!,
-            class_getClassMethod(AVCaptureDevice.self, #selector(AVCaptureDevice.makeVideoDevice))!
-        )
+        classMethodPairs.forEach { pair in
+            method_exchangeImplementations(
+                class_getClassMethod(pair.from.class, pair.from.method)!,
+                class_getClassMethod(pair.to.class, pair.to.method)!
+            )
+        }
+    }
+    
+    static func revertSwizzled() {
+        instanceMethodPairs.forEach { pair in
+            method_exchangeImplementations(
+                class_getInstanceMethod(pair.to.class, pair.to.method)!,
+                class_getInstanceMethod(pair.from.class, pair.from.method)!
+            )
+        }
         
-        method_exchangeImplementations(
-            class_getClassMethod(AVCaptureDevice.self, #selector(AVCaptureDevice.default(for:)))!,
-            class_getClassMethod(AVCaptureDevice.self, #selector(AVCaptureDevice.makeAudioDevice))!
-        )
+        classMethodPairs.forEach { pair in
+            method_exchangeImplementations(
+                class_getClassMethod(pair.to.class, pair.to.method)!,
+                class_getClassMethod(pair.from.class, pair.from.method)!
+            )
+        }
     }
 }
 
