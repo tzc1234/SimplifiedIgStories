@@ -125,6 +125,30 @@ final class AVCaptureCameraTests: XCTestCase {
         AVCaptureDevice.revertSwizzled()
     }
     
+    func test_stopSession_deliversSessionStoppedStatus() {
+        AVCaptureDevice.swizzled()
+        let sessionSpy = CaptureSessionSpy(isRunning: false)
+        let exp = expectation(description: "Wait for session queue")
+        let sut = AVCamera(
+            session: sessionSpy,
+            makeCaptureDeviceInput: { _ in
+                self.makeCaptureInput()
+            },
+            performOnSessionQueue: { action in
+                action()
+                exp.fulfill()
+            }
+        )
+        let statusSpy = CameraStatusSpy(publisher: sut.getStatusPublisher())
+        
+        sut.startSession()
+        sut.stopSession()
+        wait(for: [exp], timeout: 1)
+        
+        XCTAssertEqual(statusSpy.loggedStatuses, [.sessionStarted, .sessionStopped])
+        AVCaptureDevice.revertSwizzled()
+    }
+    
     // MARK: - Helpers
     
     private func makeCaptureInput() -> AVCaptureInput {
@@ -277,5 +301,9 @@ final class CaptureSessionSpy: AVCaptureSession {
     override func startRunning() {
         startRunningCallCount += 1
         NotificationCenter.default.post(name: .AVCaptureSessionDidStartRunning, object: nil)
+    }
+    
+    override func stopRunning() {
+        NotificationCenter.default.post(name: .AVCaptureSessionDidStopRunning, object: nil)
     }
 }
