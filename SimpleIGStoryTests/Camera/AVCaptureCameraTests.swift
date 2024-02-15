@@ -102,6 +102,29 @@ final class AVCaptureCameraTests: XCTestCase {
         AVCaptureDevice.revertSwizzled()
     }
     
+    func test_startSession_deliversSessionStartedStatus() {
+        AVCaptureDevice.swizzled()
+        let sessionSpy = CaptureSessionSpy(isRunning: false)
+        let exp = expectation(description: "Wait for session queue")
+        let sut = AVCamera(
+            session: sessionSpy,
+            makeCaptureDeviceInput: { _ in
+                self.makeCaptureInput()
+            },
+            performOnSessionQueue: { action in
+                action()
+                exp.fulfill()
+            }
+        )
+        let spy = CameraStatusSpy(publisher: sut.getStatusPublisher())
+        
+        sut.startSession()
+        wait(for: [exp], timeout: 1)
+        
+        XCTAssertEqual(spy.loggedStatuses, [.sessionStarted])
+        AVCaptureDevice.revertSwizzled()
+    }
+    
     // MARK: - Helpers
     
     private func makeCaptureInput() -> AVCaptureInput {
@@ -111,9 +134,14 @@ final class AVCaptureCameraTests: XCTestCase {
     
     private class CameraStatusSpy {
         private(set) var loggedStatuses = [CameraStatus]()
+        private var cancellables = Set<AnyCancellable>()
         
         init(publisher: AnyPublisher<CameraStatus, Never>) {
-            
+            publisher
+                .sink { [weak self] status in
+                    self?.loggedStatuses.append(status)
+                }
+                .store(in: &cancellables)
         }
     }
 }
@@ -248,5 +276,6 @@ final class CaptureSessionSpy: AVCaptureSession {
     
     override func startRunning() {
         startRunningCallCount += 1
+        NotificationCenter.default.post(name: .AVCaptureSessionDidStartRunning, object: nil)
     }
 }
