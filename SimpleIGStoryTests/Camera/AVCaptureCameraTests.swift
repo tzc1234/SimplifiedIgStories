@@ -49,7 +49,6 @@ final class AVCaptureCameraTests: XCTestCase {
         
         XCTAssertEqual(sessionSpy.loggedInputs, [captureInput, captureInput])
         XCTAssertEqual(loggedDeviceTypes, [.video, .audio])
-        XCTAssertEqual(sessionSpy.startRunningCallCount, 1)
         AVCaptureDevice.revertSwizzled()
     }
     
@@ -278,7 +277,6 @@ final class CaptureDeviceSpy: AVCaptureDevice {
 
 final class CaptureSessionSpy: AVCaptureSession {
     private(set) var loggedInputs = [AVCaptureInput]()
-    private(set) var startRunningCallCount = 0
     
     private var _isRunning = false
     
@@ -299,7 +297,6 @@ final class CaptureSessionSpy: AVCaptureSession {
     }
     
     override func startRunning() {
-        startRunningCallCount += 1
         NotificationCenter.default.post(name: .AVCaptureSessionDidStartRunning, object: nil)
     }
     

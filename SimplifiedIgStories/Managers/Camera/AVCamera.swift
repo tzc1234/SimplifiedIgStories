@@ -97,7 +97,6 @@ extension AVCamera {
     
     private func configureSession(action: (AVCamera) throws -> Void) {
         session.beginConfiguration()
-        session.sessionPreset = .high
         
         do {
             try action(self)
