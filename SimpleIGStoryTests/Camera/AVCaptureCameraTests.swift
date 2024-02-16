@@ -36,8 +36,7 @@ final class AVCaptureCameraTests: XCTestCase {
                 loggedDeviceTypes.insert(device.type)
                 return captureInput
             },
-            performOnSessionQueue: { action in
-                action()
+            afterPerformOnSessionQueue: {
                 exp.fulfill()
             }
         )
@@ -53,8 +52,7 @@ final class AVCaptureCameraTests: XCTestCase {
         let exp = expectation(description: "Wait for session queue")
         let (sut, session) = makeSUT(
             isSessionRunning: true,
-            performOnSessionQueue: { action in
-                action()
+            afterPerformOnSessionQueue: {
                 exp.fulfill()
             }
         )
@@ -74,8 +72,7 @@ final class AVCaptureCameraTests: XCTestCase {
                 loggedDevices.append(device)
                 return makeCaptureInput()
             },
-            performOnSessionQueue: { action in
-                action()
+            afterPerformOnSessionQueue: {
                 exp.fulfill()
             }
         )
@@ -93,8 +90,7 @@ final class AVCaptureCameraTests: XCTestCase {
         let exp = expectation(description: "Wait for session queue")
         let (sut, _) = makeSUT(
             isSessionRunning: false,
-            performOnSessionQueue: { action in
-                action()
+            afterPerformOnSessionQueue: {
                 exp.fulfill()
             }
         )
@@ -109,8 +105,7 @@ final class AVCaptureCameraTests: XCTestCase {
         let exp = expectation(description: "Wait for session queue")
         let (sut, _) = makeSUT(
             isSessionRunning: false,
-            performOnSessionQueue: { action in
-                action()
+            afterPerformOnSessionQueue: {
                 exp.fulfill()
             }
         )
@@ -132,12 +127,10 @@ final class AVCaptureCameraTests: XCTestCase {
                 loggedDevices.append(device)
                 return makeCaptureInput()
             },
-            performOnSessionQueue: { action in
-                action()
+            afterPerformOnSessionQueue: {
                 exp.fulfill()
             }
         )
-        
         let initialPosition = sut.cameraPosition
         
         sut.startSession()
@@ -162,8 +155,7 @@ final class AVCaptureCameraTests: XCTestCase {
                 loggedDeviceTypes.insert(device.type)
                 return captureInput
             },
-            performOnSessionQueue: { action in
-                action()
+            afterPerformOnSessionQueue: {
                 exp.fulfill()
             }
         )
@@ -184,12 +176,10 @@ final class AVCaptureCameraTests: XCTestCase {
         let exp = expectation(description: "Wait for session queue")
         let (sut, _) = makeSUT(
             isSessionRunning: false,
-            performOnSessionQueue: { action in
-                action()
+            afterPerformOnSessionQueue: {
                 exp.fulfill()
             }
         )
-        
         let initialPosition = sut.cameraPosition
         
         expect(sut, deliverStatuses: [.cameraSwitched(position: initialPosition.toggle())], when: {
@@ -203,14 +193,17 @@ final class AVCaptureCameraTests: XCTestCase {
     private func makeSUT(isSessionRunning: Bool = false,
                          captureDeviceInput: @escaping (AVCaptureDevice) throws -> AVCaptureInput
                             = { _ in makeCaptureInput() },
-                         performOnSessionQueue: @escaping (@escaping () -> Void) -> Void = { $0() })
+                         afterPerformOnSessionQueue: @escaping () -> Void = {})
     -> (sut: AVCamera, session: CaptureSessionSpy) {
         AVCaptureDevice.swizzled()
         let session = CaptureSessionSpy(isRunning: isSessionRunning)
         let sut = AVCamera(
             session: session,
             makeCaptureDeviceInput: captureDeviceInput,
-            performOnSessionQueue: performOnSessionQueue
+            performOnSessionQueue: { action in
+                action()
+                afterPerformOnSessionQueue()
+            }
         )
         addTeardownBlock {
             AVCaptureDevice.revertSwizzled()
