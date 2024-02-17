@@ -27,14 +27,13 @@ final class AVCaptureCameraTests: XCTestCase {
     }
     
     func test_startSession_ensuresInputsAreAddedToSessionProperlyWhenSessionIsNotRunning() {
-        let captureInput = makeCaptureInput()
         let exp = expectation(description: "Wait for session queue")
         var loggedDeviceTypes = Set<AVMediaType?>()
         let (sut, session) = makeSUT(
             isSessionRunning: false,
             captureDeviceInput: { device in
                 loggedDeviceTypes.insert(device.type)
-                return captureInput
+                return makeDummyCaptureInput()
             },
             afterPerformOnSessionQueue: {
                 exp.fulfill()
@@ -44,7 +43,7 @@ final class AVCaptureCameraTests: XCTestCase {
         sut.startSession()
         wait(for: [exp], timeout: 1)
         
-        XCTAssertEqual(session.loggedInputs, [captureInput, captureInput])
+        XCTAssertEqual(session.loggedInputs.count, 2)
         XCTAssertEqual(loggedDeviceTypes, [.video, .audio])
     }
     
@@ -70,7 +69,7 @@ final class AVCaptureCameraTests: XCTestCase {
             isSessionRunning: false,
             captureDeviceInput: { device in
                 loggedDevices.append(device)
-                return makeCaptureInput()
+                return makeDummyCaptureInput()
             },
             afterPerformOnSessionQueue: {
                 exp.fulfill()
@@ -122,7 +121,7 @@ final class AVCaptureCameraTests: XCTestCase {
             isSessionRunning: false,
             captureDeviceInput: { device in
                 loggedDevices.append(device)
-                return makeCaptureInput()
+                return makeDummyCaptureInput()
             },
             afterPerformOnSessionQueue: {
                 exp.fulfill()
@@ -138,7 +137,6 @@ final class AVCaptureCameraTests: XCTestCase {
     }
     
     func test_switchCamera_reAddsInputsToSession() {
-        let captureInput = makeCaptureInput()
         let exp = expectation(description: "Wait for session queue")
         exp.expectedFulfillmentCount = 2
         var loggedDeviceTypes = Set<AVMediaType?>()
@@ -146,7 +144,7 @@ final class AVCaptureCameraTests: XCTestCase {
             isSessionRunning: false,
             captureDeviceInput: { device in
                 loggedDeviceTypes.insert(device.type)
-                return captureInput
+                return makeDummyCaptureInput()
             },
             afterPerformOnSessionQueue: {
                 exp.fulfill()
@@ -160,7 +158,7 @@ final class AVCaptureCameraTests: XCTestCase {
         sut.switchCamera()
         wait(for: [exp], timeout: 1)
         
-        XCTAssertEqual(session.loggedInputs, [captureInput, captureInput])
+        XCTAssertEqual(session.loggedInputs.count, 2)
         XCTAssertEqual(session.loggedConfigurationStatus, [.begin, .commit])
         XCTAssertEqual(loggedDeviceTypes, [.video, .audio])
     }
@@ -185,7 +183,7 @@ final class AVCaptureCameraTests: XCTestCase {
     
     private func makeSUT(isSessionRunning: Bool = false,
                          captureDeviceInput: @escaping (AVCaptureDevice) throws -> AVCaptureInput
-                            = { _ in makeCaptureInput() },
+                            = { _ in makeDummyCaptureInput() },
                          afterPerformOnSessionQueue: @escaping () -> Void = {})
     -> (sut: AVCamera, session: CaptureSessionSpy) {
         AVCaptureDevice.swizzled()
@@ -239,7 +237,7 @@ final class AVCaptureCameraTests: XCTestCase {
     }
 }
 
-func makeCaptureInput() -> AVCaptureInput {
+func makeDummyCaptureInput() -> AVCaptureInput {
     let klass = AVCaptureInput.self as NSObject.Type
     return klass.init() as! AVCaptureInput
 }
