@@ -63,7 +63,7 @@ final class AVCaptureCameraTests: XCTestCase {
         XCTAssertEqual(session.loggedInputs, [])
     }
     
-    func test_startSession_setsFocusModeAndExposureModeProperlyWhenSessionIsNotRunning() {
+    func test_startSession_ensuresVideoDeviceSettingsWhenSessionIsNotRunning() {
         let exp = expectation(description: "Wait for session queue")
         var loggedDevices = [AVCaptureDevice]()
         let (sut, _) = makeSUT(
@@ -80,10 +80,7 @@ final class AVCaptureCameraTests: XCTestCase {
         sut.startSession()
         wait(for: [exp], timeout: 1)
         
-        let videoDevice = loggedDevices.last(where: { $0.type == .video })
-        XCTAssertEqual(videoDevice?.focusMode, .continuousAutoFocus)
-        XCTAssertEqual(videoDevice?.exposureMode, .continuousAutoExposure)
-        XCTAssertEqual(videoDevice?.position, sut.cameraPosition.toCaptureDevicePosition())
+        assertVideoDeviceSettings(in: loggedDevices, withExpectedPosition: sut.cameraPosition)
     }
     
     func test_startSession_deliversSessionStartedStatusAfterStartSession() {
@@ -137,11 +134,7 @@ final class AVCaptureCameraTests: XCTestCase {
         sut.switchCamera()
         wait(for: [exp], timeout: 1)
         
-        let videoDevice = loggedDevices.last(where: { $0.type == .video })
-        XCTAssertEqual(videoDevice?.focusMode, .continuousAutoFocus)
-        XCTAssertEqual(videoDevice?.exposureMode, .continuousAutoExposure)
-        XCTAssertEqual(videoDevice?.position, sut.cameraPosition.toCaptureDevicePosition())
-        XCTAssertNotEqual(sut.cameraPosition, initialPosition)
+        assertVideoDeviceSettings(in: loggedDevices, withExpectedPosition: initialPosition.toggle())
     }
     
     func test_switchCamera_reAddsInputsToSession() {
@@ -209,6 +202,16 @@ final class AVCaptureCameraTests: XCTestCase {
             AVCaptureDevice.revertSwizzled()
         }
         return (sut, session)
+    }
+    
+    private func assertVideoDeviceSettings(in devices: [AVCaptureDevice],
+                                           withExpectedPosition position: CameraPosition,
+                                           file: StaticString = #filePath,
+                                           line: UInt = #line) {
+        let videoDevice = devices.last(where: { $0.type == .video })
+        XCTAssertEqual(videoDevice?.focusMode, .continuousAutoFocus, file: file, line: line)
+        XCTAssertEqual(videoDevice?.exposureMode, .continuousAutoExposure, file: file, line: line)
+        XCTAssertEqual(videoDevice?.position, position.toCaptureDevicePosition(), file: file, line: line)
     }
     
     private func expect(_ sut: AVCamera,
