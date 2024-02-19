@@ -34,6 +34,7 @@
 		BE720F7C27BD111800E862A5 /* ProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE720F7B27BD111800E862A5 /* ProgressBar.swift */; };
 		BE72F94027DF6F9300AA98A5 /* StoryCamPermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE72F93F27DF6F9300AA98A5 /* StoryCamPermissionView.swift */; };
 		BE77C89A28895CF000E1FA0A /* PreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE77C89928895CF000E1FA0A /* PreviewData.swift */; };
+		BE80D1992B83B61E007360D1 /* CommonHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE80D1982B83B61E007360D1 /* CommonHelpers.swift */; };
 		BE84C2CA27C78E5400C42165 /* AnyTransition+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE84C2C927C78E5400C42165 /* AnyTransition+Additions.swift */; };
 		BE84F7962B7CE9C500FAD11B /* AVCaptureCameraTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE84F7952B7CE9C500FAD11B /* AVCaptureCameraTests.swift */; };
 		BE8A758127BC107000E9F745 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8A758027BC106F00E9F745 /* HomeView.swift */; };
@@ -130,6 +131,7 @@
 		BE720F7B27BD111800E862A5 /* ProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBar.swift; sourceTree = "<group>"; };
 		BE72F93F27DF6F9300AA98A5 /* StoryCamPermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCamPermissionView.swift; sourceTree = "<group>"; };
 		BE77C89928895CF000E1FA0A /* PreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewData.swift; sourceTree = "<group>"; };
+		BE80D1982B83B61E007360D1 /* CommonHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonHelpers.swift; sourceTree = "<group>"; };
 		BE84C2C927C78E5400C42165 /* AnyTransition+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnyTransition+Additions.swift"; sourceTree = "<group>"; };
 		BE84F7952B7CE9C500FAD11B /* AVCaptureCameraTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVCaptureCameraTests.swift; sourceTree = "<group>"; };
 		BE8A758027BC106F00E9F745 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -533,6 +535,7 @@
 			children = (
 				BEBF32312B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift */,
 				BEEEBBF02B75345400EC85C7 /* XCTestCase+AssertThrows.swift */,
+				BE80D1982B83B61E007360D1 /* CommonHelpers.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -745,6 +748,7 @@
 				BE50144A288DC7410043DF62 /* StoryViewModelTests.swift in Sources */,
 				BE482F042886C0C30094E54C /* CameraSpy.swift in Sources */,
 				BE8B71AB2B76516D0055C354 /* UIImage+Helpers.swift in Sources */,
+				BE80D1992B83B61E007360D1 /* CommonHelpers.swift in Sources */,
 				BEEEBBF12B75345400EC85C7 /* XCTestCase+AssertThrows.swift in Sources */,
 				BE38F7B22B837CC400F42C71 /* CaptureSessionSpy.swift in Sources */,
 				BE84F7962B7CE9C500FAD11B /* AVCaptureCameraTests.swift in Sources */,

@@ -80,10 +80,6 @@ final class LocalStoriesLoaderTests: XCTestCase {
         return sut
     }
     
-    private func anyNSError() -> NSError {
-        NSError(domain: "any", code: 0)
-    }
-    
     private func emptyStoriesData() -> Data {
         let json: [[String: Any]] = []
         return json.toData()

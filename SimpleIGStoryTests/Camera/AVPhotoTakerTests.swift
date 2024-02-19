@@ -88,6 +88,17 @@ final class AVPhotoTakerTests: XCTestCase {
         XCTAssertEqual(photoOutputSpy.capturePhotoCallCount, 1)
     }
     
+    func test_photoOutput_deliversImageConvertingFailureStatusWhenErrorOccurred() {
+        let (sut, _) = makeSUT()
+        let statusSpy = StatusSpy<PhotoTakerStatus>(publisher: sut.getStatusPublisher())
+        let anyPhotoOutput = CapturePhotoOutputSpy()
+        let anyPhoto = makeCapturePhoto()
+        
+        sut.photoOutput(anyPhotoOutput, didFinishProcessingPhoto: anyPhoto, error: anyNSError())
+        
+        XCTAssertEqual(statusSpy.loggedStatuses, [.imageConvertingFailure])
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(isSessionRunning: Bool = false,
@@ -116,6 +127,13 @@ final class AVPhotoTakerTests: XCTestCase {
         XCTAssertIdentical(output.loggedDelegates.last, sut, file: file, line: line)
         let setting = output.loggedSettings.last
         XCTAssertEqual(setting?.flashMode, flashMode.toCaptureDeviceFlashMode(), file: file, line: line)
+    }
+    
+    private func makeCapturePhoto() -> AVCapturePhotoStub {
+        AVCapturePhoto.swizzled()
+        let photo = AVCapturePhotoStub(mock: "")
+        AVCapturePhoto.revertSwizzled()
+        return photo
     }
     
     private final class PhotoCaptureDeviceSpy: PhotoCaptureDevice {
@@ -167,5 +185,55 @@ extension CameraFlashMode {
         case .off: return .off
         case .auto: return .auto
         }
+    }
+}
+
+extension AVCapturePhoto {
+    @objc convenience init(mock: String) {
+        fatalError("should not come to here, swizzled by NSObject.init")
+    }
+    
+    struct MethodPair {
+        typealias Pair = (class: AnyClass, method: Selector)
+        
+        let from: Pair
+        let to: Pair
+    }
+    
+    static var instanceMethodPairs: [MethodPair] {
+        [
+            MethodPair(
+                from: (class: AVCapturePhotoStub.self, method: #selector(AVCapturePhotoStub.init(mock:))),
+                to: (class: AVCapturePhotoStub.self, method: #selector(NSObject.init))
+            ),
+            MethodPair(
+                from: (class: AVCapturePhoto.self, method: #selector(AVCapturePhoto.init(mock:))),
+                to: (class: AVCapturePhoto.self, method: #selector(AVCapturePhotoStub.init(mock:)))
+            )
+        ]
+    }
+    
+    static func swizzled() {
+        instanceMethodPairs.forEach { pair in
+            method_exchangeImplementations(
+                class_getInstanceMethod(pair.from.class, pair.from.method)!,
+                class_getInstanceMethod(pair.to.class, pair.to.method)!
+            )
+        }
+    }
+    
+    static func revertSwizzled() {
+        instanceMethodPairs.forEach { pair in
+            method_exchangeImplementations(
+                class_getInstanceMethod(pair.to.class, pair.to.method)!,
+                class_getInstanceMethod(pair.from.class, pair.from.method)!
+            )
+        }
+    }
+}
+
+final class AVCapturePhotoStub: AVCapturePhoto {
+    @objc convenience init(mock: String) {
+        fatalError("should not come to here, swizzled by NSObject.init")
     }
 }
