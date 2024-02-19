@@ -45,6 +45,22 @@ final class AVPhotoTakerTests: XCTestCase {
         XCTAssertEqual(device.sessionSpy.loggedPhotoOutputs.count, 1)
     }
     
+    func test_takePhoto_deliversAddPhotoOutputFailureStatusWhenCannotAddPhotoOutput() {
+        let exp = expectation(description: "Wait for session queue")
+        let (sut, device) = makeSUT(
+            isSessionRunning: true,
+            canAddOutput: false,
+            perform: { exp.fulfill() }
+        )
+        let statusSpy = StatusSpy<PhotoTakerStatus>(publisher: sut.getStatusPublisher())
+        
+        sut.takePhoto(on: .off)
+        wait(for: [exp], timeout: 1)
+        
+        XCTAssertTrue(device.sessionSpy.loggedPhotoOutputs.isEmpty)
+        XCTAssertEqual(statusSpy.loggedStatuses, [.addPhotoOutputFailure])
+    }
+    
     func test_takePhoto_triggersCapturePhotoSuccessfullyWhenSessionIsRunning() throws {
         let photoOutputSpy = CapturePhotoOutputSpy()
         let flashMode: CameraFlashMode = .off
@@ -79,12 +95,14 @@ final class AVPhotoTakerTests: XCTestCase {
     // MARK: - Helpers
     
     private func makeSUT(isSessionRunning: Bool = false,
+                         canAddOutput: Bool = true,
                          capturePhotoOutput: @escaping () -> AVCapturePhotoOutput = CapturePhotoOutputSpy.init,
                          perform: @escaping () -> Void = {},
                          file: StaticString = #filePath,
                          line: UInt = #line) -> (sut: AVPhotoTaker, device: PhotoCaptureDeviceSpy) {
         let device = PhotoCaptureDeviceSpy(
             isSessionRunning: isSessionRunning,
+            canAddOutput: canAddOutput,
             performOnSessionQueue: { action in
                 action()
                 perform()
@@ -117,8 +135,9 @@ final class AVPhotoTakerTests: XCTestCase {
         let performOnSessionQueue: (@escaping () -> Void) -> Void
         
         init(isSessionRunning: Bool,
+             canAddOutput: Bool,
              performOnSessionQueue: @escaping (@escaping () -> Void) -> Void) {
-            self.session = CaptureSessionSpy(isRunning: isSessionRunning)
+            self.session = CaptureSessionSpy(isRunning: isSessionRunning, canAddOutput: canAddOutput)
             self.performOnSessionQueue = performOnSessionQueue
         }
     }

@@ -8,7 +8,8 @@
 import AVKit
 import Combine
 
-enum PhotoTakerStatus {
+enum PhotoTakerStatus: Equatable {
+    case addPhotoOutputFailure
     case photoTaken(photo: UIImage)
     case imageConvertingFailure
 }
@@ -59,6 +60,7 @@ final class AVPhotoTaker: NSObject, PhotoTaker {
             
             let output = makeCapturePhotoOutput()
             guard device.session.canAddOutput(output) else {
+                statusPublisher.send(.addPhotoOutputFailure)
                 return
             }
             

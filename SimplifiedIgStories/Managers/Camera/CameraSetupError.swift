@@ -13,7 +13,6 @@ enum CameraSetupError: Error {
     case createAudioDeviceInputFailure(err: Error)
     case addAudioDeviceInputFailure
     case addMovieFileOutputFailure
-    case addPhotoOutputFailure
     case backgroundAudioPreferenceSetupFailure
     
     var errMsg: String {
@@ -32,8 +31,6 @@ enum CameraSetupError: Error {
             return "Cannot add audio device input to the session."
         case .addMovieFileOutputFailure:
             return "Cannot add movie file output to the session."
-        case .addPhotoOutputFailure:
-            return "Cannot add photo output to the session."
         case .backgroundAudioPreferenceSetupFailure:
             return "Cannot set background audio preference."
         }

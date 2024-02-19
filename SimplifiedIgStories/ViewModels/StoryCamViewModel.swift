@@ -166,6 +166,8 @@ extension StoryCamViewModel {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] status in
                 switch status {
+                case .addPhotoOutputFailure:
+                    break
                 case .photoTaken(let photo):
                     self?.lastTakenImage = photo
                     self?.showPhotoPreview = true

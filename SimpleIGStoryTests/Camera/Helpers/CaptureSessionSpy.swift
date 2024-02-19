@@ -23,9 +23,11 @@ final class CaptureSessionSpy: AVCaptureSession {
     }
     
     private var _isRunning = false
+    private var canAddOutput: Bool
     
-    init(isRunning: Bool) {
+    init(isRunning: Bool, canAddOutput: Bool) {
         self._isRunning = isRunning
+        self.canAddOutput = canAddOutput
     }
     
     override var isRunning: Bool {
@@ -45,7 +47,7 @@ final class CaptureSessionSpy: AVCaptureSession {
     }
     
     override func canAddOutput(_ output: AVCaptureOutput) -> Bool {
-        true
+        canAddOutput
     }
     
     override func addOutput(_ output: AVCaptureOutput) {

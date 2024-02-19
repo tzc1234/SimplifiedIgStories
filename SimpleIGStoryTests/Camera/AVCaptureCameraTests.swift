@@ -188,7 +188,7 @@ final class AVCaptureCameraTests: XCTestCase {
                          afterPerformOnSessionQueue: @escaping () -> Void = {})
     -> (sut: AVCamera, session: CaptureSessionSpy) {
         AVCaptureDevice.swizzled()
-        let session = CaptureSessionSpy(isRunning: isSessionRunning)
+        let session = CaptureSessionSpy(isRunning: isSessionRunning, canAddOutput: false)
         let sut = AVCamera(
             session: session,
             makeCaptureDeviceInput: captureDeviceInput,
