@@ -27,7 +27,7 @@ final class AVPhotoTakerTests: XCTestCase {
         sut.takePhoto(on: .off)
         wait(for: [exp], timeout: 1)
         
-        XCTAssertEqual(device.sessionSpy.loggedPhotoOutputs.count, 1)
+        XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
     }
     
     func test_takePhoto_doesNotAddPhotoOutputAgainWhenPhotoOutputIsAlreadyAddedAndSessionIsRunning() {
@@ -42,7 +42,7 @@ final class AVPhotoTakerTests: XCTestCase {
         sut.takePhoto(on: .off)
         wait(for: [exp], timeout: 1)
         
-        XCTAssertEqual(device.sessionSpy.loggedPhotoOutputs.count, 1)
+        XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
     }
     
     func test_takePhoto_deliversAddPhotoOutputFailureStatusWhenCannotAddPhotoOutput() {
@@ -57,7 +57,7 @@ final class AVPhotoTakerTests: XCTestCase {
         sut.takePhoto(on: .off)
         wait(for: [exp], timeout: 1)
         
-        XCTAssertTrue(device.sessionSpy.loggedPhotoOutputs.isEmpty)
+        XCTAssertTrue(device.loggedPhotoOutputs.isEmpty)
         XCTAssertEqual(statusSpy.loggedStatuses, [.addPhotoOutputFailure])
     }
     
@@ -126,8 +126,9 @@ final class AVPhotoTakerTests: XCTestCase {
     
     private final class PhotoCaptureDeviceSpy: PhotoCaptureDevice {
         let session: AVCaptureSession
-        var sessionSpy: CaptureSessionSpy {
-            session as! CaptureSessionSpy
+        
+        var loggedPhotoOutputs: [AVCapturePhotoOutput] {
+            (session as! CaptureSessionSpy).loggedPhotoOutputs
         }
         
         private(set) var cameraPosition: CameraPosition = .back
