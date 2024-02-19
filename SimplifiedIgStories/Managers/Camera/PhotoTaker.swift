@@ -20,12 +20,14 @@ protocol PhotoTaker {
 
 protocol PhotoCaptureDevice {
     var cameraPosition: CameraPosition { get }
+    var session: AVCaptureSession { get }
     var photoOutput: AVCapturePhotoOutput? { get }
     var performOnSessionQueue: (@escaping () -> Void) -> Void { get }
 }
 
 final class AVPhotoTaker: NSObject, PhotoTaker {
     private let statusPublisher = PassthroughSubject<PhotoTakerStatus, Never>()
+    private var output: AVCapturePhotoOutput?
     
     private let device: PhotoCaptureDevice
     
@@ -41,9 +43,23 @@ final class AVPhotoTaker: NSObject, PhotoTaker {
         device.performOnSessionQueue { [weak self] in
             guard let self else { return }
             
+            addPhotoOutputIfNeeded()
+            
             let settings = AVCapturePhotoSettings()
             settings.flashMode = convertToCaptureDeviceFlashMode(from: mode)
             device.photoOutput?.capturePhoto(with: settings, delegate: self)
+        }
+    }
+    
+    private func addPhotoOutputIfNeeded() {
+        if output == nil {
+            let output = AVCapturePhotoOutput()
+            guard device.session.canAddOutput(output) else {
+                return
+            }
+            
+            device.session.addOutput(output)
+            self.output = output
         }
     }
     

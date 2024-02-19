@@ -45,7 +45,7 @@ final class AVCamera: NSObject, Camera, PhotoCaptureDevice, VideoRecordDevice, A
     private(set) var movieFileOutput: AVCaptureMovieFileOutput?
     private(set) var photoOutput: AVCapturePhotoOutput?
     
-    private let session: AVCaptureSession
+    let session: AVCaptureSession
     private let makeCaptureDeviceInput: (AVCaptureDevice) throws -> AVCaptureInput
     let performOnSessionQueue: (@escaping () -> Void) -> Void
     

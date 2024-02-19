@@ -356,6 +356,7 @@ final class CaptureSessionSpy: AVCaptureSession {
     
     private(set) var loggedConfigurationStatus = [ConfigurationStatus]()
     private(set) var loggedInputs = [AVCaptureInput]()
+    private(set) var loggedOutputs = [AVCaptureOutput]()
     
     private var _isRunning = false
     
@@ -377,6 +378,18 @@ final class CaptureSessionSpy: AVCaptureSession {
         }
         
         loggedInputs.append(input)
+    }
+    
+    override func canAddOutput(_ output: AVCaptureOutput) -> Bool {
+        true
+    }
+    
+    override func addOutput(_ output: AVCaptureOutput) {
+        if isRunning, loggedConfigurationStatus.last != .begin {
+            return
+        }
+        
+        loggedOutputs.append(output)
     }
     
     override func startRunning() {
