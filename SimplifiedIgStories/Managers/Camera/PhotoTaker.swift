@@ -23,6 +23,10 @@ protocol PhotoCaptureDevice {
     var cameraPosition: CameraPosition { get }
     var session: AVCaptureSession { get }
     var performOnSessionQueue: (@escaping () -> Void) -> Void { get }
+    
+    // Cannot override CaptureSessionSpy.outputs CaptureSessionSpy in test purpose, 
+    // so add `canAddPhotoOutput` in this protocol, for stubbing.
+    var shouldAddPhotoOutput: Bool { get }
 }
 
 final class AVPhotoTaker: NSObject, PhotoTaker {
@@ -55,7 +59,7 @@ final class AVPhotoTaker: NSObject, PhotoTaker {
     }
     
     private func addPhotoOutputIfNeeded() {
-        if output == nil {
+        if device.shouldAddPhotoOutput {
             device.session.beginConfiguration()
             
             let output = makeCapturePhotoOutput()

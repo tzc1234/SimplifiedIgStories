@@ -159,16 +159,19 @@ final class AVPhotoTakerTests: XCTestCase {
     private func makeCapturePhoto(fileData: Data? = nil) -> AVCapturePhotoStub {
         AVCapturePhoto.swizzled()
         let photo = AVCapturePhotoStub(mock: "")
-        photo.fileData = fileData
         AVCapturePhoto.revertSwizzled()
+        
+        photo.fileData = fileData
         return photo
     }
     
     private final class PhotoCaptureDeviceSpy: PhotoCaptureDevice {
         let session: AVCaptureSession
-        
         var loggedPhotoOutputs: [AVCapturePhotoOutput] {
             (session as! CaptureSessionSpy).loggedPhotoOutputs
+        }
+        var shouldAddPhotoOutput: Bool {
+            loggedPhotoOutputs.isEmpty
         }
         
         private(set) var cameraPosition: CameraPosition = .back
