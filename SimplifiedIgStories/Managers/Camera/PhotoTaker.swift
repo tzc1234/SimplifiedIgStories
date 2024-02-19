@@ -21,7 +21,6 @@ protocol PhotoTaker {
 protocol PhotoCaptureDevice {
     var cameraPosition: CameraPosition { get }
     var session: AVCaptureSession { get }
-    var photoOutput: AVCapturePhotoOutput? { get }
     var performOnSessionQueue: (@escaping () -> Void) -> Void { get }
 }
 
@@ -30,9 +29,12 @@ final class AVPhotoTaker: NSObject, PhotoTaker {
     private var output: AVCapturePhotoOutput?
     
     private let device: PhotoCaptureDevice
+    private let makeCapturePhotoOutput: () -> AVCapturePhotoOutput
     
-    init(device: PhotoCaptureDevice) {
+    init(device: PhotoCaptureDevice, 
+         makeCapturePhotoOutput: @escaping () -> AVCapturePhotoOutput = AVCapturePhotoOutput.init) {
         self.device = device
+        self.makeCapturePhotoOutput = makeCapturePhotoOutput
     }
     
     func getStatusPublisher() -> AnyPublisher<PhotoTakerStatus, Never> {
@@ -41,13 +43,13 @@ final class AVPhotoTaker: NSObject, PhotoTaker {
     
     func takePhoto(on mode: CameraFlashMode) {
         device.performOnSessionQueue { [weak self] in
-            guard let self else { return }
+            guard let self, device.session.isRunning else { return }
             
             addPhotoOutputIfNeeded()
             
             let settings = AVCapturePhotoSettings()
             settings.flashMode = convertToCaptureDeviceFlashMode(from: mode)
-            device.photoOutput?.capturePhoto(with: settings, delegate: self)
+            output?.capturePhoto(with: settings, delegate: self)
         }
     }
     
@@ -55,7 +57,7 @@ final class AVPhotoTaker: NSObject, PhotoTaker {
         if output == nil {
             device.session.beginConfiguration()
             
-            let output = AVCapturePhotoOutput()
+            let output = makeCapturePhotoOutput()
             guard device.session.canAddOutput(output) else {
                 return
             }
