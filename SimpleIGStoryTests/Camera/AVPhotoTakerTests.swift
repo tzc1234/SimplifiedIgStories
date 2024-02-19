@@ -110,6 +110,22 @@ final class AVPhotoTakerTests: XCTestCase {
         XCTAssertEqual(statusSpy.loggedStatuses, [.imageConvertingFailure])
     }
     
+    func test_photoOutput_deliversPhotoSuccessfullyWhenHavingFileData() {
+        let (sut, _) = makeSUT()
+        let statusSpy = StatusSpy<PhotoTakerStatus>(publisher: sut.getStatusPublisher())
+        let anyPhotoOutput = CapturePhotoOutputSpy()
+        let photo = makeCapturePhoto(fileData: UIImage.makeData(withColor: .red))
+        
+        sut.photoOutput(anyPhotoOutput, didFinishProcessingPhoto: photo, error: nil)
+        
+        XCTAssertEqual(statusSpy.loggedStatuses.count, 1)
+        if case let .photoTaken(photo: receivedPhoto) = statusSpy.loggedStatuses.last {
+            XCTAssertFalse(receivedPhoto.pngData()!.isEmpty)
+        } else {
+            XCTFail("Should receive a photo")
+        }
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(isSessionRunning: Bool = false,

@@ -402,7 +402,6 @@
 		BE8B71A92B7651610055C354 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				BE8B71AA2B76516D0055C354 /* UIImage+Helpers.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -536,6 +535,7 @@
 				BEBF32312B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift */,
 				BEEEBBF02B75345400EC85C7 /* XCTestCase+AssertThrows.swift */,
 				BE80D1982B83B61E007360D1 /* CommonHelpers.swift */,
+				BE8B71AA2B76516D0055C354 /* UIImage+Helpers.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
