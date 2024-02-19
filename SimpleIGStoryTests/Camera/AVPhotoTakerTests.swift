@@ -157,10 +157,8 @@ final class AVPhotoTakerTests: XCTestCase {
     }
     
     private func makeCapturePhoto(fileData: Data? = nil) -> AVCapturePhotoStub {
-        AVCapturePhoto.swizzled()
-        let photo = AVCapturePhotoStub(mock: "")
-        AVCapturePhoto.revertSwizzled()
-        
+        let klass = AVCapturePhotoStub.self as NSObject.Type
+        let photo = klass.init() as! AVCapturePhotoStub
         photo.fileData = fileData
         return photo
     }
@@ -219,56 +217,8 @@ extension CameraFlashMode {
     }
 }
 
-extension AVCapturePhoto {
-    @objc convenience init(mock: String) {
-        fatalError("should not come to here, swizzled by NSObject.init")
-    }
-    
-    struct MethodPair {
-        typealias Pair = (class: AnyClass, method: Selector)
-        
-        let from: Pair
-        let to: Pair
-    }
-    
-    static var instanceMethodPairs: [MethodPair] {
-        [
-            MethodPair(
-                from: (class: AVCapturePhotoStub.self, method: #selector(AVCapturePhotoStub.init(mock:))),
-                to: (class: AVCapturePhotoStub.self, method: #selector(NSObject.init))
-            ),
-            MethodPair(
-                from: (class: AVCapturePhoto.self, method: #selector(AVCapturePhoto.init(mock:))),
-                to: (class: AVCapturePhoto.self, method: #selector(AVCapturePhotoStub.init(mock:)))
-            )
-        ]
-    }
-    
-    static func swizzled() {
-        instanceMethodPairs.forEach { pair in
-            method_exchangeImplementations(
-                class_getInstanceMethod(pair.from.class, pair.from.method)!,
-                class_getInstanceMethod(pair.to.class, pair.to.method)!
-            )
-        }
-    }
-    
-    static func revertSwizzled() {
-        instanceMethodPairs.forEach { pair in
-            method_exchangeImplementations(
-                class_getInstanceMethod(pair.to.class, pair.to.method)!,
-                class_getInstanceMethod(pair.from.class, pair.from.method)!
-            )
-        }
-    }
-}
-
 final class AVCapturePhotoStub: AVCapturePhoto {
     var fileData: Data?
-    
-    @objc convenience init(mock: String) {
-        fatalError("should not come to here, swizzled by NSObject.init")
-    }
     
     override func fileDataRepresentation() -> Data? {
         fileData
