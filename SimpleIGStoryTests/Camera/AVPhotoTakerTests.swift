@@ -21,7 +21,10 @@ final class AVPhotoTakerTests: XCTestCase {
         let exp = expectation(description: "Wait for session queue")
         let (sut, device) = makeSUT(
             isSessionRunning: true,
-            perform: { exp.fulfill() }
+            perform: { action in
+                action()
+                exp.fulfill()
+            }
         )
         
         sut.takePhoto(on: .off)
@@ -35,7 +38,10 @@ final class AVPhotoTakerTests: XCTestCase {
         exp.expectedFulfillmentCount = 2
         let (sut, device) = makeSUT(
             isSessionRunning: true,
-            perform: { exp.fulfill() }
+            perform: { action in
+                action()
+                exp.fulfill()
+            }
         )
         
         sut.takePhoto(on: .off)
@@ -50,7 +56,10 @@ final class AVPhotoTakerTests: XCTestCase {
         let (sut, device) = makeSUT(
             isSessionRunning: true,
             canAddOutput: false,
-            perform: { exp.fulfill() }
+            perform: { action in
+                action()
+                exp.fulfill()
+            }
         )
         let statusSpy = StatusSpy<PhotoTakerStatus>(publisher: sut.getStatusPublisher())
         
@@ -61,6 +70,31 @@ final class AVPhotoTakerTests: XCTestCase {
         XCTAssertEqual(statusSpy.loggedStatuses, [.addPhotoOutputFailure])
     }
     
+    func test_takePhoto_performsInSessionQueue() {
+        let photoOutputSpy = CapturePhotoOutputSpy()
+        var actions = [() -> Void]()
+        let (sut, device) = makeSUT(
+            isSessionRunning: true,
+            capturePhotoOutput: { photoOutputSpy },
+            perform: { actions.append($0) }
+        )
+        
+        sut.takePhoto(on: .off)
+        
+        XCTAssertTrue(device.loggedPhotoOutputs.isEmpty)
+        XCTAssertEqual(photoOutputSpy.capturePhotoCallCount, 0)
+        
+        let exp = expectation(description: "Wait for session queue")
+        actions.forEach { action in
+            action()
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1)
+        
+        XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
+        XCTAssertEqual(photoOutputSpy.capturePhotoCallCount, 1)
+    }
+    
     func test_takePhoto_triggersCapturePhotoSuccessfullyWhenSessionIsRunning() throws {
         let photoOutputSpy = CapturePhotoOutputSpy()
         let flashMode: CameraFlashMode = .off
@@ -68,7 +102,10 @@ final class AVPhotoTakerTests: XCTestCase {
         let (sut, _) = makeSUT(
             isSessionRunning: true,
             capturePhotoOutput: { photoOutputSpy },
-            perform: { exp.fulfill() }
+            perform: { action in
+                action()
+                exp.fulfill()
+            }
         )
         
         sut.takePhoto(on: flashMode)
@@ -83,13 +120,16 @@ final class AVPhotoTakerTests: XCTestCase {
         let (sut, _) = makeSUT(
             isSessionRunning: false,
             capturePhotoOutput: { photoOutputSpy },
-            perform: { exp.fulfill() }
+            perform: { action in
+                action()
+                exp.fulfill()
+            }
         )
         
         sut.takePhoto(on: .off)
         wait(for: [exp], timeout: 1)
         
-        XCTAssertTrue(photoOutputSpy.loggedCapturePhotoParams.isEmpty)
+        XCTAssertEqual(photoOutputSpy.capturePhotoCallCount, 0)
     }
     
     // MARK: - Helpers
@@ -97,16 +137,14 @@ final class AVPhotoTakerTests: XCTestCase {
     private func makeSUT(isSessionRunning: Bool = false,
                          canAddOutput: Bool = true,
                          capturePhotoOutput: @escaping () -> AVCapturePhotoOutput = CapturePhotoOutputSpy.init,
-                         perform: @escaping () -> Void = {},
+                         perform: @escaping (@escaping () -> Void) -> Void = { _ in },
                          file: StaticString = #filePath,
                          line: UInt = #line) -> (sut: AVPhotoTaker, device: PhotoCaptureDeviceSpy) {
         let device = PhotoCaptureDeviceSpy(
             isSessionRunning: isSessionRunning,
             canAddOutput: canAddOutput,
-            performOnSessionQueue: { action in
-                action()
-                perform()
-            })
+            performOnSessionQueue: perform
+        )
         let sut = AVPhotoTaker(device: device, makeCapturePhotoOutput: capturePhotoOutput)
         trackForMemoryLeaks(device, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
@@ -118,7 +156,7 @@ final class AVPhotoTakerTests: XCTestCase {
                                           andExpected flashMode: CameraFlashMode,
                                           file: StaticString = #filePath,
                                           line: UInt = #line) {
-        XCTAssertEqual(output.loggedCapturePhotoParams.count, 1, file: file, line: line)
+        XCTAssertEqual(output.capturePhotoCallCount, 1, file: file, line: line)
         XCTAssertIdentical(output.loggedDelegates.last, sut, file: file, line: line)
         let setting = output.loggedSettings.last
         XCTAssertEqual(setting?.flashMode, flashMode.toCaptureDeviceFlashMode(), file: file, line: line)
@@ -150,7 +188,10 @@ final class CapturePhotoOutputSpy: AVCapturePhotoOutput {
         weak var delegate: AVCapturePhotoCaptureDelegate?
     }
     
-    private(set) var loggedCapturePhotoParams = [CapturePhotoParam]()
+    private var loggedCapturePhotoParams = [CapturePhotoParam]()
+    var capturePhotoCallCount: Int {
+        loggedCapturePhotoParams.count
+    }
     var loggedSettings: [AVCapturePhotoSettings] {
         loggedCapturePhotoParams.map(\.settings)
     }
