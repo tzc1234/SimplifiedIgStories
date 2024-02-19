@@ -62,10 +62,6 @@ final class AVCamera: NSObject, Camera, PhotoCaptureDevice, VideoRecordDevice, A
 }
 
 extension AVCamera {
-    var shouldAddPhotoOutput: Bool {
-        session.outputs.first(where: { $0 is AVCapturePhotoOutput }) == nil
-    }
-    
     func performOnSessionQueue(action: @escaping () -> Void) {
         performOnSessionQueue(action)
     }

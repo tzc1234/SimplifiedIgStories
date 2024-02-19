@@ -16,7 +16,7 @@ final class CaptureSessionSpy: AVCaptureSession {
     
     private(set) var loggedConfigurationStatus = [ConfigurationStatus]()
     private(set) var loggedInputs = [AVCaptureInput]()
-    private(set) var loggedOutputs = [AVCaptureOutput]()
+    @objc private(set) var loggedOutputs = [AVCaptureOutput]()
     
     var loggedPhotoOutputs: [AVCapturePhotoOutput] {
         loggedOutputs.compactMap { $0 as? AVCapturePhotoOutput }
@@ -82,5 +82,42 @@ final class CaptureSessionSpy: AVCaptureSession {
     
     func resetLoggedInputs() {
         loggedInputs.removeAll()
+    }
+}
+
+extension CaptureSessionSpy {
+    struct MethodPair {
+        typealias Pair = (class: AnyClass, method: Selector)
+        
+        let from: Pair
+        let to: Pair
+    }
+    
+    // Cannot override the outputs directly, error occurred, so use method swizzling.
+    private static var instanceMethodPairs: [MethodPair] {
+        [
+            MethodPair(
+                from: (class: CaptureSessionSpy.self, method: #selector(getter: CaptureSessionSpy.outputs)),
+                to: (class: CaptureSessionSpy.self, method: #selector(getter: CaptureSessionSpy.loggedOutputs))
+            )
+        ]
+    }
+    
+    static func swizzled() {
+        instanceMethodPairs.forEach { pair in
+            method_exchangeImplementations(
+                class_getInstanceMethod(pair.from.class, pair.from.method)!,
+                class_getInstanceMethod(pair.to.class, pair.to.method)!
+            )
+        }
+    }
+    
+    static func revertSwizzled() {
+        instanceMethodPairs.forEach { pair in
+            method_exchangeImplementations(
+                class_getInstanceMethod(pair.to.class, pair.to.method)!,
+                class_getInstanceMethod(pair.from.class, pair.from.method)!
+            )
+        }
     }
 }

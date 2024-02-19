@@ -23,15 +23,14 @@ protocol PhotoCaptureDevice {
     var cameraPosition: CameraPosition { get }
     var session: AVCaptureSession { get }
     var performOnSessionQueue: (@escaping () -> Void) -> Void { get }
-    
-    // Cannot override CaptureSessionSpy.outputs CaptureSessionSpy in test purpose, 
-    // so add `canAddPhotoOutput` in this protocol, for stubbing.
-    var shouldAddPhotoOutput: Bool { get }
 }
 
 final class AVPhotoTaker: NSObject, PhotoTaker {
     private let statusPublisher = PassthroughSubject<PhotoTakerStatus, Never>()
     private var output: AVCapturePhotoOutput?
+    private var session: AVCaptureSession {
+        device.session
+    }
     
     private let device: PhotoCaptureDevice
     private let makeCapturePhotoOutput: () -> AVCapturePhotoOutput
@@ -48,7 +47,7 @@ final class AVPhotoTaker: NSObject, PhotoTaker {
     
     func takePhoto(on mode: CameraFlashMode) {
         device.performOnSessionQueue { [weak self] in
-            guard let self, device.session.isRunning else { return }
+            guard let self, session.isRunning else { return }
             
             addPhotoOutputIfNeeded()
             
@@ -59,19 +58,19 @@ final class AVPhotoTaker: NSObject, PhotoTaker {
     }
     
     private func addPhotoOutputIfNeeded() {
-        if device.shouldAddPhotoOutput {
-            device.session.beginConfiguration()
+        if session.outputs.first(where: { $0 is AVCapturePhotoOutput }) == nil {
+            session.beginConfiguration()
             
             let output = makeCapturePhotoOutput()
-            guard device.session.canAddOutput(output) else {
+            guard session.canAddOutput(output) else {
                 statusPublisher.send(.addPhotoOutputFailure)
                 return
             }
             
-            device.session.addOutput(output)
+            session.addOutput(output)
             self.output = output
             
-            device.session.commitConfiguration()
+            session.commitConfiguration()
         }
     }
     
