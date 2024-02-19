@@ -30,6 +30,21 @@ final class AVPhotoTakerTests: XCTestCase {
         XCTAssertEqual(device.sessionSpy.loggedPhotoOutputs.count, 1)
     }
     
+    func test_takePhoto_doesNotAddPhotoOutputAgainWhenPhotoOutputIsAlreadyAddedAndSessionIsRunning() {
+        let exp = expectation(description: "Wait for session queue")
+        exp.expectedFulfillmentCount = 2
+        let (sut, device) = makeSUT(
+            isSessionRunning: true,
+            perform: { exp.fulfill() }
+        )
+        
+        sut.takePhoto(on: .off)
+        sut.takePhoto(on: .off)
+        wait(for: [exp], timeout: 1)
+        
+        XCTAssertEqual(device.sessionSpy.loggedPhotoOutputs.count, 1)
+    }
+    
     func test_takePhoto_triggersCapturePhotoSuccessfully() throws {
         let photoOutputSpy = CapturePhotoOutputSpy()
         let flashMode: CameraFlashMode = .off
