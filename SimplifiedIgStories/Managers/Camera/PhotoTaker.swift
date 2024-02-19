@@ -21,10 +21,10 @@ protocol PhotoTaker {
 protocol PhotoCaptureDevice {
     var cameraPosition: CameraPosition { get }
     var photoOutput: AVCapturePhotoOutput? { get }
-    func performOnSessionQueue(action: @escaping () -> Void)
+    var performOnSessionQueue: (@escaping () -> Void) -> Void { get }
 }
 
-final class AVCapturePhotoTaker: NSObject, PhotoTaker {
+final class AVPhotoTaker: NSObject, PhotoTaker {
     private let statusPublisher = PassthroughSubject<PhotoTakerStatus, Never>()
     
     private let device: PhotoCaptureDevice
@@ -56,7 +56,7 @@ final class AVCapturePhotoTaker: NSObject, PhotoTaker {
     }
 }
 
-extension AVCapturePhotoTaker: AVCapturePhotoCaptureDelegate {
+extension AVPhotoTaker: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         guard error == nil, let data = photo.fileDataRepresentation(), let image = makeImage(from: data) else {
             statusPublisher.send(.imageConvertingFailure)

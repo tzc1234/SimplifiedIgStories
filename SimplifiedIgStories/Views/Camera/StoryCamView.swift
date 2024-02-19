@@ -18,7 +18,7 @@ struct StoryCamView: View {
          postVideoAction: @escaping (URL) -> Void,
          tapCloseAction: @escaping () -> Void) {
         let camera = AVCamera()
-        let photoTaker = AVCapturePhotoTaker(device: camera)
+        let photoTaker = AVPhotoTaker(device: camera)
         let videoRecorder = AVCaptureVideoRecorder(device: camera)
         let cameraAuxiliary = AVCaptureDeviceAuxiliary(camera: camera)
         let vm = StoryCamViewModel(
