@@ -18,56 +18,49 @@ final class AVPhotoTakerTests: XCTestCase {
     }
     
     func test_takePhoto_addsPhotoOutputToSessionIfNoPhotoOutputWhenSessionIsRunning() {
-        let exp = expectation(description: "Wait for session queue")
-        let (sut, device) = makeSUT(
-            isSessionRunning: true,
-            perform: { action in
-                action()
-                exp.fulfill()
-            }
-        )
+        let (sut, device) = makeSUT(isSessionRunning: true)
         
         sut.takePhoto(on: .off)
-        wait(for: [exp], timeout: 1)
         
         XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
     }
     
     func test_takePhoto_doesNotAddPhotoOutputAgainWhenPhotoOutputIsAlreadyAddedAndSessionIsRunning() {
-        let exp = expectation(description: "Wait for session queue")
-        exp.expectedFulfillmentCount = 2
-        let (sut, device) = makeSUT(
-            isSessionRunning: true,
-            perform: { action in
-                action()
-                exp.fulfill()
-            }
-        )
+        let (sut, device) = makeSUT(isSessionRunning: true)
         
         sut.takePhoto(on: .off)
         sut.takePhoto(on: .off)
-        wait(for: [exp], timeout: 1)
         
         XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
     }
     
     func test_takePhoto_deliversAddPhotoOutputFailureStatusWhenCannotAddPhotoOutput() {
-        let exp = expectation(description: "Wait for session queue")
-        let (sut, device) = makeSUT(
-            isSessionRunning: true,
-            canAddOutput: false,
-            perform: { action in
-                action()
-                exp.fulfill()
-            }
-        )
+        let (sut, device) = makeSUT(isSessionRunning: true, canAddOutput: false)
         let statusSpy = StatusSpy<PhotoTakerStatus>(publisher: sut.getStatusPublisher())
         
         sut.takePhoto(on: .off)
-        wait(for: [exp], timeout: 1)
         
         XCTAssertTrue(device.loggedPhotoOutputs.isEmpty)
         XCTAssertEqual(statusSpy.loggedStatuses, [.addPhotoOutputFailure])
+    }
+    
+    func test_takePhoto_triggersCapturePhotoSuccessfullyWhenSessionIsRunning() throws {
+        let photoOutputSpy = CapturePhotoOutputSpy()
+        let flashMode: CameraFlashMode = .off
+        let (sut, _) = makeSUT(isSessionRunning: true, capturePhotoOutput: { photoOutputSpy })
+        
+        sut.takePhoto(on: flashMode)
+        
+        assertCapturePhotoParams(in: photoOutputSpy, with: sut, andExpected: flashMode)
+    }
+    
+    func test_takePhoto_doesNotTriggerCapturePhotoWhenSessionIsNotRunning() throws {
+        let photoOutputSpy = CapturePhotoOutputSpy()
+        let (sut, _) = makeSUT(isSessionRunning: false, capturePhotoOutput: { photoOutputSpy })
+        
+        sut.takePhoto(on: .off)
+        
+        XCTAssertEqual(photoOutputSpy.capturePhotoCallCount, 0)
     }
     
     func test_takePhoto_performsInSessionQueue() {
@@ -95,49 +88,12 @@ final class AVPhotoTakerTests: XCTestCase {
         XCTAssertEqual(photoOutputSpy.capturePhotoCallCount, 1)
     }
     
-    func test_takePhoto_triggersCapturePhotoSuccessfullyWhenSessionIsRunning() throws {
-        let photoOutputSpy = CapturePhotoOutputSpy()
-        let flashMode: CameraFlashMode = .off
-        let exp = expectation(description: "Wait for session queue")
-        let (sut, _) = makeSUT(
-            isSessionRunning: true,
-            capturePhotoOutput: { photoOutputSpy },
-            perform: { action in
-                action()
-                exp.fulfill()
-            }
-        )
-        
-        sut.takePhoto(on: flashMode)
-        wait(for: [exp], timeout: 1)
-        
-        assertCapturePhotoParams(in: photoOutputSpy, with: sut, andExpected: flashMode)
-    }
-    
-    func test_takePhoto_doesNotTriggerCapturePhotoWhenSessionIsNotRunning() throws {
-        let photoOutputSpy = CapturePhotoOutputSpy()
-        let exp = expectation(description: "Wait for session queue")
-        let (sut, _) = makeSUT(
-            isSessionRunning: false,
-            capturePhotoOutput: { photoOutputSpy },
-            perform: { action in
-                action()
-                exp.fulfill()
-            }
-        )
-        
-        sut.takePhoto(on: .off)
-        wait(for: [exp], timeout: 1)
-        
-        XCTAssertEqual(photoOutputSpy.capturePhotoCallCount, 0)
-    }
-    
     // MARK: - Helpers
     
     private func makeSUT(isSessionRunning: Bool = false,
                          canAddOutput: Bool = true,
                          capturePhotoOutput: @escaping () -> AVCapturePhotoOutput = CapturePhotoOutputSpy.init,
-                         perform: @escaping (@escaping () -> Void) -> Void = { _ in },
+                         perform: @escaping (@escaping () -> Void) -> Void = { $0() },
                          file: StaticString = #filePath,
                          line: UInt = #line) -> (sut: AVPhotoTaker, device: PhotoCaptureDeviceSpy) {
         let device = PhotoCaptureDeviceSpy(
