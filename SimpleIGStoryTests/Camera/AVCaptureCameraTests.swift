@@ -6,7 +6,6 @@
 //
 
 import XCTest
-import Combine
 import AVFoundation
 @testable import Simple_IG_Story
 
@@ -181,6 +180,8 @@ final class AVCaptureCameraTests: XCTestCase {
     
     // MARK: - Helpers
     
+    typealias CameraStatusSpy = StatusSpy<CameraStatus>
+    
     private func makeSUT(isSessionRunning: Bool = false,
                          captureDeviceInput: @escaping (AVCaptureDevice) throws -> AVCaptureInput
                             = { _ in makeDummyCaptureInput() },
@@ -222,18 +223,6 @@ final class AVCaptureCameraTests: XCTestCase {
         action()
         
         XCTAssertEqual(spy.loggedStatuses, expectedStatuses, file: file, line: line)
-    }
-    
-    private class CameraStatusSpy {
-        private(set) var loggedStatuses = [CameraStatus]()
-        private var cancellable: AnyCancellable?
-        
-        init(publisher: AnyPublisher<CameraStatus, Never>) {
-            cancellable = publisher
-                .sink { [weak self] status in
-                    self?.loggedStatuses.append(status)
-                }
-        }
     }
 }
 

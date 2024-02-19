@@ -7,14 +7,13 @@
 
 import XCTest
 import AVKit
-import Combine
 @testable import Simple_IG_Story
 
 final class AVPhotoTakerTests: XCTestCase {
     func test_init_doesNotDeliverStatusUponInit() {
         let device = PhotoCaptureDeviceSpy(performOnSessionQueue: { _ in })
         let sut = AVPhotoTaker(device: device)
-        let statusSpy = DeviceStatusSpy(publisher: sut.getStatusPublisher())
+        let statusSpy = StatusSpy<PhotoTakerStatus>(publisher: sut.getStatusPublisher())
         
         XCTAssertTrue(statusSpy.loggedStatuses.isEmpty)
     }
@@ -29,18 +28,6 @@ final class AVPhotoTakerTests: XCTestCase {
         
         init(performOnSessionQueue: @escaping (@escaping () -> Void) -> Void) {
             self.performOnSessionQueue = performOnSessionQueue
-        }
-    }
-    
-    private class DeviceStatusSpy {
-        private(set) var loggedStatuses = [PhotoTakerStatus]()
-        private var cancellable: AnyCancellable?
-        
-        init(publisher: AnyPublisher<PhotoTakerStatus, Never>) {
-            cancellable = publisher
-                .sink { [weak self] status in
-                    self?.loggedStatuses.append(status)
-                }
         }
     }
 }

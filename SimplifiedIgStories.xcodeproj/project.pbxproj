@@ -20,6 +20,7 @@
 		BE2D7796285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2D7795285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift */; };
 		BE35051B2B7ABB4800348B4B /* PhotoTaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE35051A2B7ABB4800348B4B /* PhotoTaker.swift */; };
 		BE38F7AD2B83649300F42C71 /* AVPhotoTakerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE38F7AC2B83649300F42C71 /* AVPhotoTakerTests.swift */; };
+		BE38F7B02B83672400F42C71 /* StatusSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE38F7AF2B83672400F42C71 /* StatusSpy.swift */; };
 		BE42A3382B7B8053004BC257 /* VideoRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE42A3372B7B8053004BC257 /* VideoRecorder.swift */; };
 		BE42A33A2B7B9A80004BC257 /* CameraAuxiliary.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE42A3392B7B9A80004BC257 /* CameraAuxiliary.swift */; };
 		BE463A2D285F05AE00599929 /* AVCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE463A2C285F05AE00599929 /* AVCamera.swift */; };
@@ -113,6 +114,7 @@
 		BE2D7795285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVCaptureVideoPreviewRepresentable.swift; sourceTree = "<group>"; };
 		BE35051A2B7ABB4800348B4B /* PhotoTaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoTaker.swift; sourceTree = "<group>"; };
 		BE38F7AC2B83649300F42C71 /* AVPhotoTakerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPhotoTakerTests.swift; sourceTree = "<group>"; };
+		BE38F7AF2B83672400F42C71 /* StatusSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusSpy.swift; sourceTree = "<group>"; };
 		BE42A3372B7B8053004BC257 /* VideoRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRecorder.swift; sourceTree = "<group>"; };
 		BE42A3392B7B9A80004BC257 /* CameraAuxiliary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraAuxiliary.swift; sourceTree = "<group>"; };
 		BE463A2C285F05AE00599929 /* AVCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVCamera.swift; sourceTree = "<group>"; };
@@ -280,6 +282,14 @@
 			path = Camera;
 			sourceTree = "<group>";
 		};
+		BE38F7AE2B83671300F42C71 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				BE38F7AF2B83672400F42C71 /* StatusSpy.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 		BE47195027D6CFCC004500F2 /* Stories */ = {
 			isa = PBXGroup;
 			children = (
@@ -352,6 +362,7 @@
 		BE84F7942B7CE9A300FAD11B /* Camera */ = {
 			isa = PBXGroup;
 			children = (
+				BE38F7AE2B83671300F42C71 /* Helpers */,
 				BE84F7952B7CE9C500FAD11B /* AVCaptureCameraTests.swift */,
 				BE38F7AC2B83649300F42C71 /* AVPhotoTakerTests.swift */,
 			);
@@ -726,6 +737,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE38F7B02B83672400F42C71 /* StatusSpy.swift in Sources */,
 				BEEEBBEB2B75287100EC85C7 /* FileDataClientTests.swift in Sources */,
 				BE50144A288DC7410043DF62 /* StoryViewModelTests.swift in Sources */,
 				BE482F042886C0C30094E54C /* CameraSpy.swift in Sources */,
