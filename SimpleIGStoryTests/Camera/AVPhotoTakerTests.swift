@@ -29,7 +29,7 @@ final class AVPhotoTakerTests: XCTestCase {
         sut.takePhoto(on: .off)
         wait(for: [exp], timeout: 1)
         
-        XCTAssertEqual(device.sessionSpy?.loggedOutputs.count, 1)
+        XCTAssertEqual(device.sessionSpy?.loggedPhotoOutputs.count, 1)
     }
     
     func test_takePhoto_addsPhotoOutputToSessionIfNoPhotoOutputWhenSessionIsRunning() throws {
@@ -43,7 +43,7 @@ final class AVPhotoTakerTests: XCTestCase {
         sut.takePhoto(on: .off)
         wait(for: [exp], timeout: 1)
         
-        XCTAssertEqual(device.sessionSpy?.loggedOutputs.count, 1)
+        XCTAssertEqual(device.sessionSpy?.loggedPhotoOutputs.count, 1)
     }
     
     // MARK: - Helpers

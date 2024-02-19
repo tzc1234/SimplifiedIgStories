@@ -358,6 +358,10 @@ final class CaptureSessionSpy: AVCaptureSession {
     private(set) var loggedInputs = [AVCaptureInput]()
     private(set) var loggedOutputs = [AVCaptureOutput]()
     
+    var loggedPhotoOutputs: [AVCapturePhotoOutput] {
+        loggedOutputs.compactMap { $0 as? AVCapturePhotoOutput }
+    }
+    
     private var _isRunning = false
     
     init(isRunning: Bool) {
