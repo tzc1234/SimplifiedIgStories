@@ -18,11 +18,9 @@ final class AVPhotoTakerTests: XCTestCase {
     }
     
     func test_takePhoto_addsPhotoOutputToSessionIfNoPhotoOutputWhenSessionIsRunning() {
-        let photoOutputSpy = CapturePhotoOutputSpy()
         let exp = expectation(description: "Wait for session queue")
         let (sut, device) = makeSUT(
             isSessionRunning: true,
-            capturePhotoOutput: { photoOutputSpy },
             perform: { exp.fulfill() }
         )
         
@@ -45,16 +43,13 @@ final class AVPhotoTakerTests: XCTestCase {
         sut.takePhoto(on: flashMode)
         wait(for: [exp], timeout: 1)
         
-        XCTAssertEqual(photoOutputSpy.loggedCapturePhotos.count, 1)
-        XCTAssertIdentical(photoOutputSpy.loggedDelegates.last, sut)
-        let setting = photoOutputSpy.loggedSettings.last
-        XCTAssertEqual(setting?.flashMode, flashMode.toCaptureDeviceFlashMode())
+        assertCapturePhotoParams(in: photoOutputSpy, with: sut, andExpected: flashMode)
     }
     
     // MARK: - Helpers
     
     private func makeSUT(isSessionRunning: Bool = false,
-                         capturePhotoOutput: @escaping () -> AVCapturePhotoOutput = AVCapturePhotoOutput.init,
+                         capturePhotoOutput: @escaping () -> AVCapturePhotoOutput = CapturePhotoOutputSpy.init,
                          perform: @escaping () -> Void = {},
                          file: StaticString = #filePath,
                          line: UInt = #line) -> (sut: AVPhotoTaker, device: PhotoCaptureDeviceSpy) {
@@ -68,6 +63,17 @@ final class AVPhotoTakerTests: XCTestCase {
         trackForMemoryLeaks(device, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
         return (sut, device)
+    }
+    
+    private func assertCapturePhotoParams(in output: CapturePhotoOutputSpy,
+                                          with sut: AVPhotoTaker,
+                                          andExpected flashMode: CameraFlashMode,
+                                          file: StaticString = #filePath,
+                                          line: UInt = #line) {
+        XCTAssertEqual(output.loggedCapturePhotoParams.count, 1, file: file, line: line)
+        XCTAssertIdentical(output.loggedDelegates.last, sut, file: file, line: line)
+        let setting = output.loggedSettings.last
+        XCTAssertEqual(setting?.flashMode, flashMode.toCaptureDeviceFlashMode(), file: file, line: line)
     }
     
     private final class PhotoCaptureDeviceSpy: PhotoCaptureDevice {
@@ -89,25 +95,21 @@ final class AVPhotoTakerTests: XCTestCase {
 }
 
 final class CapturePhotoOutputSpy: AVCapturePhotoOutput {
-    struct CapturePhoto {
+    struct CapturePhotoParam {
         let settings: AVCapturePhotoSettings
         weak var delegate: AVCapturePhotoCaptureDelegate?
     }
     
-    private(set) var loggedCapturePhotos = [CapturePhoto]()
+    private(set) var loggedCapturePhotoParams = [CapturePhotoParam]()
     var loggedSettings: [AVCapturePhotoSettings] {
-        loggedCapturePhotos.map(\.settings)
+        loggedCapturePhotoParams.map(\.settings)
     }
     var loggedDelegates: [AVCapturePhotoCaptureDelegate] {
-        loggedCapturePhotos.compactMap(\.delegate)
-    }
-    
-    func resetLoggedCapturePhotos() {
-        loggedCapturePhotos.removeAll()
+        loggedCapturePhotoParams.compactMap(\.delegate)
     }
     
     override func capturePhoto(with settings: AVCapturePhotoSettings, delegate: AVCapturePhotoCaptureDelegate) {
-        loggedCapturePhotos.append(CapturePhoto(settings: settings, delegate: delegate))
+        loggedCapturePhotoParams.append(CapturePhotoParam(settings: settings, delegate: delegate))
     }
 }
 
