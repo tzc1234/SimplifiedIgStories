@@ -43,7 +43,6 @@ final class AVCamera: NSObject, Camera, PhotoCaptureDevice, VideoRecordDevice, A
     
     private(set) var captureDevice: AVCaptureDevice?
     private(set) var movieFileOutput: AVCaptureMovieFileOutput?
-    private(set) var photoOutput: AVCapturePhotoOutput?
     
     let session: AVCaptureSession
     private let makeCaptureDeviceInput: (AVCaptureDevice) throws -> AVCaptureInput
@@ -223,16 +222,6 @@ extension AVCamera {
         }
         
         movieFileOutput = output
-    }
-    
-    private func addPhotoOutput() throws {
-        let output = AVCapturePhotoOutput()
-        guard session.canAddOutput(output) else {
-            throw CameraSetupError.addPhotoOutputFailure
-        }
-        
-        session.addOutput(output)
-        photoOutput = output
     }
     
     private func subscribeCaptureSessionNotifications() {
