@@ -53,6 +53,8 @@ final class AVPhotoTaker: NSObject, PhotoTaker {
     
     private func addPhotoOutputIfNeeded() {
         if output == nil {
+            device.session.beginConfiguration()
+            
             let output = AVCapturePhotoOutput()
             guard device.session.canAddOutput(output) else {
                 return
@@ -60,6 +62,8 @@ final class AVPhotoTaker: NSObject, PhotoTaker {
             
             device.session.addOutput(output)
             self.output = output
+            
+            device.session.commitConfiguration()
         }
     }
     
