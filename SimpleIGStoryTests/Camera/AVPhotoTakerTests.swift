@@ -99,6 +99,17 @@ final class AVPhotoTakerTests: XCTestCase {
         XCTAssertEqual(statusSpy.loggedStatuses, [.imageConvertingFailure])
     }
     
+    func test_photoOutput_deliversImageConvertingFailureStatusWhenNoPhotoData() {
+        let (sut, _) = makeSUT()
+        let statusSpy = StatusSpy<PhotoTakerStatus>(publisher: sut.getStatusPublisher())
+        let anyPhotoOutput = CapturePhotoOutputSpy()
+        let noFileDataPhoto = makeCapturePhoto(fileData: nil)
+        
+        sut.photoOutput(anyPhotoOutput, didFinishProcessingPhoto: noFileDataPhoto, error: nil)
+        
+        XCTAssertEqual(statusSpy.loggedStatuses, [.imageConvertingFailure])
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(isSessionRunning: Bool = false,
@@ -129,9 +140,10 @@ final class AVPhotoTakerTests: XCTestCase {
         XCTAssertEqual(setting?.flashMode, flashMode.toCaptureDeviceFlashMode(), file: file, line: line)
     }
     
-    private func makeCapturePhoto() -> AVCapturePhotoStub {
+    private func makeCapturePhoto(fileData: Data? = nil) -> AVCapturePhotoStub {
         AVCapturePhoto.swizzled()
         let photo = AVCapturePhotoStub(mock: "")
+        photo.fileData = fileData
         AVCapturePhoto.revertSwizzled()
         return photo
     }
@@ -233,7 +245,13 @@ extension AVCapturePhoto {
 }
 
 final class AVCapturePhotoStub: AVCapturePhoto {
+    var fileData: Data?
+    
     @objc convenience init(mock: String) {
         fatalError("should not come to here, swizzled by NSObject.init")
+    }
+    
+    override func fileDataRepresentation() -> Data? {
+        fileData
     }
 }
