@@ -42,7 +42,6 @@ final class AVCamera: NSObject, Camera, PhotoCaptureDevice, VideoRecordDevice, A
     }()
     
     private(set) var captureDevice: AVCaptureDevice?
-    private(set) var movieFileOutput: AVCaptureMovieFileOutput?
     
     let session: AVCaptureSession
     private let makeCaptureDeviceInput: (AVCaptureDevice) throws -> AVCaptureInput
@@ -207,21 +206,6 @@ extension AVCamera {
         } catch {
             throw CameraSetupError.createAudioDeviceInputFailure(err: error)
         }
-    }
-    
-    private func addVideoOutput() throws {
-        let output = AVCaptureMovieFileOutput()
-        guard session.canAddOutput(output) else {
-            throw CameraSetupError.addMovieFileOutputFailure
-        }
-        
-        session.addOutput(output)
-
-        if let connection = output.connection(with: .video), connection.isVideoStabilizationSupported {
-            connection.preferredVideoStabilizationMode = .auto
-        }
-        
-        movieFileOutput = output
     }
     
     private func subscribeCaptureSessionNotifications() {

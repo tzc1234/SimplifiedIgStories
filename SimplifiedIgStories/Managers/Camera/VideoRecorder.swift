@@ -77,13 +77,20 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
     }
     
     private func addMovieFileOutputIfNeeded() {
+        session.beginConfiguration()
+        
         let output = makeCaptureMovieFileOutput()
         guard session.canAddOutput(output) else {
             return
         }
         
         session.addOutput(output)
-
+        setAutoVideoStabilizationMode(on: output)
+        
+        session.commitConfiguration()
+    }
+    
+    private func setAutoVideoStabilizationMode(on output: AVCaptureMovieFileOutput) {
         if let connection = output.connection(with: .video), connection.isVideoStabilizationSupported {
             connection.preferredVideoStabilizationMode = .auto
         }

@@ -18,13 +18,19 @@ final class AVVideoRecorderTests: XCTestCase {
     }
     
     func test_startRecording_addsMovieFileOutputIfNoMovieFileOutputWhenSessionIsNotRunning() {
-        let movieFileOutputSpy = CaptureMovieFileOutputSpy()
-        let (sut, device) = makeSUT(isSessionRunning: false, captureMovieFileOutput: { movieFileOutputSpy })
+        let (sut, device) = makeSUT(isSessionRunning: false)
         
         sut.startRecording()
         
-        XCTAssertEqual(device.loggedMovieFileOutputs.count, 1)
-        XCTAssertEqual(movieFileOutputSpy.preferredVideoStabilizationMode, .auto)
+        assertMovieFileOutput(on: device)
+    }
+    
+    func test_startRecording_addsMovieFileOutputIfNoMovieFileOutputWhenSessionIsRunning() {
+        let (sut, device) = makeSUT(isSessionRunning: true)
+        
+        sut.startRecording()
+        
+        assertMovieFileOutput(on: device)
     }
     
     // MARK: - Helpers
@@ -32,8 +38,8 @@ final class AVVideoRecorderTests: XCTestCase {
     private typealias VideoRecorderStatusSpy = StatusSpy<VideoRecorderStatus>
     
     private func makeSUT(isSessionRunning: Bool = false,
-                         captureMovieFileOutput: @escaping () -> AVCaptureMovieFileOutput = AVCaptureMovieFileOutput.init,
-                         perform: @escaping (@escaping () -> Void) -> Void = { $0() }, 
+                         captureMovieFileOutput: @escaping () -> AVCaptureMovieFileOutput = CaptureMovieFileOutputSpy.init,
+                         perform: @escaping (@escaping () -> Void) -> Void = { $0() },
                          file: StaticString = #filePath,
                          line: UInt = #line) -> (sut: AVVideoRecorder, device: VideoRecordDeviceSpy) {
         let device = VideoRecordDeviceSpy(
@@ -46,11 +52,22 @@ final class AVVideoRecorderTests: XCTestCase {
         return (sut, device)
     }
     
+    private func assertMovieFileOutput(on device: VideoRecordDeviceSpy, 
+                                       file: StaticString = #filePath,
+                                       line: UInt = #line) {
+        XCTAssertEqual(device.loggedMovieFileOutputs.count, 1, file: file, line: line)
+        XCTAssertEqual(device.movieFileOutput?.preferredVideoStabilizationMode, .auto, file: file, line: line)
+    }
+    
     private final class VideoRecordDeviceSpy: VideoRecordDevice {
         private(set) var cameraPosition = CameraPosition.back
+        
         let session: AVCaptureSession
         var loggedMovieFileOutputs: [AVCaptureMovieFileOutput] {
             (session as! CaptureSessionSpy).loggedMovieFileOutputs
+        }
+        var movieFileOutput: CaptureMovieFileOutputSpy? {
+            loggedMovieFileOutputs.last as? CaptureMovieFileOutputSpy
         }
         
         let performOnSessionQueue: (@escaping () -> Void) -> Void
