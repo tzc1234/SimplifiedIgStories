@@ -12,7 +12,7 @@ import AVKit
 final class AVPhotoTakerTests: XCTestCase {
     func test_init_doesNotDeliverStatusUponInit() {
         let (sut, _) = makeSUT()
-        let statusSpy = StatusSpy<PhotoTakerStatus>(publisher: sut.getStatusPublisher())
+        let statusSpy = PhotoTakerStatusSpy(publisher: sut.getStatusPublisher())
         
         XCTAssertTrue(statusSpy.loggedStatuses.isEmpty)
     }
@@ -46,7 +46,7 @@ final class AVPhotoTakerTests: XCTestCase {
     
     func test_takePhoto_deliversAddPhotoOutputFailureStatusWhenCannotAddPhotoOutput() {
         let (sut, device) = makeSUT(isSessionRunning: true, canAddOutput: false)
-        let statusSpy = StatusSpy<PhotoTakerStatus>(publisher: sut.getStatusPublisher())
+        let statusSpy = PhotoTakerStatusSpy(publisher: sut.getStatusPublisher())
         
         sut.takePhoto(on: .off)
         
@@ -100,7 +100,7 @@ final class AVPhotoTakerTests: XCTestCase {
     
     func test_photoOutput_deliversImageConvertingFailureStatusWhenErrorOccurred() {
         let (sut, _) = makeSUT()
-        let statusSpy = StatusSpy<PhotoTakerStatus>(publisher: sut.getStatusPublisher())
+        let statusSpy = PhotoTakerStatusSpy(publisher: sut.getStatusPublisher())
         let anyPhotoOutput = CapturePhotoOutputSpy()
         let anyPhoto = makeCapturePhoto()
         
@@ -111,7 +111,7 @@ final class AVPhotoTakerTests: XCTestCase {
     
     func test_photoOutput_deliversImageConvertingFailureStatusWhenNoPhotoData() {
         let (sut, _) = makeSUT()
-        let statusSpy = StatusSpy<PhotoTakerStatus>(publisher: sut.getStatusPublisher())
+        let statusSpy = PhotoTakerStatusSpy(publisher: sut.getStatusPublisher())
         let anyPhotoOutput = CapturePhotoOutputSpy()
         let noFileDataPhoto = makeCapturePhoto(fileData: nil)
         
@@ -122,7 +122,7 @@ final class AVPhotoTakerTests: XCTestCase {
     
     func test_photoOutput_deliversPhotoSuccessfullyWhenHavingFileData() {
         let (sut, _) = makeSUT()
-        let statusSpy = StatusSpy<PhotoTakerStatus>(publisher: sut.getStatusPublisher())
+        let statusSpy = PhotoTakerStatusSpy(publisher: sut.getStatusPublisher())
         let anyPhotoOutput = CapturePhotoOutputSpy()
         let photo = makeCapturePhoto(fileData: UIImage.makeData(withColor: .red))
         
@@ -137,6 +137,8 @@ final class AVPhotoTakerTests: XCTestCase {
     }
     
     // MARK: - Helpers
+    
+    private typealias PhotoTakerStatusSpy = StatusSpy<PhotoTakerStatus>
     
     private func makeSUT(isSessionRunning: Bool = false,
                          canAddOutput: Bool = true,
