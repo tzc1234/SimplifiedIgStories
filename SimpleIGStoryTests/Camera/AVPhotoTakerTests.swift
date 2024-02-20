@@ -64,7 +64,7 @@ final class AVPhotoTakerTests: XCTestCase {
         XCTAssertEqual(statusSpy.loggedStatuses, [.addPhotoOutputFailure])
     }
     
-    func test_takePhoto_triggersCapturePhotoSuccessfullyWhenSessionIsRunning() throws {
+    func test_takePhoto_triggersCapturePhotoSuccessfullyWhenSessionIsRunning() {
         let photoOutputSpy = CapturePhotoOutputSpy()
         let flashMode: CameraFlashMode = .off
         let (sut, _) = makeSUT(isSessionRunning: true, capturePhotoOutput: { photoOutputSpy })
@@ -74,7 +74,19 @@ final class AVPhotoTakerTests: XCTestCase {
         assertCapturePhotoParams(in: photoOutputSpy, with: sut, andExpected: flashMode)
     }
     
-    func test_takePhoto_doesNotTriggerCapturePhotoWhenSessionIsNotRunning() throws {
+    func test_takePhoto_triggersCapturePhotoSuccessfullyWhenSessionIsRunningWithExistingPhotoOutput() {
+        CaptureSessionSpy.swizzled()
+        let photoOutputSpy = CapturePhotoOutputSpy()
+        let flashMode: CameraFlashMode = .off
+        let (sut, _) = makeSUT(isSessionRunning: true, existingPhotoOutput: photoOutputSpy)
+        
+        sut.takePhoto(on: flashMode)
+        
+        assertCapturePhotoParams(in: photoOutputSpy, with: sut, andExpected: flashMode)
+        CaptureSessionSpy.revertSwizzled()
+    }
+    
+    func test_takePhoto_doesNotTriggerCapturePhotoWhenSessionIsNotRunning() {
         let photoOutputSpy = CapturePhotoOutputSpy()
         let (sut, _) = makeSUT(isSessionRunning: false, capturePhotoOutput: { photoOutputSpy })
         

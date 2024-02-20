@@ -56,20 +56,23 @@ final class AVPhotoTaker: NSObject, PhotoTaker {
     }
     
     private func addPhotoOutputIfNeeded() {
-        if session.outputs.first(where: { $0 is AVCapturePhotoOutput }) == nil {
-            session.beginConfiguration()
-            
-            let output = makeCapturePhotoOutput()
-            guard session.canAddOutput(output) else {
-                statusPublisher.send(.addPhotoOutputFailure)
-                return
-            }
-            
-            session.addOutput(output)
-            self.output = output
-            
-            session.commitConfiguration()
+        if let output = session.outputs.first(where: { $0 is AVCapturePhotoOutput }) {
+            self.output = output as? AVCapturePhotoOutput
+            return
         }
+        
+        session.beginConfiguration()
+        
+        let output = makeCapturePhotoOutput()
+        guard session.canAddOutput(output) else {
+            statusPublisher.send(.addPhotoOutputFailure)
+            return
+        }
+        
+        session.addOutput(output)
+        self.output = output
+        session.commitConfiguration()
+    }
     
     private func capturePhoto(on flashMode: CameraFlashMode) {
         guard session.isRunning else { return }
