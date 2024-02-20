@@ -8,11 +8,13 @@ A simple version of IG story, this demo app is my **SwiftUI** study record.
 1. SwiftUI
 2. Combine
 3. AVFoundation
-4. Dependency Injection
-5. XCTest
-6. Async/await
+4. XCTest
+5. Async/await
 
 ## Update History
+#### 20/02/2024
+1. WIP: add unit tests
+
 #### 25/07/2022:
 1. Refactored some animation logic.
 2. More tests.
