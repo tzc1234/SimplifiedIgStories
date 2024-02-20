@@ -17,6 +17,14 @@ final class AVPhotoTakerTests: XCTestCase {
         XCTAssertTrue(statusSpy.loggedStatuses.isEmpty)
     }
     
+    func test_takePhoto_addsPhotoOutputToSessionIfNoPhotoOutputWhenSessionIsNotRunning() {
+        let (sut, device) = makeSUT(isSessionRunning: false)
+        
+        sut.takePhoto(on: .off)
+        
+        XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
+    }
+    
     func test_takePhoto_addsPhotoOutputToSessionIfNoPhotoOutputWhenSessionIsRunning() {
         let (sut, device) = makeSUT(isSessionRunning: true)
         
