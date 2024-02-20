@@ -65,6 +65,7 @@ final class AVPhotoTakerTests: XCTestCase {
     }
     
     func test_takePhoto_triggersCapturePhotoSuccessfullyWhenSessionIsRunning() {
+        CaptureSessionSpy.swizzled()
         let photoOutputSpy = CapturePhotoOutputSpy()
         let flashMode: CameraFlashMode = .off
         let (sut, _) = makeSUT(isSessionRunning: true, capturePhotoOutput: { photoOutputSpy })
@@ -72,6 +73,7 @@ final class AVPhotoTakerTests: XCTestCase {
         sut.takePhoto(on: flashMode)
         
         assertCapturePhotoParams(in: photoOutputSpy, with: sut, andExpected: flashMode)
+        CaptureSessionSpy.revertSwizzled()
     }
     
     func test_takePhoto_triggersCapturePhotoSuccessfullyWhenSessionIsRunningWithExistingPhotoOutput() {
@@ -96,6 +98,7 @@ final class AVPhotoTakerTests: XCTestCase {
     }
     
     func test_takePhoto_performsInSessionQueue() {
+        CaptureSessionSpy.swizzled()
         let photoOutputSpy = CapturePhotoOutputSpy()
         var actions = [() -> Void]()
         let (sut, device) = makeSUT(
@@ -118,6 +121,7 @@ final class AVPhotoTakerTests: XCTestCase {
         
         XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
         XCTAssertEqual(photoOutputSpy.capturePhotoCallCount, 1)
+        CaptureSessionSpy.revertSwizzled()
     }
     
     func test_photoOutput_deliversImageConvertingFailureStatusWhenErrorOccurred() {

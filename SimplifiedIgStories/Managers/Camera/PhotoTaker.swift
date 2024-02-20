@@ -27,7 +27,9 @@ protocol PhotoCaptureDevice {
 
 final class AVPhotoTaker: NSObject, PhotoTaker {
     private let statusPublisher = PassthroughSubject<PhotoTakerStatus, Never>()
-    private var output: AVCapturePhotoOutput?
+    private var output: AVCapturePhotoOutput? {
+        session.outputs.first(where: { $0 is AVCapturePhotoOutput }) as? AVCapturePhotoOutput
+    }
     private var session: AVCaptureSession {
         device.session
     }
@@ -47,17 +49,13 @@ final class AVPhotoTaker: NSObject, PhotoTaker {
     
     func takePhoto(on flashMode: CameraFlashMode) {
         device.performOnSessionQueue { [weak self] in
-            guard let self else { return }
-            
-            addPhotoOutputIfNeeded()
-            
-            capturePhoto(on: flashMode)
+            self?.addPhotoOutputIfNeeded()
+            self?.capturePhoto(on: flashMode)
         }
     }
     
     private func addPhotoOutputIfNeeded() {
-        if let output = session.outputs.first(where: { $0 is AVCapturePhotoOutput }) {
-            self.output = output as? AVCapturePhotoOutput
+        guard output == nil else {
             return
         }
         
@@ -70,7 +68,6 @@ final class AVPhotoTaker: NSObject, PhotoTaker {
         }
         
         session.addOutput(output)
-        self.output = output
         session.commitConfiguration()
     }
     
