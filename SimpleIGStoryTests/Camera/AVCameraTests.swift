@@ -1,5 +1,5 @@
 //
-//  AVCaptureCameraTests.swift
+//  AVCameraTests.swift
 //  SimpleIGStoryTests
 //
 //  Created by Tsz-Lung on 14/02/2024.
@@ -9,7 +9,7 @@ import XCTest
 import AVFoundation
 @testable import Simple_IG_Story
 
-final class AVCaptureCameraTests: XCTestCase {
+final class AVCameraTests: XCTestCase {
     func test_init_doesNotDeliverAnyStatusUponInit() {
         let (sut, _) = makeSUT()
         let spy = CameraStatusSpy(publisher: sut.getStatusPublisher())
