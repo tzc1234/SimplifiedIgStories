@@ -86,38 +86,25 @@ final class CaptureSessionSpy: AVCaptureSession {
 }
 
 extension CaptureSessionSpy {
-    struct MethodPair {
-        typealias Pair = (class: AnyClass, method: Selector)
-        
-        let from: Pair
-        let to: Pair
+    static func swizzled() {
+        methodSwizzlingStub.swizzled()
+    }
+    
+    static func revertSwizzled() {
+        methodSwizzlingStub.revertSwizzled()
+    }
+    
+    private static var methodSwizzlingStub: MethodSwizzlingStub {
+        MethodSwizzlingStub(instanceMethodPairs: instanceMethodPairs, classMethodPairs: [])
     }
     
     // Cannot override the outputs directly, error occurred, so use method swizzling.
-    private static var instanceMethodPairs: [MethodPair] {
+    private static var instanceMethodPairs: [MethodSwizzlingStub.MethodPair] {
         [
-            MethodPair(
+            .init(
                 from: (class: CaptureSessionSpy.self, method: #selector(getter: CaptureSessionSpy.outputs)),
                 to: (class: CaptureSessionSpy.self, method: #selector(getter: CaptureSessionSpy.loggedOutputs))
             )
         ]
-    }
-    
-    static func swizzled() {
-        instanceMethodPairs.forEach { pair in
-            method_exchangeImplementations(
-                class_getInstanceMethod(pair.from.class, pair.from.method)!,
-                class_getInstanceMethod(pair.to.class, pair.to.method)!
-            )
-        }
-    }
-    
-    static func revertSwizzled() {
-        instanceMethodPairs.forEach { pair in
-            method_exchangeImplementations(
-                class_getInstanceMethod(pair.to.class, pair.to.method)!,
-                class_getInstanceMethod(pair.from.class, pair.from.method)!
-            )
-        }
     }
 }

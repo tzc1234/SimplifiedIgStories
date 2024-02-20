@@ -232,13 +232,6 @@ func makeDummyCaptureInput() -> AVCaptureInput {
 }
 
 extension AVCaptureDevice {
-    struct MethodPair {
-        typealias Pair = (class: AnyClass, method: Selector)
-        
-        let from: Pair
-        let to: Pair
-    }
-    
     @objc convenience init(type: AVMediaType) {
         fatalError("should not come to here, swizzled by NSObject.init")
     }
@@ -257,58 +250,38 @@ extension AVCaptureDevice {
         (self as? CaptureDeviceSpy)?.mediaType
     }
     
-    static var instanceMethodPairs: [MethodPair] {
+    static func swizzled() {
+        methodSwizzlingStub.swizzled()
+    }
+    
+    static func revertSwizzled() {
+        methodSwizzlingStub.revertSwizzled()
+    }
+    
+    private static var instanceMethodPairs: [MethodSwizzlingStub.MethodPair] {
         [
-            MethodPair(
+            .init(
                 from: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.init(type:))),
                 to: (class: AVCaptureDevice.self, method: #selector(NSObject.init))
             )
         ]
     }
     
-    static var classMethodPairs: [MethodPair] {
+    private static var classMethodPairs: [MethodSwizzlingStub.MethodPair] {
         [
-            MethodPair(
+            .init(
                 from: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.default(_:for:position:))),
                 to: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.makeVideoDevice(deviceType:mediaType:position:)))
             ),
-            MethodPair(
+            .init(
                 from: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.default(for:))),
                 to: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.makeAudioDevice))
             )
         ]
     }
     
-    static func swizzled() {
-        instanceMethodPairs.forEach { pair in
-            method_exchangeImplementations(
-                class_getInstanceMethod(pair.from.class, pair.from.method)!,
-                class_getInstanceMethod(pair.to.class, pair.to.method)!
-            )
-        }
-        
-        classMethodPairs.forEach { pair in
-            method_exchangeImplementations(
-                class_getClassMethod(pair.from.class, pair.from.method)!,
-                class_getClassMethod(pair.to.class, pair.to.method)!
-            )
-        }
-    }
-    
-    static func revertSwizzled() {
-        instanceMethodPairs.forEach { pair in
-            method_exchangeImplementations(
-                class_getInstanceMethod(pair.to.class, pair.to.method)!,
-                class_getInstanceMethod(pair.from.class, pair.from.method)!
-            )
-        }
-        
-        classMethodPairs.forEach { pair in
-            method_exchangeImplementations(
-                class_getClassMethod(pair.to.class, pair.to.method)!,
-                class_getClassMethod(pair.from.class, pair.from.method)!
-            )
-        }
+    private static var methodSwizzlingStub: MethodSwizzlingStub {
+        MethodSwizzlingStub(instanceMethodPairs: instanceMethodPairs, classMethodPairs: classMethodPairs)
     }
 }
 
