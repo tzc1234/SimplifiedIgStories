@@ -196,9 +196,9 @@ final class AVPhotoTakerTests: XCTestCase {
         XCTAssertEqual(setting?.flashMode, flashMode.toCaptureDeviceFlashMode(), file: file, line: line)
     }
     
-    private func makeCapturePhoto(fileData: Data? = nil) -> AVCapturePhotoStub {
-        let klass = AVCapturePhotoStub.self as NSObject.Type
-        let photo = klass.init() as! AVCapturePhotoStub
+    private func makeCapturePhoto(fileData: Data? = nil) -> CapturePhotoStub {
+        let klass = CapturePhotoStub.self as NSObject.Type
+        let photo = klass.init() as! CapturePhotoStub
         photo.fileData = fileData
         return photo
     }
@@ -207,9 +207,6 @@ final class AVPhotoTakerTests: XCTestCase {
         let session: AVCaptureSession
         var loggedPhotoOutputs: [AVCapturePhotoOutput] {
             (session as! CaptureSessionSpy).loggedPhotoOutputs
-        }
-        var shouldAddPhotoOutput: Bool {
-            loggedPhotoOutputs.isEmpty
         }
         
         private(set) var cameraPosition: CameraPosition = .back
@@ -226,45 +223,5 @@ final class AVPhotoTakerTests: XCTestCase {
             self.session = session
             self.performOnSessionQueue = performOnSessionQueue
         }
-    }
-}
-
-final class CapturePhotoOutputSpy: AVCapturePhotoOutput {
-    struct CapturePhotoParam {
-        let settings: AVCapturePhotoSettings
-        weak var delegate: AVCapturePhotoCaptureDelegate?
-    }
-    
-    private var loggedCapturePhotoParams = [CapturePhotoParam]()
-    var capturePhotoCallCount: Int {
-        loggedCapturePhotoParams.count
-    }
-    var loggedSettings: [AVCapturePhotoSettings] {
-        loggedCapturePhotoParams.map(\.settings)
-    }
-    var loggedDelegates: [AVCapturePhotoCaptureDelegate] {
-        loggedCapturePhotoParams.compactMap(\.delegate)
-    }
-    
-    override func capturePhoto(with settings: AVCapturePhotoSettings, delegate: AVCapturePhotoCaptureDelegate) {
-        loggedCapturePhotoParams.append(CapturePhotoParam(settings: settings, delegate: delegate))
-    }
-}
-
-extension CameraFlashMode {
-    func toCaptureDeviceFlashMode() -> AVCaptureDevice.FlashMode {
-        switch self {
-        case .on: return .on
-        case .off: return .off
-        case .auto: return .auto
-        }
-    }
-}
-
-final class AVCapturePhotoStub: AVCapturePhoto {
-    var fileData: Data?
-    
-    override func fileDataRepresentation() -> Data? {
-        fileData
     }
 }
