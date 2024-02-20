@@ -55,3 +55,28 @@ final class MethodSwizzlingStub {
         }
     }
 }
+
+protocol MethodSwizzling {
+    typealias MethodPair = MethodSwizzlingStub.MethodPair
+    
+    static var instanceMethodPairs: [MethodPair] { get }
+    static var classMethodPairs: [MethodPair] { get }
+    static func swizzled()
+    static func revertSwizzled()
+}
+
+extension MethodSwizzling {
+    static func swizzled() {
+        methodSwizzlingStub.swizzled()
+    }
+    
+    static func revertSwizzled() {
+        methodSwizzlingStub.revertSwizzled()
+    }
+    
+    static var classMethodPairs: [MethodPair] { [] }
+    
+    private static var methodSwizzlingStub: MethodSwizzlingStub {
+        MethodSwizzlingStub(instanceMethodPairs: instanceMethodPairs, classMethodPairs: classMethodPairs)
+    }
+}

@@ -85,21 +85,9 @@ final class CaptureSessionSpy: AVCaptureSession {
     }
 }
 
-extension CaptureSessionSpy {
-    static func swizzled() {
-        methodSwizzlingStub.swizzled()
-    }
-    
-    static func revertSwizzled() {
-        methodSwizzlingStub.revertSwizzled()
-    }
-    
-    private static var methodSwizzlingStub: MethodSwizzlingStub {
-        MethodSwizzlingStub(instanceMethodPairs: instanceMethodPairs, classMethodPairs: [])
-    }
-    
+extension CaptureSessionSpy: MethodSwizzling {
     // Cannot override the outputs directly, error occurred, so use method swizzling.
-    private static var instanceMethodPairs: [MethodSwizzlingStub.MethodPair] {
+    static var instanceMethodPairs: [MethodPair] {
         [
             .init(
                 from: (class: CaptureSessionSpy.self, method: #selector(getter: CaptureSessionSpy.outputs)),

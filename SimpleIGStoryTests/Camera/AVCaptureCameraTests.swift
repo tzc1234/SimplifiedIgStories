@@ -231,7 +231,7 @@ func makeDummyCaptureInput() -> AVCaptureInput {
     return klass.init() as! AVCaptureInput
 }
 
-extension AVCaptureDevice {
+extension AVCaptureDevice: MethodSwizzling {
     @objc convenience init(type: AVMediaType) {
         fatalError("should not come to here, swizzled by NSObject.init")
     }
@@ -250,15 +250,7 @@ extension AVCaptureDevice {
         (self as? CaptureDeviceSpy)?.mediaType
     }
     
-    static func swizzled() {
-        methodSwizzlingStub.swizzled()
-    }
-    
-    static func revertSwizzled() {
-        methodSwizzlingStub.revertSwizzled()
-    }
-    
-    private static var instanceMethodPairs: [MethodSwizzlingStub.MethodPair] {
+    static var instanceMethodPairs: [MethodPair] {
         [
             .init(
                 from: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.init(type:))),
@@ -267,7 +259,7 @@ extension AVCaptureDevice {
         ]
     }
     
-    private static var classMethodPairs: [MethodSwizzlingStub.MethodPair] {
+    static var classMethodPairs: [MethodPair] {
         [
             .init(
                 from: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.default(_:for:position:))),
@@ -278,10 +270,6 @@ extension AVCaptureDevice {
                 to: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.makeAudioDevice))
             )
         ]
-    }
-    
-    private static var methodSwizzlingStub: MethodSwizzlingStub {
-        MethodSwizzlingStub(instanceMethodPairs: instanceMethodPairs, classMethodPairs: classMethodPairs)
     }
 }
 
