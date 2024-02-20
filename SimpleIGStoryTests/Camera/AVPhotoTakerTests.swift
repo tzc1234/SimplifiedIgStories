@@ -25,9 +25,9 @@ final class AVPhotoTakerTests: XCTestCase {
         XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
     }
     
-    func test_takePhoto_doesNotAddPhotoOutputAgainWhenPhotoOutputIsAlreadyAddedAndSessionIsRunning() {
+    func test_takePhoto_doesNotAddPhotoOutputAgainWhenPhotoOutputIsAlreadyAdded() {
         CaptureSessionSpy.swizzled()
-        let (sut, device) = makeSUT(isSessionRunning: true)
+        let (sut, device) = makeSUT()
         
         sut.takePhoto(on: .off)
         sut.takePhoto(on: .off)

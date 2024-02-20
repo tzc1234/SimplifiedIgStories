@@ -16,7 +16,7 @@ enum PhotoTakerStatus: Equatable {
 
 protocol PhotoTaker {
     func getStatusPublisher() -> AnyPublisher<PhotoTakerStatus, Never>
-    func takePhoto(on mode: CameraFlashMode)
+    func takePhoto(on flashMode: CameraFlashMode)
 }
 
 protocol PhotoCaptureDevice {
@@ -45,15 +45,13 @@ final class AVPhotoTaker: NSObject, PhotoTaker {
         statusPublisher.eraseToAnyPublisher()
     }
     
-    func takePhoto(on mode: CameraFlashMode) {
+    func takePhoto(on flashMode: CameraFlashMode) {
         device.performOnSessionQueue { [weak self] in
-            guard let self, session.isRunning else { return }
+            guard let self else { return }
             
             addPhotoOutputIfNeeded()
             
-            let settings = AVCapturePhotoSettings()
-            settings.flashMode = convertToCaptureDeviceFlashMode(from: mode)
-            output?.capturePhoto(with: settings, delegate: self)
+            capturePhoto(on: flashMode)
         }
     }
     
@@ -72,6 +70,13 @@ final class AVPhotoTaker: NSObject, PhotoTaker {
             
             session.commitConfiguration()
         }
+    
+    private func capturePhoto(on flashMode: CameraFlashMode) {
+        guard session.isRunning else { return }
+        
+        let settings = AVCapturePhotoSettings()
+        settings.flashMode = convertToCaptureDeviceFlashMode(from: flashMode)
+        output?.capturePhoto(with: settings, delegate: self)
     }
     
     private func convertToCaptureDeviceFlashMode(from flashMode: CameraFlashMode) -> AVCaptureDevice.FlashMode {
