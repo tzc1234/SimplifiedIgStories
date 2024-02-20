@@ -16,7 +16,7 @@ final class CaptureSessionSpy: AVCaptureSession {
     
     private(set) var loggedConfigurationStatus = [ConfigurationStatus]()
     private(set) var loggedInputs = [AVCaptureInput]()
-    @objc private(set) var loggedOutputs = [AVCaptureOutput]()
+    @objc var loggedOutputs = [AVCaptureOutput]()
     
     var loggedPhotoOutputs: [AVCapturePhotoOutput] {
         loggedOutputs.compactMap { $0 as? AVCapturePhotoOutput }

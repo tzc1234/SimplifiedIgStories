@@ -44,6 +44,16 @@ final class AVPhotoTakerTests: XCTestCase {
         CaptureSessionSpy.revertSwizzled()
     }
     
+    func test_takePhoto_doesNotAddPhotoOutputAgainWhenPhotoOutputIsAlreadyExisted() {
+        CaptureSessionSpy.swizzled()
+        let (sut, device) = makeSUT(existingPhotoOutput: AVCapturePhotoOutput())
+        
+        sut.takePhoto(on: .off)
+        
+        XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
+        CaptureSessionSpy.revertSwizzled()
+    }
+    
     func test_takePhoto_deliversAddPhotoOutputFailureStatusWhenCannotAddPhotoOutput() {
         let (sut, device) = makeSUT(isSessionRunning: true, canAddOutput: false)
         let statusSpy = PhotoTakerStatusSpy(publisher: sut.getStatusPublisher())
@@ -142,6 +152,7 @@ final class AVPhotoTakerTests: XCTestCase {
     
     private func makeSUT(isSessionRunning: Bool = false,
                          canAddOutput: Bool = true,
+                         existingPhotoOutput: AVCapturePhotoOutput? = nil,
                          capturePhotoOutput: @escaping () -> AVCapturePhotoOutput = CapturePhotoOutputSpy.init,
                          perform: @escaping (@escaping () -> Void) -> Void = { $0() },
                          file: StaticString = #filePath,
@@ -149,6 +160,7 @@ final class AVPhotoTakerTests: XCTestCase {
         let device = PhotoCaptureDeviceSpy(
             isSessionRunning: isSessionRunning,
             canAddOutput: canAddOutput,
+            existingPhotoOutput: existingPhotoOutput,
             performOnSessionQueue: perform
         )
         let sut = AVPhotoTaker(device: device, makeCapturePhotoOutput: capturePhotoOutput)
@@ -190,8 +202,12 @@ final class AVPhotoTakerTests: XCTestCase {
         
         init(isSessionRunning: Bool,
              canAddOutput: Bool,
+             existingPhotoOutput: AVCapturePhotoOutput? = nil,
              performOnSessionQueue: @escaping (@escaping () -> Void) -> Void) {
-            self.session = CaptureSessionSpy(isRunning: isSessionRunning, canAddOutput: canAddOutput)
+            let session = CaptureSessionSpy(isRunning: isSessionRunning, canAddOutput: canAddOutput)
+            existingPhotoOutput.map { session.loggedOutputs.append($0) }
+            
+            self.session = session
             self.performOnSessionQueue = performOnSessionQueue
         }
     }
