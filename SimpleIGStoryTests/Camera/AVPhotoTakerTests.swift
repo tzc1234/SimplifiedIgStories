@@ -75,6 +75,17 @@ final class AVPhotoTakerTests: XCTestCase {
         CaptureSessionSpy.revertSwizzled()
     }
     
+    func test_takePhoto_triggersCapturePhotoWithAutoFlashModeWhenSessionIsRunning() {
+        CaptureSessionSpy.swizzled()
+        let autoFlashMode: CameraFlashMode = .auto
+        let (sut, device) = makeSUT(isSessionRunning: true)
+        
+        sut.takePhoto(on: autoFlashMode)
+        
+        assertCapturePhotoParams(in: device.photoOutput, with: sut, andExpected: autoFlashMode)
+        CaptureSessionSpy.revertSwizzled()
+    }
+    
     func test_takePhoto_triggersCapturePhotoSuccessfullyWhenSessionIsRunningWithExistingPhotoOutput() {
         CaptureSessionSpy.swizzled()
         let photoOutput = CapturePhotoOutputSpy()
