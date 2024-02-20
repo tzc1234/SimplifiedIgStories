@@ -23,18 +23,24 @@ protocol VideoRecorder {
 
 protocol VideoRecordDevice {
     var cameraPosition: CameraPosition { get }
-    var movieFileOutput: AVCaptureMovieFileOutput? { get }
+    var session: AVCaptureSession { get }
     var performOnSessionQueue: (@escaping () -> Void) -> Void { get }
 }
 
 final class AVVideoRecorder: NSObject, VideoRecorder {
     private let statusPublisher = PassthroughSubject<VideoRecorderStatus, Never>()
     private var backgroundRecordingID = UIBackgroundTaskIdentifier.invalid
+    private var session: AVCaptureSession {
+        device.session
+    }
     
     private let device: VideoRecordDevice
+    private let makeCaptureMovieFileOutput: () -> AVCaptureMovieFileOutput
     
-    init(device: VideoRecordDevice) {
+    init(device: VideoRecordDevice,
+         makeCaptureMovieFileOutput: @escaping () -> AVCaptureMovieFileOutput = AVCaptureMovieFileOutput.init) {
         self.device = device
+        self.makeCaptureMovieFileOutput = makeCaptureMovieFileOutput
     }
     
     func getStatusPublisher() -> AnyPublisher<VideoRecorderStatus, Never> {
@@ -43,26 +49,43 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
     
     func startRecording() {
         device.performOnSessionQueue { [weak self] in
-            guard let self, let output = device.movieFileOutput, !output.isRecording else {
-                return
-            }
+            guard let self else { return }
             
-            backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
+            addMovieFileOutputIfNeeded()
             
-            guard let outputConnection = output.connection(with: .video) else {
-                return
-            }
-            
-            outputConnection.videoOrientation = .portrait
-            outputConnection.isVideoMirrored = device.cameraPosition == .front
-            
-            if output.availableVideoCodecTypes.contains(.hevc) {
-                output.setOutputSettings([AVVideoCodecKey: AVVideoCodecType.hevc], for: outputConnection)
-            }
-            
-            output.startRecording(to: getOutputPath(), recordingDelegate: self)
-            
-            statusPublisher.send(.recordingBegun)
+//            guard let self, let output = device.movieFileOutput, !output.isRecording else {
+//                return
+//            }
+//            
+//            backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
+//            
+//            guard let outputConnection = output.connection(with: .video) else {
+//                return
+//            }
+//            
+//            outputConnection.videoOrientation = .portrait
+//            outputConnection.isVideoMirrored = device.cameraPosition == .front
+//            
+//            if output.availableVideoCodecTypes.contains(.hevc) {
+//                output.setOutputSettings([AVVideoCodecKey: AVVideoCodecType.hevc], for: outputConnection)
+//            }
+//            
+//            output.startRecording(to: getOutputPath(), recordingDelegate: self)
+//            
+//            statusPublisher.send(.recordingBegun)
+        }
+    }
+    
+    private func addMovieFileOutputIfNeeded() {
+        let output = makeCaptureMovieFileOutput()
+        guard session.canAddOutput(output) else {
+            return
+        }
+        
+        session.addOutput(output)
+
+        if let connection = output.connection(with: .video), connection.isVideoStabilizationSupported {
+            connection.preferredVideoStabilizationMode = .auto
         }
     }
     
@@ -74,14 +97,14 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
     }
     
     func stopRecording() {
-        device.performOnSessionQueue { [weak self] in
-            guard let self, let output = device.movieFileOutput, output.isRecording else {
-                return
-            }
-            
-            output.stopRecording()
-            statusPublisher.send(.recordingFinished)
-        }
+//        device.performOnSessionQueue { [weak self] in
+//            guard let self, let output = device.movieFileOutput, output.isRecording else {
+//                return
+//            }
+//            
+//            output.stopRecording()
+//            statusPublisher.send(.recordingFinished)
+//        }
     }
 }
 

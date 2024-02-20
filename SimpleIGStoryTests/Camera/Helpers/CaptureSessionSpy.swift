@@ -21,6 +21,9 @@ final class CaptureSessionSpy: AVCaptureSession {
     var loggedPhotoOutputs: [AVCapturePhotoOutput] {
         loggedOutputs.compactMap { $0 as? AVCapturePhotoOutput }
     }
+    var loggedMovieFileOutputs: [AVCaptureMovieFileOutput] {
+        loggedOutputs.compactMap { $0 as? AVCaptureMovieFileOutput }
+    }
     
     private var _isRunning = false
     private var canAddOutput: Bool
