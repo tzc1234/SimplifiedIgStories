@@ -24,10 +24,10 @@ protocol VideoRecorder {
 protocol VideoRecordDevice {
     var cameraPosition: CameraPosition { get }
     var movieFileOutput: AVCaptureMovieFileOutput? { get }
-    func performOnSessionQueue(action: @escaping () -> Void)
+    var performOnSessionQueue: (@escaping () -> Void) -> Void { get }
 }
 
-final class AVCaptureVideoRecorder: NSObject, VideoRecorder {
+final class AVVideoRecorder: NSObject, VideoRecorder {
     private let statusPublisher = PassthroughSubject<VideoRecorderStatus, Never>()
     private var backgroundRecordingID = UIBackgroundTaskIdentifier.invalid
     
@@ -85,7 +85,7 @@ final class AVCaptureVideoRecorder: NSObject, VideoRecorder {
     }
 }
 
-extension AVCaptureVideoRecorder: AVCaptureFileOutputRecordingDelegate {
+extension AVVideoRecorder: AVCaptureFileOutputRecordingDelegate {
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         invalidateBackgroundRecordingTask()
         

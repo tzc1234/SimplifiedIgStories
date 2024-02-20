@@ -40,6 +40,7 @@
 		BE83D1212B84D88B004A1FB4 /* CapturePhotoStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE83D1202B84D88B004A1FB4 /* CapturePhotoStub.swift */; };
 		BE83D1232B84D8F5004A1FB4 /* CapturePhotoOutputSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE83D1222B84D8F5004A1FB4 /* CapturePhotoOutputSpy.swift */; };
 		BE83D1252B84E3E6004A1FB4 /* CameraPosition+TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE83D1242B84E3E6004A1FB4 /* CameraPosition+TestHelpers.swift */; };
+		BE83D1272B850BB5004A1FB4 /* AVVideoRecorderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE83D1262B850BB5004A1FB4 /* AVVideoRecorderTests.swift */; };
 		BE84C2CA27C78E5400C42165 /* AnyTransition+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE84C2C927C78E5400C42165 /* AnyTransition+Additions.swift */; };
 		BE84F7962B7CE9C500FAD11B /* AVCameraTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE84F7952B7CE9C500FAD11B /* AVCameraTests.swift */; };
 		BE8A758127BC107000E9F745 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8A758027BC106F00E9F745 /* HomeView.swift */; };
@@ -142,6 +143,7 @@
 		BE83D1202B84D88B004A1FB4 /* CapturePhotoStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapturePhotoStub.swift; sourceTree = "<group>"; };
 		BE83D1222B84D8F5004A1FB4 /* CapturePhotoOutputSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapturePhotoOutputSpy.swift; sourceTree = "<group>"; };
 		BE83D1242B84E3E6004A1FB4 /* CameraPosition+TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CameraPosition+TestHelpers.swift"; sourceTree = "<group>"; };
+		BE83D1262B850BB5004A1FB4 /* AVVideoRecorderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVVideoRecorderTests.swift; sourceTree = "<group>"; };
 		BE84C2C927C78E5400C42165 /* AnyTransition+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnyTransition+Additions.swift"; sourceTree = "<group>"; };
 		BE84F7952B7CE9C500FAD11B /* AVCameraTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVCameraTests.swift; sourceTree = "<group>"; };
 		BE8A758027BC106F00E9F745 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -384,6 +386,7 @@
 				BE38F7AE2B83671300F42C71 /* Helpers */,
 				BE84F7952B7CE9C500FAD11B /* AVCameraTests.swift */,
 				BE38F7AC2B83649300F42C71 /* AVPhotoTakerTests.swift */,
+				BE83D1262B850BB5004A1FB4 /* AVVideoRecorderTests.swift */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -780,6 +783,7 @@
 				BEBF322F2B74D5DD00DCD624 /* LocalStoriesLoaderTests.swift in Sources */,
 				BEEEBBF82B75418800EC85C7 /* LocalStoriesLoaderIntegrationTests.swift in Sources */,
 				BEBF32322B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift in Sources */,
+				BE83D1272B850BB5004A1FB4 /* AVVideoRecorderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
