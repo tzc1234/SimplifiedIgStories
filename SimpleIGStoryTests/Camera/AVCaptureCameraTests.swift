@@ -308,16 +308,3 @@ final class CaptureDeviceSpy: AVCaptureDevice {
         true
     }
 }
-
-extension CameraPosition {
-    func toCaptureDevicePosition() -> AVCaptureDevice.Position {
-        switch self {
-        case .back: return .back
-        case .front: return .front
-        }
-    }
-    
-    func toggle() -> CameraPosition {
-        self == .back ? .front : .back
-    }
-}
