@@ -41,6 +41,8 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
     private let device: VideoRecordDevice
     private let captureMovieFileOutput: () -> AVCaptureMovieFileOutput
     private let outputPath: () -> URL
+    private let beginBackgroundTask: () -> UIBackgroundTaskIdentifier
+    private let endBackgroundTask: (UIBackgroundTaskIdentifier) -> Void
     
     init(device: VideoRecordDevice,
          captureMovieFileOutput: @escaping () -> AVCaptureMovieFileOutput = AVCaptureMovieFileOutput.init,
@@ -48,11 +50,15 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
             FileManager.default.temporaryDirectory
                 .appendingPathComponent(UUID().uuidString)
                 .appendingPathExtension("mov")
-        }
+         },
+         beginBackgroundTask: @escaping () -> UIBackgroundTaskIdentifier = { UIApplication.shared.beginBackgroundTask() },
+         endBackgroundTask: @escaping (UIBackgroundTaskIdentifier) -> Void = UIApplication.shared.endBackgroundTask
     ) {
         self.device = device
         self.captureMovieFileOutput = captureMovieFileOutput
         self.outputPath = outputPath
+        self.beginBackgroundTask = beginBackgroundTask
+        self.endBackgroundTask = endBackgroundTask
     }
     
     func getStatusPublisher() -> AnyPublisher<VideoRecorderStatus, Never> {
@@ -69,7 +75,7 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
                 return
             }
             
-            backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
+            backgroundRecordingID = beginBackgroundTask()
             
             setup(movieFileOutput)
             movieFileOutput.startRecording(to: outputPath(), recordingDelegate: self)
@@ -146,7 +152,7 @@ extension AVVideoRecorder: AVCaptureFileOutputRecordingDelegate {
     
     private func invalidateBackgroundRecordingTask() {
         if backgroundRecordingID != UIBackgroundTaskIdentifier.invalid {
-            UIApplication.shared.endBackgroundTask(backgroundRecordingID)
+            endBackgroundTask(backgroundRecordingID)
             backgroundRecordingID = UIBackgroundTaskIdentifier.invalid
         }
     }

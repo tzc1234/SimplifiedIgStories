@@ -138,22 +138,28 @@ final class AVVideoRecorderTests: XCTestCase {
     }
     
     func test_backgroundRecordingID_assignsBackgroundRecordingIDAfterStartRecording() {
-        let (sut, _) = makeSUT()
-        let initialID = sut.backgroundRecordingID
+        let recordingID = UIBackgroundTaskIdentifier(rawValue: 999)
+        let (sut, _) = makeSUT(beginBackgroundTask: { recordingID })
         
-        XCTAssertEqual(initialID, .invalid)
+        XCTAssertEqual(sut.backgroundRecordingID, .invalid)
         
         sut.startRecording()
         
-        XCTAssertNotEqual(sut.backgroundRecordingID, initialID)
+        XCTAssertEqual(sut.backgroundRecordingID, recordingID)
     }
     
     func test_backgroundRecordingID_invalidatesBackgroundRecordingIDAfterFileOutput() {
-        let (sut, _) = makeSUT()
+        let recordingID = UIBackgroundTaskIdentifier(rawValue: 999)
+        var loggedBackgroundRecordingIDs = [UIBackgroundTaskIdentifier]()
+        let (sut, _) = makeSUT(
+            beginBackgroundTask: { recordingID },
+            endBackgroundTask: { loggedBackgroundRecordingIDs.append($0) }
+        )
         
         sut.startRecording()
         sut.fileOutput(anyCaptureFileOutput(), didFinishRecordingTo: anyVideoURL(), from: [], error: nil)
         
+        XCTAssertEqual(loggedBackgroundRecordingIDs, [recordingID])
         XCTAssertEqual(sut.backgroundRecordingID, .invalid)
     }
     
@@ -183,9 +189,13 @@ final class AVVideoRecorderTests: XCTestCase {
     private func makeSUT(isSessionRunning: Bool = false,
                          cameraPosition: CameraPosition = .back,
                          canAddMovieFileOutput: Bool = true,
-                         captureMovieFileOutput: @escaping () -> AVCaptureMovieFileOutput = CaptureMovieFileOutputSpy.init,
+                         captureMovieFileOutput: @escaping () -> AVCaptureMovieFileOutput 
+                            = CaptureMovieFileOutputSpy.init,
                          outputPath: @escaping () -> URL = { anyVideoURL() },
                          perform: @escaping (@escaping () -> Void) -> Void = { $0() },
+                         beginBackgroundTask: @escaping () -> UIBackgroundTaskIdentifier 
+                            = { UIBackgroundTaskIdentifier.invalid },
+                         endBackgroundTask: @escaping (UIBackgroundTaskIdentifier) -> Void = { _ in },
                          file: StaticString = #filePath,
                          line: UInt = #line) -> (sut: AVVideoRecorder, device: VideoRecordDeviceSpy) {
         CaptureSessionSpy.swizzled()
@@ -198,7 +208,9 @@ final class AVVideoRecorderTests: XCTestCase {
         let sut = AVVideoRecorder(
             device: device,
             captureMovieFileOutput: captureMovieFileOutput,
-            outputPath: outputPath
+            outputPath: outputPath,
+            beginBackgroundTask: beginBackgroundTask,
+            endBackgroundTask: endBackgroundTask
         )
         addTeardownBlock {
             CaptureSessionSpy.revertSwizzled()
