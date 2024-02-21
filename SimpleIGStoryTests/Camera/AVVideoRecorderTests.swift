@@ -33,6 +33,15 @@ final class AVVideoRecorderTests: XCTestCase {
         assertMovieFileOutput(on: device)
     }
     
+    func test_startRecording_doesNotAddMovieFileOutputAgainIfItIsAlreadyAdded() {
+        let (sut, device) = makeSUT()
+        
+        sut.startRecording()
+        sut.startRecording()
+        
+        assertMovieFileOutput(on: device)
+    }
+    
     // MARK: - Helpers
     
     private typealias VideoRecorderStatusSpy = StatusSpy<VideoRecorderStatus>
@@ -42,11 +51,15 @@ final class AVVideoRecorderTests: XCTestCase {
                          perform: @escaping (@escaping () -> Void) -> Void = { $0() },
                          file: StaticString = #filePath,
                          line: UInt = #line) -> (sut: AVVideoRecorder, device: VideoRecordDeviceSpy) {
+        CaptureSessionSpy.swizzled()
         let device = VideoRecordDeviceSpy(
             isSessionRunning: isSessionRunning,
             performOnSessionQueue: perform
         )
         let sut = AVVideoRecorder(device: device, makeCaptureMovieFileOutput: captureMovieFileOutput)
+        addTeardownBlock {
+            CaptureSessionSpy.revertSwizzled()
+        }
         trackForMemoryLeaks(device, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
         return (sut, device)

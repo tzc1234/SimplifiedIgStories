@@ -77,6 +77,10 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
     }
     
     private func addMovieFileOutputIfNeeded() {
+        guard session.outputs.first(where: { $0 is AVCaptureMovieFileOutput }) == nil else {
+            return
+        }
+        
         session.beginConfiguration()
         
         let output = makeCaptureMovieFileOutput()
