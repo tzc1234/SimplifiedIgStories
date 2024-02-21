@@ -94,6 +94,21 @@ final class AVVideoRecorderTests: XCTestCase {
         )
     }
     
+    func test_startRecording_startsWhenItIsNotRecording() {
+        let movieFileOutput = CaptureMovieFileOutputSpy()
+        movieFileOutput.setRecording(false)
+        let filePath = URL(string: "file://test-video.mp4")!
+        let (sut, _) = makeSUT(captureMovieFileOutput: { movieFileOutput }, outputPath: { filePath })
+        let statusSpy = VideoRecorderStatusSpy(publisher: sut.getStatusPublisher())
+        
+        sut.startRecording()
+        
+        XCTAssertEqual(movieFileOutput.startRecordingCallCount, 1)
+        XCTAssertEqual(movieFileOutput.startRecordingURLs, [filePath])
+        XCTAssertIdentical(movieFileOutput.startRecordingDelegates.first, sut)
+        XCTAssertEqual(statusSpy.loggedStatuses, [.recordingBegun])
+    }
+    
     // MARK: - Helpers
     
     private typealias VideoRecorderStatusSpy = StatusSpy<VideoRecorderStatus>
@@ -102,6 +117,7 @@ final class AVVideoRecorderTests: XCTestCase {
                          cameraPosition: CameraPosition = .back,
                          canAddMovieFileOutput: Bool = true,
                          captureMovieFileOutput: @escaping () -> AVCaptureMovieFileOutput = CaptureMovieFileOutputSpy.init,
+                         outputPath: @escaping () -> URL = { URL(string: "file://any-video.mp4")! },
                          perform: @escaping (@escaping () -> Void) -> Void = { $0() },
                          file: StaticString = #filePath,
                          line: UInt = #line) -> (sut: AVVideoRecorder, device: VideoRecordDeviceSpy) {
@@ -112,7 +128,11 @@ final class AVVideoRecorderTests: XCTestCase {
             canAddMovieFileOutput: canAddMovieFileOutput,
             performOnSessionQueue: perform
         )
-        let sut = AVVideoRecorder(device: device, makeCaptureMovieFileOutput: captureMovieFileOutput)
+        let sut = AVVideoRecorder(
+            device: device,
+            captureMovieFileOutput: captureMovieFileOutput,
+            outputPath: outputPath
+        )
         addTeardownBlock {
             CaptureSessionSpy.revertSwizzled()
         }
@@ -153,12 +173,28 @@ final class AVVideoRecorderTests: XCTestCase {
 }
 
 final class CaptureMovieFileOutputSpy: AVCaptureMovieFileOutput {
+    private struct StartRecordingParam {
+        let url: URL
+        weak var delegate: AVCaptureFileOutputRecordingDelegate?
+    }
+    
     private(set) var loggedConnection: CaptureConnectionStub?
     var preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode? {
         loggedConnection?.preferredVideoStabilizationMode
     }
     
-    private(set) var startRecordingCallCount = 0
+    private var startRecordingParam = [StartRecordingParam]()
+    var startRecordingCallCount: Int {
+        startRecordingParam.count
+    }
+    var startRecordingURLs: [URL] {
+        startRecordingParam.map(\.url)
+    }
+    
+    var startRecordingDelegates: [AVCaptureFileOutputRecordingDelegate] {
+        startRecordingParam.compactMap(\.delegate)
+    }
+    
     private(set) var loggedOutputSettings = [[String: Any]]()
     
     private var _isRecording = false
@@ -191,7 +227,7 @@ final class CaptureMovieFileOutputSpy: AVCaptureMovieFileOutput {
     }
     
     override func startRecording(to outputFileURL: URL, recordingDelegate delegate: AVCaptureFileOutputRecordingDelegate) {
-        startRecordingCallCount += 1
+        startRecordingParam.append(.init(url: outputFileURL, delegate: delegate))
     }
 }
 

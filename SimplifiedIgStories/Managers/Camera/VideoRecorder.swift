@@ -39,12 +39,20 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
     }
     
     private let device: VideoRecordDevice
-    private let makeCaptureMovieFileOutput: () -> AVCaptureMovieFileOutput
+    private let captureMovieFileOutput: () -> AVCaptureMovieFileOutput
+    private let outputPath: () -> URL
     
     init(device: VideoRecordDevice,
-         makeCaptureMovieFileOutput: @escaping () -> AVCaptureMovieFileOutput = AVCaptureMovieFileOutput.init) {
+         captureMovieFileOutput: @escaping () -> AVCaptureMovieFileOutput = AVCaptureMovieFileOutput.init,
+         outputPath: @escaping () -> URL = {
+            FileManager.default.temporaryDirectory
+                .appendingPathComponent(UUID().uuidString)
+                .appendingPathExtension("mov")
+        }
+    ) {
         self.device = device
-        self.makeCaptureMovieFileOutput = makeCaptureMovieFileOutput
+        self.captureMovieFileOutput = captureMovieFileOutput
+        self.outputPath = outputPath
     }
     
     func getStatusPublisher() -> AnyPublisher<VideoRecorderStatus, Never> {
@@ -57,16 +65,13 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
             
             addMovieFileOutputIfNeeded()
             
-            guard let movieFileOutput, let connection = movieFileOutput.connection(with: .video) else {
+            guard let movieFileOutput,
+                  let connection = movieFileOutput.connection(with: .video),
+                  !movieFileOutput.isRecording else {
                 return
             }
             
-//            guard let self, let output = device.movieFileOutput, !output.isRecording else {
-//                return
-//            }
-//            
 //            backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
-//            
             
             if connection.isVideoOrientationSupported {
                 connection.videoOrientation = .portrait
@@ -80,9 +85,8 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
                 movieFileOutput.setOutputSettings([AVVideoCodecKey: AVVideoCodecType.hevc], for: connection)
             }
             
-//            output.startRecording(to: getOutputPath(), recordingDelegate: self)
-//            
-//            statusPublisher.send(.recordingBegun)
+            movieFileOutput.startRecording(to: outputPath(), recordingDelegate: self)
+            statusPublisher.send(.recordingBegun)
         }
     }
     
@@ -93,7 +97,7 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
         
         session.beginConfiguration()
         
-        let output = makeCaptureMovieFileOutput()
+        let output = captureMovieFileOutput()
         guard session.canAddOutput(output) else {
             statusPublisher.send(.addMovieFileOutputFailure)
             return
@@ -109,13 +113,6 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
         if let connection = output.connection(with: .video), connection.isVideoStabilizationSupported {
             connection.preferredVideoStabilizationMode = .auto
         }
-    }
-    
-    private func getOutputPath() -> URL {
-        let fileName = UUID().uuidString
-        return FileManager.default.temporaryDirectory
-            .appendingPathComponent(fileName)
-            .appendingPathExtension("mov")
     }
     
     func stopRecording() {
