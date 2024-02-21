@@ -192,6 +192,8 @@ extension StoryCamViewModel {
                 case .processedVideo(let videoURL):
                     self?.lastVideoUrl = videoURL
                     self?.showVideoPreview = true
+                case .addMovieFileOutputFailure:
+                    break
                 }
             }
             .store(in: &subscriptions)

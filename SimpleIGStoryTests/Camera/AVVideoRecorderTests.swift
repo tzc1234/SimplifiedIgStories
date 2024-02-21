@@ -42,11 +42,21 @@ final class AVVideoRecorderTests: XCTestCase {
         assertMovieFileOutput(on: device)
     }
     
+    func test_startRecording_deliversAddMovieFileOutputFailureStatusWhenCannotAddMovieFileOutput() {
+        let (sut, _) = makeSUT(canAddMovieFileOutput: false)
+        let statusSpy = VideoRecorderStatusSpy(publisher: sut.getStatusPublisher())
+        
+        sut.startRecording()
+        
+        XCTAssertEqual(statusSpy.loggedStatuses, [.addMovieFileOutputFailure])
+    }
+    
     // MARK: - Helpers
     
     private typealias VideoRecorderStatusSpy = StatusSpy<VideoRecorderStatus>
     
     private func makeSUT(isSessionRunning: Bool = false,
+                         canAddMovieFileOutput: Bool = true,
                          captureMovieFileOutput: @escaping () -> AVCaptureMovieFileOutput = CaptureMovieFileOutputSpy.init,
                          perform: @escaping (@escaping () -> Void) -> Void = { $0() },
                          file: StaticString = #filePath,
@@ -54,6 +64,7 @@ final class AVVideoRecorderTests: XCTestCase {
         CaptureSessionSpy.swizzled()
         let device = VideoRecordDeviceSpy(
             isSessionRunning: isSessionRunning,
+            canAddMovieFileOutput: canAddMovieFileOutput,
             performOnSessionQueue: perform
         )
         let sut = AVVideoRecorder(device: device, makeCaptureMovieFileOutput: captureMovieFileOutput)
@@ -86,8 +97,9 @@ final class AVVideoRecorderTests: XCTestCase {
         let performOnSessionQueue: (@escaping () -> Void) -> Void
         
         init(isSessionRunning: Bool,
+             canAddMovieFileOutput: Bool,
              performOnSessionQueue: @escaping (@escaping () -> Void) -> Void) {
-            let session = CaptureSessionSpy(isRunning: isSessionRunning, canAddOutput: true)
+            let session = CaptureSessionSpy(isRunning: isSessionRunning, canAddOutput: canAddMovieFileOutput)
             self.session = session
             self.performOnSessionQueue = performOnSessionQueue
         }

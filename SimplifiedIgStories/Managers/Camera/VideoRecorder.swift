@@ -8,11 +8,12 @@
 import AVKit
 import Combine
 
-enum VideoRecorderStatus {
+enum VideoRecorderStatus: Equatable {
     case recordingBegun
     case recordingFinished
     case videoProcessFailure
     case processedVideo(videoURL: URL)
+    case addMovieFileOutputFailure
 }
 
 protocol VideoRecorder {
@@ -85,6 +86,7 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
         
         let output = makeCaptureMovieFileOutput()
         guard session.canAddOutput(output) else {
+            statusPublisher.send(.addMovieFileOutputFailure)
             return
         }
         
