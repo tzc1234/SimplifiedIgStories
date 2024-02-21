@@ -86,6 +86,14 @@ final class CaptureSessionSpy: AVCaptureSession {
     func resetLoggedInputs() {
         loggedInputs.removeAll()
     }
+    
+    private func resetLoggedOutputs() {
+        loggedOutputs.removeAll()
+    }
+    
+    deinit {
+        resetLoggedOutputs()
+    }
 }
 
 extension CaptureSessionSpy: MethodSwizzling {

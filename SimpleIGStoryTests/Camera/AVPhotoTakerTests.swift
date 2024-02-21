@@ -34,24 +34,20 @@ final class AVPhotoTakerTests: XCTestCase {
     }
     
     func test_takePhoto_doesNotAddPhotoOutputAgainWhenPhotoOutputIsAlreadyAdded() {
-        CaptureSessionSpy.swizzled()
         let (sut, device) = makeSUT()
         
         sut.takePhoto(on: .off)
         sut.takePhoto(on: .off)
         
         XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
-        CaptureSessionSpy.revertSwizzled()
     }
     
     func test_takePhoto_doesNotAddPhotoOutputAgainWhenPhotoOutputIsAlreadyExisted() {
-        CaptureSessionSpy.swizzled()
         let (sut, device) = makeSUT(existingPhotoOutput: AVCapturePhotoOutput())
         
         sut.takePhoto(on: .off)
         
         XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
-        CaptureSessionSpy.revertSwizzled()
     }
     
     func test_takePhoto_deliversAddPhotoOutputFailureStatusWhenCannotAddPhotoOutput() {
@@ -65,29 +61,24 @@ final class AVPhotoTakerTests: XCTestCase {
     }
     
     func test_takePhoto_triggersCapturePhotoSuccessfullyWhenSessionIsRunning() {
-        CaptureSessionSpy.swizzled()
         let flashMode: CameraFlashMode = .off
         let (sut, device) = makeSUT(isSessionRunning: true)
         
         sut.takePhoto(on: flashMode)
         
         assertCapturePhotoParams(in: device.photoOutput, with: sut, andExpected: flashMode)
-        CaptureSessionSpy.revertSwizzled()
     }
     
     func test_takePhoto_triggersCapturePhotoWithAutoFlashModeWhenSessionIsRunning() {
-        CaptureSessionSpy.swizzled()
         let autoFlashMode: CameraFlashMode = .auto
         let (sut, device) = makeSUT(isSessionRunning: true)
         
         sut.takePhoto(on: autoFlashMode)
         
         assertCapturePhotoParams(in: device.photoOutput, with: sut, andExpected: autoFlashMode)
-        CaptureSessionSpy.revertSwizzled()
     }
     
     func test_takePhoto_triggersCapturePhotoSuccessfullyWhenSessionIsRunningWithExistingPhotoOutput() {
-        CaptureSessionSpy.swizzled()
         let photoOutput = CapturePhotoOutputSpy()
         let flashMode: CameraFlashMode = .on
         let (sut, _) = makeSUT(isSessionRunning: true, existingPhotoOutput: photoOutput)
@@ -95,7 +86,6 @@ final class AVPhotoTakerTests: XCTestCase {
         sut.takePhoto(on: flashMode)
         
         assertCapturePhotoParams(in: photoOutput, with: sut, andExpected: flashMode)
-        CaptureSessionSpy.revertSwizzled()
     }
     
     func test_takePhoto_doesNotTriggerCapturePhotoWhenSessionIsNotRunning() {
@@ -107,7 +97,6 @@ final class AVPhotoTakerTests: XCTestCase {
     }
     
     func test_takePhoto_performsInSessionQueue() {
-        CaptureSessionSpy.swizzled()
         var actions = [() -> Void]()
         let (sut, device) = makeSUT(isSessionRunning: true, perform: { actions.append($0) })
         
@@ -125,7 +114,6 @@ final class AVPhotoTakerTests: XCTestCase {
         
         XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
         XCTAssertEqual(device.photoOutput?.capturePhotoCallCount, 1)
-        CaptureSessionSpy.revertSwizzled()
     }
     
     func test_photoOutput_deliversImageConvertingFailureStatusWhenErrorOccurred() {
@@ -173,6 +161,7 @@ final class AVPhotoTakerTests: XCTestCase {
                          perform: @escaping (@escaping () -> Void) -> Void = { $0() },
                          file: StaticString = #filePath,
                          line: UInt = #line) -> (sut: AVPhotoTaker, device: PhotoCaptureDeviceSpy) {
+        CaptureSessionSpy.swizzled()
         let device = PhotoCaptureDeviceSpy(
             isSessionRunning: isSessionRunning,
             canAddOutput: canAddOutput,
@@ -180,6 +169,9 @@ final class AVPhotoTakerTests: XCTestCase {
             performOnSessionQueue: perform
         )
         let sut = AVPhotoTaker(device: device, makeCapturePhotoOutput: CapturePhotoOutputSpy.init)
+        addTeardownBlock {
+            CaptureSessionSpy.revertSwizzled()
+        }
         trackForMemoryLeaks(device, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
         return (sut, device)
