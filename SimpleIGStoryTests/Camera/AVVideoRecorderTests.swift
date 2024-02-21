@@ -122,9 +122,9 @@ final class AVVideoRecorderTests: XCTestCase {
         XCTAssertEqual(statusSpy.loggedStatuses, [.recordingBegun, .recordingFinished])
     }
     
-    func test_performOnSessionQueue_performsStartAndStopRecordingOnSessionQueue() {
+    func test_performOnSessionQueue_performsBothStartAndStopRecordingOnSessionQueue() {
         var loggedActions = [() -> Void]()
-        let (sut, device) = makeSUT(perform: { loggedActions.append($0) })
+        let (sut, _) = makeSUT(perform: { loggedActions.append($0) })
         let statusSpy = VideoRecorderStatusSpy(publisher: sut.getStatusPublisher())
         
         sut.startRecording()

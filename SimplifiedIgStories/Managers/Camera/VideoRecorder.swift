@@ -65,26 +65,13 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
             
             addMovieFileOutputIfNeeded()
             
-            guard let movieFileOutput,
-                  let connection = movieFileOutput.connection(with: .video),
-                  !movieFileOutput.isRecording else {
+            guard let movieFileOutput, !movieFileOutput.isRecording else {
                 return
             }
             
-//            backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
+            backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
             
-            if connection.isVideoOrientationSupported {
-                connection.videoOrientation = .portrait
-            }
-            
-            if connection.isVideoMirroringSupported {
-                connection.isVideoMirrored = device.cameraPosition == .front
-            }
-            
-            if movieFileOutput.availableVideoCodecTypes.contains(.hevc) {
-                movieFileOutput.setOutputSettings([AVVideoCodecKey: AVVideoCodecType.hevc], for: connection)
-            }
-            
+            setup(movieFileOutput)
             movieFileOutput.startRecording(to: outputPath(), recordingDelegate: self)
             statusPublisher.send(.recordingBegun)
         }
@@ -104,14 +91,32 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
         }
         
         session.addOutput(output)
-        setAutoVideoStabilizationMode(on: output)
-        
         session.commitConfiguration()
     }
     
-    private func setAutoVideoStabilizationMode(on output: AVCaptureMovieFileOutput) {
-        if let connection = output.connection(with: .video), connection.isVideoStabilizationSupported {
+    private func setup(_ output: AVCaptureMovieFileOutput) {
+        guard let connection = output.connection(with: .video) else {
+            return
+        }
+        
+        if output.availableVideoCodecTypes.contains(.hevc) {
+            output.setOutputSettings([AVVideoCodecKey: AVVideoCodecType.hevc], for: connection)
+        }
+        
+        setup(connection: connection)
+    }
+    
+    private func setup(connection: AVCaptureConnection) {
+        if connection.isVideoStabilizationSupported {
             connection.preferredVideoStabilizationMode = .auto
+        }
+        
+        if connection.isVideoOrientationSupported {
+            connection.videoOrientation = .portrait
+        }
+        
+        if connection.isVideoMirroringSupported {
+            connection.isVideoMirrored = device.cameraPosition == .front
         }
     }
     
