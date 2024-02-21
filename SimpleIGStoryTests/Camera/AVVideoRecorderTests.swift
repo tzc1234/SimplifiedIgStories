@@ -137,7 +137,7 @@ final class AVVideoRecorderTests: XCTestCase {
         XCTAssertEqual(device.movieFileOutput?.stopRecordingCallCount, 1)
     }
     
-    func test_startRecording_assignsBackgroundRecordingIDAfterStartRecording() {
+    func test_backgroundRecordingID_assignsBackgroundRecordingIDAfterStartRecording() {
         let (sut, _) = makeSUT()
         let initialID = sut.backgroundRecordingID
         
@@ -146,6 +146,15 @@ final class AVVideoRecorderTests: XCTestCase {
         sut.startRecording()
         
         XCTAssertNotEqual(sut.backgroundRecordingID, initialID)
+    }
+    
+    func test_backgroundRecordingID_invalidatesBackgroundRecordingIDAfterFileOutput() {
+        let (sut, _) = makeSUT()
+        
+        sut.startRecording()
+        sut.fileOutput(anyCaptureFileOutput(), didFinishRecordingTo: anyVideoURL(), from: [], error: nil)
+        
+        XCTAssertEqual(sut.backgroundRecordingID, .invalid)
     }
     
     // MARK: - Helpers
@@ -185,6 +194,10 @@ final class AVVideoRecorderTests: XCTestCase {
                                        line: UInt = #line) {
         XCTAssertEqual(device.loggedMovieFileOutputs.count, 1, file: file, line: line)
         XCTAssertEqual(device.movieFileOutput?.preferredVideoStabilizationMode, .auto, file: file, line: line)
+    }
+    
+    private func anyCaptureFileOutput() -> AVCaptureFileOutput {
+        CaptureMovieFileOutputSpy()
     }
     
     private final class VideoRecordDeviceSpy: VideoRecordDevice {
