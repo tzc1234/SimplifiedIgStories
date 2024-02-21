@@ -96,21 +96,16 @@ final class AVPhotoTakerTests: XCTestCase {
         XCTAssertEqual(device.photoOutput?.capturePhotoCallCount, 0)
     }
     
-    func test_takePhoto_performsInSessionQueue() {
-        var actions = [() -> Void]()
-        let (sut, device) = makeSUT(isSessionRunning: true, perform: { actions.append($0) })
+    func test_takePhoto_performsOnSessionQueue() {
+        var loggedActions = [() -> Void]()
+        let (sut, device) = makeSUT(isSessionRunning: true, perform: { loggedActions.append($0) })
         
         sut.takePhoto(on: .off)
         
         XCTAssertTrue(device.loggedPhotoOutputs.isEmpty)
         XCTAssertNil(device.photoOutput)
         
-        let exp = expectation(description: "Wait for session queue")
-        actions.forEach { action in
-            action()
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: 1)
+        loggedActions.forEach { $0() }
         
         XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
         XCTAssertEqual(device.photoOutput?.capturePhotoCallCount, 1)
