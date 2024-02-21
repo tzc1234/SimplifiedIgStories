@@ -145,7 +145,7 @@ final class AVVideoRecorderTests: XCTestCase {
                          cameraPosition: CameraPosition = .back,
                          canAddMovieFileOutput: Bool = true,
                          captureMovieFileOutput: @escaping () -> AVCaptureMovieFileOutput = CaptureMovieFileOutputSpy.init,
-                         outputPath: @escaping () -> URL = { URL(string: "file://any-video.mp4")! },
+                         outputPath: @escaping () -> URL = { anyVideoURL() },
                          perform: @escaping (@escaping () -> Void) -> Void = { $0() },
                          file: StaticString = #filePath,
                          line: UInt = #line) -> (sut: AVVideoRecorder, device: VideoRecordDeviceSpy) {

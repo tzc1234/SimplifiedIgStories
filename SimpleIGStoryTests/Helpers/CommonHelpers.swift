@@ -10,3 +10,7 @@ import Foundation
 func anyNSError() -> NSError {
     NSError(domain: "any", code: 0)
 }
+
+func anyVideoURL() -> URL {
+    URL(string: "file://any-video.mp4")!
+}

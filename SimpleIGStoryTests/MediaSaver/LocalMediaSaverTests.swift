@@ -75,10 +75,6 @@ final class LocalMediaSaverTests: XCTestCase {
         UIImage.make(withColor: .gray).pngData()!
     }
     
-    private func anyVideoURL() -> URL {
-        URL(string: "file://any-video.mp4")!
-    }
-    
     final private class MediaStoreSpy: MediaStore {
         typealias Stub = Result<Void, MediaStoreError>
         
