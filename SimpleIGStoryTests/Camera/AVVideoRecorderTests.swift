@@ -51,6 +51,16 @@ final class AVVideoRecorderTests: XCTestCase {
         XCTAssertEqual(statusSpy.loggedStatuses, [.addMovieFileOutputFailure])
     }
     
+    func test_startRecording_doesNotStartRecordingWhenItIsAlreadyRecording() {
+        let movieFileOutput = CaptureMovieFileOutputSpy()
+        movieFileOutput.setRecording(true)
+        let (sut, device) = makeSUT(captureMovieFileOutput: { movieFileOutput })
+        
+        sut.startRecording()
+        
+        XCTAssertEqual(movieFileOutput.startRecordingCallCount, 0)
+    }
+    
     // MARK: - Helpers
     
     private typealias VideoRecorderStatusSpy = StatusSpy<VideoRecorderStatus>
@@ -112,9 +122,24 @@ final class CaptureMovieFileOutputSpy: AVCaptureMovieFileOutput {
         connection?.preferredVideoStabilizationMode
     }
     
+    private(set) var startRecordingCallCount = 0
+    
+    private var _isRecording = false
+    override var isRecording: Bool {
+        _isRecording
+    }
+    
+    func setRecording(_ bool: Bool) {
+        _isRecording = bool
+    }
+    
     override func connection(with mediaType: AVMediaType) -> AVCaptureConnection? {
         connection = CaptureConnectionStub(inputPorts: [], output: self)
         return connection
+    }
+    
+    override func startRecording(to outputFileURL: URL, recordingDelegate delegate: AVCaptureFileOutputRecordingDelegate) {
+        startRecordingCallCount += 1
     }
 }
 
