@@ -157,6 +157,15 @@ final class AVVideoRecorderTests: XCTestCase {
         XCTAssertEqual(sut.backgroundRecordingID, .invalid)
     }
     
+    func test_fileOutput_deliversVideoProcessFailureStatusOnFileOutputError() {
+        let (sut, _) = makeSUT()
+        let statusSpy = VideoRecorderStatusSpy(publisher: sut.getStatusPublisher())
+        
+        sut.fileOutput(anyCaptureFileOutput(), didFinishRecordingTo: anyVideoURL(), from: [], error: anyNSError())
+        
+        XCTAssertEqual(statusSpy.loggedStatuses, [.videoProcessFailure])
+    }
+    
     // MARK: - Helpers
     
     private typealias VideoRecorderStatusSpy = StatusSpy<VideoRecorderStatus>
