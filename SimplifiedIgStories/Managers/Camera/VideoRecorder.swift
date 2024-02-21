@@ -34,6 +34,9 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
     private var session: AVCaptureSession {
         device.session
     }
+    private var movieFileOutput: AVCaptureMovieFileOutput? {
+        session.outputs.first(where: { $0 is AVCaptureMovieFileOutput }) as? AVCaptureMovieFileOutput
+    }
     
     private let device: VideoRecordDevice
     private let makeCaptureMovieFileOutput: () -> AVCaptureMovieFileOutput
@@ -60,13 +63,18 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
 //            
 //            backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
 //            
-//            guard let outputConnection = output.connection(with: .video) else {
-//                return
-//            }
-//            
-//            outputConnection.videoOrientation = .portrait
-//            outputConnection.isVideoMirrored = device.cameraPosition == .front
-//            
+            let cameraPosition = device.cameraPosition
+            movieFileOutput?.connection(with: .video).map { connection in
+                if connection.isVideoOrientationSupported {
+                    connection.videoOrientation = .portrait
+                }
+                
+                if connection.isVideoMirroringSupported {
+                    connection.isVideoMirrored = cameraPosition == .front
+                }
+            }
+            
+//
 //            if output.availableVideoCodecTypes.contains(.hevc) {
 //                output.setOutputSettings([AVVideoCodecKey: AVVideoCodecType.hevc], for: outputConnection)
 //            }
@@ -78,7 +86,7 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
     }
     
     private func addMovieFileOutputIfNeeded() {
-        guard session.outputs.first(where: { $0 is AVCaptureMovieFileOutput }) == nil else {
+        guard movieFileOutput == nil else {
             return
         }
         

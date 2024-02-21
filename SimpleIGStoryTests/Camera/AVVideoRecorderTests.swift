@@ -54,11 +54,21 @@ final class AVVideoRecorderTests: XCTestCase {
     func test_startRecording_doesNotStartRecordingWhenItIsAlreadyRecording() {
         let movieFileOutput = CaptureMovieFileOutputSpy()
         movieFileOutput.setRecording(true)
-        let (sut, device) = makeSUT(captureMovieFileOutput: { movieFileOutput })
+        let (sut, _) = makeSUT(captureMovieFileOutput: { movieFileOutput })
         
         sut.startRecording()
         
         XCTAssertEqual(movieFileOutput.startRecordingCallCount, 0)
+    }
+    
+    func test_startRecording_setupCaptureConnectionCorrectlyWithBackCamera() throws {
+        let (sut, device) = makeSUT(cameraPosition: .back)
+        
+        sut.startRecording()
+        
+        let captureConnection = try XCTUnwrap(device.movieFileOutput?.loggedConnection)
+        XCTAssertEqual(captureConnection.videoOrientation, .portrait)
+        XCTAssertFalse(captureConnection.isVideoMirrored)
     }
     
     // MARK: - Helpers
@@ -66,6 +76,7 @@ final class AVVideoRecorderTests: XCTestCase {
     private typealias VideoRecorderStatusSpy = StatusSpy<VideoRecorderStatus>
     
     private func makeSUT(isSessionRunning: Bool = false,
+                         cameraPosition: CameraPosition = .back,
                          canAddMovieFileOutput: Bool = true,
                          captureMovieFileOutput: @escaping () -> AVCaptureMovieFileOutput = CaptureMovieFileOutputSpy.init,
                          perform: @escaping (@escaping () -> Void) -> Void = { $0() },
@@ -74,6 +85,7 @@ final class AVVideoRecorderTests: XCTestCase {
         CaptureSessionSpy.swizzled()
         let device = VideoRecordDeviceSpy(
             isSessionRunning: isSessionRunning,
+            cameraPosition: cameraPosition,
             canAddMovieFileOutput: canAddMovieFileOutput,
             performOnSessionQueue: perform
         )
@@ -94,9 +106,6 @@ final class AVVideoRecorderTests: XCTestCase {
     }
     
     private final class VideoRecordDeviceSpy: VideoRecordDevice {
-        private(set) var cameraPosition = CameraPosition.back
-        
-        let session: AVCaptureSession
         var loggedMovieFileOutputs: [AVCaptureMovieFileOutput] {
             (session as! CaptureSessionSpy).loggedMovieFileOutputs
         }
@@ -104,22 +113,26 @@ final class AVVideoRecorderTests: XCTestCase {
             loggedMovieFileOutputs.last as? CaptureMovieFileOutputSpy
         }
         
+        let session: AVCaptureSession
+        let cameraPosition: CameraPosition
         let performOnSessionQueue: (@escaping () -> Void) -> Void
         
         init(isSessionRunning: Bool,
+             cameraPosition: CameraPosition,
              canAddMovieFileOutput: Bool,
              performOnSessionQueue: @escaping (@escaping () -> Void) -> Void) {
             let session = CaptureSessionSpy(isRunning: isSessionRunning, canAddOutput: canAddMovieFileOutput)
             self.session = session
+            self.cameraPosition = cameraPosition
             self.performOnSessionQueue = performOnSessionQueue
         }
     }
 }
 
 final class CaptureMovieFileOutputSpy: AVCaptureMovieFileOutput {
-    private var connection: CaptureConnectionStub?
+    private(set) var loggedConnection: CaptureConnectionStub?
     var preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode? {
-        connection?.preferredVideoStabilizationMode
+        loggedConnection?.preferredVideoStabilizationMode
     }
     
     private(set) var startRecordingCallCount = 0
@@ -134,8 +147,14 @@ final class CaptureMovieFileOutputSpy: AVCaptureMovieFileOutput {
     }
     
     override func connection(with mediaType: AVMediaType) -> AVCaptureConnection? {
-        connection = CaptureConnectionStub(inputPorts: [], output: self)
-        return connection
+        guard mediaType == .video else { return nil }
+        
+        if let loggedConnection {
+            return loggedConnection
+        }
+        
+        loggedConnection = CaptureConnectionStub(inputPorts: [], output: self)
+        return loggedConnection
     }
     
     override func startRecording(to outputFileURL: URL, recordingDelegate delegate: AVCaptureFileOutputRecordingDelegate) {
@@ -145,13 +164,33 @@ final class CaptureMovieFileOutputSpy: AVCaptureMovieFileOutput {
 
 final class CaptureConnectionStub: AVCaptureConnection {
     private var stabilizationMode = AVCaptureVideoStabilizationMode.off
+    private var _videoOrientation =  AVCaptureVideoOrientation.portraitUpsideDown
+    private var _isVideoMirrored = false
     
     override var isVideoStabilizationSupported: Bool {
+        true
+    }
+    
+    override var isVideoOrientationSupported: Bool {
+        true
+    }
+    
+    override var isVideoMirroringSupported: Bool {
         true
     }
     
     override var preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode {
         get { stabilizationMode }
         set { stabilizationMode = newValue }
+    }
+    
+    override var videoOrientation: AVCaptureVideoOrientation {
+        get { _videoOrientation }
+        set { _videoOrientation = newValue }
+    }
+    
+    override var isVideoMirrored: Bool {
+        get { _isVideoMirrored }
+        set { _isVideoMirrored = newValue }
     }
 }
