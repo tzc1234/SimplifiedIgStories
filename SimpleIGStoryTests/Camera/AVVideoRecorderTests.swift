@@ -137,6 +137,17 @@ final class AVVideoRecorderTests: XCTestCase {
         XCTAssertEqual(device.movieFileOutput?.stopRecordingCallCount, 1)
     }
     
+    func test_startRecording_assignsBackgroundRecordingIDAfterStartRecording() {
+        let (sut, _) = makeSUT()
+        let initialID = sut.backgroundRecordingID
+        
+        XCTAssertEqual(initialID, .invalid)
+        
+        sut.startRecording()
+        
+        XCTAssertNotEqual(sut.backgroundRecordingID, initialID)
+    }
+    
     // MARK: - Helpers
     
     private typealias VideoRecorderStatusSpy = StatusSpy<VideoRecorderStatus>

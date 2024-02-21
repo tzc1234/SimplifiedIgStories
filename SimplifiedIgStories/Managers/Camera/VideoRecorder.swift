@@ -30,7 +30,7 @@ protocol VideoRecordDevice {
 
 final class AVVideoRecorder: NSObject, VideoRecorder {
     private let statusPublisher = PassthroughSubject<VideoRecorderStatus, Never>()
-    private var backgroundRecordingID = UIBackgroundTaskIdentifier.invalid
+    private(set) var backgroundRecordingID = UIBackgroundTaskIdentifier.invalid
     private var session: AVCaptureSession {
         device.session
     }
