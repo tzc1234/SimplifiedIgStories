@@ -81,6 +81,19 @@ final class AVVideoRecorderTests: XCTestCase {
         XCTAssertTrue(captureConnection.isVideoMirrored)
     }
     
+    func test_startRecording_setsOutputSettingsCorrectly() throws {
+        let (sut, device) = makeSUT()
+        
+        sut.startRecording()
+        
+        let movieFileOutput = try XCTUnwrap(device.movieFileOutput)
+        XCTAssertEqual(movieFileOutput.loggedOutputSettings.count, 1)
+        XCTAssertEqual(
+            movieFileOutput.loggedOutputSettings.last as? [String: AVVideoCodecType],
+            [AVVideoCodecKey: .hevc]
+        )
+    }
+    
     // MARK: - Helpers
     
     private typealias VideoRecorderStatusSpy = StatusSpy<VideoRecorderStatus>
@@ -146,10 +159,15 @@ final class CaptureMovieFileOutputSpy: AVCaptureMovieFileOutput {
     }
     
     private(set) var startRecordingCallCount = 0
+    private(set) var loggedOutputSettings = [[String: Any]]()
     
     private var _isRecording = false
     override var isRecording: Bool {
         _isRecording
+    }
+    
+    override var availableVideoCodecTypes: [AVVideoCodecType] {
+        [.hevc]
     }
     
     func setRecording(_ bool: Bool) {
@@ -165,6 +183,11 @@ final class CaptureMovieFileOutputSpy: AVCaptureMovieFileOutput {
         
         loggedConnection = CaptureConnectionStub(inputPorts: [], output: self)
         return loggedConnection
+    }
+    
+    override func setOutputSettings(_ outputSettings: [String : Any]?, for connection: AVCaptureConnection) {
+        outputSettings.map { loggedOutputSettings.append($0) }
+        super.setOutputSettings(outputSettings, for: connection)
     }
     
     override func startRecording(to outputFileURL: URL, recordingDelegate delegate: AVCaptureFileOutputRecordingDelegate) {
