@@ -103,9 +103,7 @@ final class AVVideoRecorderTests: XCTestCase {
         
         sut.startRecording()
         
-        XCTAssertEqual(movieFileOutput.startRecordingCallCount, 1)
-        XCTAssertEqual(movieFileOutput.startRecordingURLs, [filePath])
-        XCTAssertIdentical(movieFileOutput.startRecordingDelegates.first, sut)
+        XCTAssertEqual(movieFileOutput.startRecordingParams, [.init(url: filePath, delegate: sut)])
         XCTAssertEqual(statusSpy.loggedStatuses, [.recordingBegun])
     }
     
@@ -173,7 +171,11 @@ final class AVVideoRecorderTests: XCTestCase {
 }
 
 final class CaptureMovieFileOutputSpy: AVCaptureMovieFileOutput {
-    private struct StartRecordingParam {
+    struct StartRecordingParam: Equatable {
+        static func == (lhs: StartRecordingParam, rhs: StartRecordingParam) -> Bool {
+            lhs.url == rhs.url && lhs.delegate === rhs.delegate
+        }
+        
         let url: URL
         weak var delegate: AVCaptureFileOutputRecordingDelegate?
     }
@@ -183,16 +185,9 @@ final class CaptureMovieFileOutputSpy: AVCaptureMovieFileOutput {
         loggedConnection?.preferredVideoStabilizationMode
     }
     
-    private var startRecordingParam = [StartRecordingParam]()
+    private(set) var startRecordingParams = [StartRecordingParam]()
     var startRecordingCallCount: Int {
-        startRecordingParam.count
-    }
-    var startRecordingURLs: [URL] {
-        startRecordingParam.map(\.url)
-    }
-    
-    var startRecordingDelegates: [AVCaptureFileOutputRecordingDelegate] {
-        startRecordingParam.compactMap(\.delegate)
+        startRecordingParams.count
     }
     
     private(set) var loggedOutputSettings = [[String: Any]]()
@@ -227,7 +222,7 @@ final class CaptureMovieFileOutputSpy: AVCaptureMovieFileOutput {
     }
     
     override func startRecording(to outputFileURL: URL, recordingDelegate delegate: AVCaptureFileOutputRecordingDelegate) {
-        startRecordingParam.append(.init(url: outputFileURL, delegate: delegate))
+        startRecordingParams.append(.init(url: outputFileURL, delegate: delegate))
     }
 }
 
