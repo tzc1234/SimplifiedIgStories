@@ -107,6 +107,21 @@ final class AVVideoRecorderTests: XCTestCase {
         XCTAssertEqual(statusSpy.loggedStatuses, [.recordingBegun])
     }
     
+    func test_stopRecording_stopsRecordingWhenItIsRecording() {
+        let (sut, device) = makeSUT()
+        let statusSpy = VideoRecorderStatusSpy(publisher: sut.getStatusPublisher())
+        
+        sut.startRecording()
+        
+        XCTAssertEqual(device.movieFileOutput?.stopRecordingCallCount, 0)
+        XCTAssertEqual(statusSpy.loggedStatuses, [.recordingBegun])
+        
+        sut.stopRecording()
+        
+        XCTAssertEqual(device.movieFileOutput?.stopRecordingCallCount, 1)
+        XCTAssertEqual(statusSpy.loggedStatuses, [.recordingBegun, .recordingFinished])
+    }
+    
     // MARK: - Helpers
     
     private typealias VideoRecorderStatusSpy = StatusSpy<VideoRecorderStatus>
@@ -190,6 +205,7 @@ final class CaptureMovieFileOutputSpy: AVCaptureMovieFileOutput {
         startRecordingParams.count
     }
     
+    private(set) var stopRecordingCallCount = 0
     private(set) var loggedOutputSettings = [[String: Any]]()
     
     private var _isRecording = false
@@ -223,6 +239,12 @@ final class CaptureMovieFileOutputSpy: AVCaptureMovieFileOutput {
     
     override func startRecording(to outputFileURL: URL, recordingDelegate delegate: AVCaptureFileOutputRecordingDelegate) {
         startRecordingParams.append(.init(url: outputFileURL, delegate: delegate))
+        _isRecording = true
+    }
+    
+    override func stopRecording() {
+        stopRecordingCallCount += 1
+        _isRecording = false
     }
 }
 

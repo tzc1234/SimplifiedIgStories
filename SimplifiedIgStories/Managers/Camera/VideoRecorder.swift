@@ -116,14 +116,14 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
     }
     
     func stopRecording() {
-//        device.performOnSessionQueue { [weak self] in
-//            guard let self, let output = device.movieFileOutput, output.isRecording else {
-//                return
-//            }
-//            
-//            output.stopRecording()
-//            statusPublisher.send(.recordingFinished)
-//        }
+        device.performOnSessionQueue { [weak self] in
+            guard let self, let movieFileOutput, movieFileOutput.isRecording else {
+                return
+            }
+            
+            movieFileOutput.stopRecording()
+            statusPublisher.send(.recordingFinished)
+        }
     }
 }
 
