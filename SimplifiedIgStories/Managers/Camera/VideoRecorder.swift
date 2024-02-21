@@ -57,6 +57,8 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
             
             addMovieFileOutputIfNeeded()
             
+            guard let movieFileOutput else { return }
+            
 //            guard let self, let output = device.movieFileOutput, !output.isRecording else {
 //                return
 //            }
@@ -64,7 +66,7 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
 //            backgroundRecordingID = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
 //            
             let cameraPosition = device.cameraPosition
-            movieFileOutput?.connection(with: .video).map { connection in
+            movieFileOutput.connection(with: .video).map { connection in
                 if connection.isVideoOrientationSupported {
                     connection.videoOrientation = .portrait
                 }

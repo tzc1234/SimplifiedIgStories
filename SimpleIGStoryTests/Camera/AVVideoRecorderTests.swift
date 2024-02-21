@@ -71,6 +71,16 @@ final class AVVideoRecorderTests: XCTestCase {
         XCTAssertFalse(captureConnection.isVideoMirrored)
     }
     
+    func test_startRecording_setupCaptureConnectionCorrectlyWithFrontCamera() throws {
+        let (sut, device) = makeSUT(cameraPosition: .front)
+        
+        sut.startRecording()
+        
+        let captureConnection = try XCTUnwrap(device.movieFileOutput?.loggedConnection)
+        XCTAssertEqual(captureConnection.videoOrientation, .portrait)
+        XCTAssertTrue(captureConnection.isVideoMirrored)
+    }
+    
     // MARK: - Helpers
     
     private typealias VideoRecorderStatusSpy = StatusSpy<VideoRecorderStatus>
