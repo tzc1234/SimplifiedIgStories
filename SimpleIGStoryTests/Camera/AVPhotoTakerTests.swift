@@ -181,7 +181,7 @@ final class AVPhotoTakerTests: XCTestCase {
         XCTAssertEqual(setting?.flashMode, flashMode.toCaptureDeviceFlashMode(), file: file, line: line)
     }
     
-    private final class PhotoCaptureDeviceSpy: PhotoCaptureDevice {
+    private final class PhotoCaptureDeviceSpy: CaptureDevice {
         let session: AVCaptureSession
         var loggedPhotoOutputs: [AVCapturePhotoOutput] {
             (session as! CaptureSessionSpy).loggedPhotoOutputs

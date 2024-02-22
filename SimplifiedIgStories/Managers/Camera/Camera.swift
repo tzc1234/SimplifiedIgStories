@@ -29,7 +29,13 @@ protocol Camera {
     func switchCamera()
 }
 
-final class AVCamera: NSObject, Camera, PhotoCaptureDevice, VideoRecordDevice, AuxiliarySupportedCamera {
+protocol CaptureDevice {
+    var cameraPosition: CameraPosition { get }
+    var session: AVCaptureSession { get }
+    var performOnSessionQueue: (@escaping () -> Void) -> Void { get }
+}
+
+final class AVCamera: NSObject, Camera, CaptureDevice, AuxiliarySupportedCamera {
     private let statusPublisher = PassthroughSubject<CameraStatus, Never>()
     private var subscriptions = Set<AnyCancellable>()
     

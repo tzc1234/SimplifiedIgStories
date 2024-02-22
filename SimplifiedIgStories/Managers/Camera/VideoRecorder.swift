@@ -22,12 +22,6 @@ protocol VideoRecorder {
     func stopRecording()
 }
 
-protocol VideoRecordDevice {
-    var cameraPosition: CameraPosition { get }
-    var session: AVCaptureSession { get }
-    var performOnSessionQueue: (@escaping () -> Void) -> Void { get }
-}
-
 final class AVVideoRecorder: NSObject, VideoRecorder {
     private let statusPublisher = PassthroughSubject<VideoRecorderStatus, Never>()
     private var backgroundRecordingID = UIBackgroundTaskIdentifier.invalid
@@ -39,13 +33,13 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
         session.outputs.first(where: { $0 is AVCaptureMovieFileOutput }) as? AVCaptureMovieFileOutput
     }
     
-    private let device: VideoRecordDevice
+    private let device: CaptureDevice
     private let captureMovieFileOutput: () -> AVCaptureMovieFileOutput
     private let outputPath: () -> URL
     private let beginBackgroundTask: () -> UIBackgroundTaskIdentifier
     private let endBackgroundTask: (UIBackgroundTaskIdentifier) -> Void
     
-    init(device: VideoRecordDevice,
+    init(device: CaptureDevice,
          captureMovieFileOutput: @escaping () -> AVCaptureMovieFileOutput = AVCaptureMovieFileOutput.init,
          outputPath: @escaping () -> URL = {
             FileManager.default.temporaryDirectory

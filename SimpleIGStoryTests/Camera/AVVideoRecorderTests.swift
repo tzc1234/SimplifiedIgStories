@@ -223,7 +223,7 @@ final class AVVideoRecorderTests: XCTestCase {
         XCTAssertEqual(device.movieFileOutput?.preferredVideoStabilizationMode, .auto, file: file, line: line)
     }
     
-    private final class VideoRecordDeviceSpy: VideoRecordDevice {
+    private final class VideoRecordDeviceSpy: CaptureDevice {
         var loggedMovieFileOutputs: [AVCaptureMovieFileOutput] {
             (session as! CaptureSessionSpy).loggedMovieFileOutputs
         }
