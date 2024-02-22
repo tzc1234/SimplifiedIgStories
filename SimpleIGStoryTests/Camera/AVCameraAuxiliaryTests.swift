@@ -66,6 +66,15 @@ final class AVCameraAuxiliaryTests: XCTestCase {
         XCTAssertNotEqual(device.videoZoomFactor, initialZoomFactor)
     }
     
+    func test_zoom_deliversChangeDeviceSettingsFailureStatusWhenErrorOccurred() {
+        let (sut, _) = makeSUT(shouldLockForConfigurationThrowAnError: true)
+        let statusSpy = CameraAuxiliaryStatusSpy(publisher: sut.getStatusPublisher())
+        
+        sut.zoom(to: 999)
+        
+        XCTAssertEqual(statusSpy.loggedStatuses, [.changeDeviceSettingsFailure])
+    }
+    
     // MARK: - Helpers
     
     private typealias CameraAuxiliaryStatusSpy = StatusSpy<CameraAuxiliaryStatus>

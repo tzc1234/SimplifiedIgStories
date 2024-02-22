@@ -20,7 +20,6 @@ protocol CameraAuxiliary {
 
 protocol AuxiliarySupportedCamera {
     var captureDevice: AVCaptureDevice? { get }
-    var performOnSessionQueue: (@escaping () -> Void) -> Void { get }
 }
 
 final class AVCameraAuxiliary: CameraAuxiliary {
@@ -41,49 +40,45 @@ final class AVCameraAuxiliary: CameraAuxiliary {
         let y = 1.0 - point.x / .screenWidth
         let focusPoint = CGPoint(x: x, y: y)
 
-        do {
-            try configureVideoDevice { device in
-                if device.isFocusPointOfInterestSupported {
-                    device.focusPointOfInterest = focusPoint
-                }
-                
-                if device.isFocusModeSupported(.autoFocus) {
-                    device.focusMode = .autoFocus
-                }
-                
-                if device.isExposurePointOfInterestSupported {
-                    device.exposurePointOfInterest = focusPoint
-                }
-                
-                if device.isExposureModeSupported(.continuousAutoExposure) {
-                    device.exposureMode = .continuousAutoExposure
-                }
+        configureCaptureDevice { device in
+            if device.isFocusPointOfInterestSupported {
+                device.focusPointOfInterest = focusPoint
             }
-        } catch {
-            statusPublisher.send(.changeDeviceSettingsFailure)
+            
+            if device.isFocusModeSupported(.autoFocus) {
+                device.focusMode = .autoFocus
+            }
+            
+            if device.isExposurePointOfInterestSupported {
+                device.exposurePointOfInterest = focusPoint
+            }
+            
+            if device.isExposureModeSupported(.continuousAutoExposure) {
+                device.exposureMode = .continuousAutoExposure
+            }
         }
     }
     
     func zoom(to factor: CGFloat) {
-        do {
-            try configureVideoDevice { device in
-                // Reference: https://stackoverflow.com/a/43278702
-                let maxZoomFactor = device.activeFormat.videoMaxZoomFactor
-                device.videoZoomFactor = max(1.0, min(device.videoZoomFactor + factor, maxZoomFactor))
-            }
-        } catch {
-            
+        configureCaptureDevice { device in
+            // Reference: https://stackoverflow.com/a/43278702
+            let maxZoomFactor = device.activeFormat.videoMaxZoomFactor
+            device.videoZoomFactor = max(1.0, min(device.videoZoomFactor + factor, maxZoomFactor))
         }
     }
     
-    private func configureVideoDevice(action: (AVCaptureDevice) -> Void) throws {
+    private func configureCaptureDevice(action: (AVCaptureDevice) -> Void) {
         guard let device = camera.captureDevice else {
             statusPublisher.send(.captureDeviceNotFound)
             return
         }
         
-        try device.lockForConfiguration()
-        action(device)
-        device.unlockForConfiguration()
+        do {
+            try device.lockForConfiguration()
+            action(device)
+            device.unlockForConfiguration()
+        } catch {
+            statusPublisher.send(.changeDeviceSettingsFailure)
+        }
     }
 }
