@@ -12,8 +12,6 @@ enum CameraSetupError: Error {
     case defaultAudioDeviceUnavailable
     case createAudioDeviceInputFailure(err: Error)
     case addAudioDeviceInputFailure
-    case addMovieFileOutputFailure
-    case backgroundAudioPreferenceSetupFailure
     
     var errMsg: String {
         switch self {
@@ -29,10 +27,6 @@ enum CameraSetupError: Error {
             return "Cannot create audio device input: \(err)"
         case .addAudioDeviceInputFailure:
             return "Cannot add audio device input to the session."
-        case .addMovieFileOutputFailure:
-            return "Cannot add movie file output to the session."
-        case .backgroundAudioPreferenceSetupFailure:
-            return "Cannot set background audio preference."
         }
     }
 }

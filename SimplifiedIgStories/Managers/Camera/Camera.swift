@@ -1,5 +1,5 @@
 //
-//  AVCamera.swift
+//  Camera.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 19/06/2022.
