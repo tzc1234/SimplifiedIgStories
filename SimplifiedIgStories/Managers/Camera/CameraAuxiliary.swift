@@ -6,6 +6,11 @@
 //
 
 import AVKit
+import Combine
+
+enum CameraAuxiliaryStatus {
+    
+}
 
 protocol CameraAuxiliary {
     func focus(on point: CGPoint)
@@ -14,14 +19,20 @@ protocol CameraAuxiliary {
 
 protocol AuxiliarySupportedCamera {
     var captureDevice: AVCaptureDevice? { get }
-    func performOnSessionQueue(action: @escaping () -> Void)
+    var performOnSessionQueue: (@escaping () -> Void) -> Void { get }
 }
 
-final class AVCaptureDeviceAuxiliary: CameraAuxiliary {
+final class AVCameraAuxiliary: CameraAuxiliary {
+    private let statusPublisher = PassthroughSubject<CameraAuxiliaryStatus, Never>()
+    
     private let camera: AuxiliarySupportedCamera
     
     init(camera: AuxiliarySupportedCamera) {
         self.camera = camera
+    }
+    
+    func getStatusPublisher() -> AnyPublisher<CameraAuxiliaryStatus, Never> {
+        statusPublisher.eraseToAnyPublisher()
     }
     
     enum Error: Swift.Error {

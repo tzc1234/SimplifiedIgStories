@@ -20,7 +20,7 @@ struct StoryCamView: View {
         let camera = AVCamera()
         let photoTaker = AVPhotoTaker(device: camera)
         let videoRecorder = AVVideoRecorder(device: camera)
-        let cameraAuxiliary = AVCaptureDeviceAuxiliary(camera: camera)
+        let cameraAuxiliary = AVCameraAuxiliary(camera: camera)
         let vm = StoryCamViewModel(
             camera: camera,
             photoTaker: photoTaker,
