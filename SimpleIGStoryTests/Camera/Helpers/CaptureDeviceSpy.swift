@@ -18,6 +18,7 @@ final class CaptureDeviceSpy: AVCaptureDevice {
     private var _position = AVCaptureDevice.Position.unspecified
     private var _focusPointOfInterest = CGPoint.zero
     private var _exposurePointOfInterest = CGPoint.zero
+    private var _videoZoomFactor: CGFloat = 0
     private(set) var loggedLockStatuses: [LockStatus]
     private var canChangeSettings: Bool {
         loggedLockStatuses.last == .locked
@@ -84,6 +85,15 @@ final class CaptureDeviceSpy: AVCaptureDevice {
         set { 
             if canChangeSettings {
                 _position = newValue
+            }
+        }
+    }
+    
+    override var videoZoomFactor: CGFloat {
+        get { _videoZoomFactor }
+        set {
+            if canChangeSettings {
+                _videoZoomFactor = newValue
             }
         }
     }

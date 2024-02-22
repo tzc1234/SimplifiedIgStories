@@ -65,17 +65,15 @@ final class AVCameraAuxiliary: CameraAuxiliary {
     }
     
     func zoom(to factor: CGFloat) {
-//        camera.performOnSessionQueue { [weak self] in
-//            do {
-//                try self?.configureVideoDevice { device in
-//                    // Reference: https://stackoverflow.com/a/43278702
-//                    let maxZoomFactor = device.activeFormat.videoMaxZoomFactor
-//                    device.videoZoomFactor = max(1.0, min(device.videoZoomFactor + factor, maxZoomFactor))
-//                }
-//            } catch {
-//                print("Cannot lock device for configuration: \(error)")
-//            }
-//        }
+        do {
+            try configureVideoDevice { device in
+                // Reference: https://stackoverflow.com/a/43278702
+                let maxZoomFactor = device.activeFormat.videoMaxZoomFactor
+                device.videoZoomFactor = max(1.0, min(device.videoZoomFactor + factor, maxZoomFactor))
+            }
+        } catch {
+            
+        }
     }
     
     private func configureVideoDevice(action: (AVCaptureDevice) -> Void) throws {
