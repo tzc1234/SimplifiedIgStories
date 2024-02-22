@@ -114,9 +114,8 @@ final class AVPhotoTakerTests: XCTestCase {
     func test_photoOutput_deliversImageConvertingFailureStatusWhenErrorOccurred() {
         let (sut, _) = makeSUT()
         let statusSpy = PhotoTakerStatusSpy(publisher: sut.getStatusPublisher())
-        let anyPhoto = makeCapturePhoto()
         
-        sut.photoOutput(anyPhotoOutput(), didFinishProcessingPhoto: anyPhoto, error: anyNSError())
+        sut.photoOutputWithError()
         
         XCTAssertEqual(statusSpy.loggedStatuses, [.imageConvertingFailure])
     }
@@ -124,9 +123,8 @@ final class AVPhotoTakerTests: XCTestCase {
     func test_photoOutput_deliversImageConvertingFailureStatusWhenNoPhotoData() {
         let (sut, _) = makeSUT()
         let statusSpy = PhotoTakerStatusSpy(publisher: sut.getStatusPublisher())
-        let noFileDataPhoto = makeCapturePhoto(fileData: nil)
         
-        sut.photoOutput(anyPhotoOutput(), didFinishProcessingPhoto: noFileDataPhoto, error: nil)
+        sut.photoOutput(fileData: nil)
         
         XCTAssertEqual(statusSpy.loggedStatuses, [.imageConvertingFailure])
     }
@@ -134,9 +132,9 @@ final class AVPhotoTakerTests: XCTestCase {
     func test_photoOutput_deliversPhotoSuccessfullyWhenHavingFileData() {
         let (sut, _) = makeSUT()
         let statusSpy = PhotoTakerStatusSpy(publisher: sut.getStatusPublisher())
-        let photo = makeCapturePhoto(fileData: UIImage.makeData(withColor: .red))
+        let fileData = UIImage.makeData(withColor: .red)
         
-        sut.photoOutput(anyPhotoOutput(), didFinishProcessingPhoto: photo, error: nil)
+        sut.photoOutput(fileData: fileData)
         
         XCTAssertEqual(statusSpy.loggedStatuses.count, 1)
         if case let .photoTaken(photo: receivedPhoto) = statusSpy.loggedStatuses.last {
@@ -183,17 +181,6 @@ final class AVPhotoTakerTests: XCTestCase {
         XCTAssertEqual(setting?.flashMode, flashMode.toCaptureDeviceFlashMode(), file: file, line: line)
     }
     
-    private func anyPhotoOutput() -> CapturePhotoOutputSpy {
-        .init()
-    }
-    
-    private func makeCapturePhoto(fileData: Data? = nil) -> CapturePhotoStub {
-        let klass = CapturePhotoStub.self as NSObject.Type
-        let photo = klass.init() as! CapturePhotoStub
-        photo.fileData = fileData
-        return photo
-    }
-    
     private final class PhotoCaptureDeviceSpy: PhotoCaptureDevice {
         let session: AVCaptureSession
         var loggedPhotoOutputs: [AVCapturePhotoOutput] {
@@ -217,5 +204,23 @@ final class AVPhotoTakerTests: XCTestCase {
             self.session = session
             self.performOnSessionQueue = performOnSessionQueue
         }
+    }
+}
+
+private extension AVPhotoTaker {
+    func photoOutput(fileData: Data?) {
+        let photo = makeCapturePhoto(fileData: fileData)
+        photoOutput(AVCapturePhotoOutput(), didFinishProcessingPhoto: photo, error: nil)
+    }
+    
+    func photoOutputWithError() {
+        photoOutput(AVCapturePhotoOutput(), didFinishProcessingPhoto: makeCapturePhoto(), error: anyNSError())
+    }
+    
+    private func makeCapturePhoto(fileData: Data? = nil) -> CapturePhotoStub {
+        let klass = CapturePhotoStub.self as NSObject.Type
+        let photo = klass.init() as! CapturePhotoStub
+        photo.fileData = fileData
+        return photo
     }
 }
