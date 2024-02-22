@@ -158,4 +158,3 @@ extension AVVideoRecorder: AVCaptureFileOutputRecordingDelegate {
         }
     }
 }
-

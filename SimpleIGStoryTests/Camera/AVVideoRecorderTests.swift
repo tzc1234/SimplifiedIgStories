@@ -146,11 +146,11 @@ final class AVVideoRecorderTests: XCTestCase {
         )
         
         sut.startRecording()
-        sut.fileOutput(anyCaptureFileOutput(), didFinishRecordingTo: anyVideoURL(), from: [], error: nil)
+        sut.fileOutput(outputFileURL: anyVideoURL())
         
         XCTAssertEqual(loggedBackgroundRecordingIDs, [recordingID])
         
-        sut.fileOutput(anyCaptureFileOutput(), didFinishRecordingTo: anyVideoURL(), from: [], error: nil)
+        sut.fileOutput(outputFileURL: anyVideoURL())
         
         XCTAssertEqual(
             loggedBackgroundRecordingIDs,
@@ -163,7 +163,7 @@ final class AVVideoRecorderTests: XCTestCase {
         let (sut, _) = makeSUT()
         let statusSpy = VideoRecorderStatusSpy(publisher: sut.getStatusPublisher())
         
-        sut.fileOutput(anyCaptureFileOutput(), didFinishRecordingTo: anyVideoURL(), from: [], error: anyNSError())
+        sut.fileOutputWithError()
         
         XCTAssertEqual(statusSpy.loggedStatuses, [.videoProcessFailure])
     }
@@ -173,7 +173,7 @@ final class AVVideoRecorderTests: XCTestCase {
         let videoURL = URL(string: "file://test-video.mp4")!
         let statusSpy = VideoRecorderStatusSpy(publisher: sut.getStatusPublisher())
         
-        sut.fileOutput(anyCaptureFileOutput(), didFinishRecordingTo: videoURL, from: [], error: nil)
+        sut.fileOutput(outputFileURL: videoURL)
         
         XCTAssertEqual(statusSpy.loggedStatuses, [.processedVideo(videoURL: videoURL)])
     }
@@ -223,10 +223,6 @@ final class AVVideoRecorderTests: XCTestCase {
         XCTAssertEqual(device.movieFileOutput?.preferredVideoStabilizationMode, .auto, file: file, line: line)
     }
     
-    private func anyCaptureFileOutput() -> AVCaptureFileOutput {
-        AVCaptureMovieFileOutput()
-    }
-    
     private final class VideoRecordDeviceSpy: VideoRecordDevice {
         var loggedMovieFileOutputs: [AVCaptureMovieFileOutput] {
             (session as! CaptureSessionSpy).loggedMovieFileOutputs
@@ -248,5 +244,15 @@ final class AVVideoRecorderTests: XCTestCase {
             self.cameraPosition = cameraPosition
             self.performOnSessionQueue = performOnSessionQueue
         }
+    }
+}
+
+private extension AVVideoRecorder {
+    func fileOutput(outputFileURL: URL) {
+        fileOutput(AVCaptureMovieFileOutput(), didFinishRecordingTo: outputFileURL, from: [], error: nil)
+    }
+    
+    func fileOutputWithError() {
+        fileOutput(AVCaptureMovieFileOutput(), didFinishRecordingTo: anyVideoURL(), from: [], error: anyNSError())
     }
 }
