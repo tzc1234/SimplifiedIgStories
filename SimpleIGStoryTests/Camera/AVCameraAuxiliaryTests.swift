@@ -26,7 +26,7 @@ final class AVCameraAuxiliaryTests: XCTestCase {
         XCTAssertEqual(statusSpy.loggedStatuses, [.captureDeviceNotFound])
     }
     
-    func test_focus_setsFocusPointProperly() {
+    func test_focus_setsFocusProperly() {
         let (sut, device) = makeSUT()
         let initialFocusPoint = device.focusPointOfInterest
         
@@ -34,6 +34,18 @@ final class AVCameraAuxiliaryTests: XCTestCase {
         
         XCTAssertNotEqual(device.focusPointOfInterest, initialFocusPoint)
         XCTAssertEqual(device.focusMode, .autoFocus)
+        XCTAssertEqual(device.loggedLockStatuses, [.locked, .unlocked])
+    }
+    
+    func test_focus_setsExposureProperly() {
+        let (sut, device) = makeSUT()
+        let initialExposurePoint = device.exposurePointOfInterest
+        
+        sut.focus(on: .init(x: 999, y: 999))
+        
+        XCTAssertNotEqual(device.exposurePointOfInterest, initialExposurePoint)
+        XCTAssertEqual(device.exposureMode, .continuousAutoExposure)
+        XCTAssertEqual(device.loggedLockStatuses, [.locked, .unlocked])
     }
     
     // MARK: - Helpers

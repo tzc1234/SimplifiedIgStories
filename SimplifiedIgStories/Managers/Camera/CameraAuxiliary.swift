@@ -51,11 +51,13 @@ final class AVCameraAuxiliary: CameraAuxiliary {
                         device.focusMode = .autoFocus
                     }
                     
-//                    if device.isExposurePointOfInterestSupported &&
-//                        device.isExposureModeSupported(.continuousAutoExposure) {
-//                        device.exposurePointOfInterest = focusPoint
-//                        device.exposureMode = .continuousAutoExposure
-//                    }
+                    if device.isExposurePointOfInterestSupported {
+                        device.exposurePointOfInterest = focusPoint
+                    }
+                    
+                    if device.isExposureModeSupported(.continuousAutoExposure) {
+                        device.exposureMode = .continuousAutoExposure
+                    }
                 }
             } catch {
                 print("Cannot lock device for configuration: \(error)")
@@ -83,8 +85,8 @@ final class AVCameraAuxiliary: CameraAuxiliary {
             return
         }
         
-//        try device.lockForConfiguration()
+        try device.lockForConfiguration()
         action(device)
-//        device.unlockForConfiguration()
+        device.unlockForConfiguration()
     }
 }
