@@ -145,13 +145,18 @@ final class AVVideoRecorderTests: XCTestCase {
             endBackgroundTask: { loggedBackgroundRecordingIDs.append($0) }
         )
         
-        XCTAssertEqual(sut.backgroundRecordingID, .invalid)
-        
         sut.startRecording()
         sut.fileOutput(anyCaptureFileOutput(), didFinishRecordingTo: anyVideoURL(), from: [], error: nil)
         
         XCTAssertEqual(loggedBackgroundRecordingIDs, [recordingID])
-        XCTAssertEqual(sut.backgroundRecordingID, .invalid)
+        
+        sut.fileOutput(anyCaptureFileOutput(), didFinishRecordingTo: anyVideoURL(), from: [], error: nil)
+        
+        XCTAssertEqual(
+            loggedBackgroundRecordingIDs,
+            [recordingID],
+            "Expect no changes of backgroundRecordingID when no startRecording before fileOutput."
+        )
     }
     
     func test_fileOutput_deliversVideoProcessFailureStatusOnFileOutputError() {
