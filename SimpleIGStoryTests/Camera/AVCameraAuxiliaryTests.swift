@@ -11,22 +11,41 @@ import AVFoundation
 
 final class AVCameraAuxiliaryTests: XCTestCase {
     func test_init_doesNotDeliverStatusUponInit() {
-        let camera = AuxiliarySupportedCameraSpy(performOnSessionQueue: { _ in })
-        let sut = AVCameraAuxiliary(camera: camera)
+        let (sut, _) = makeSUT()
         let statusSpy = CameraAuxiliaryStatusSpy(publisher: sut.getStatusPublisher())
         
         XCTAssertTrue(statusSpy.loggedStatuses.isEmpty)
+    }
+    
+    func test_focus_deliversCaptureDeviceNotFoundStatusWhenNoCaptureDeviceFound() {
+        let (sut, _) = makeSUT(captureDevice: nil)
+        let statusSpy = CameraAuxiliaryStatusSpy(publisher: sut.getStatusPublisher())
+        
+        sut.focus(on: .zero)
+        
+        XCTAssertEqual(statusSpy.loggedStatuses, [.captureDeviceNotFound])
     }
     
     // MARK: - Helpers
     
     private typealias CameraAuxiliaryStatusSpy = StatusSpy<CameraAuxiliaryStatus>
     
+    private func makeSUT(captureDevice: AVCaptureDevice? = nil,
+                         file: StaticString = #filePath,
+                         line: UInt = #line) -> (sut: AVCameraAuxiliary, camera: AuxiliarySupportedCameraSpy) {
+        let camera = AuxiliarySupportedCameraSpy(captureDevice: captureDevice, performOnSessionQueue: { $0() })
+        let sut = AVCameraAuxiliary(camera: camera)
+        trackForMemoryLeaks(camera, file: file, line: line)
+        trackForMemoryLeaks(sut, file: file, line: line)
+        return (sut, camera)
+    }
+    
     private final class AuxiliarySupportedCameraSpy: AuxiliarySupportedCamera {
-        var captureDevice: AVCaptureDevice?
-        var performOnSessionQueue: (@escaping () -> Void) -> Void
+        let captureDevice: AVCaptureDevice?
+        let performOnSessionQueue: (@escaping () -> Void) -> Void
         
-        init(performOnSessionQueue: @escaping (@escaping () -> Void) -> Void) {
+        init(captureDevice: AVCaptureDevice?, performOnSessionQueue: @escaping (@escaping () -> Void) -> Void) {
+            self.captureDevice = captureDevice
             self.performOnSessionQueue = performOnSessionQueue
         }
     }

@@ -9,7 +9,7 @@ import AVKit
 import Combine
 
 enum CameraAuxiliaryStatus {
-    
+    case captureDeviceNotFound
 }
 
 protocol CameraAuxiliary {
@@ -33,10 +33,6 @@ final class AVCameraAuxiliary: CameraAuxiliary {
     
     func getStatusPublisher() -> AnyPublisher<CameraAuxiliaryStatus, Never> {
         statusPublisher.eraseToAnyPublisher()
-    }
-    
-    enum Error: Swift.Error {
-        case videoDeviceNotFound
     }
     
     func focus(on point: CGPoint) {
@@ -80,7 +76,8 @@ final class AVCameraAuxiliary: CameraAuxiliary {
     
     private func configureVideoDevice(action: (AVCaptureDevice) -> Void) throws {
         guard let device = camera.captureDevice else {
-            throw Error.videoDeviceNotFound
+            statusPublisher.send(.captureDeviceNotFound)
+            return
         }
         
         try device.lockForConfiguration()
