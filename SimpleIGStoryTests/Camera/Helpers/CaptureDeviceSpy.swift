@@ -22,7 +22,9 @@ final class CaptureDeviceSpy: AVCaptureDevice {
     private var canChangeSettings: Bool {
         loggedLockStatuses.last == .locked
     }
-    private var shouldLockForConfigurationThrow: Bool
+    private var shouldLockForConfigurationThrowAnError: Bool
+    private var loggedFocusModeSupported = [FocusMode]()
+    private var loggedExposureModeSupported = [ExposureMode]()
     
     let mediaType: AVMediaType
     
@@ -30,21 +32,21 @@ final class CaptureDeviceSpy: AVCaptureDevice {
         self.mediaType = type
         self._position = position
         self.loggedLockStatuses = [LockStatus]()
-        self.shouldLockForConfigurationThrow = false
+        self.shouldLockForConfigurationThrowAnError = false
         super.init(type: type)
     }
     
-    init(type: AVMediaType, shouldLockForConfigurationThrow: Bool) {
+    init(type: AVMediaType, shouldLockForConfigurationThrowAnError: Bool) {
         self.mediaType = type
         self.loggedLockStatuses = [LockStatus]()
-        self.shouldLockForConfigurationThrow = shouldLockForConfigurationThrow
+        self.shouldLockForConfigurationThrowAnError = shouldLockForConfigurationThrowAnError
         super.init(type: type)
     }
     
     override var focusMode: FocusMode {
         get { _focusMode }
         set {
-            if canChangeSettings {
+            if canChangeSettings && loggedFocusModeSupported.contains(newValue) {
                 _focusMode = newValue
             }
         }
@@ -62,7 +64,7 @@ final class CaptureDeviceSpy: AVCaptureDevice {
     override var exposureMode: ExposureMode {
         get { _exposureMode }
         set { 
-            if canChangeSettings {
+            if canChangeSettings && loggedExposureModeSupported.contains(newValue) {
                 _exposureMode = newValue
             }
         }
@@ -91,7 +93,8 @@ final class CaptureDeviceSpy: AVCaptureDevice {
     }
     
     override func isFocusModeSupported(_ focusMode: FocusMode) -> Bool {
-        true
+        loggedFocusModeSupported.append(focusMode)
+        return true
     }
     
     override var isExposurePointOfInterestSupported: Bool {
@@ -99,13 +102,14 @@ final class CaptureDeviceSpy: AVCaptureDevice {
     }
     
     override func isExposureModeSupported(_ exposureMode: ExposureMode) -> Bool {
-        true
+        loggedExposureModeSupported.append(exposureMode)
+        return true
     }
     
     override func lockForConfiguration() throws {
         try super.lockForConfiguration()
         
-        if shouldLockForConfigurationThrow {
+        if shouldLockForConfigurationThrowAnError {
             throw anyNSError()
         }
         

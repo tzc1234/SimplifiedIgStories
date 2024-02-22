@@ -49,7 +49,7 @@ final class AVCameraAuxiliaryTests: XCTestCase {
     }
     
     func test_focus_deliversChangeDeviceSettingsFailureStatusWhenErrorOccurred() {
-        let (sut, _) = makeSUT(shouldLockForConfigurationThrow: true)
+        let (sut, _) = makeSUT(shouldLockForConfigurationThrowAnError: true)
         let statusSpy = CameraAuxiliaryStatusSpy(publisher: sut.getStatusPublisher())
         
         sut.focus(on: .zero)
@@ -62,13 +62,13 @@ final class AVCameraAuxiliaryTests: XCTestCase {
     private typealias CameraAuxiliaryStatusSpy = StatusSpy<CameraAuxiliaryStatus>
     
     private func makeSUT(isCaptureDeviceExisted: Bool = true,
-                         shouldLockForConfigurationThrow: Bool = false,
+                         shouldLockForConfigurationThrowAnError: Bool = false,
                          file: StaticString = #filePath,
                          line: UInt = #line) -> (sut: AVCameraAuxiliary, captureDevice: CaptureDeviceSpy) {
         AVCaptureDevice.swizzled()
         let captureDevice = CaptureDeviceSpy(
             type: .video,
-            shouldLockForConfigurationThrow: shouldLockForConfigurationThrow
+            shouldLockForConfigurationThrowAnError: shouldLockForConfigurationThrowAnError
         )
         let camera = AuxiliarySupportedCameraSpy(
             captureDevice: isCaptureDeviceExisted ? captureDevice : nil,
