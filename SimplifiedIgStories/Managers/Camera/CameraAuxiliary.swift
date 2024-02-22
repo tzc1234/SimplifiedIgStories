@@ -10,6 +10,7 @@ import Combine
 
 enum CameraAuxiliaryStatus {
     case captureDeviceNotFound
+    case changeDeviceSettingsFailure
 }
 
 protocol CameraAuxiliary {
@@ -41,8 +42,10 @@ final class AVCameraAuxiliary: CameraAuxiliary {
         let focusPoint = CGPoint(x: x, y: y)
 
         camera.performOnSessionQueue { [weak self] in
+            guard let self else { return }
+            
             do {
-                try self?.configureVideoDevice { device in
+                try configureVideoDevice { device in
                     if device.isFocusPointOfInterestSupported {
                         device.focusPointOfInterest = focusPoint
                     }
@@ -60,7 +63,7 @@ final class AVCameraAuxiliary: CameraAuxiliary {
                     }
                 }
             } catch {
-                print("Cannot lock device for configuration: \(error)")
+                statusPublisher.send(.changeDeviceSettingsFailure)
             }
         }
     }
