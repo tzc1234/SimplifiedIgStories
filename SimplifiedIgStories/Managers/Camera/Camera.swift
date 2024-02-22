@@ -13,12 +13,6 @@ enum CameraPosition {
     case front
 }
 
-enum CameraFlashMode {
-    case on
-    case off
-    case auto
-}
-
 protocol Camera {
     var cameraPosition: CameraPosition { get }
     var videoPreviewLayer: CALayer { get }

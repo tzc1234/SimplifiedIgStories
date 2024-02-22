@@ -8,6 +8,12 @@
 import AVKit
 import Combine
 
+enum CameraFlashMode {
+    case on
+    case off
+    case auto
+}
+
 enum PhotoTakerStatus: Equatable {
     case addPhotoOutputFailure
     case photoTaken(photo: UIImage)
