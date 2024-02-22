@@ -272,39 +272,3 @@ extension AVCaptureDevice: MethodSwizzling {
         ]
     }
 }
-
-final class CaptureDeviceSpy: AVCaptureDevice {
-    private var _focusMode = FocusMode.locked
-    private var _exposureMode = ExposureMode.locked
-    private var _position = AVCaptureDevice.Position.unspecified
-    let mediaType: AVMediaType
-    
-    init(type: AVMediaType, position: AVCaptureDevice.Position) {
-        self.mediaType = type
-        self._position = position
-        super.init(type: type)
-    }
-    
-    override var focusMode: FocusMode {
-        get { _focusMode }
-        set { _focusMode = newValue }
-    }
-    
-    override var exposureMode: ExposureMode {
-        get { _exposureMode }
-        set { _exposureMode = newValue }
-    }
-    
-    override var position: AVCaptureDevice.Position {
-        get { _position }
-        set { _position = newValue }
-    }
-    
-    override func isFocusModeSupported(_ focusMode: FocusMode) -> Bool {
-        true
-    }
-    
-    override func isExposureModeSupported(_ exposureMode: ExposureMode) -> Bool {
-        true
-    }
-}

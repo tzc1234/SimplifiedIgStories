@@ -18,7 +18,7 @@ final class AVCameraAuxiliaryTests: XCTestCase {
     }
     
     func test_focus_deliversCaptureDeviceNotFoundStatusWhenNoCaptureDeviceFound() {
-        let (sut, _) = makeSUT(captureDevice: nil)
+        let (sut, _) = makeSUT(isCaptureDeviceExisted: false)
         let statusSpy = CameraAuxiliaryStatusSpy(publisher: sut.getStatusPublisher())
         
         sut.focus(on: .zero)
@@ -26,18 +26,36 @@ final class AVCameraAuxiliaryTests: XCTestCase {
         XCTAssertEqual(statusSpy.loggedStatuses, [.captureDeviceNotFound])
     }
     
+    func test_focus_setsFocusPointProperly() {
+        let (sut, device) = makeSUT()
+        let initialFocusPoint = device.focusPointOfInterest
+        
+        sut.focus(on: .init(x: 999, y: 999))
+        
+        XCTAssertNotEqual(device.focusPointOfInterest, initialFocusPoint)
+        XCTAssertEqual(device.focusMode, .autoFocus)
+    }
+    
     // MARK: - Helpers
     
     private typealias CameraAuxiliaryStatusSpy = StatusSpy<CameraAuxiliaryStatus>
     
-    private func makeSUT(captureDevice: AVCaptureDevice? = nil,
+    private func makeSUT(isCaptureDeviceExisted: Bool = true,
                          file: StaticString = #filePath,
-                         line: UInt = #line) -> (sut: AVCameraAuxiliary, camera: AuxiliarySupportedCameraSpy) {
-        let camera = AuxiliarySupportedCameraSpy(captureDevice: captureDevice, performOnSessionQueue: { $0() })
+                         line: UInt = #line) -> (sut: AVCameraAuxiliary, captureDevice: CaptureDeviceSpy) {
+        AVCaptureDevice.swizzled()
+        let captureDevice = CaptureDeviceSpy(type: .video)
+        let camera = AuxiliarySupportedCameraSpy(
+            captureDevice: isCaptureDeviceExisted ? captureDevice : nil,
+            performOnSessionQueue: { $0() }
+        )
         let sut = AVCameraAuxiliary(camera: camera)
+        addTeardownBlock {
+            AVCaptureDevice.revertSwizzled()
+        }
         trackForMemoryLeaks(camera, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
-        return (sut, camera)
+        return (sut, captureDevice)
     }
     
     private final class AuxiliarySupportedCameraSpy: AuxiliarySupportedCamera {

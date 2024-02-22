@@ -43,16 +43,19 @@ final class AVCameraAuxiliary: CameraAuxiliary {
         camera.performOnSessionQueue { [weak self] in
             do {
                 try self?.configureVideoDevice { device in
-                    if device.isFocusPointOfInterestSupported && device.isFocusModeSupported(.continuousAutoFocus) {
+                    if device.isFocusPointOfInterestSupported {
                         device.focusPointOfInterest = focusPoint
+                    }
+                    
+                    if device.isFocusModeSupported(.autoFocus) {
                         device.focusMode = .autoFocus
                     }
                     
-                    if device.isExposurePointOfInterestSupported &&
-                        device.isExposureModeSupported(.continuousAutoExposure) {
-                        device.exposurePointOfInterest = focusPoint
-                        device.exposureMode = .continuousAutoExposure
-                    }
+//                    if device.isExposurePointOfInterestSupported &&
+//                        device.isExposureModeSupported(.continuousAutoExposure) {
+//                        device.exposurePointOfInterest = focusPoint
+//                        device.exposureMode = .continuousAutoExposure
+//                    }
                 }
             } catch {
                 print("Cannot lock device for configuration: \(error)")
@@ -61,17 +64,17 @@ final class AVCameraAuxiliary: CameraAuxiliary {
     }
     
     func zoom(to factor: CGFloat) {
-        camera.performOnSessionQueue { [weak self] in
-            do {
-                try self?.configureVideoDevice { device in
-                    // Reference: https://stackoverflow.com/a/43278702
-                    let maxZoomFactor = device.activeFormat.videoMaxZoomFactor
-                    device.videoZoomFactor = max(1.0, min(device.videoZoomFactor + factor, maxZoomFactor))
-                }
-            } catch {
-                print("Cannot lock device for configuration: \(error)")
-            }
-        }
+//        camera.performOnSessionQueue { [weak self] in
+//            do {
+//                try self?.configureVideoDevice { device in
+//                    // Reference: https://stackoverflow.com/a/43278702
+//                    let maxZoomFactor = device.activeFormat.videoMaxZoomFactor
+//                    device.videoZoomFactor = max(1.0, min(device.videoZoomFactor + factor, maxZoomFactor))
+//                }
+//            } catch {
+//                print("Cannot lock device for configuration: \(error)")
+//            }
+//        }
     }
     
     private func configureVideoDevice(action: (AVCaptureDevice) -> Void) throws {
@@ -80,8 +83,8 @@ final class AVCameraAuxiliary: CameraAuxiliary {
             return
         }
         
-        try device.lockForConfiguration()
+//        try device.lockForConfiguration()
         action(device)
-        device.unlockForConfiguration()
+//        device.unlockForConfiguration()
     }
 }
