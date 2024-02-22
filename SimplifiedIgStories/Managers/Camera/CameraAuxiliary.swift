@@ -41,30 +41,26 @@ final class AVCameraAuxiliary: CameraAuxiliary {
         let y = 1.0 - point.x / .screenWidth
         let focusPoint = CGPoint(x: x, y: y)
 
-        camera.performOnSessionQueue { [weak self] in
-            guard let self else { return }
-            
-            do {
-                try configureVideoDevice { device in
-                    if device.isFocusPointOfInterestSupported {
-                        device.focusPointOfInterest = focusPoint
-                    }
-                    
-                    if device.isFocusModeSupported(.autoFocus) {
-                        device.focusMode = .autoFocus
-                    }
-                    
-                    if device.isExposurePointOfInterestSupported {
-                        device.exposurePointOfInterest = focusPoint
-                    }
-                    
-                    if device.isExposureModeSupported(.continuousAutoExposure) {
-                        device.exposureMode = .continuousAutoExposure
-                    }
+        do {
+            try configureVideoDevice { device in
+                if device.isFocusPointOfInterestSupported {
+                    device.focusPointOfInterest = focusPoint
                 }
-            } catch {
-                statusPublisher.send(.changeDeviceSettingsFailure)
+                
+                if device.isFocusModeSupported(.autoFocus) {
+                    device.focusMode = .autoFocus
+                }
+                
+                if device.isExposurePointOfInterestSupported {
+                    device.exposurePointOfInterest = focusPoint
+                }
+                
+                if device.isExposureModeSupported(.continuousAutoExposure) {
+                    device.exposureMode = .continuousAutoExposure
+                }
             }
+        } catch {
+            statusPublisher.send(.changeDeviceSettingsFailure)
         }
     }
     
