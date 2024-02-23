@@ -29,10 +29,58 @@ final class PHPPhotoMediaStoreTests: XCTestCase {
         }
         PHPhotoLibrary.revertSwizzledToUnauthorizedPermission()
     }
+    
+    // Cannot mock PHAssetChangeRequest, therefore cannot tests the happy path of saveImageData.
+    
+    func test_saveImageData_deliversFailedErrorWhenPerformChangeFailed() async {
+        PHPhotoLibrary.swizzled()
+        let sut = PHPPhotoMediaStore()
+        let imageData = UIImage.makeData(withColor: .red)
+        
+        await assertThrowsError(try await sut.saveImageData(imageData)) { error in
+            XCTAssertEqual(error as? MediaStoreError, .failed)
+        }
+        PHPhotoLibrary.revertSwizzled()
+    }
 }
 
 extension PHPhotoLibrary {
-    @objc static func returnDeniedAuthorization(for accessLevel: PHAccessLevel) async -> PHAuthorizationStatus {
+    @objc class func returnAuthorized(for accessLevel: PHAccessLevel) async -> PHAuthorizationStatus {
+        accessLevel == .addOnly ? .authorized : .denied
+    }
+    
+    @objc func _performChanges(_ changeBlock: @escaping () -> Void) async throws {
+        throw anyNSError()
+    }
+    
+    static func swizzled() {
+        stub().swizzled()
+    }
+    
+    static func revertSwizzled() {
+        stub().revertSwizzled()
+    }
+    
+    private static func stub() -> MethodSwizzlingStub {
+        MethodSwizzlingStub(
+            instanceMethodPairs: [
+                .init(
+                    from: (PHPhotoLibrary.self, #selector(PHPhotoLibrary.performChanges(_:))),
+                    to: (PHPhotoLibrary.self, #selector(PHPhotoLibrary._performChanges(_:)))
+                )
+            ],
+            classMethodPairs: [
+                .init(
+                    from: (PHPhotoLibrary.self, #selector(PHPhotoLibrary.requestAuthorization(for:))),
+                    to: (PHPhotoLibrary.self, #selector(PHPhotoLibrary.returnAuthorized(for:)))
+                )
+            ]
+        )
+    }
+}
+
+extension PHPhotoLibrary {
+    @objc class func returnDeniedAuthorization(for accessLevel: PHAccessLevel) async -> PHAuthorizationStatus {
         .denied
     }
     
