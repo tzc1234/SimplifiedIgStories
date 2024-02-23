@@ -5,11 +5,6 @@
 //  Created by Tsz-Lung on 09/02/2024.
 //
 
-/*
-    This class is not tested because every time have to ensure there is an add photo permission,
-    it makes the test flaky. And also this class is simple enough not testing.
-*/
-
 import PhotosUI
 
 final class PHPPhotoMediaStore: MediaStore {
@@ -23,7 +18,7 @@ final class PHPPhotoMediaStore: MediaStore {
         }
     }
     
-    func saveVideo(by url: URL) async throws {
+    func saveVideo(for url: URL) async throws {
         try await save {
             PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
         }

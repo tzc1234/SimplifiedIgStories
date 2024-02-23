@@ -31,7 +31,7 @@ final class LocalMediaSaver {
     
     func saveVideo(by url: URL) async throws {
         do {
-            try await store.saveVideo(by: url)
+            try await store.saveVideo(for: url)
         } catch MediaStoreError.noPermission {
             throw Error.noPermission
         } catch {

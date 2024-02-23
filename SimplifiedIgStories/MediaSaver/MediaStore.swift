@@ -9,7 +9,7 @@ import Foundation
 
 protocol MediaStore {
     func saveImageData(_ data: Data) async throws
-    func saveVideo(by url: URL) async throws
+    func saveVideo(for url: URL) async throws
 }
 
 enum MediaStoreError: Error {

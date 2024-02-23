@@ -92,7 +92,7 @@ final class LocalMediaSaverTests: XCTestCase {
             try stubs.removeLast().get()
         }
         
-        func saveVideo(by url: URL) async throws {
+        func saveVideo(for url: URL) async throws {
             savedVideoURLs.append(url)
             try stubs.removeLast().get()
         }
