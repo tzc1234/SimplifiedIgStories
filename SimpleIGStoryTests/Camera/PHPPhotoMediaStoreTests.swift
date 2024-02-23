@@ -30,7 +30,7 @@ final class PHPPhotoMediaStoreTests: XCTestCase {
         PHPhotoLibrary.revertSwizzledToUnauthorizedPermission()
     }
     
-    // Cannot mock PHAssetChangeRequest, therefore cannot tests the happy path of saveImageData.
+    // Cannot mock PHAssetChangeRequest, therefore cannot test the happy path of saveImageData and saveVideo.
     
     func test_saveImageData_deliversFailedErrorWhenPerformChangeFailed() async {
         PHPhotoLibrary.swizzled()
@@ -51,6 +51,16 @@ final class PHPPhotoMediaStoreTests: XCTestCase {
             XCTAssertEqual(error as? MediaStoreError, .noPermission)
         }
         PHPhotoLibrary.revertSwizzledToUnauthorizedPermission()
+    }
+    
+    func test_saveVideo_deliversFailedErrorWhenPerformChangeFailed() async {
+        PHPhotoLibrary.swizzled()
+        let sut = PHPPhotoMediaStore()
+        
+        await assertThrowsError(try await sut.saveVideo(for: anyVideoURL())) { error in
+            XCTAssertEqual(error as? MediaStoreError, .failed)
+        }
+        PHPhotoLibrary.revertSwizzled()
     }
 }
 
