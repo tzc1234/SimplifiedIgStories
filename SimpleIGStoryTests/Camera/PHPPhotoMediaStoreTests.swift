@@ -10,6 +10,15 @@ import PhotosUI
 @testable import Simple_IG_Story
 
 final class PHPPhotoMediaStoreTests: XCTestCase {
+    func test_saveImageData_deliversFailedErrorWithInvalidImageData() async {
+        let sut = PHPPhotoMediaStore()
+        let invalidData = Data("invalid".utf8)
+        
+        await assertThrowsError(try await sut.saveImageData(invalidData)) { error in
+            XCTAssertEqual(error as? MediaStoreError, .failed)
+        }
+    }
+    
     func test_saveImageData_deliversNoPermissionErrorIfUnauthorizedWithImageData() async {
         PHPhotoLibrary.swizzledToUnauthorizedPermission()
         let sut = PHPPhotoMediaStore()
@@ -28,20 +37,21 @@ extension PHPhotoLibrary {
     }
     
     static func swizzledToUnauthorizedPermission() {
-        permissionStub().swizzled()
+        deniedPermissionStub().swizzled()
     }
     
     static func revertSwizzledToUnauthorizedPermission() {
-        permissionStub().revertSwizzled()
+        deniedPermissionStub().revertSwizzled()
     }
     
-    private static func permissionStub() -> MethodSwizzlingStub {
+    private static func deniedPermissionStub() -> MethodSwizzlingStub {
         MethodSwizzlingStub(
             instanceMethodPairs: [],
             classMethodPairs: [
                 .init(
                     from: (PHPhotoLibrary.self, #selector(PHPhotoLibrary.requestAuthorization(for:))),
-                    to: (PHPhotoLibrary.self, #selector(PHPhotoLibrary.returnDeniedAuthorization(for:))))
+                    to: (PHPhotoLibrary.self, #selector(PHPhotoLibrary.returnDeniedAuthorization(for:)))
+                )
             ]
         )
     }
