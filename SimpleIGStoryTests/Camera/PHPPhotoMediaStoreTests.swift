@@ -42,6 +42,16 @@ final class PHPPhotoMediaStoreTests: XCTestCase {
         }
         PHPhotoLibrary.revertSwizzled()
     }
+    
+    func test_saveVideo_deliversNoPermissionErrorIfUnauthorized() async {
+        PHPhotoLibrary.swizzledToUnauthorizedPermission()
+        let sut = PHPPhotoMediaStore()
+        
+        await assertThrowsError(try await sut.saveVideo(for: anyVideoURL())) { error in
+            XCTAssertEqual(error as? MediaStoreError, .noPermission)
+        }
+        PHPhotoLibrary.revertSwizzledToUnauthorizedPermission()
+    }
 }
 
 extension PHPhotoLibrary {
