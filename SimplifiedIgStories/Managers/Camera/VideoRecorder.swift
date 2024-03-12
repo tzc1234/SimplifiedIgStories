@@ -54,6 +54,8 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
         self.outputPath = outputPath
         self.beginBackgroundTask = beginBackgroundTask
         self.endBackgroundTask = endBackgroundTask
+        super.init()
+        self.addMovieFileOutputIfNeeded()
     }
     
     func getStatusPublisher() -> AnyPublisher<VideoRecorderStatus, Never> {
@@ -63,8 +65,6 @@ final class AVVideoRecorder: NSObject, VideoRecorder {
     func startRecording() {
         device.performOnSessionQueue { [weak self] in
             guard let self else { return }
-            
-            addMovieFileOutputIfNeeded()
             
             guard let movieFileOutput, !movieFileOutput.isRecording else {
                 return

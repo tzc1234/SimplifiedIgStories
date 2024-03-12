@@ -42,15 +42,6 @@ final class AVVideoRecorderTests: XCTestCase {
         assertMovieFileOutput(on: device)
     }
     
-    func test_startRecording_deliversAddMovieFileOutputFailureStatusWhenCannotAddMovieFileOutput() {
-        let (sut, _) = makeSUT(canAddMovieFileOutput: false)
-        let statusSpy = VideoRecorderStatusSpy(publisher: sut.getStatusPublisher())
-        
-        sut.startRecording()
-        
-        XCTAssertEqual(statusSpy.loggedStatuses, [.addMovieFileOutputFailure])
-    }
-    
     func test_startRecording_doesNotStartRecordingWhenItIsAlreadyRecording() {
         let movieFileOutput = CaptureMovieFileOutputSpy()
         movieFileOutput.setRecording(true)
@@ -129,7 +120,8 @@ final class AVVideoRecorderTests: XCTestCase {
         sut.startRecording()
         sut.stopRecording()
         
-        XCTAssertNil(device.movieFileOutput)
+        XCTAssertEqual(device.movieFileOutput?.startRecordingCallCount, 0)
+        XCTAssertEqual(device.movieFileOutput?.stopRecordingCallCount, 0)
         
         loggedActions.forEach { $0() }
         
@@ -184,7 +176,6 @@ final class AVVideoRecorderTests: XCTestCase {
     
     private func makeSUT(isSessionRunning: Bool = false,
                          cameraPosition: CameraPosition = .back,
-                         canAddMovieFileOutput: Bool = true,
                          captureMovieFileOutput: @escaping () -> AVCaptureMovieFileOutput 
                             = CaptureMovieFileOutputSpy.init,
                          outputPath: @escaping () -> URL = { anyVideoURL() },
@@ -198,7 +189,7 @@ final class AVVideoRecorderTests: XCTestCase {
         let device = VideoRecordDeviceSpy(
             isSessionRunning: isSessionRunning,
             cameraPosition: cameraPosition,
-            canAddMovieFileOutput: canAddMovieFileOutput,
+            canAddMovieFileOutput: true,
             performOnSessionQueue: perform
         )
         let sut = AVVideoRecorder(
