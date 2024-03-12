@@ -23,8 +23,8 @@ struct StoryContainer: View {
                         vm: StoryViewModel(
                             storyId: story.id,
                             storiesViewModel: vm,
-                            fileManager: LocalFileManager(),
-                            mediaSaver: MediaFileSaver()
+                            fileManager: LocalImageFileManager(),
+                            mediaSaver: LocalMediaSaver()
                         )
                     )
                     .opacity(story.id != vm.currentStoryId && !vm.shouldCubicRotation ? 0.0 : 1.0)
@@ -43,23 +43,25 @@ struct StoryContainer: View {
         .animation(.interactiveSpring(), value: translation)
         .gesture(
             DragGesture()
-                .updating($translation) { value, state, transaction in
+                .onChanged { _ in
                     vm.isDragging = true
+                }
+                .updating($translation) { value, state, transaction in
                     vm.updateStoryIdBeforeDragged()
                     state = value.translation.width
                 }
                 .onEnded { value in
                     endDraggingStoryContainerWith(offset: value.translation.width / .screenWidth)
+                    vm.isDragging = false
                 }
         )
         .statusBar(hidden: true)
-        
     }
 }
 
 struct StoryContainer_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = StoriesViewModel(fileManager: LocalFileManager())
+        let vm = StoriesViewModel(fileManager: LocalImageFileManager())
         StoryContainer(vm: vm)
             .environmentObject(HomeUIActionHandler())
             .task {
@@ -74,6 +76,7 @@ extension StoryContainer {
         guard let index = vm.currentStoryIndex else {
             return 0.0
         }
+        
         return -CGFloat(index) * width
     }
     
@@ -88,7 +91,5 @@ extension StoryContainer {
         } else if abs(offset.rounded()) > 0 {
             vm.moveCurrentStory(to: offset >= 0 ? .previous : .next)
         }
-        
-        vm.isDragging = false
     }
 }

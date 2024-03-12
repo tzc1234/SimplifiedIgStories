@@ -12,7 +12,7 @@ struct ProgressBarPortion: View {
     @State private var endX = 0.0
     
     // ProgressBarPortion will frequently be recreate,
-    // TracingEndX must be a @StateObject to keep it unchange.
+    // TracingEndX must be a @StateObject to keep it unchanged.
     @StateObject private var tracingEndX = TracingEndX(currentEndX: 0.0)
     
     // For reset animation!
@@ -47,7 +47,7 @@ struct ProgressBarPortion: View {
                 .onChange(of: vm.barPortionAnimationStatusDict[portionId]) { newValue in
                     if let portionAnimationStatus = newValue {
                         switch portionAnimationStatus {
-                        case .inital:
+                        case .initial:
                             initializeAnimation()
                         case .start:
                             startAnimation(maxWidth: geo.size.width)
@@ -69,7 +69,7 @@ struct ProgressBarPortion: View {
 
 struct ProgressBarPortion_Previews: PreviewProvider {
     static var previews: some View {
-        let storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
+        let storiesViewModel = StoriesViewModel(fileManager: LocalImageFileManager())
         let story = storiesViewModel.stories[1]
         ProgressBarPortion(
             portionId: story.portions[0].id,
@@ -78,8 +78,8 @@ struct ProgressBarPortion_Previews: PreviewProvider {
             storyViewModel: StoryViewModel(
                 storyId: story.id,
                 storiesViewModel: storiesViewModel,
-                fileManager: LocalFileManager(),
-                mediaSaver: MediaFileSaver()
+                fileManager: LocalImageFileManager(),
+                mediaSaver: LocalMediaSaver()
             )
         )
     }

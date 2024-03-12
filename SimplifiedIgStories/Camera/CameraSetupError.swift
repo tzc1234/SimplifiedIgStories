@@ -1,21 +1,17 @@
 //
-//  CamSetupError.swift
+//  CameraSetupError.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 19/06/2022.
 //
 
-enum CamSetupError: Error {
+enum CameraSetupError: Error {
     case defaultVideoDeviceUnavailable
     case createVideoDeviceInputFailure(err: Error)
     case addVideoDeviceInputFailure
     case defaultAudioDeviceUnavailable
     case createAudioDeviceInputFailure(err: Error)
     case addAudioDeviceInputFailure
-    case addMovieFileOutputFailure
-    case addPhotoOutputFailure
-    case backgroundAudioPreferenceSetupFailure
-    case videoDeviceNotFound
     
     var errMsg: String {
         switch self {
@@ -31,14 +27,6 @@ enum CamSetupError: Error {
             return "Cannot create audio device input: \(err)"
         case .addAudioDeviceInputFailure:
             return "Cannot add audio device input to the session."
-        case .addMovieFileOutputFailure:
-            return "Cannot add movie file output to the session."
-        case .addPhotoOutputFailure:
-            return "Cannot add photo output to the session."
-        case .backgroundAudioPreferenceSetupFailure:
-            return "Cannot set background audio preference."
-        case .videoDeviceNotFound:
-            return "Cannot find videoDevice."
         }
     }
 }

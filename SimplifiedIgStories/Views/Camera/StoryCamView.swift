@@ -8,11 +8,31 @@
 import SwiftUI
 
 struct StoryCamView: View {
-    @StateObject private var vm = StoryCamViewModel(camManager: AVCamManager())
+    @StateObject private var vm: StoryCamViewModel
     
     let postImageAction: ((UIImage) -> Void)
     let postVideoAction: ((URL) -> Void)
     let tapCloseAction: (() -> Void)
+    
+    init(postImageAction: @escaping (UIImage) -> Void,
+         postVideoAction: @escaping (URL) -> Void,
+         tapCloseAction: @escaping () -> Void) {
+        let camera = AVCamera()
+        let photoTaker = AVPhotoTaker(device: camera)
+        let videoRecorder = AVVideoRecorder(device: camera)
+        let cameraAuxiliary = AVCameraAuxiliary(camera: camera)
+        let vm = StoryCamViewModel(
+            camera: camera,
+            photoTaker: photoTaker,
+            videoRecorder: videoRecorder,
+            cameraAuxiliary: cameraAuxiliary
+        )
+        self._vm = StateObject(wrappedValue: vm)
+        
+        self.postImageAction = postImageAction
+        self.postVideoAction = postVideoAction
+        self.tapCloseAction = tapCloseAction
+    }
     
     var body: some View {
         ZStack {
@@ -70,13 +90,12 @@ struct StoryCamView: View {
         }
         .onChange(of: vm.arePermissionsGranted) { isGranted in
             if isGranted {
-                vm.setupAndStartSession()
+                vm.startSession()
             }
         }
         .onDisappear {
             print("StoryCamView disappear")
         }
-        
     }
 }
 
@@ -162,7 +181,6 @@ extension StoryCamView {
         case .auto: return "bolt.badge.a.fill"
         case .on:   return "bolt.fill"
         case .off:  return "bolt.slash.fill"
-        @unknown default: return ""
         }
     }
 }
@@ -171,14 +189,9 @@ extension StoryCamView {
 extension StoryCamView {
     private func toggleFlashMode() {
         switch vm.flashMode {
-        case .auto:
-            vm.flashMode = .off
-        case .on:
-            vm.flashMode = .auto
-        case .off:
-            vm.flashMode = .on
-        @unknown default:
-            break
+        case .auto: vm.flashMode = .off
+        case .on:   vm.flashMode = .auto
+        case .off:  vm.flashMode = .on
         }
     }
 }

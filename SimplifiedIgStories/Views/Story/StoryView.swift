@@ -77,15 +77,15 @@ struct StoryView: View {
 
 struct StoryView_Previews: PreviewProvider {
     static var previews: some View {
-        let storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
+        let storiesViewModel = StoriesViewModel(fileManager: LocalImageFileManager())
         let story = storiesViewModel.currentStories[0]
         StoryView(
             storyId: story.id,
             vm: StoryViewModel(
                 storyId: story.id,
                 storiesViewModel: storiesViewModel,
-                fileManager: LocalFileManager(),
-                mediaSaver: MediaFileSaver()
+                fileManager: LocalImageFileManager(),
+                mediaSaver: LocalMediaSaver()
             )
         )
     }
@@ -139,7 +139,7 @@ extension StoryView {
     }
     
     private var dateText: some View {
-        Text(vm.story.lastUpdateDate?.timeAgoDisplay() ?? "")
+        Text(vm.story.lastUpdate?.timeAgoDisplay() ?? "")
             .foregroundColor(.white)
             .font(.subheadline)
     }

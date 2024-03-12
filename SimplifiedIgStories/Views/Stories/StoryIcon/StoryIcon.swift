@@ -47,7 +47,9 @@ struct StoryIcon: View {
         .scaleEffect(isOnTap ? 1.1 : 1.0)
         .frame(maxWidth: .infinity)
         .onChange(of: tracingEndAngle.currentEndAngle) { newValue in
-            if newValue == 360.0 { resetStrokeAnimationAfterCompletion() }
+            if newValue == 360.0 {
+                resetStrokeAnimationAfterCompletion()
+            }
         }
         .onTapGesture {
             guard let onTapAction = onTapAction else { return }
@@ -137,7 +139,9 @@ extension StoryIcon {
             isAnimating.toggle()
             
             // reset endAngle to 0 if the animation is finished
-            if endAngle == 360 { endAngle = 0 }
+            if endAngle == 360 {
+                endAngle = 0
+            }
             
             let animationDuration = animationDuration * (1 - tracingEndAngle.currentEndAngle / 360.0)
             withAnimation(.easeInOut(duration: animationDuration)) {
@@ -157,12 +161,12 @@ extension StoryIcon {
     
     private func resetStrokeAnimationAfterCompletion() {
         // reset currentEndAngle to 0 after finishing animation
-        tracingEndAngle.currentEndAngle = 0
+        tracingEndAngle.updateEndAngle(0)
         isAnimating = false
     }
     
     private func resetAnimation() {
         arcId = arcId == 0 ? 1 : 0
-        tracingEndAngle.currentEndAngle = 0
+        tracingEndAngle.updateEndAngle(0)
     }
 }

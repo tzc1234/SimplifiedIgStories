@@ -8,7 +8,7 @@
 import SwiftUI
 import AVKit
 
-// *** In real enironment, images are loaded through internet.
+// *** In real environment, images are loaded through internet.
 // The failure case should be considered.
 struct StoryPortionView: View {
     @State private var player: AVPlayer?
@@ -38,7 +38,7 @@ struct StoryPortionView: View {
             }
             
             switch animationStatus {
-            case .inital:
+            case .initial:
                 player.reset()
             case .start:
                 player.replay()
@@ -58,7 +58,7 @@ struct StoryPortionView: View {
 
 struct StoryPortionView_Previews: PreviewProvider {
     static var previews: some View {
-        let storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
+        let storiesViewModel = StoriesViewModel(fileManager: LocalImageFileManager())
         let story = storiesViewModel.currentStories[0]
         let portion = story.portions[0]
         StoryPortionView(
@@ -66,8 +66,8 @@ struct StoryPortionView_Previews: PreviewProvider {
             storyViewModel: StoryViewModel(
                 storyId: story.id,
                 storiesViewModel: storiesViewModel,
-                fileManager: LocalFileManager(),
-                mediaSaver: MediaFileSaver()
+                fileManager: LocalImageFileManager(),
+                mediaSaver: LocalMediaSaver()
             )
         )
     }

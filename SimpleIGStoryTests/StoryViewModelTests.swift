@@ -15,7 +15,7 @@ class StoryViewModelTests: XCTestCase {
     var storiesViewModel: StoriesViewModel!
     
     override func setUpWithError() throws {
-        storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
+        storiesViewModel = StoriesViewModel(fileManager: LocalImageFileManager())
         
         let expectation = XCTestExpectation(description: "wait async fetchStories")
         Task {
@@ -34,8 +34,8 @@ class StoryViewModelTests: XCTestCase {
         sut = StoryViewModel(
             storyId: firstHasPortionStory!.id,
             storiesViewModel: storiesViewModel,
-            fileManager: LocalFileManager(),
-            mediaSaver: MediaFileSaver()
+            fileManager: LocalImageFileManager(),
+            mediaSaver: LocalMediaSaver()
         )
         
         XCTAssertIdentical(storiesViewModel, storiesViewModel, "storiesViewModel")
@@ -75,11 +75,11 @@ class StoryViewModelTests: XCTestCase {
     
     func test_barPortionAnimationStatusDict_ensureTheValuesAreValid() {
         let currentPortionId = sut.currentPortionId
-        XCTAssertEqual(sut.currentPortionAnimationStatus, .inital, "currentPortionAnimationStatus")
-        XCTAssertEqual(sut.barPortionAnimationStatusDict[currentPortionId], .inital, "barPortionAnimationStatusDict")
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .initial, "currentPortionAnimationStatus")
+        XCTAssertEqual(sut.barPortionAnimationStatusDict[currentPortionId], .initial, "barPortionAnimationStatusDict")
         
         for _ in 1...30 {
-            let status = BarPortionAnimationStatus.allCases.randomElement() ?? .inital
+            let status = BarPortionAnimationStatus.allCases.randomElement() ?? .initial
             sut.barPortionAnimationStatusDict[currentPortionId] = status
             
             XCTAssertEqual(sut.currentPortionAnimationStatus, status, "currentPortionAnimationStatus")
@@ -192,13 +192,13 @@ class StoryViewModelTests: XCTestCase {
     }
     
     func test_performProgressBarAnimation_setPortionTransitionDirectionToForward_currentBarPortionAnimationStatusWillBeFinish() {
-        XCTAssertEqual(sut.currentPortionAnimationStatus, .inital)
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .initial)
         setPortionTransitionDirectionForward()
         XCTAssertEqual(sut.currentPortionAnimationStatus, .finish)
     }
     
     func test_performProgressBarAnimation_setPortionTransitionDirectionToBackward_firstStoryFirstPortion_startCurrentPortionAnimation() {
-        XCTAssertEqual(sut.currentPortionAnimationStatus, .inital, "currentPortionAnimationStatus")
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .initial, "currentPortionAnimationStatus")
         XCTAssertEqual(sut.currentPortionId, sut.firstPortionId, "currentPortionId == firstPortionId")
         
         setPortionTransitionDirectionBackward()
@@ -225,7 +225,7 @@ class StoryViewModelTests: XCTestCase {
         
         setPortionTransitionDirectionBackward()
         
-        XCTAssertEqual(sut.barPortionAnimationStatusDict[firstPortionId], .inital)
+        XCTAssertEqual(sut.barPortionAnimationStatusDict[firstPortionId], .initial)
         XCTAssertEqual(sut.currentStoryId, previousCurrentStoryId, "currentStoryId == previousCurrentStoryId")
     }
     
@@ -239,7 +239,7 @@ class StoryViewModelTests: XCTestCase {
         let portionId = sut.currentPortionId
         setPortionTransitionDirectionBackward()
         
-        XCTAssertEqual(sut.barPortionAnimationStatusDict[portionId], .inital)
+        XCTAssertEqual(sut.barPortionAnimationStatusDict[portionId], .initial)
         XCTAssertEqual(sut.currentPortionId, previousPortionId, "currentPortionId == previousPortionId")
         XCTAssertEqual(sut.barPortionAnimationStatusDict[previousPortionId], .start, "currentBarPortionAnimationStatus")
     }
@@ -256,12 +256,12 @@ class StoryViewModelTests: XCTestCase {
     }
     
     func test_updateBarPortionAnimationStatusWhenDrag_isDragging_andAnimationStatusIsInital_ignore() {
-        XCTAssertEqual(sut.currentPortionAnimationStatus, .inital, "currentPortionAnimationStatus")
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .initial, "currentPortionAnimationStatus")
         XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
         
         storiesViewModel.isDragging = true
         
-        XCTAssertEqual(sut.currentPortionAnimationStatus, .inital, "currentPortionAnimationStatus")
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .initial, "currentPortionAnimationStatus")
         XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
     }
     
@@ -283,7 +283,7 @@ class StoryViewModelTests: XCTestCase {
         storiesViewModel.isDragging = false
         
         XCTAssertEqual(storiesViewModel.currentStoryId, secondSUT.storyId, "secondSUT is now current")
-        XCTAssertEqual(sut.currentPortionAnimationStatus, .inital, "1st story currentPortionAnimationStatus")
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .initial, "1st story currentPortionAnimationStatus")
         XCTAssertEqual(secondSUT.currentPortionAnimationStatus, .start, "2nd story currentPortionAnimationStatus")
     }
     
@@ -317,7 +317,7 @@ class StoryViewModelTests: XCTestCase {
     }
     
     func test_startProgressBarAnimation_currentStory_andCurrentPortionIsNotAnimating_startAnmation() {
-        XCTAssertEqual(sut.currentPortionAnimationStatus, .inital, "currentPortionAnimationStatus")
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .initial, "currentPortionAnimationStatus")
         XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
         
         sut.startProgressBarAnimation()
@@ -371,8 +371,8 @@ extension StoryViewModelTests {
         return StoryViewModel(
             storyId: secondStory.id,
             storiesViewModel: storiesViewModel,
-            fileManager: LocalFileManager(),
-            mediaSaver: MediaFileSaver()
+            fileManager: LocalImageFileManager(),
+            mediaSaver: LocalMediaSaver()
         )
     }
 }

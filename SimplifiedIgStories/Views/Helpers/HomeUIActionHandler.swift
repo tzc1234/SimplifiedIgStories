@@ -43,6 +43,7 @@ final class HomeUIActionHandler: ObservableObject {
         guard let storyId = storyId, let iconFrame = storyIconFrameDict[storyId] else {
             return
         }
+        
         currentIconFrame = iconFrame
     }
 }

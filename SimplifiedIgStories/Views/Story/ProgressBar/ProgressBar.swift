@@ -56,15 +56,15 @@ struct ProgressBar: View {
 
 struct ProgressBar_Previews: PreviewProvider {
     static var previews: some View {
-        let storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
+        let storiesViewModel = StoriesViewModel(fileManager: LocalImageFileManager())
         let story = storiesViewModel.stories[1]
         ProgressBar(
             storyId: story.id,
             storyViewModel: StoryViewModel(
                 storyId: story.id,
                 storiesViewModel: storiesViewModel,
-                fileManager: LocalFileManager(),
-                mediaSaver: MediaFileSaver()
+                fileManager: LocalImageFileManager(),
+                mediaSaver: LocalMediaSaver()
             )
         )
     }

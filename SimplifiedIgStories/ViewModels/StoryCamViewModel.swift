@@ -10,18 +10,14 @@ import AVKit
 import Combine
 
 @MainActor final class StoryCamViewModel: ObservableObject {
-    @Published var flashMode: AVCaptureDevice.FlashMode = .off {
-        willSet {
-            camManager.flashMode = newValue
-        }
-    }
+    @Published var flashMode: CameraFlashMode = .off
     
     @Published private(set) var enableVideoRecordBtn = false
     
     @Published var shouldPhotoTake = false {
         willSet {
             if newValue {
-                camManager.takePhoto()
+                photoTaker.takePhoto(on: flashMode)
             }
         }
     }
@@ -29,9 +25,9 @@ import Combine
     @Published var showPhotoPreview = false {
         didSet {
             if showPhotoPreview {
-                camManager.stopSession()
+                camera.stopSession()
             } else {
-                camManager.startSession()
+                camera.startSession()
             }
         }
     }
@@ -45,9 +41,9 @@ import Combine
             case .none:
                 break
             case .start:
-                camManager.startVideoRecording()
+                videoRecorder.startRecording()
             case .stop:
-                camManager.stopVideoRecording()
+                videoRecorder.stopRecording()
             }
         }
     }
@@ -55,9 +51,9 @@ import Combine
     @Published var showVideoPreview = false {
         didSet {
             if showVideoPreview {
-                camManager.stopSession()
+                camera.stopSession()
             } else {
-                camManager.startSession()
+                camera.startSession()
             }
         }
     }
@@ -69,21 +65,36 @@ import Combine
     
     var videoPreviewTapPoint: CGPoint = .zero {
         didSet {
-            camManager.focus(on: videoPreviewTapPoint)
+            cameraAuxiliary.focus(on: videoPreviewTapPoint)
         }
     }
     
     var videoPreviewPinchFactor: CGFloat = .zero {
         didSet {
-            camManager.zoom(to: videoPreviewPinchFactor)
+            cameraAuxiliary.zoom(to: videoPreviewPinchFactor)
         }
     }
     
-    private let camManager: CamManager
+    private let camera: Camera
+    private let photoTaker: PhotoTaker
+    private let videoRecorder: VideoRecorder
+    private let cameraAuxiliary: CameraAuxiliary
+    private let cameraAuthorizationTracker: DeviceAuthorizationTracker
+    private let microphoneAuthorizationTracker: DeviceAuthorizationTracker
 
-    init(camManager: CamManager) {
-        self.camManager = camManager
-        subscribeCamMangerPublishers()
+    init(camera: Camera,
+         photoTaker: PhotoTaker,
+         videoRecorder: VideoRecorder,
+         cameraAuxiliary: CameraAuxiliary,
+         cameraAuthorizationTracker: DeviceAuthorizationTracker = AVCaptureDeviceAuthorizationTracker(mediaType: .video),
+         microphoneAuthorizationTracker: DeviceAuthorizationTracker = AVCaptureDeviceAuthorizationTracker(mediaType: .audio)) {
+        self.camera = camera
+        self.photoTaker = photoTaker
+        self.videoRecorder = videoRecorder
+        self.cameraAuxiliary = cameraAuxiliary
+        self.cameraAuthorizationTracker = cameraAuthorizationTracker
+        self.microphoneAuthorizationTracker = microphoneAuthorizationTracker
+        self.subscribeCamMangerPublishers()
     }
 }
 
@@ -93,44 +104,48 @@ extension StoryCamViewModel {
         isCamPermGranted && isMicrophonePermGranted
     }
     
-    var videoPreviewLayer: AVCaptureVideoPreviewLayer {
-        camManager.videoPreviewLayer
+    var videoPreviewLayer: CALayer {
+        camera.videoPreviewLayer
     }
 }
 
 // MARK: internal functions
 extension StoryCamViewModel {
     func checkPermissions() {
-        camManager.checkPermissions()
+        cameraAuthorizationTracker.startTracking()
+        microphoneAuthorizationTracker.startTracking()
     }
     
-    func setupAndStartSession() {
-        camManager.setupAndStartSession()
+    func startSession() {
+        camera.startSession()
     }
     
     func switchCamera() {
-        camManager.switchCamera()
+        camera.switchCamera()
     }
 }
 
 // MARK: private functions
 extension StoryCamViewModel {
     private func subscribeCamMangerPublishers() {
-        camManager.camPermPublisher
+        cameraAuthorizationTracker
+            .getPublisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isGranted in
                 self?.isCamPermGranted = isGranted
             }
             .store(in: &subscriptions)
         
-        camManager.microphonePermPublisher
+        microphoneAuthorizationTracker
+            .getPublisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isGranted in
                 self?.isMicrophonePermGranted = isGranted
             }
             .store(in: &subscriptions)
         
-        camManager.camStatusPublisher
+        camera
+            .getStatusPublisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] camStatus in
                 switch camStatus {
@@ -140,26 +155,44 @@ extension StoryCamViewModel {
                 case .sessionStopped:
                     print("Camera session did stop running")
                     self?.enableVideoRecordBtn = false
-                case .photoTaken(photo: let photo):
+                case .cameraSwitched:
+                    break
+                }
+            }
+            .store(in: &subscriptions)
+        
+        photoTaker
+            .getStatusPublisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in
+                switch status {
+                case .addPhotoOutputFailure:
+                    break
+                case .photoTaken(let photo):
                     self?.lastTakenImage = photo
                     self?.showPhotoPreview = true
-                case .processingPhotoFailure:
+                case .imageConvertingFailure:
                     break
-                case .processingPhotoDataFailure:
-                    break
-                case .convertToUIImageFailure:
-                    break
-                case .recordingVideoBegun:
+                }
+            }
+            .store(in: &subscriptions)
+        
+        videoRecorder
+            .getStatusPublisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in
+                switch status {
+                case .recordingBegun:
                     print("Did Begin Recording Video")
-                case .recordingVideoFinished:
+                case .recordingFinished:
                     print("Did finish Recording Video")
                     self?.videoRecordingStatus = .none
-                case .processingVideoFailure:
+                case .videoProcessFailure:
                     break
-                case .processingVideoFinished(videoUrl: let videoUrl):
-                    self?.lastVideoUrl = videoUrl
+                case .processedVideo(let videoURL):
+                    self?.lastVideoUrl = videoURL
                     self?.showVideoPreview = true
-                case .cameraSwitched(camPosition: _):
+                case .addMovieFileOutputFailure:
                     break
                 }
             }

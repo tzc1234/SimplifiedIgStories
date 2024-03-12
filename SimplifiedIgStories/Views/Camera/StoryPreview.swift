@@ -172,8 +172,10 @@ extension StoryPreview {
 
 // MARK: helper functions
 extension StoryPreview {
-    private func showNoticeMsg(_ msg: String) {
-        noticeMsg = msg
+    private func showNotice(message: String?) {
+        guard let message else { return }
+        
+        noticeMsg = message
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             showNoticeLabel = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
@@ -184,25 +186,32 @@ extension StoryPreview {
     
     private func saveToAlbum() {
         Task { @MainActor in
-            do {
-                isLoading = true
-                
-                var successMsg: String?
-                if let uiImage = uiImage {
-                    successMsg = try await MediaFileSaver().saveToAlbum(uiImage)
-                } else if let videoUrl = videoUrl {
-                    successMsg = try await MediaFileSaver().saveToAlbum(videoUrl)
+            
+            isLoading = true
+            
+            var successMessage: String?
+            if let data = uiImage?.jpegData(compressionQuality: 1) {
+                do {
+                    try await LocalMediaSaver().saveImageData(data)
+                    successMessage = "Saved."
+                } catch MediaSaverError.noPermission {
+                    successMessage = "Couldn't save. No add photo permission."
+                } catch {
+                    successMessage = "Save failed."
                 }
-                
-                isLoading = false
-                if let successMsg = successMsg {
-                    showNoticeMsg(successMsg)
+            } else if let videoUrl = videoUrl {
+                do {
+                    try await LocalMediaSaver().saveVideo(by: videoUrl)
+                    successMessage = "Saved."
+                } catch MediaSaverError.noPermission {
+                    successMessage = "Couldn't save. No add photo permission."
+                } catch {
+                    successMessage = "Save failed."
                 }
-            } catch {
-                isLoading = false
-                let errMsg = (error as? MediaSavingError)?.errMsg ?? error.localizedDescription
-                showNoticeMsg("ERROR: \(errMsg)")
             }
+            
+            isLoading = false
+            showNotice(message: successMessage)
         }
     }
 }

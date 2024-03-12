@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-// MARK: - TraceableRectangle
 struct TraceableRectangle: Shape {
     let startX: Double
     var endX: Double
@@ -17,7 +16,9 @@ struct TraceableRectangle: Shape {
         get { endX }
         set {
             endX = newValue
-            tracingEndX.updateCurrentEndX(newValue)
+            Task { @MainActor [weak tracingEndX] in
+                tracingEndX?.updateCurrentEndX(newValue)
+            }
         }
     }
     
@@ -33,17 +34,15 @@ struct TraceableRectangle: Shape {
     }
 }
 
-// MARK: - TracingEndX
+@MainActor
 final class TracingEndX: ObservableObject {
-    @Published var currentEndX: Double
+    @Published private(set) var currentEndX: Double
     
     init(currentEndX: Double) {
         self.currentEndX = currentEndX
     }
     
     func updateCurrentEndX(_ endX: Double) {
-        DispatchQueue.main.async { [weak self] in
-            self?.currentEndX = endX
-        }
+        self.currentEndX = endX
     }
 }

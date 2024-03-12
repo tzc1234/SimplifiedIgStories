@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject private var handler = HomeUIActionHandler()
-    @StateObject private var storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
+    @StateObject private var storiesViewModel = StoriesViewModel(fileManager: LocalImageFileManager())
     
     var body: some View {
         ZStack {
@@ -72,7 +72,7 @@ extension HomeView {
                 StoryContainer(vm: storiesViewModel)
                     .zIndex(1.0)
                     .frame(maxHeight: .infinity, alignment: .top)
-                    .openAppLikeTransition(sacle: iconFrame.height / .screenHeight, offestX: offsetX, offsetY: offsetY)
+                    .openAppImitationTransition(scale: iconFrame.height / .screenHeight, offsetX: offsetX, offsetY: offsetY)
             }
         }
     }

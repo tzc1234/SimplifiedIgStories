@@ -16,20 +16,24 @@
 		"portions": [
 			{
 				"id": 0,
-				"imageName": "sea1"
+				"resource": "sea1",
+                "type": "image"
 			},
             {
                 "id": 15,
-                "videoName": "seaVideo",
-                "videoDuration": 7.6
+                "resource": "seaVideo",
+                "duration": 7.6,
+                "type": "video"
             },
 			{
 				"id": 1,
-				"imageName": "sea2"
+				"resource": "sea2",
+                "type": "image"
 			},
 			{
 				"id": 2,
-				"imageName": "sea3"
+				"resource": "sea3",
+                "type": "image"
 			}
 		],
 		"user": {
@@ -45,19 +49,23 @@
 		"portions": [
 			{
 				"id": 3,
-				"imageName": "peace1"
+				"resource": "peace1",
+                "type": "image"
 			},
 			{
 				"id": 4,
-				"imageName": "peace2"
+				"resource": "peace2",
+                "type": "image"
 			},
 			{
 				"id": 5,
-				"imageName": "peace3"
+				"resource": "peace3",
+                "type": "image"
 			},
             {
                 "id": 8,
-                "imageName": "peace4"
+                "resource": "peace4",
+                "type": "image"
             }
 		],
 		"user": {
@@ -73,11 +81,13 @@
         "portions": [
             {
                 "id": 6,
-                "imageName": "bird1"
+                "resource": "bird1",
+                "type": "image"
             },
             {
                 "id": 7,
-                "imageName": "bird2"
+                "resource": "bird2",
+                "type": "image"
             }
         ],
         "user": {
@@ -93,28 +103,34 @@
         "portions": [
             {
                 "id": 9,
-                "imageName": "forest1"
+                "resource": "forest1",
+                "type": "image"
             },
             {
                 "id": 10,
-                "imageName": "forest2"
+                "resource": "forest2",
+                "type": "image"
             },
             {
                 "id": 14,
-                "videoName": "forestVideo",
-                "videoDuration": 7.0
+                "resource": "forestVideo",
+                "duration": 7.0,
+                "type": "video"
             },
             {
                 "id": 11,
-                "imageName": "forest3"
+                "resource": "forest3",
+                "type": "image"
             },
             {
                 "id": 12,
-                "imageName": "forest4"
+                "resource": "forest4",
+                "type": "image"
             },
             {
                 "id": 13,
-                "imageName": "forest5"
+                "resource": "forest5",
+                "type": "image"
             }
         ],
         "user": {

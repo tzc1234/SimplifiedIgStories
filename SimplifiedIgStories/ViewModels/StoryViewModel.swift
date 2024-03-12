@@ -9,7 +9,7 @@ import Combine
 import UIKit
 
 enum BarPortionAnimationStatus: CaseIterable {
-    case inital, start, restart, pause, resume, finish
+    case initial, start, restart, pause, resume, finish
 }
 
 final class StoryViewModel: ObservableObject {
@@ -37,13 +37,13 @@ final class StoryViewModel: ObservableObject {
     
     let storyId: Int
     private let storiesViewModel: StoriesViewModel
-    private let fileManager: FileManageable
+    private let fileManager: ImageFileManageable
     private let mediaSaver: MediaSaver
     
     init(
         storyId: Int,
         storiesViewModel: StoriesViewModel,
-        fileManager: FileManageable,
+        fileManager: ImageFileManageable,
         mediaSaver: MediaSaver
     ) {
         self.storyId = storyId
@@ -58,10 +58,12 @@ final class StoryViewModel: ObservableObject {
         
         // Reference: https://stackoverflow.com/a/58406402
         // Trigger current ViewModel objectWillChange when parent's published property changed.
-        storiesViewModel.objectWillChange.sink { [weak self] in
-            self?.objectWillChange.send()
-        }
-        .store(in: &subscriptions)
+        storiesViewModel
+            .objectWillChange
+            .sink { [weak self] in
+                self?.objectWillChange.send()
+            }
+            .store(in: &subscriptions)
     }
     
     deinit {
@@ -72,7 +74,7 @@ final class StoryViewModel: ObservableObject {
 // MARK: computed variables
 extension StoryViewModel {
     // *** All the stories are from local JSON, not from API,
-    // so force unwarp here. Don't do this in real environment!
+    // so force unwrap here. Don't do this in real environment!
     var story: Story {
         storiesViewModel.stories.first(where: { $0.id == storyId })!
     }
@@ -123,12 +125,13 @@ extension StoryViewModel {
 // MARK: helper functions
 extension StoryViewModel {
     private func initCurrentStoryPortionId() {
-        guard let firstPortionId = firstPortionId else { return }
+        guard let firstPortionId else { return }
+        
         currentPortionId = firstPortionId
     }
     
     private func initBarPortionAnimationStatus() {
-        setCurrentBarPortionAnimationStatus(to: .inital)
+        setCurrentBarPortionAnimationStatus(to: .initial)
     }
     
     func setCurrentBarPortionAnimationStatus(to status: BarPortionAnimationStatus) {
@@ -160,7 +163,7 @@ extension StoryViewModel {
         $portionTransitionDirection
             .dropFirst()
             .sink { [weak self] transitionDirection in
-                guard let self = self else { return }
+                guard let self else { return }
                 print("storyId:\(self.storyId) | transitionDirection: \(transitionDirection)")
                 self.performProgressBarAnimation(by: transitionDirection)
             }
@@ -180,7 +183,7 @@ extension StoryViewModel {
     }
     
     private func moveCurrentPortion(to direction: PortionMoveDirection) {
-        guard let currentPortionIndex = currentPortionIndex else {
+        guard let currentPortionIndex else {
             return
         }
         
@@ -197,10 +200,10 @@ extension StoryViewModel {
     }
 }
 
-// MARK: functions for StoyView
+// MARK: functions for StoryView
 extension StoryViewModel {
     func initStoryAnimation() {
-        if isCurrentStory && currentPortionAnimationStatus == .inital {
+        if isCurrentStory && currentPortionAnimationStatus == .initial {
             setCurrentBarPortionAnimationStatus(to: .start)
         }
     }
@@ -210,7 +213,7 @@ extension StoryViewModel {
     }
     
     func deleteCurrentPortion(withoutNextPortionAction: () -> Void) {
-        guard let currentPortionIndex = currentPortionIndex else {
+        guard let currentPortionIndex else {
             return
         }
 
@@ -242,14 +245,14 @@ extension StoryViewModel {
                     // just start the animation.
                     setCurrentBarPortionAnimationStatus(to: currentPortionAnimationStatus == .start ? .restart : .start)
                 } else { // Not at the first story (that means previous story must exist.),
-                    // set current portion animation status back to inital,
-                    setCurrentBarPortionAnimationStatus(to: .inital)
+                    // set current portion animation status back to initial,
+                    setCurrentBarPortionAnimationStatus(to: .initial)
                     // and then go to previous story.
                     storiesViewModel.moveCurrentStory(to: .previous)
                 }
             } else { // Not at the first portion,
-                // set current portion animation status to inital,
-                setCurrentBarPortionAnimationStatus(to: .inital)
+                // set current portion animation status to initial,
+                setCurrentBarPortionAnimationStatus(to: .initial)
                 // go back to previous portion normally,
                 moveCurrentPortion(to: .previous)
                 // and start the previous portion animation (is now the current portion).
@@ -269,7 +272,7 @@ extension StoryViewModel {
             // It's the last story now, withoutNextStoryAction perform.
             if storiesViewModel.isNowAtLastStory {
                 withoutNextStoryAction()
-            } else { // Not the last stroy now, go to next story.
+            } else { // Not the last story now, go to next story.
                 storiesViewModel.moveCurrentStory(to: .next)
             }
         } else { // Not the last portion, go to next portion.
@@ -290,7 +293,7 @@ extension StoryViewModel {
                 }
                 
                 if storiesViewModel.storyIdBeforeDragged == storyId {
-                    setCurrentBarPortionAnimationStatus(to: .inital)
+                    setCurrentBarPortionAnimationStatus(to: .initial)
                 }
             }
         }
@@ -300,41 +303,51 @@ extension StoryViewModel {
         guard isCurrentStory && !isCurrentPortionAnimating else {
             return
         }
+        
         setCurrentBarPortionAnimationStatus(to: .start)
     }
 }
 
 // MARK: File management
 extension StoryViewModel {
-    @MainActor func savePortionImageVideo() async {
-        guard let currentPortion = currentPortion else {
+    @MainActor 
+    func savePortionImageVideo() async {
+        guard let currentPortion else {
             return
         }
         
-        do {
-            isLoading = true
-            
-            var successMsg: String?
-            if let imageUrl = currentPortion.imageUrl, let uiImage = fileManager.getImage(by: imageUrl) {
-                successMsg = try await mediaSaver.saveToAlbum(uiImage)
-            } else if let videoUrl = currentPortion.videoUrlFromCam {
-                successMsg = try await mediaSaver.saveToAlbum(videoUrl)
+        isLoading = true
+        var successMessage: String?
+        
+        if let imageUrl = currentPortion.imageUrl, 
+            let data = fileManager.getImage(for: imageUrl)?.jpegData(compressionQuality: 1) {
+            do {
+                try await mediaSaver.saveImageData(data)
+                successMessage = "Saved."
+            } catch MediaSaverError.noPermission {
+                successMessage = "Couldn't save. No add photo permission."
+            } catch {
+                successMessage = "Save failed."
             }
-            
-            isLoading = false
-            
-            if let successMsg = successMsg {
-                showNotice(errMsg: successMsg)
+        } else if let videoUrl = currentPortion.videoUrlFromCam {
+            do {
+                try await mediaSaver.saveVideo(by: videoUrl)
+                successMessage = "Saved."
+            } catch MediaSaverError.noPermission {
+                successMessage = "Couldn't save. No add photo permission."
+            } catch {
+                successMessage = "Save failed."
             }
-        } catch {
-            isLoading = false
-            let errMsg = (error as? MediaSavingError)?.errMsg ?? error.localizedDescription
-            showNotice(errMsg: errMsg)
         }
+        
+        isLoading = false
+        showNotice(message: successMessage)
     }
     
-    private func showNotice(errMsg: String) {
-        noticeMsg = errMsg
+    private func showNotice(message: String?) {
+        guard let message else { return }
+        
+        noticeMsg = message
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
             self?.showNoticeLabel = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
@@ -346,21 +359,19 @@ extension StoryViewModel {
     // *** In real environment, the photo or video should be deleted by API call,
     // this is a demo app, however, deleting them from temp directory.
     private func deletePortionFromStory(by portionIndex: Int) {
-        guard
-            let currentStoryIndex = storiesViewModel.stories.firstIndex(where: { $0.id == storyId })
-        else {
+        guard let currentStoryIndex = storiesViewModel.stories.firstIndex(where: { $0.id == storyId }) else {
             return
         }
         
         let portion = portions[portionIndex]
         if let fileUrl = portion.imageUrl ?? portion.videoUrl {
-            fileManager.deleteFile(by: fileUrl)
+            try? fileManager.deleteImage(for: fileUrl)
         }
         
         storiesViewModel.stories[currentStoryIndex].portions.remove(at: portionIndex)
     }
     
     func getImage(by url: URL) -> UIImage? {
-        fileManager.getImage(by: url)
+        fileManager.getImage(for: url)
     }
 }
