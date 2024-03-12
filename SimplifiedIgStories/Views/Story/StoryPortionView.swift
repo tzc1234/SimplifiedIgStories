@@ -67,7 +67,7 @@ struct StoryPortionView_Previews: PreviewProvider {
                 storyId: story.id,
                 storiesViewModel: storiesViewModel,
                 fileManager: LocalImageFileManager(),
-                mediaSaver: MediaFileSaver()
+                mediaSaver: LocalMediaSaver()
             )
         )
     }

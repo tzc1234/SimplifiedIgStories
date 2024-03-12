@@ -35,7 +35,7 @@ class StoryViewModelTests: XCTestCase {
             storyId: firstHasPortionStory!.id,
             storiesViewModel: storiesViewModel,
             fileManager: LocalImageFileManager(),
-            mediaSaver: MediaFileSaver()
+            mediaSaver: LocalMediaSaver()
         )
         
         XCTAssertIdentical(storiesViewModel, storiesViewModel, "storiesViewModel")
@@ -372,7 +372,7 @@ extension StoryViewModelTests {
             storyId: secondStory.id,
             storiesViewModel: storiesViewModel,
             fileManager: LocalImageFileManager(),
-            mediaSaver: MediaFileSaver()
+            mediaSaver: LocalMediaSaver()
         )
     }
 }

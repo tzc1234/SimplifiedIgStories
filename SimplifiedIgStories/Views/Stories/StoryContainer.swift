@@ -24,7 +24,7 @@ struct StoryContainer: View {
                             storyId: story.id,
                             storiesViewModel: vm,
                             fileManager: LocalImageFileManager(),
-                            mediaSaver: MediaFileSaver()
+                            mediaSaver: LocalMediaSaver()
                         )
                     )
                     .opacity(story.id != vm.currentStoryId && !vm.shouldCubicRotation ? 0.0 : 1.0)
