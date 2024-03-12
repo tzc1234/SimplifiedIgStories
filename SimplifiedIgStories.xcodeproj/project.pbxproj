@@ -251,7 +251,8 @@
 				BE9EF6C427E3673600942976 /* Configs.swift */,
 				BE8F57FF27D60E7D00F9DB92 /* DataServices */,
 				BE8B71B02B765EAE0055C354 /* MediaSaver */,
-				BE9336C827D24468009E5370 /* Managers */,
+				BE2D7790285F761F00DBD924 /* Camera */,
+				BE9336C827D24468009E5370 /* ImageFileManager */,
 				BE8F580827D668C700F9DB92 /* ViewModels */,
 				BE090B6527B9566D00B6F906 /* Views */,
 				BEA1D95C27C3DA3000D0A67A /* Models */,
@@ -498,13 +499,12 @@
 			path = Camera;
 			sourceTree = "<group>";
 		};
-		BE9336C827D24468009E5370 /* Managers */ = {
+		BE9336C827D24468009E5370 /* ImageFileManager */ = {
 			isa = PBXGroup;
 			children = (
 				BEB8752827DA120300D60110 /* LocalImageFileManager.swift */,
-				BE2D7790285F761F00DBD924 /* Camera */,
 			);
-			path = Managers;
+			path = ImageFileManager;
 			sourceTree = "<group>";
 		};
 		BEA1D95627C3C71B00D0A67A /* Extensions */ = {
