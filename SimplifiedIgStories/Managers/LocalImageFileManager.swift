@@ -16,6 +16,7 @@ protocol ImageFileManageable {
 enum ImageFileManageableError: Error {
     case saveFailed
     case jpegConversionFailed
+    case fileForDeletionNotFound
     case deleteFailed
 }
 
@@ -43,14 +44,13 @@ final class LocalImageFileManager: ImageFileManageable {
     
     func deleteImage(for url: URL) throws {
         guard FileManager.default.fileExists(atPath: url.path) else {
-            throw ImageFileManageableError.deleteFailed
+            throw ImageFileManageableError.fileForDeletionNotFound
         }
         
         do {
             try FileManager.default.removeItem(at: url)
-            print("Delete file at \(url.path) successful.")
         } catch {
-            print("Error: \(error.localizedDescription)")
+            throw ImageFileManageableError.deleteFailed
         }
     }
 }

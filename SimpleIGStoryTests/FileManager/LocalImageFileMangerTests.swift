@@ -91,12 +91,25 @@ final class LocalImageFileMangerTests: XCTestCase {
         XCTAssertEqual(firstReceivedImage?.pngData(), lastReceivedImage?.pngData())
     }
     
-    func test_deleteImage_deliversDeleteFailedErrorWhenImageFileNotExisted() {
+    func test_deleteImage_deliversFileForDeletionNotFoundErrorWhenImageFileNotExisted() {
         let sut = LocalImageFileManager()
+        
+        XCTAssertThrowsError(try sut.deleteImage(for: imageFileURL())) { error in
+            XCTAssertEqual(error as? ImageFileManageableError, .fileForDeletionNotFound)
+        }
+    }
+    
+    func test_deleteImage_deliversDeleteFailedErrorOnDeletionError() {
+        FileManager.swizzled()
+        let sut = LocalImageFileManager()
+        let image = UIImage.make(withColor: .red)
+        
+        _ = try! sut.saveImage(image, fileName: imageFileName())
         
         XCTAssertThrowsError(try sut.deleteImage(for: imageFileURL())) { error in
             XCTAssertEqual(error as? ImageFileManageableError, .deleteFailed)
         }
+        FileManager.revertSwizzled()
     }
     
     // MARK: - Helpers
@@ -111,5 +124,20 @@ final class LocalImageFileMangerTests: XCTestCase {
     
     private func clearFileArtefacts() {
         try? FileManager.default.removeItem(at: imageFileURL())
+    }
+}
+
+extension FileManager: MethodSwizzling {
+    @objc func alwaysFailRemoveItem(at URL: URL) throws {
+        throw anyNSError()
+    }
+    
+    static var instanceMethodPairs: [MethodPair] {
+        [
+            .init(
+                from: (class: FileManager.self, method: #selector(FileManager.removeItem(at:))),
+                to: (class: FileManager.self, method: #selector(FileManager.alwaysFailRemoveItem(at:)))
+            )
+        ]
     }
 }
