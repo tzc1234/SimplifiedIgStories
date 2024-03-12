@@ -12,17 +12,17 @@ final class LocalImageFileMangerTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        clearFileArtefacts()
+        clearImageFileArtefacts()
     }
     
     override func tearDown() {
         super.tearDown()
         
-        clearFileArtefacts()
+        clearImageFileArtefacts()
     }
     
     func test_getImage_doesNotDeliverImageWhenNoImage() {
-        let sut = LocalImageFileManager()
+        let sut = makeSUT()
         
         let image = sut.getImage(for: imageFileURL())
         
@@ -30,7 +30,7 @@ final class LocalImageFileMangerTests: XCTestCase {
     }
     
     func test_getImageTwice_ensuresNoSideEffectsWhenNoImage() {
-        let sut = LocalImageFileManager()
+        let sut = makeSUT()
         let url = imageFileURL()
         
         let firstReceivedImage = sut.getImage(for: url)
@@ -41,7 +41,7 @@ final class LocalImageFileMangerTests: XCTestCase {
     }
     
     func test_saveImage_deliversSaveFailedErrorOnSaveError() {
-        let sut = LocalImageFileManager()
+        let sut = makeSUT()
         let image = UIImage.make(withColor: .red)
         let invalidFileName = "invalid://fileName"
         
@@ -51,7 +51,7 @@ final class LocalImageFileMangerTests: XCTestCase {
     }
     
     func test_saveImage_deliversJpegConversionFailedErrorOnConversionError() {
-        let sut = LocalImageFileManager()
+        let sut = makeSUT()
         let image = UIImage()
         
         XCTAssertThrowsError(try sut.saveImage(image, fileName: imageFileName())) { error in
@@ -60,7 +60,7 @@ final class LocalImageFileMangerTests: XCTestCase {
     }
     
     func test_saveImage_deliversImageURLWhenSaveSuccessfully() throws {
-        let sut = LocalImageFileManager()
+        let sut = makeSUT()
         let image = UIImage.make(withColor: .red)
         let expectedFileURL = imageFileURL()
         
@@ -70,7 +70,7 @@ final class LocalImageFileMangerTests: XCTestCase {
     }
     
     func test_getImage_deliversSavedImageWhenSavedImageExisted() throws {
-        let sut = LocalImageFileManager()
+        let sut = makeSUT()
         let image = UIImage.make(withColor: .red)
         
         let receivedURL = try sut.saveImage(image, fileName: imageFileName())
@@ -80,7 +80,7 @@ final class LocalImageFileMangerTests: XCTestCase {
     }
     
     func test_getImageTwice_ensuresNoSideEffectsWhenSavedImageExisted() throws {
-        let sut = LocalImageFileManager()
+        let sut = makeSUT()
         let image = UIImage.make(withColor: .red)
         
         let receivedURL = try sut.saveImage(image, fileName: imageFileName())
@@ -92,7 +92,7 @@ final class LocalImageFileMangerTests: XCTestCase {
     }
     
     func test_deleteImage_deliversFileForDeletionNotFoundErrorWhenImageFileNotExisted() {
-        let sut = LocalImageFileManager()
+        let sut = makeSUT()
         
         XCTAssertThrowsError(try sut.deleteImage(for: imageFileURL())) { error in
             XCTAssertEqual(error as? ImageFileManageableError, .fileForDeletionNotFound)
@@ -101,7 +101,7 @@ final class LocalImageFileMangerTests: XCTestCase {
     
     func test_deleteImage_deliversDeleteFailedErrorOnDeletionError() {
         FileManager.swizzled()
-        let sut = LocalImageFileManager()
+        let sut = makeSUT()
         let image = UIImage.make(withColor: .red)
         
         _ = try! sut.saveImage(image, fileName: imageFileName())
@@ -113,7 +113,7 @@ final class LocalImageFileMangerTests: XCTestCase {
     }
     
     func test_deleteImage_deletesImageSuccessfullyWhenSavedImageExisted() throws {
-        let sut = LocalImageFileManager()
+        let sut = makeSUT()
         let image = UIImage.make(withColor: .red)
         
         let receivedURL = try sut.saveImage(image, fileName: imageFileName())
@@ -125,15 +125,30 @@ final class LocalImageFileMangerTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func imageFileName() -> String {
-        "test"
+    private func makeSUT(file: StaticString = #filePath,
+                         line: UInt = #line) -> LocalImageFileManager {
+        let sut = LocalImageFileManager(directory: directory(), fileExtension: imageFileExtension())
+        trackForMemoryLeaks(sut, file: file, line: line)
+        return sut
     }
     
     private func imageFileURL() -> URL {
-        FileManager.default.temporaryDirectory.appendingPathComponent("\(imageFileName()).jpg")
+        directory().appendingPathComponent("\(imageFileName())").appendingPathExtension(imageFileExtension())
     }
     
-    private func clearFileArtefacts() {
+    private func directory() -> URL {
+        FileManager.default.temporaryDirectory
+    }
+    
+    private func imageFileName() -> String {
+        "img_test"
+    }
+    
+    private func imageFileExtension() -> String {
+        "jpg"
+    }
+    
+    private func clearImageFileArtefacts() {
         try? FileManager.default.removeItem(at: imageFileURL())
     }
 }

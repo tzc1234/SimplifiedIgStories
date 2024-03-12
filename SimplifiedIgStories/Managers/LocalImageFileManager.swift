@@ -21,13 +21,20 @@ enum ImageFileManageableError: Error {
 }
 
 final class LocalImageFileManager: ImageFileManageable {
+    private let directory: URL
+    private let fileExtension: String
+    
+    init(directory: URL = FileManager.default.temporaryDirectory, fileExtension: String = "jpg") {
+        self.directory = directory
+        self.fileExtension = fileExtension
+    }
+    
     func saveImage(_ image: UIImage, fileName: String) throws -> URL {
         guard let data = image.jpegData(compressionQuality: 0.8) else {
             throw ImageFileManageableError.jpegConversionFailed
         }
         
-        let directory = FileManager.default.temporaryDirectory
-        let url = directory.appendingPathComponent("\(fileName).jpg")
+        let url = directory.appendingPathComponent("\(fileName)").appendingPathExtension(fileExtension)
         
         do {
             try data.write(to: url)

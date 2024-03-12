@@ -379,7 +379,7 @@
 				BEEEBBF62B7540AC00EC85C7 /* DataServices */,
 				BE8B71A82B7651450055C354 /* MediaSaver */,
 				BE84F7942B7CE9A300FAD11B /* Camera */,
-				BEBE9C392BA059B500C9C093 /* FileManager */,
+				BEBE9C392BA059B500C9C093 /* ImageFileManager */,
 			);
 			path = SimpleIGStoryTests;
 			sourceTree = "<group>";
@@ -561,12 +561,12 @@
 			path = PreferenceKeys;
 			sourceTree = "<group>";
 		};
-		BEBE9C392BA059B500C9C093 /* FileManager */ = {
+		BEBE9C392BA059B500C9C093 /* ImageFileManager */ = {
 			isa = PBXGroup;
 			children = (
 				BEBE9C372BA059AF00C9C093 /* LocalImageFileMangerTests.swift */,
 			);
-			path = FileManager;
+			path = ImageFileManager;
 			sourceTree = "<group>";
 		};
 		BEBF32302B74D86600DCD624 /* Helpers */ = {
