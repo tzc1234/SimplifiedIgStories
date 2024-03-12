@@ -50,6 +50,16 @@ final class LocalFileMangerTests: XCTestCase {
         }
     }
     
+    func test_saveImage_deliversImageURLWhenSaveSuccessfully() throws {
+        let sut = LocalFileManager()
+        let image = UIImage.make(withColor: .red)
+        let expectedFileURL = imageFileURL()
+        
+        let receivedURL = try sut.saveImage(image, fileName: imageFileName())
+        
+        XCTAssertEqual(receivedURL, expectedFileURL)
+    }
+    
     // MARK: - Helpers
     
     private func imageFileName() -> String {
