@@ -13,7 +13,7 @@ final class LocalMediaSaverTests: XCTestCase {
         let (sut, _) = makeSUT(stubs: [.failure(.noPermission)])
         
         await assertThrowsError(try await sut.saveImageData(anyImageData())) { error in
-            XCTAssertEqual(error as? LocalMediaSaver.Error, .noPermission)
+            XCTAssertEqual(error as? MediaSaverError, .noPermission)
         }
     }
     
@@ -21,7 +21,7 @@ final class LocalMediaSaverTests: XCTestCase {
         let (sut, _) = makeSUT(stubs: [.failure(.failed)])
         
         await assertThrowsError(try await sut.saveImageData(anyImageData())) { error in
-            XCTAssertEqual(error as? LocalMediaSaver.Error, .failed)
+            XCTAssertEqual(error as? MediaSaverError, .failed)
         }
     }
     
@@ -38,7 +38,7 @@ final class LocalMediaSaverTests: XCTestCase {
         let (sut, _) = makeSUT(stubs: [.failure(.noPermission)])
         
         await assertThrowsError(try await sut.saveVideo(by: anyVideoURL())) { error in
-            XCTAssertEqual(error as? LocalMediaSaver.Error, .noPermission)
+            XCTAssertEqual(error as? MediaSaverError, .noPermission)
         }
     }
     
@@ -46,7 +46,7 @@ final class LocalMediaSaverTests: XCTestCase {
         let (sut, _) = makeSUT(stubs: [.failure(.failed)])
         
         await assertThrowsError(try await sut.saveVideo(by: anyVideoURL())) { error in
-            XCTAssertEqual(error as? LocalMediaSaver.Error, .failed)
+            XCTAssertEqual(error as? MediaSaverError, .failed)
         }
     }
     

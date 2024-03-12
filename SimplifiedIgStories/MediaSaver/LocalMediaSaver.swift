@@ -7,25 +7,30 @@
 
 import Foundation
 
-final class LocalMediaSaver {
+protocol MediaSaver {
+    func saveImageData(_ data: Data) async throws
+    func saveVideo(by url: URL) async throws
+}
+
+enum MediaSaverError: Error {
+    case noPermission
+    case failed
+}
+
+final class LocalMediaSaver: MediaSaver {
     private let store: MediaStore
     
-    init(store: MediaStore) {
+    init(store: MediaStore = PHPPhotoMediaStore()) {
         self.store = store
-    }
-    
-    enum Error: Swift.Error {
-        case noPermission
-        case failed
     }
     
     func saveImageData(_ data: Data) async throws {
         do {
             try await store.saveImageData(data)
         } catch MediaStoreError.noPermission {
-            throw Error.noPermission
+            throw MediaSaverError.noPermission
         } catch {
-            throw Error.failed
+            throw MediaSaverError.failed
         }
     }
     
@@ -33,9 +38,9 @@ final class LocalMediaSaver {
         do {
             try await store.saveVideo(for: url)
         } catch MediaStoreError.noPermission {
-            throw Error.noPermission
+            throw MediaSaverError.noPermission
         } catch {
-            throw Error.failed
+            throw MediaSaverError.failed
         }
     }
 }
