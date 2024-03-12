@@ -15,12 +15,13 @@ protocol ImageFileManageable {
 
 enum ImageFileManageableError: Error {
     case saveFailed
+    case jpegConversionFailed
 }
 
 final class LocalImageFileManager: ImageFileManageable {
     func saveImage(_ image: UIImage, fileName: String) throws -> URL {
         guard let data = image.jpegData(compressionQuality: 0.8) else {
-            throw ImageFileManageableError.saveFailed
+            throw ImageFileManageableError.jpegConversionFailed
         }
         
         let directory = FileManager.default.temporaryDirectory

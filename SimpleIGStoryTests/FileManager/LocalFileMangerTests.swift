@@ -50,6 +50,15 @@ final class LocalFileMangerTests: XCTestCase {
         }
     }
     
+    func test_saveImage_deliversJpegConversionFailedErrorOnConversionError() {
+        let sut = LocalImageFileManager()
+        let image = UIImage()
+        
+        XCTAssertThrowsError(try sut.saveImage(image, fileName: imageFileName())) { error in
+            XCTAssertEqual(error as? ImageFileManageableError, .jpegConversionFailed)
+        }
+    }
+    
     func test_saveImage_deliversImageURLWhenSaveSuccessfully() throws {
         let sut = LocalImageFileManager()
         let image = UIImage.make(withColor: .red)
