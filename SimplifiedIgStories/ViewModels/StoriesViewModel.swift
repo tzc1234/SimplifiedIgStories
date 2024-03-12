@@ -20,12 +20,19 @@ final class StoriesViewModel: ObservableObject {
         case previous, next
     }
     
-    private let dataService: DataService
+    private let storiesLoader: StoriesLoader?
     private let fileManager: ImageFileManageable
     
-    init(dataService: DataService = AppDataService(), fileManager: ImageFileManageable) {
-        self.dataService = dataService
+    init(fileManager: ImageFileManageable) {
         self.fileManager = fileManager
+        
+        guard let url = Bundle.main.url(forResource: "storiesData.json", withExtension: nil) else {
+            self.storiesLoader = nil
+            return
+        }
+        
+        let dataClient = FileDataClient(url: url)
+        self.storiesLoader = LocalStoriesLoader(client: dataClient)
     }
 }
 
@@ -78,12 +85,18 @@ extension StoriesViewModel {
 
 // MARK: internal functions
 extension StoriesViewModel {
-    @MainActor func fetchStories() async {
+    @MainActor 
+    func fetchStories() async {
         do {
-            self.stories = try await dataService.fetchStories()
+            guard let localStories = try await storiesLoader?.load() else {
+                return
+            }
+            
+            stories = localStories.toStories()
+        } catch StoriesLoaderError.notFound {
+            print("JSON file not found.")
         } catch {
-            let errMsg = (error as? DataServiceError)?.errMsg ?? error.localizedDescription
-            print(errMsg)
+            print("JSON data invalid.")
         }
     }
     
@@ -134,7 +147,7 @@ extension StoriesViewModel {
         // Just append a new Portion instance to current user's potion array.
         portions.append(Portion(id: lastPortionId + 1, imageUrl: imageUrl))
         stories[yourStoryIdx].portions = portions
-        stories[yourStoryIdx].lastUpdate = Date().timeIntervalSince1970
+        stories[yourStoryIdx].lastUpdate = .now
     }
     
     func postStoryPortion(videoUrl: URL) {
@@ -150,6 +163,45 @@ extension StoriesViewModel {
         // Similar to image case.
         portions.append(Portion(id: lastPortionId + 1, videoDuration: durationSeconds, videoUrlFromCam: videoUrl))
         stories[yourStoryIdx].portions = portions
-        stories[yourStoryIdx].lastUpdate = Date().timeIntervalSince1970
+        stories[yourStoryIdx].lastUpdate = .now
+    }
+}
+
+private extension [LocalStory] {
+    func toStories() -> [Story] {
+        map { local in
+            Story(
+                id: local.id,
+                lastUpdate: local.lastUpdate,
+                portions: local.portions.toPortions(),
+                user: local.user.toUser()
+            )
+        }
+    }
+}
+
+private extension [LocalPortion] {
+    func toPortions() -> [Portion] {
+        map { local in
+            switch local.type {
+            case .image:
+                return Portion(
+                    id: local.id,
+                    imageName: local.resource
+                )
+            case .video:
+                return Portion(
+                    id: local.id,
+                    videoName: local.resource,
+                    videoDuration: local.duration
+                )
+            }
+        }
+    }
+}
+
+private extension LocalUser {
+    func toUser() -> User {
+        User(id: id, name: name, avatar: avatar, isCurrentUser: isCurrentUser)
     }
 }

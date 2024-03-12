@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Portion: Codable, Identifiable {
+struct Portion: Identifiable {
     var id: Int
     var imageName: String?
     var videoName: String?
@@ -17,10 +17,10 @@ struct Portion: Codable, Identifiable {
     var videoUrlFromCam: URL?
     
     var videoUrl: URL? {
-        guard let videoName = videoName else { return nil }
-        guard let videoPath = Bundle.main.path(forResource: videoName, ofType: "mp4") else {
+        guard let videoName, let videoPath = Bundle.main.path(forResource: videoName, ofType: "mp4") else {
             return nil
         }
+        
         return URL(fileURLWithPath: videoPath)
     }
     
@@ -31,5 +31,4 @@ struct Portion: Codable, Identifiable {
         
         return videoDuration
     }
-    
 }

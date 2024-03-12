@@ -7,18 +7,13 @@
 
 import Foundation
 
-struct Story: Codable, Identifiable {
+struct Story: Identifiable {
     let id: Int
-    var lastUpdate: TimeInterval?
+    var lastUpdate: Date?
     var portions: [Portion]
     let user: User
     
-    var lastUpdateDate: Date? {
-        guard let lastUpdate = lastUpdate else { return nil }
-        return Date(timeIntervalSince1970: lastUpdate)
-    }
-    
     var hasPortion: Bool {
-        return portions.count > 0
+        portions.count > 0
     }
 }

@@ -63,7 +63,6 @@
 		BE8F580127D63F1A00F9DB92 /* forestVideo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = BE8F580027D63EF300F9DB92 /* forestVideo.mp4 */; };
 		BE8F580327D641AF00F9DB92 /* Portion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8F580227D641AE00F9DB92 /* Portion.swift */; };
 		BE8F580527D643BC00F9DB92 /* seaVideo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = BE8F580427D643BC00F9DB92 /* seaVideo.mp4 */; };
-		BE8F580727D6668000F9DB92 /* AppDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8F580627D6668000F9DB92 /* AppDataService.swift */; };
 		BE8F580A27D668E900F9DB92 /* StoriesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8F580927D668E900F9DB92 /* StoriesViewModel.swift */; };
 		BE90CE0427D00A0E001EA0CA /* StoryCamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE90CE0327D00A0E001EA0CA /* StoryCamView.swift */; };
 		BE91AA5427BFD96800BB9846 /* StoryPortionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE91AA5327BFD96700BB9846 /* StoryPortionView.swift */; };
@@ -170,7 +169,6 @@
 		BE8F580027D63EF300F9DB92 /* forestVideo.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = forestVideo.mp4; sourceTree = "<group>"; };
 		BE8F580227D641AE00F9DB92 /* Portion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Portion.swift; sourceTree = "<group>"; };
 		BE8F580427D643BC00F9DB92 /* seaVideo.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = seaVideo.mp4; sourceTree = "<group>"; };
-		BE8F580627D6668000F9DB92 /* AppDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDataService.swift; sourceTree = "<group>"; };
 		BE8F580927D668E900F9DB92 /* StoriesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesViewModel.swift; sourceTree = "<group>"; };
 		BE90CE0327D00A0E001EA0CA /* StoryCamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCamView.swift; sourceTree = "<group>"; };
 		BE91AA5327BFD96700BB9846 /* StoryPortionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPortionView.swift; sourceTree = "<group>"; };
@@ -467,7 +465,6 @@
 		BE8F57FF27D60E7D00F9DB92 /* DataServices */ = {
 			isa = PBXGroup;
 			children = (
-				BE8F580627D6668000F9DB92 /* AppDataService.swift */,
 				BEBF32392B7512EF00DCD624 /* DataClient.swift */,
 				BEBF32372B7512BF00DCD624 /* LocalStory.swift */,
 				BEBF323D2B75149300DCD624 /* LocalStoriesMapper.swift */,
@@ -728,7 +725,6 @@
 				BE287A2A2B7A47FB00119674 /* CameraAuthorizationHandler.swift in Sources */,
 				BE2D7794285F797400DBD924 /* CameraStatus.swift in Sources */,
 				BE8AEF9027DB9D5800D7EAA1 /* VerticalLabelStyle.swift in Sources */,
-				BE8F580727D6668000F9DB92 /* AppDataService.swift in Sources */,
 				BE90CE0427D00A0E001EA0CA /* StoryCamView.swift in Sources */,
 				BE090B6727B9568700B6F906 /* StoryIcon.swift in Sources */,
 				BE72F94027DF6F9300AA98A5 /* StoryCamPermissionView.swift in Sources */,

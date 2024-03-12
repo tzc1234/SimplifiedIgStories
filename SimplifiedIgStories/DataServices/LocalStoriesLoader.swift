@@ -7,25 +7,29 @@
 
 import Foundation
 
-final class LocalStoriesLoader {
+protocol StoriesLoader {
+    func load() async throws -> [LocalStory]
+}
+
+enum StoriesLoaderError: Error {
+    case notFound
+    case invalidData
+}
+
+final class LocalStoriesLoader: StoriesLoader {
     private let client: DataClient
     
     init(client: DataClient) {
         self.client = client
     }
     
-    enum Error: Swift.Error {
-        case notFound
-        case invalidData
-    }
-    
     func load() async throws -> [LocalStory] {
         guard let data = try? await client.fetch() else {
-            throw Error.notFound
+            throw StoriesLoaderError.notFound
         }
         
         guard let stories = try? LocalStoriesMapper.map(data) else {
-            throw Error.invalidData
+            throw StoriesLoaderError.invalidData
         }
         
         return stories

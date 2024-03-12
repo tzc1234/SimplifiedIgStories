@@ -139,7 +139,7 @@ extension StoryView {
     }
     
     private var dateText: some View {
-        Text(vm.story.lastUpdateDate?.timeAgoDisplay() ?? "")
+        Text(vm.story.lastUpdate?.timeAgoDisplay() ?? "")
             .foregroundColor(.white)
             .font(.subheadline)
     }

@@ -16,7 +16,7 @@ final class LocalStoriesLoaderTests: XCTestCase {
             _ = try await sut.load()
             XCTFail("Should be an error")
         } catch {
-            XCTAssertEqual(error as? LocalStoriesLoader.Error, .notFound)
+            XCTAssertEqual(error as? StoriesLoaderError, .notFound)
         }
     }
     
@@ -28,7 +28,7 @@ final class LocalStoriesLoaderTests: XCTestCase {
             _ = try await sut.load()
             XCTFail("Should be an error")
         } catch {
-            XCTAssertEqual(error as? LocalStoriesLoader.Error, .invalidData)
+            XCTAssertEqual(error as? StoriesLoaderError, .invalidData)
         }
     }
     
