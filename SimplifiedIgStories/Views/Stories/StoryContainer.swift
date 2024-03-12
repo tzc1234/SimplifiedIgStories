@@ -43,17 +43,19 @@ struct StoryContainer: View {
         .animation(.interactiveSpring(), value: translation)
         .gesture(
             DragGesture()
-                .updating($translation) { value, state, transaction in
+                .onChanged { _ in
                     vm.isDragging = true
+                }
+                .updating($translation) { value, state, transaction in
                     vm.updateStoryIdBeforeDragged()
                     state = value.translation.width
                 }
                 .onEnded { value in
                     endDraggingStoryContainerWith(offset: value.translation.width / .screenWidth)
+                    vm.isDragging = false
                 }
         )
         .statusBar(hidden: true)
-        
     }
 }
 
@@ -89,7 +91,5 @@ extension StoryContainer {
         } else if abs(offset.rounded()) > 0 {
             vm.moveCurrentStory(to: offset >= 0 ? .previous : .next)
         }
-        
-        vm.isDragging = false
     }
 }

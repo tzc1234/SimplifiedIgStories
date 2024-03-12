@@ -58,10 +58,12 @@ final class StoryViewModel: ObservableObject {
         
         // Reference: https://stackoverflow.com/a/58406402
         // Trigger current ViewModel objectWillChange when parent's published property changed.
-        storiesViewModel.objectWillChange.sink { [weak self] in
-            self?.objectWillChange.send()
-        }
-        .store(in: &subscriptions)
+        storiesViewModel
+            .objectWillChange
+            .sink { [weak self] in
+                self?.objectWillChange.send()
+            }
+            .store(in: &subscriptions)
     }
     
     deinit {

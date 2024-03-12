@@ -108,11 +108,12 @@ extension StoriesViewModel {
         guard stories.map(\.id).contains(storyId) else {
             return
         }
+        
         currentStoryId = storyId
     }
     
     func moveCurrentStory(to direction: StoryMoveDirection) {
-        guard let currentStoryIndex = currentStoryIndex else {
+        guard let currentStoryIndex else {
             return
         }
         
@@ -151,7 +152,7 @@ extension StoriesViewModel {
     }
     
     func postStoryPortion(videoUrl: URL) {
-        guard let yourStoryIdx = yourStoryIdx else {
+        guard let yourStoryIdx else {
             return
         }
 
