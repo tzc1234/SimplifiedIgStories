@@ -112,6 +112,17 @@ final class LocalImageFileMangerTests: XCTestCase {
         FileManager.revertSwizzled()
     }
     
+    func test_deleteImage_deletesImageSuccessfullyWhenSavedImageExisted() throws {
+        let sut = LocalImageFileManager()
+        let image = UIImage.make(withColor: .red)
+        
+        let receivedURL = try sut.saveImage(image, fileName: imageFileName())
+        try sut.deleteImage(for: receivedURL)
+        let receivedImage = sut.getImage(for: receivedURL)
+        
+        XCTAssertNil(receivedImage)
+    }
+    
     // MARK: - Helpers
     
     private func imageFileName() -> String {
