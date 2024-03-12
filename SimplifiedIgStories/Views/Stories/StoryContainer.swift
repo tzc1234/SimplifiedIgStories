@@ -23,7 +23,7 @@ struct StoryContainer: View {
                         vm: StoryViewModel(
                             storyId: story.id,
                             storiesViewModel: vm,
-                            fileManager: LocalFileManager(),
+                            fileManager: LocalImageFileManager(),
                             mediaSaver: MediaFileSaver()
                         )
                     )
@@ -59,7 +59,7 @@ struct StoryContainer: View {
 
 struct StoryContainer_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = StoriesViewModel(fileManager: LocalFileManager())
+        let vm = StoriesViewModel(fileManager: LocalImageFileManager())
         StoryContainer(vm: vm)
             .environmentObject(HomeUIActionHandler())
             .task {

@@ -15,7 +15,7 @@ class StoryViewModelTests: XCTestCase {
     var storiesViewModel: StoriesViewModel!
     
     override func setUpWithError() throws {
-        storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
+        storiesViewModel = StoriesViewModel(fileManager: LocalImageFileManager())
         
         let expectation = XCTestExpectation(description: "wait async fetchStories")
         Task {
@@ -34,7 +34,7 @@ class StoryViewModelTests: XCTestCase {
         sut = StoryViewModel(
             storyId: firstHasPortionStory!.id,
             storiesViewModel: storiesViewModel,
-            fileManager: LocalFileManager(),
+            fileManager: LocalImageFileManager(),
             mediaSaver: MediaFileSaver()
         )
         
@@ -371,7 +371,7 @@ extension StoryViewModelTests {
         return StoryViewModel(
             storyId: secondStory.id,
             storiesViewModel: storiesViewModel,
-            fileManager: LocalFileManager(),
+            fileManager: LocalImageFileManager(),
             mediaSaver: MediaFileSaver()
         )
     }

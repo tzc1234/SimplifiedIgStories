@@ -83,7 +83,7 @@
 		BEA93F9427D7511000964226 /* VideoRecordButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA8E50E27D0CFD200640B19 /* VideoRecordButton.swift */; };
 		BEAED9E427D36F7D00A98F3A /* IdFramePreferenceKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEAED9E327D36F7D00A98F3A /* IdFramePreferenceKey.swift */; };
 		BEAFE90E2817F81C004C4D43 /* Double+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEAFE90D2817F81C004C4D43 /* Double+Additions.swift */; };
-		BEB8752927DA120300D60110 /* LocalFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB8752827DA120300D60110 /* LocalFileManager.swift */; };
+		BEB8752927DA120300D60110 /* LocalImageFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB8752827DA120300D60110 /* LocalImageFileManager.swift */; };
 		BEBE9C382BA059AF00C9C093 /* LocalFileMangerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBE9C372BA059AF00C9C093 /* LocalFileMangerTests.swift */; };
 		BEBF322F2B74D5DD00DCD624 /* LocalStoriesLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF322E2B74D5DD00DCD624 /* LocalStoriesLoaderTests.swift */; };
 		BEBF32322B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF32312B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift */; };
@@ -191,7 +191,7 @@
 		BEA901D327BC716E00E3362D /* ProgressBarPortion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarPortion.swift; sourceTree = "<group>"; };
 		BEAED9E327D36F7D00A98F3A /* IdFramePreferenceKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdFramePreferenceKey.swift; sourceTree = "<group>"; };
 		BEAFE90D2817F81C004C4D43 /* Double+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+Additions.swift"; sourceTree = "<group>"; };
-		BEB8752827DA120300D60110 /* LocalFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileManager.swift; sourceTree = "<group>"; };
+		BEB8752827DA120300D60110 /* LocalImageFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalImageFileManager.swift; sourceTree = "<group>"; };
 		BEBE9C372BA059AF00C9C093 /* LocalFileMangerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileMangerTests.swift; sourceTree = "<group>"; };
 		BEBF322E2B74D5DD00DCD624 /* LocalStoriesLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStoriesLoaderTests.swift; sourceTree = "<group>"; };
 		BEBF32312B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+MemoryLeakTracking.swift"; sourceTree = "<group>"; };
@@ -504,7 +504,7 @@
 			isa = PBXGroup;
 			children = (
 				BE9336CD27D2690E009E5370 /* _MediaSaver.swift */,
-				BEB8752827DA120300D60110 /* LocalFileManager.swift */,
+				BEB8752827DA120300D60110 /* LocalImageFileManager.swift */,
 				BE2D7790285F761F00DBD924 /* Camera */,
 			);
 			path = Managers;
@@ -738,7 +738,7 @@
 				BE72F94027DF6F9300AA98A5 /* StoryCamPermissionView.swift in Sources */,
 				BE090B5827B9562B00B6F906 /* SimplifiedIgStoriesApp.swift in Sources */,
 				BE8B973827DAAC6600A59292 /* FramePreferenceKey.swift in Sources */,
-				BEB8752927DA120300D60110 /* LocalFileManager.swift in Sources */,
+				BEB8752927DA120300D60110 /* LocalImageFileManager.swift in Sources */,
 				BE77C89A28895CF000E1FA0A /* PreviewData.swift in Sources */,
 				BE8A758127BC107000E9F745 /* HomeView.swift in Sources */,
 				BEEEBBF42B75357500EC85C7 /* FileDataClient.swift in Sources */,

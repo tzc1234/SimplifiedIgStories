@@ -21,9 +21,9 @@ final class StoriesViewModel: ObservableObject {
     }
     
     private let dataService: DataService
-    private let fileManager: FileManageable
+    private let fileManager: ImageFileManageable
     
-    init(dataService: DataService = AppDataService(), fileManager: FileManageable) {
+    init(dataService: DataService = AppDataService(), fileManager: ImageFileManageable) {
         self.dataService = dataService
         self.fileManager = fileManager
     }

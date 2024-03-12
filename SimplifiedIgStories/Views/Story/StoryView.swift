@@ -77,14 +77,14 @@ struct StoryView: View {
 
 struct StoryView_Previews: PreviewProvider {
     static var previews: some View {
-        let storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
+        let storiesViewModel = StoriesViewModel(fileManager: LocalImageFileManager())
         let story = storiesViewModel.currentStories[0]
         StoryView(
             storyId: story.id,
             vm: StoryViewModel(
                 storyId: story.id,
                 storiesViewModel: storiesViewModel,
-                fileManager: LocalFileManager(),
+                fileManager: LocalImageFileManager(),
                 mediaSaver: MediaFileSaver()
             )
         )

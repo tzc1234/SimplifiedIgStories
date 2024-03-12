@@ -1,5 +1,5 @@
 //
-//  LocalFileManager.swift
+//  LocalImageFileManager.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 10/03/2022.
@@ -7,20 +7,20 @@
 
 import UIKit
 
-protocol FileManageable {
+protocol ImageFileManageable {
     func saveImage(_ image: UIImage, fileName: String) throws -> URL
     func getImage(for url: URL) -> UIImage?
     func deleteFile(by url: URL)
 }
 
-enum FileManageableError: Error {
+enum ImageFileManageableError: Error {
     case saveFailed
 }
 
-final class LocalFileManager: FileManageable {
+final class LocalImageFileManager: ImageFileManageable {
     func saveImage(_ image: UIImage, fileName: String) throws -> URL {
         guard let data = image.pngData() else {
-            throw FileManageableError.saveFailed
+            throw ImageFileManageableError.saveFailed
         }
         
         let directory = FileManager.default.temporaryDirectory
@@ -30,7 +30,7 @@ final class LocalFileManager: FileManageable {
             try data.write(to: url)
             return url
         } catch {
-            throw FileManageableError.saveFailed
+            throw ImageFileManageableError.saveFailed
         }
     }
     

@@ -22,7 +22,7 @@ final class LocalFileMangerTests: XCTestCase {
     }
     
     func test_getImage_doesNotDeliverImageWhenNoImage() {
-        let sut = LocalFileManager()
+        let sut = LocalImageFileManager()
         
         let image = sut.getImage(for: imageFileURL())
         
@@ -30,7 +30,7 @@ final class LocalFileMangerTests: XCTestCase {
     }
     
     func test_getImageTwice_ensuresNoSideEffectsWhenNoImage() {
-        let sut = LocalFileManager()
+        let sut = LocalImageFileManager()
         let url = imageFileURL()
         
         let firstReceivedImage = sut.getImage(for: url)
@@ -41,17 +41,17 @@ final class LocalFileMangerTests: XCTestCase {
     }
     
     func test_saveImage_deliversSaveFailedErrorOnSaveError() {
-        let sut = LocalFileManager()
+        let sut = LocalImageFileManager()
         let image = UIImage.make(withColor: .red)
         let invalidFileName = "invalid://fileName"
         
         XCTAssertThrowsError(try sut.saveImage(image, fileName: invalidFileName)) { error in
-            XCTAssertEqual(error as? FileManageableError, .saveFailed)
+            XCTAssertEqual(error as? ImageFileManageableError, .saveFailed)
         }
     }
     
     func test_saveImage_deliversImageURLWhenSaveSuccessfully() throws {
-        let sut = LocalFileManager()
+        let sut = LocalImageFileManager()
         let image = UIImage.make(withColor: .red)
         let expectedFileURL = imageFileURL()
         
@@ -61,7 +61,7 @@ final class LocalFileMangerTests: XCTestCase {
     }
     
     func test_getImage_deliversSavedImageWhenSavedImageExisted() throws {
-        let sut = LocalFileManager()
+        let sut = LocalImageFileManager()
         let image = UIImage.make(withColor: .red)
         
         let receivedURL = try sut.saveImage(image, fileName: imageFileName())
@@ -72,7 +72,7 @@ final class LocalFileMangerTests: XCTestCase {
     }
     
     func test_getImageTwice_ensuresNoSideEffectsWhenSavedImageExisted() throws {
-        let sut = LocalFileManager()
+        let sut = LocalImageFileManager()
         let image = UIImage.make(withColor: .red)
         
         let receivedURL = try sut.saveImage(image, fileName: imageFileName())

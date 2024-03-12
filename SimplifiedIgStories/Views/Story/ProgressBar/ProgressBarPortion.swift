@@ -69,7 +69,7 @@ struct ProgressBarPortion: View {
 
 struct ProgressBarPortion_Previews: PreviewProvider {
     static var previews: some View {
-        let storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
+        let storiesViewModel = StoriesViewModel(fileManager: LocalImageFileManager())
         let story = storiesViewModel.stories[1]
         ProgressBarPortion(
             portionId: story.portions[0].id,
@@ -78,7 +78,7 @@ struct ProgressBarPortion_Previews: PreviewProvider {
             storyViewModel: StoryViewModel(
                 storyId: story.id,
                 storiesViewModel: storiesViewModel,
-                fileManager: LocalFileManager(),
+                fileManager: LocalImageFileManager(),
                 mediaSaver: MediaFileSaver()
             )
         )
