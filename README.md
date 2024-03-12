@@ -12,8 +12,11 @@ A simple version of IG story, this demo app is my **SwiftUI** study record.
 5. Async/await
 
 ## Update History
+#### 12/03/2024
+1. WIP: gradually refactor this project
+
 #### 20/02/2024
-1. WIP: add unit tests
+1. Add unit tests
 
 #### 25/07/2022:
 1. Refactored some animation logic.
