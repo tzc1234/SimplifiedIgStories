@@ -315,7 +315,7 @@ extension StoryViewModel {
             isLoading = true
             
             var successMsg: String?
-            if let imageUrl = currentPortion.imageUrl, let uiImage = fileManager.getImage(by: imageUrl) {
+            if let imageUrl = currentPortion.imageUrl, let uiImage = fileManager.getImage(for: imageUrl) {
                 successMsg = try await mediaSaver.saveToAlbum(uiImage)
             } else if let videoUrl = currentPortion.videoUrlFromCam {
                 successMsg = try await mediaSaver.saveToAlbum(videoUrl)
@@ -361,6 +361,6 @@ extension StoryViewModel {
     }
     
     func getImage(by url: URL) -> UIImage? {
-        fileManager.getImage(by: url)
+        fileManager.getImage(for: url)
     }
 }

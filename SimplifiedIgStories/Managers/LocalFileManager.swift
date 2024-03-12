@@ -9,7 +9,7 @@ import UIKit
 
 protocol FileManageable {
     func saveImageToTemp(image: UIImage) -> URL?
-    func getImage(by url: URL) -> UIImage?
+    func getImage(for url: URL) -> UIImage?
     func deleteFile(by url: URL)
 }
 
@@ -34,7 +34,7 @@ struct LocalFileManager: FileManageable {
         }
     }
     
-    func getImage(by url: URL) -> UIImage? {
+    func getImage(for url: URL) -> UIImage? {
         guard FileManager.default.fileExists(atPath: url.path) else { return nil }
         return UIImage(contentsOfFile: url.path)
     }

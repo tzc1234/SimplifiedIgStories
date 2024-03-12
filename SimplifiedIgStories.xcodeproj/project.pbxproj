@@ -84,6 +84,7 @@
 		BEAED9E427D36F7D00A98F3A /* IdFramePreferenceKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEAED9E327D36F7D00A98F3A /* IdFramePreferenceKey.swift */; };
 		BEAFE90E2817F81C004C4D43 /* Double+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEAFE90D2817F81C004C4D43 /* Double+Additions.swift */; };
 		BEB8752927DA120300D60110 /* LocalFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB8752827DA120300D60110 /* LocalFileManager.swift */; };
+		BEBE9C382BA059AF00C9C093 /* LocalFileMangerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBE9C372BA059AF00C9C093 /* LocalFileMangerTests.swift */; };
 		BEBF322F2B74D5DD00DCD624 /* LocalStoriesLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF322E2B74D5DD00DCD624 /* LocalStoriesLoaderTests.swift */; };
 		BEBF32322B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF32312B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift */; };
 		BEBF32382B7512BF00DCD624 /* LocalStory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF32372B7512BF00DCD624 /* LocalStory.swift */; };
@@ -191,6 +192,7 @@
 		BEAED9E327D36F7D00A98F3A /* IdFramePreferenceKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdFramePreferenceKey.swift; sourceTree = "<group>"; };
 		BEAFE90D2817F81C004C4D43 /* Double+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+Additions.swift"; sourceTree = "<group>"; };
 		BEB8752827DA120300D60110 /* LocalFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileManager.swift; sourceTree = "<group>"; };
+		BEBE9C372BA059AF00C9C093 /* LocalFileMangerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileMangerTests.swift; sourceTree = "<group>"; };
 		BEBF322E2B74D5DD00DCD624 /* LocalStoriesLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStoriesLoaderTests.swift; sourceTree = "<group>"; };
 		BEBF32312B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+MemoryLeakTracking.swift"; sourceTree = "<group>"; };
 		BEBF32372B7512BF00DCD624 /* LocalStory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStory.swift; sourceTree = "<group>"; };
@@ -377,6 +379,7 @@
 				BEEEBBF62B7540AC00EC85C7 /* DataServices */,
 				BE8B71A82B7651450055C354 /* MediaSaver */,
 				BE84F7942B7CE9A300FAD11B /* Camera */,
+				BEBE9C392BA059B500C9C093 /* FileManager */,
 			);
 			path = SimpleIGStoryTests;
 			sourceTree = "<group>";
@@ -556,6 +559,14 @@
 				BE8B973727DAAC6600A59292 /* FramePreferenceKey.swift */,
 			);
 			path = PreferenceKeys;
+			sourceTree = "<group>";
+		};
+		BEBE9C392BA059B500C9C093 /* FileManager */ = {
+			isa = PBXGroup;
+			children = (
+				BEBE9C372BA059AF00C9C093 /* LocalFileMangerTests.swift */,
+			);
+			path = FileManager;
 			sourceTree = "<group>";
 		};
 		BEBF32302B74D86600DCD624 /* Helpers */ = {
@@ -774,6 +785,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE38F7B02B83672400F42C71 /* StatusSpy.swift in Sources */,
+				BEBE9C382BA059AF00C9C093 /* LocalFileMangerTests.swift in Sources */,
 				BEEEBBEB2B75287100EC85C7 /* FileDataClientTests.swift in Sources */,
 				BE50144A288DC7410043DF62 /* StoryViewModelTests.swift in Sources */,
 				BE7079492B86744A00365260 /* CaptureMovieFileOutputSpy.swift in Sources */,
