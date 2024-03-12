@@ -354,7 +354,7 @@ extension StoryViewModel {
         
         let portion = portions[portionIndex]
         if let fileUrl = portion.imageUrl ?? portion.videoUrl {
-            fileManager.deleteFile(by: fileUrl)
+            try? fileManager.deleteImage(for: fileUrl)
         }
         
         storiesViewModel.stories[currentStoryIndex].portions.remove(at: portionIndex)

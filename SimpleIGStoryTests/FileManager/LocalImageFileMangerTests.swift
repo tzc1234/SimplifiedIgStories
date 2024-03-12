@@ -91,6 +91,14 @@ final class LocalImageFileMangerTests: XCTestCase {
         XCTAssertEqual(firstReceivedImage?.pngData(), lastReceivedImage?.pngData())
     }
     
+    func test_deleteImage_deliversDeleteFailedErrorWhenImageFileNotExisted() {
+        let sut = LocalImageFileManager()
+        
+        XCTAssertThrowsError(try sut.deleteImage(for: imageFileURL())) { error in
+            XCTAssertEqual(error as? ImageFileManageableError, .deleteFailed)
+        }
+    }
+    
     // MARK: - Helpers
     
     private func imageFileName() -> String {
