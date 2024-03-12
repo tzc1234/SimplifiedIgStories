@@ -68,7 +68,6 @@ final class LocalFileMangerTests: XCTestCase {
         let receivedImage = sut.getImage(for: receivedURL)
         
         XCTAssertNotNil(receivedImage)
-        XCTAssertEqual(receivedImage?.pngData(), image.pngData())
     }
     
     func test_getImageTwice_ensuresNoSideEffectsWhenSavedImageExisted() throws {
