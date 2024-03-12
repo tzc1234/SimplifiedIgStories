@@ -1,5 +1,5 @@
 //
-//  LocalFileMangerTests.swift
+//  LocalImageFileMangerTests.swift
 //  SimpleIGStoryTests
 //
 //  Created by Tsz-Lung on 12/03/2024.
@@ -8,7 +8,7 @@
 import XCTest
 @testable import Simple_IG_Story
 
-final class LocalFileMangerTests: XCTestCase {
+final class LocalImageFileMangerTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
