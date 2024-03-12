@@ -33,11 +33,11 @@ final class LocalFileMangerTests: XCTestCase {
         let sut = LocalFileManager()
         let url = imageFileURL()
         
-        let firstImage = sut.getImage(for: url)
-        let lastImage = sut.getImage(for: url)
+        let firstReceivedImage = sut.getImage(for: url)
+        let lastReceivedImage = sut.getImage(for: url)
         
-        XCTAssertNil(firstImage)
-        XCTAssertNil(lastImage)
+        XCTAssertNil(firstReceivedImage)
+        XCTAssertNil(lastReceivedImage)
     }
     
     func test_saveImage_deliversSaveFailedErrorOnSaveError() {
@@ -69,6 +69,18 @@ final class LocalFileMangerTests: XCTestCase {
         
         XCTAssertNotNil(receivedImage)
         XCTAssertEqual(receivedImage?.pngData(), image.pngData())
+    }
+    
+    func test_getImageTwice_ensuresNoSideEffectsWhenSavedImageExisted() throws {
+        let sut = LocalFileManager()
+        let image = UIImage.make(withColor: .red)
+        
+        let receivedURL = try sut.saveImage(image, fileName: imageFileName())
+        let firstReceivedImage = sut.getImage(for: receivedURL)
+        let lastReceivedImage = sut.getImage(for: receivedURL)
+        
+        XCTAssertNotNil(firstReceivedImage)
+        XCTAssertEqual(firstReceivedImage?.pngData(), lastReceivedImage?.pngData())
     }
     
     // MARK: - Helpers
