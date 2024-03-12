@@ -125,7 +125,7 @@ extension StoriesViewModel {
     
     func postStoryPortion(image: UIImage) {
         guard let yourStoryIdx = yourStoryIdx,
-              let imageUrl = fileManager.saveImageToTemp(image: image)
+              let imageUrl = try? fileManager.saveImage(image, fileName: "img_\(UUID().uuidString)")
         else {
             return
         }

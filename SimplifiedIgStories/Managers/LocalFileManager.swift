@@ -8,29 +8,29 @@
 import UIKit
 
 protocol FileManageable {
-    func saveImageToTemp(image: UIImage) -> URL?
+    func saveImage(_ image: UIImage, fileName: String) throws -> URL
     func getImage(for url: URL) -> UIImage?
     func deleteFile(by url: URL)
 }
 
-struct LocalFileManager: FileManageable {
-    func saveImageToTemp(image: UIImage) -> URL? {
+enum FileManageableError: Error {
+    case saveFailed
+}
+
+final class LocalFileManager: FileManageable {
+    func saveImage(_ image: UIImage, fileName: String) throws -> URL {
         guard let data = image.jpegData(compressionQuality: 0.8) else {
-            print("Error when getting image data.")
-            return nil
+            throw FileManageableError.saveFailed
         }
         
-        let imageName = "img_\(UUID().uuidString)"
         let directory = FileManager.default.temporaryDirectory
-        let url = directory.appendingPathComponent("\(imageName).jpg")
+        let url = directory.appendingPathComponent("\(fileName).jpg")
         
         do {
             try data.write(to: url)
-            print("Saving image: \(imageName) successful.")
             return url
         } catch {
-            print("Error: \(error.localizedDescription)")
-            return nil
+            throw FileManageableError.saveFailed
         }
     }
     
