@@ -93,7 +93,7 @@ extension StoryIcon {
     }
     
     private var avatarImage: some View {
-        AsyncImage(url: avatarURL) { image in
+        AsyncImage(url: story.user.avatarURL) { image in
             GeometryReader { geo in
                 image
                     .resizable()
@@ -112,10 +112,6 @@ extension StoryIcon {
         } placeholder: {
             Color.darkGray
         }
-    }
-    
-    private var avatarURL: URL? {
-        Bundle.main.url(forResource: story.user.avatar, withExtension: "jpg")
     }
     
     @ViewBuilder 

@@ -40,24 +40,22 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertEqual(sut.yourStoryIdx, currentUserStoryIdx, "yourStoryIdx == currentUserStoryIdx")
     }
     
-    func test_currentStories_shouldContainOnlyOneCurrentUserStory_whenCurrentStoryIdIsSetToCurrentUserStoryId() {
-        let currentUserStoryId = sut.stories.first(where: { $0.user.isCurrentUser })?.id
-        XCTAssertNotNil(currentUserStoryId, "currentUserStoryId")
+    func test_currentStories_shouldContainOnlyOneCurrentUserStory_whenCurrentStoryIdIsSetToCurrentUserStoryId() throws {
+        let currentUserStoryId = try XCTUnwrap(sut.stories.first(where: { $0.user.isCurrentUser })?.id)
         
-        sut.setCurrentStoryId(currentUserStoryId!)
+        sut.setCurrentStoryId(currentUserStoryId)
         
-        XCTAssertEqual(sut.currentStoryId, currentUserStoryId!, "currentStoryId == currentUserStoryId")
+        XCTAssertEqual(sut.currentStoryId, currentUserStoryId, "currentStoryId == currentUserStoryId")
         XCTAssertEqual(sut.currentStories.count, 1, "currentStories.count == 1")
         XCTAssertEqual(sut.currentStories.first?.id, currentUserStoryId, "currentStories.first.id == currentUserStoryId")
     }
     
-    func test_currentStories_shouldNotContainCurrentUserStory_whenCurrentStoryIdIsNotCurrentUserStoryId() {
-        let nonCurrentUserStroyId = sut.stories.first(where: { !$0.user.isCurrentUser })?.id
-        XCTAssertNotNil(nonCurrentUserStroyId, "nonCurrentUserStroyId")
+    func test_currentStories_shouldNotContainCurrentUserStory_whenCurrentStoryIdIsNotCurrentUserStoryId() throws {
+        let nonCurrentUserStoryId = try XCTUnwrap(sut.stories.first(where: { !$0.user.isCurrentUser })?.id)
         
-        sut.setCurrentStoryId(nonCurrentUserStroyId!)
+        sut.setCurrentStoryId(nonCurrentUserStoryId)
         
-        XCTAssertEqual(sut.currentStoryId, nonCurrentUserStroyId!, "currentStoryId == nonCurrentUserStroyId")
+        XCTAssertEqual(sut.currentStoryId, nonCurrentUserStoryId, "currentStoryId == nonCurrentUserStoryId")
         XCTAssertEqual(sut.currentStories.filter { $0.user.isCurrentUser }.count, 0, "currentStories")
     }
     

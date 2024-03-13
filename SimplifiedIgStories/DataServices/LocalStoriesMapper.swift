@@ -30,7 +30,12 @@ enum LocalStoriesMapper {
             let isCurrentUser: Bool
             
             var local: LocalUser {
-                .init(id: id, name: name, avatar: avatar, isCurrentUser: isCurrentUser)
+                .init(
+                    id: id,
+                    name: name,
+                    avatarURL: Bundle.main.url(forResource: avatar, withExtension: "jpg"),
+                    isCurrentUser: isCurrentUser
+                )
             }
         }
         

@@ -17,7 +17,7 @@ struct LocalStory: Equatable {
 struct LocalUser: Equatable {
     let id: Int
     let name: String
-    let avatar: String
+    let avatarURL: URL?
     let isCurrentUser: Bool
 }
 

@@ -5,8 +5,8 @@
         "portions": [],
         "user": {
             "id": 0,
-            "name": "user0",
-            "avatar": "avatar0",
+            "name": "sea1",
+            "avatar": "sea1",
             "isCurrentUser": true
         }
     },
@@ -34,8 +34,8 @@
         ],
         "user": {
             "id": 1,
-            "name": "user1",
-            "avatar": "avatar1",
+            "name": "sea2",
+            "avatar": "sea2",
             "isCurrentUser": false
         }
     }

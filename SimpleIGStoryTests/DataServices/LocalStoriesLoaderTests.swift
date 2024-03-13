@@ -45,13 +45,13 @@ final class LocalStoriesLoaderTests: XCTestCase {
             makeStory(
                 id: 0,
                 lastUpdate: nil,
-                user: .init(id: 0, name: "user0", avatar: "avatar0", isCurrentUser: true),
+                user: .init(id: 0, name: "user0", avatar: "sea1", isCurrentUser: true),
                 portions: []
             ),
             makeStory(
                 id: 1,
                 lastUpdate: 1645401600,
-                user: .init(id: 1, name: "user1", avatar: "avatar1", isCurrentUser: false),
+                user: .init(id: 1, name: "user1", avatar: "sea2", isCurrentUser: false),
                 portions: [
                     .init(id: 0, resource: "resource0", duration: nil, type: "image"),
                     .init(id: 1, resource: "resource1", duration: 999, type: "video"),
@@ -122,7 +122,12 @@ final class LocalStoriesLoaderTests: XCTestCase {
         }
         
         var model: LocalUser {
-            .init(id: id, name: name, avatar: avatar, isCurrentUser: isCurrentUser)
+            .init(
+                id: id,
+                name: name,
+                avatarURL: Bundle.main.url(forResource: avatar, withExtension: "jpg"),
+                isCurrentUser: isCurrentUser
+            )
         }
     }
     

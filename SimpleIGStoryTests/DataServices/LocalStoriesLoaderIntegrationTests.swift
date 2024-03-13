@@ -25,12 +25,22 @@ final class LocalStoriesLoaderIntegrationTests: XCTestCase {
     }
     
     private func expectedStory0() -> LocalStory {
-        let user = LocalUser(id: 0, name: "user0", avatar: "avatar0", isCurrentUser: true)
+        let user = LocalUser(
+            id: 0,
+            name: "sea1",
+            avatarURL: Bundle.main.url(forResource: "sea1", withExtension: "jpg")!,
+            isCurrentUser: true
+        )
         return .init(id: 0, lastUpdate: nil, user: user, portions: [])
     }
     
     private func expectedStory1() -> LocalStory {
-        let user = LocalUser(id: 1, name: "user1", avatar: "avatar1", isCurrentUser: false)
+        let user = LocalUser(
+            id: 1,
+            name: "sea2",
+            avatarURL: Bundle.main.url(forResource: "sea2", withExtension: "jpg")!,
+            isCurrentUser: false
+        )
         let portions = [
             LocalPortion(id: 0, resource: "resource0", duration: .defaultStoryDuration, type: .image),
             LocalPortion(id: 1, resource: "resource1", duration: 999, type: .video),

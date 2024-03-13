@@ -203,6 +203,6 @@ private extension [LocalPortion] {
 
 private extension LocalUser {
     func toUser() -> User {
-        User(id: id, name: name, avatar: avatar, isCurrentUser: isCurrentUser)
+        User(id: id, name: name, avatarURL: avatarURL, isCurrentUser: isCurrentUser)
     }
 }

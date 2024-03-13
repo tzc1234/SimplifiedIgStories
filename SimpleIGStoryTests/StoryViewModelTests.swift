@@ -24,22 +24,21 @@ class StoryViewModelTests: XCTestCase {
         }
         wait(for: [expectation], timeout: 0.3)
         
-        let firstHasPortionStory = storiesViewModel.stories.filter { $0.hasPortion }.first
-        XCTAssertNotNil(firstHasPortionStory, "firstHasPortionStory")
+        let firstHasPortionStory = try XCTUnwrap(storiesViewModel.stories.filter { $0.hasPortion }.first)
         
-        storiesViewModel.setCurrentStoryId(firstHasPortionStory!.id)
+        storiesViewModel.setCurrentStoryId(firstHasPortionStory.id)
         
-        XCTAssertEqual(storiesViewModel.currentStoryId, firstHasPortionStory!.id, "currentStoryId")
+        XCTAssertEqual(storiesViewModel.currentStoryId, firstHasPortionStory.id, "currentStoryId")
         
         sut = StoryViewModel(
-            storyId: firstHasPortionStory!.id,
+            storyId: firstHasPortionStory.id,
             storiesViewModel: storiesViewModel,
             fileManager: LocalImageFileManager(),
             mediaSaver: LocalMediaSaver()
         )
         
         XCTAssertIdentical(storiesViewModel, storiesViewModel, "storiesViewModel")
-        XCTAssertEqual(sut.storyId, firstHasPortionStory!.id, "storyId")
+        XCTAssertEqual(sut.storyId, firstHasPortionStory.id, "storyId")
         XCTAssertNotEqual(sut.currentPortionId, -1, "currentPortionId")
     }
 
