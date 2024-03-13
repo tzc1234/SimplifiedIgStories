@@ -20,23 +20,23 @@ struct StoryPreview: View {
     let backBtnAction: (() -> Void)
     let postBtnAction: (() -> Void)
     
-    init(
-        uiImage: UIImage,
-        backBtnAction: @escaping (() -> Void),
-        postBtnAction: @escaping (() -> Void)
-    ) {
-        self.uiImage = uiImage
-        self.videoUrl = nil
-        self.backBtnAction = backBtnAction
-        self.postBtnAction = postBtnAction
+    init(uiImage: UIImage,
+         backBtnAction: @escaping (() -> Void),
+         postBtnAction: @escaping (() -> Void)) {
+        self.init(uiImage: uiImage, videoUrl: nil, backBtnAction: backBtnAction, postBtnAction: postBtnAction)
     }
     
-    init(
-        videoUrl: URL,
-        backBtnAction: @escaping (() -> Void),
-        postBtnAction: @escaping (() -> Void)
-    ) {
-        self.uiImage = nil
+    init(videoUrl: URL,
+         backBtnAction: @escaping (() -> Void),
+         postBtnAction: @escaping (() -> Void)) {
+        self.init(uiImage: nil, videoUrl: videoUrl, backBtnAction: backBtnAction, postBtnAction: postBtnAction)
+    }
+    
+    private init(uiImage: UIImage?,
+                 videoUrl: URL?,
+                 backBtnAction: @escaping (() -> Void),
+                 postBtnAction: @escaping (() -> Void)) {
+        self.uiImage = uiImage
         self.videoUrl = videoUrl
         self.backBtnAction = backBtnAction
         self.postBtnAction = postBtnAction
@@ -47,8 +47,8 @@ struct StoryPreview: View {
             photoView
             videoView
             
-            VStack(alignment: .leading) {
-                HStack(alignment: .top, spacing: 0) {
+            VStack {
+                HStack {
                     backBtn
                     Spacer()
                     saveBtn
@@ -57,27 +57,26 @@ struct StoryPreview: View {
                 
                 Spacer()
                 
-                HStack(alignment: .bottom, spacing: 0) {
+                HStack {
                     Spacer()
                     postBtn
                     Spacer()
                 }
                 .padding(.horizontal, 12)
             }
+            .frame(width: .screenWidth)
             .padding(.vertical, 20)
             
-            if isLoading {
-                LoadingView()
-            }
-         
+            LoadingView()
+                .opacity(isLoading ? 1 : 0)
+            
             noticeLabel
         }
         .onAppear {
-            if let videoUrl = videoUrl {
+            if let videoUrl {
                 player = AVPlayer(url: videoUrl)
             }
         }
-        
     }
 }
 
@@ -89,15 +88,17 @@ struct StoryPreview_Previews: PreviewProvider {
 
 // MARK: components
 extension StoryPreview {
-    @ViewBuilder private var photoView: some View {
-        if let uiImage = uiImage {
+    @ViewBuilder 
+    private var photoView: some View {
+        if let uiImage {
             Image(uiImage: uiImage)
                 .resizable()
                 .scaledToFill()
         }
     }
     
-    @ViewBuilder private var videoView: some View {
+    @ViewBuilder 
+    private var videoView: some View {
         if player != nil {
             AVPlayerControllerRepresentable(
                 shouldLoop: true,
@@ -122,9 +123,7 @@ extension StoryPreview {
                 .frame(width: 45, height: 45)
         }
         .alert("Discard media?", isPresented: $showAlert) {
-            Button("Discard", role: .destructive) {
-                backBtnAction()
-            }
+            Button("Discard", role: .destructive, action: backBtnAction)
             Button("Cancel", role: .cancel, action: {})
         } message: {
             Text("If you go back now, you will lose it.")
@@ -132,9 +131,7 @@ extension StoryPreview {
     }
     
     private var saveBtn: some View {
-        Button {
-            saveToAlbum()
-        } label: {
+        Button(action: saveToAlbum) {
             Image(systemName: "arrow.down.to.line")
                 .resizable()
                 .scaledToFit()
@@ -149,9 +146,7 @@ extension StoryPreview {
     }
     
     private var postBtn: some View {
-        Button {
-            postBtnAction()
-        } label: {
+        Button(action: postBtnAction) {
             Text("Post")
                 .font(.headline)
                 .foregroundColor(.white)
@@ -170,23 +165,10 @@ extension StoryPreview {
     }
 }
 
-// MARK: helper functions
+// MARK: helpers
 extension StoryPreview {
-    private func showNotice(message: String?) {
-        guard let message else { return }
-        
-        noticeMsg = message
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            showNoticeLabel = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                showNoticeLabel = false
-            }
-        }
-    }
-    
     private func saveToAlbum() {
         Task { @MainActor in
-            
             isLoading = true
             
             var successMessage: String?
@@ -212,6 +194,18 @@ extension StoryPreview {
             
             isLoading = false
             showNotice(message: successMessage)
+        }
+    }
+    
+    private func showNotice(message: String?) {
+        guard let message else { return }
+        
+        noticeMsg = message
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            showNoticeLabel = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                showNoticeLabel = false
+            }
         }
     }
 }
