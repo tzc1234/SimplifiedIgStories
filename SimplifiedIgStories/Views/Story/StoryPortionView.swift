@@ -8,8 +8,7 @@
 import SwiftUI
 import AVKit
 
-// *** In real environment, images are loaded through internet.
-// The failure case should be considered.
+// *** In real environment, images are loaded through internet. The failure case should be considered.
 struct StoryPortionView: View {
     @State private var player: AVPlayer?
     
@@ -28,21 +27,17 @@ struct StoryPortionView: View {
             videoView
         }
         .onAppear {
-            if let videoUrl = portion.videoURL {
-                player = AVPlayer(url: videoUrl)
+            if let videoURL = portion.videoURL {
+                player = AVPlayer(url: videoURL)
             }
         }
-        .onChange(of: vm.barPortionAnimationStatusDict[portion.id]) { animationStatus in
-            guard let player, let animationStatus else {
-                return
-            }
+        .onChange(of: vm.barPortionAnimationStatusDict[portion.id]) { status in
+            guard let player else { return }
             
-            switch animationStatus {
+            switch status {
             case .initial:
                 player.reset()
-            case .start:
-                player.replay()
-            case .restart:
+            case .start, .restart:
                 player.replay()
             case .pause:
                 player.pause()
@@ -50,30 +45,13 @@ struct StoryPortionView: View {
                 player.play()
             case .finish:
                 player.finish()
+            case .none:
+                break
             }
         }
-        
     }
 }
 
-struct StoryPortionView_Previews: PreviewProvider {
-    static var previews: some View {
-        let storiesViewModel = StoriesViewModel(fileManager: LocalImageFileManager())
-        let story = storiesViewModel.currentStories[0]
-        let portion = story.portions[0]
-        StoryPortionView(
-            portion: portion,
-            storyViewModel: StoryViewModel(
-                storyId: story.id,
-                storiesViewModel: storiesViewModel,
-                fileManager: LocalImageFileManager(),
-                mediaSaver: LocalMediaSaver()
-            )
-        )
-    }
-}
-
-// MARK: components
 extension StoryPortionView {
     @ViewBuilder
     private var photoView: some View {
@@ -104,5 +82,22 @@ extension StoryPortionView {
                 player: player
             )
         }
+    }
+}
+
+struct StoryPortionView_Previews: PreviewProvider {
+    static var previews: some View {
+        let storiesViewModel = StoriesViewModel(fileManager: LocalImageFileManager())
+        let story = storiesViewModel.currentStories[0]
+        let portion = story.portions[0]
+        StoryPortionView(
+            portion: portion,
+            storyViewModel: StoryViewModel(
+                storyId: story.id,
+                storiesViewModel: storiesViewModel,
+                fileManager: LocalImageFileManager(),
+                mediaSaver: LocalMediaSaver()
+            )
+        )
     }
 }
