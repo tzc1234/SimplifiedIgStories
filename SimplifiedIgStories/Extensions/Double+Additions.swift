@@ -11,4 +11,7 @@ extension Double {
     static var screenWidth: Double {
         UIScreen.main.bounds.width
     }
+    
+    static let maximumVideoDuration: Double = 10.0
+    static let defaultStoryDuration: Double = 5.0
 }

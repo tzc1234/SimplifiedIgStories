@@ -72,7 +72,6 @@
 		BE9336C727D22628009E5370 /* Color+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9336C627D22628009E5370 /* Color+Additions.swift */; };
 		BE9336CC27D24CC1009E5370 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9336CB27D24CC1009E5370 /* LoadingView.swift */; };
 		BE93B8C127C8D96900B97C40 /* TraceableRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE93B8C027C8D96900B97C40 /* TraceableRectangle.swift */; };
-		BE9EF6C527E3673600942976 /* Configs.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9EF6C427E3673600942976 /* Configs.swift */; };
 		BE9EF6C727E36F7D00942976 /* CGFloat+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9EF6C627E36F7D00942976 /* CGFloat+Additions.swift */; };
 		BEA1D95827C3C74D00D0A67A /* Date+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA1D95727C3C74D00D0A67A /* Date+Additions.swift */; };
 		BEA1D95E27C3DA7100D0A67A /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA1D95D27C3DA7100D0A67A /* User.swift */; };
@@ -178,7 +177,6 @@
 		BE9336C627D22628009E5370 /* Color+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Additions.swift"; sourceTree = "<group>"; };
 		BE9336CB27D24CC1009E5370 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		BE93B8C027C8D96900B97C40 /* TraceableRectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TraceableRectangle.swift; sourceTree = "<group>"; };
-		BE9EF6C427E3673600942976 /* Configs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configs.swift; sourceTree = "<group>"; };
 		BE9EF6C627E36F7D00942976 /* CGFloat+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGFloat+Additions.swift"; sourceTree = "<group>"; };
 		BEA1D95727C3C74D00D0A67A /* Date+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Additions.swift"; sourceTree = "<group>"; };
 		BEA1D95D27C3DA7100D0A67A /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -246,7 +244,6 @@
 			isa = PBXGroup;
 			children = (
 				BE090B5727B9562B00B6F906 /* SimplifiedIgStoriesApp.swift */,
-				BE9EF6C427E3673600942976 /* Configs.swift */,
 				BE8F57FF27D60E7D00F9DB92 /* DataServices */,
 				BE8B71B02B765EAE0055C354 /* MediaSaver */,
 				BE2D7790285F761F00DBD924 /* Camera */,
@@ -764,7 +761,6 @@
 				BE720F7C27BD111800E862A5 /* ProgressBar.swift in Sources */,
 				BE9336C727D22628009E5370 /* Color+Additions.swift in Sources */,
 				BE2D7796285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift in Sources */,
-				BE9EF6C527E3673600942976 /* Configs.swift in Sources */,
 				BE35051B2B7ABB4800348B4B /* PhotoTaker.swift in Sources */,
 				BEAFE90E2817F81C004C4D43 /* Double+Additions.swift in Sources */,
 				BEA1D95827C3C74D00D0A67A /* Date+Additions.swift in Sources */,
