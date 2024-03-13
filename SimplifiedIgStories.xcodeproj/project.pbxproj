@@ -368,8 +368,8 @@
 		BE501444288D3F510043DF62 /* Story */ = {
 			isa = PBXGroup;
 			children = (
-				BE2C557127BFFE9D0087EE7F /* StoryView.swift */,
 				BE720F7A27BD10E800E862A5 /* ProgressBar */,
+				BE2C557127BFFE9D0087EE7F /* StoryView.swift */,
 				BE91AA5327BFD96700BB9846 /* StoryPortionView.swift */,
 			);
 			path = Story;

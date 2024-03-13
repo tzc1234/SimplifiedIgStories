@@ -166,12 +166,12 @@ extension StoryIcon {
     
     private func resetStrokeAnimationAfterCompletion() {
         // reset currentEndAngle to 0 after finishing animation
-        tracingEndAngle.updateEndAngle(0)
+        tracingEndAngle.currentEndAngle = 0
         isAnimating = false
     }
     
     private func resetAnimation() {
         arcId = arcId == 0 ? 1 : 0
-        tracingEndAngle.updateEndAngle(0)
+        tracingEndAngle.currentEndAngle = 0
     }
 }

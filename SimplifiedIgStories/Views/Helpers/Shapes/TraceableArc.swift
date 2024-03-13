@@ -9,16 +9,16 @@ import SwiftUI
 
 struct TraceableArc: InsettableShape {
     let startAngle: Double
-    var endAngle: Double
+    private(set) var endAngle: Double
     let clockwise: Bool
     let traceEndAngle: TracingEndAngle
-    var insetAmount = 0.0
+    private(set) var insetAmount = 0.0
     
     var animatableData: Double {
         get { endAngle }
         set {
             Task { @MainActor [weak traceEndAngle] in
-                traceEndAngle?.updateEndAngle(newValue)
+                traceEndAngle?.currentEndAngle = newValue
             }
             endAngle = newValue
         }
@@ -36,7 +36,7 @@ struct TraceableArc: InsettableShape {
         var path = Path()
         path.addArc(
             center: CGPoint(x: rect.midX, y: rect.midY),
-            radius: rect.width / 2 - insetAmount,
+            radius: rect.width/2 - insetAmount,
             startAngle: .degrees(startAngle) - rotationAdjustment,
             endAngle: .degrees(endAngle) - rotationAdjustment,
             clockwise: !clockwise
@@ -53,13 +53,9 @@ struct TraceableArc: InsettableShape {
 
 @MainActor
 final class TracingEndAngle: ObservableObject {
-    @Published private(set) var currentEndAngle: Double
+    @Published var currentEndAngle: Double
     
     init(currentEndAngle: Double) {
         self.currentEndAngle = currentEndAngle
-    }
-    
-    func updateEndAngle(_ endAngle: Double) {
-        currentEndAngle = endAngle
     }
 }

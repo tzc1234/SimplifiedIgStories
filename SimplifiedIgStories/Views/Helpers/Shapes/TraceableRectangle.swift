@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TraceableRectangle: Shape {
     let startX: Double
-    var endX: Double
+    private(set) var endX: Double
     let tracingEndX: TracingEndX
     
     var animatableData: Double {
@@ -17,7 +17,7 @@ struct TraceableRectangle: Shape {
         set {
             endX = newValue
             Task { @MainActor [weak tracingEndX] in
-                tracingEndX?.updateCurrentEndX(newValue)
+                tracingEndX?.currentEndX = newValue
             }
         }
     }
@@ -36,13 +36,9 @@ struct TraceableRectangle: Shape {
 
 @MainActor
 final class TracingEndX: ObservableObject {
-    @Published private(set) var currentEndX: Double
+    @Published var currentEndX: Double
     
     init(currentEndX: Double) {
         self.currentEndX = currentEndX
-    }
-    
-    func updateCurrentEndX(_ endX: Double) {
-        self.currentEndX = endX
     }
 }
