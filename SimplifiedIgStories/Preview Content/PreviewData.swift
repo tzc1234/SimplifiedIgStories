@@ -16,7 +16,8 @@ struct PreviewData {
                 Portion(
                     id: 0,
                     duration: .defaultStoryDuration,
-                    imageURL: Bundle.main.url(forResource: "sea1", withExtension: "jpg")
+                    resourceURL: Bundle.main.url(forResource: "sea1", withExtension: "jpg"),
+                    type: .image
                 )
             ],
             user: User(

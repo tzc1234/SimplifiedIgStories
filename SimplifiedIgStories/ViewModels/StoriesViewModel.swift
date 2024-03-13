@@ -139,14 +139,13 @@ extension StoriesViewModel {
     
     func postStoryPortion(image: UIImage) {
         guard let yourStoryIdx = yourStoryIdx,
-              let imageUrl = try? fileManager.saveImage(image, fileName: "img_\(UUID().uuidString)")
-        else {
+              let imageURL = try? fileManager.saveImage(image, fileName: "img_\(UUID().uuidString)") else {
             return
         }
 
         var portions = stories[yourStoryIdx].portions
         // Just append a new Portion instance to current user's potion array.
-        portions.append(Portion(id: lastPortionId + 1, duration: .defaultStoryDuration, imageURL: imageUrl))
+        portions.append(Portion(id: lastPortionId+1, duration: .defaultStoryDuration, resourceURL: imageURL, type: .image))
         stories[yourStoryIdx].portions = portions
         stories[yourStoryIdx].lastUpdate = .now
     }
@@ -162,7 +161,7 @@ extension StoriesViewModel {
         let durationSeconds = CMTimeGetSeconds(duration)
 
         // Similar to image case.
-        portions.append(Portion(id: lastPortionId + 1, duration: durationSeconds, videoURL: videoUrl))
+        portions.append(Portion(id: lastPortionId+1, duration: durationSeconds, resourceURL: videoUrl, type: .video))
         stories[yourStoryIdx].portions = portions
         stories[yourStoryIdx].lastUpdate = .now
     }
@@ -189,13 +188,15 @@ private extension [LocalPortion] {
                 return Portion(
                     id: local.id, 
                     duration: local.duration,
-                    imageURL: local.resourceURL
+                    resourceURL: local.resourceURL,
+                    type: .init(rawValue: local.type.rawValue) ?? .image
                 )
             case .video:
                 return Portion(
                     id: local.id, 
                     duration: local.duration,
-                    videoURL: local.resourceURL
+                    resourceURL: local.resourceURL,
+                    type: .init(rawValue: local.type.rawValue) ?? .image
                 )
             }
         }

@@ -10,6 +10,19 @@ import Foundation
 struct Portion: Identifiable {
     var id: Int
     var duration: Double
-    var imageURL: URL?
-    var videoURL: URL?
+    var resourceURL: URL?
+    var type: ResourceType
+    
+    var imageURL: URL? {
+        type == .image ? resourceURL : nil
+    }
+    
+    var videoURL: URL? {
+        type == .video ? resourceURL : nil
+    }
+}
+
+enum ResourceType: String {
+    case image
+    case video
 }
