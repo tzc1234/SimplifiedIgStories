@@ -28,7 +28,7 @@ struct StoryPortionView: View {
             videoView
         }
         .onAppear {
-            if let videoUrl = portion.videoUrl ?? portion.videoUrlFromCam {
+            if let videoUrl = portion.videoURL {
                 player = AVPlayer(url: videoUrl)
             }
         }
@@ -77,7 +77,7 @@ struct StoryPortionView_Previews: PreviewProvider {
 extension StoryPortionView {
     @ViewBuilder
     private var photoView: some View {
-        AsyncImage(url: imageURL) { image in
+        AsyncImage(url: portion.imageURL) { image in
             ZStack {
                 GeometryReader { _ in
                     image
@@ -94,14 +94,6 @@ extension StoryPortionView {
         } placeholder: {
             Color.darkGray
         }
-    }
-    
-    private var imageURL: URL? {
-        if let imageName = portion.imageName {
-            return Bundle.main.url(forResource: imageName, withExtension: "jpg")
-        }
-        
-        return portion.imageUrl
     }
     
     @ViewBuilder 

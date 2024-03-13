@@ -317,7 +317,7 @@ extension StoryViewModel {
         isLoading = true
         var successMessage: String?
         
-        if let imageUrl = currentPortion.imageUrl, 
+        if let imageUrl = currentPortion.imageURL, 
             let data = fileManager.getImage(for: imageUrl)?.jpegData(compressionQuality: 1) {
             do {
                 try await mediaSaver.saveImageData(data)
@@ -327,7 +327,7 @@ extension StoryViewModel {
             } catch {
                 successMessage = "Save failed."
             }
-        } else if let videoUrl = currentPortion.videoUrlFromCam {
+        } else if let videoUrl = currentPortion.videoURL {
             do {
                 try await mediaSaver.saveVideo(by: videoUrl)
                 successMessage = "Saved."
@@ -362,7 +362,7 @@ extension StoryViewModel {
         }
         
         let portion = portions[portionIndex]
-        if let fileUrl = portion.imageUrl ?? portion.videoUrl {
+        if let fileUrl = portion.imageURL ?? portion.videoURL {
             try? fileManager.deleteImage(for: fileUrl)
         }
         

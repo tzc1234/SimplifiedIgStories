@@ -48,7 +48,7 @@ enum LocalStoriesMapper {
             var local: LocalPortion {
                 .init(
                     id: id,
-                    resource: resource,
+                    resourceURL: Bundle.main.url(forResource: resource, withExtension: type == "video" ? "mp4" : "jpg"),
                     duration: duration ?? .defaultStoryDuration,
                     type: .init(rawValue: type) ?? .image
                 )

@@ -16,18 +16,18 @@
         "portions": [
             {
                 "id": 0,
-                "resource": "resource0",
+                "resource": "sea1",
                 "type": "image"
             },
             {
                 "id": 1,
-                "resource": "resource1",
+                "resource": "seaVideo",
                 "duration": 999,
                 "type": "video"
             },
             {
                 "id": 2,
-                "resource": "resource2",
+                "resource": "sea2",
                 "duration": 1,
                 "type": "any"
             }

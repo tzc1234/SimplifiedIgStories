@@ -146,7 +146,7 @@ extension StoriesViewModel {
 
         var portions = stories[yourStoryIdx].portions
         // Just append a new Portion instance to current user's potion array.
-        portions.append(Portion(id: lastPortionId + 1, imageUrl: imageUrl))
+        portions.append(Portion(id: lastPortionId + 1, duration: .defaultStoryDuration, imageURL: imageUrl))
         stories[yourStoryIdx].portions = portions
         stories[yourStoryIdx].lastUpdate = .now
     }
@@ -162,7 +162,7 @@ extension StoriesViewModel {
         let durationSeconds = CMTimeGetSeconds(duration)
 
         // Similar to image case.
-        portions.append(Portion(id: lastPortionId + 1, videoDuration: durationSeconds, videoUrlFromCam: videoUrl))
+        portions.append(Portion(id: lastPortionId + 1, duration: durationSeconds, videoURL: videoUrl))
         stories[yourStoryIdx].portions = portions
         stories[yourStoryIdx].lastUpdate = .now
     }
@@ -187,14 +187,15 @@ private extension [LocalPortion] {
             switch local.type {
             case .image:
                 return Portion(
-                    id: local.id,
-                    imageName: local.resource
+                    id: local.id, 
+                    duration: local.duration,
+                    imageURL: local.resourceURL
                 )
             case .video:
                 return Portion(
-                    id: local.id,
-                    videoName: local.resource,
-                    videoDuration: local.duration
+                    id: local.id, 
+                    duration: local.duration,
+                    videoURL: local.resourceURL
                 )
             }
         }

@@ -42,9 +42,24 @@ final class LocalStoriesLoaderIntegrationTests: XCTestCase {
             isCurrentUser: false
         )
         let portions = [
-            LocalPortion(id: 0, resource: "resource0", duration: .defaultStoryDuration, type: .image),
-            LocalPortion(id: 1, resource: "resource1", duration: 999, type: .video),
-            LocalPortion(id: 2, resource: "resource2", duration: 1, type: .image),
+            LocalPortion(
+                id: 0,
+                resourceURL: Bundle.main.url(forResource: "sea1", withExtension: "jpg")!,
+                duration: .defaultStoryDuration,
+                type: .image
+            ),
+            LocalPortion(
+                id: 1,
+                resourceURL: Bundle.main.url(forResource: "seaVideo", withExtension: "mp4")!,
+                duration: 999,
+                type: .video
+            ),
+            LocalPortion(
+                id: 2,
+                resourceURL: Bundle.main.url(forResource: "sea2", withExtension: "jpg")!,
+                duration: 1,
+                type: .image
+            ),
         ]
         return .init(id: 1, lastUpdate: Date(timeIntervalSince1970: 1645401600), user: user, portions: portions)
     }

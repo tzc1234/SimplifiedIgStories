@@ -13,7 +13,11 @@ struct PreviewData {
             id: 0,
             lastUpdate: .now,
             portions: [
-                Portion(id: 0, imageName: "sea1")
+                Portion(
+                    id: 0,
+                    duration: .defaultStoryDuration,
+                    imageURL: Bundle.main.url(forResource: "sea1", withExtension: "jpg")
+                )
             ],
             user: User(
                 id: 0,

@@ -23,7 +23,7 @@ struct LocalUser: Equatable {
 
 struct LocalPortion: Equatable {
     let id: Int
-    let resource: String
+    let resourceURL: URL?
     let duration: Double
     let type: LocalResourceType
 }

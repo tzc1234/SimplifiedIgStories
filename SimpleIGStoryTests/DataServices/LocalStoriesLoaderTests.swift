@@ -53,9 +53,24 @@ final class LocalStoriesLoaderTests: XCTestCase {
                 lastUpdate: 1645401600,
                 user: .init(id: 1, name: "user1", avatar: "sea2", isCurrentUser: false),
                 portions: [
-                    .init(id: 0, resource: "resource0", duration: nil, type: "image"),
-                    .init(id: 1, resource: "resource1", duration: 999, type: "video"),
-                    .init(id: 2, resource: "resource2", duration: nil, type: "unknown"),
+                    .init(
+                        id: 0,
+                        resource: "forest1",
+                        duration: nil,
+                        type: "image"
+                    ),
+                    .init(
+                        id: 1,
+                        resource: "forestVideo",
+                        duration: 999,
+                        type: "video"
+                    ),
+                    .init(
+                        id: 2,
+                        resource: "forest2",
+                        duration: nil,
+                        type: "unknown"
+                    ),
                 ]
             )
         ]
@@ -149,7 +164,7 @@ final class LocalStoriesLoaderTests: XCTestCase {
         var model: LocalPortion {
             .init(
                 id: id,
-                resource: resource,
+                resourceURL: Bundle.main.url(forResource: resource, withExtension: type == "video" ? "mp4" : "jpg"),
                 duration: duration ?? .defaultStoryDuration,
                 type: .init(rawValue: type) ?? .image
             )
