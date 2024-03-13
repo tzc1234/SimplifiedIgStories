@@ -25,10 +25,10 @@ struct LocalPortion: Equatable {
     let id: Int
     let resource: String
     let duration: Double
-    let type: ResourceType
+    let type: LocalResourceType
 }
 
-enum ResourceType: String {
+enum LocalResourceType: String {
     case image
     case video
 }
