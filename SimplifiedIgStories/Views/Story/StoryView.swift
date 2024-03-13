@@ -54,7 +54,8 @@ struct StoryView: View {
                         }
                 }
                 
-                if vm.isLoading { LoadingView() }
+                LoadingView()
+                    .opacity(vm.isLoading ? 1 : 0)
                 
                 noticeLabel
             }
@@ -70,9 +71,7 @@ struct StoryView: View {
                 print("storyId: \(storyId) view onDisappear.")
             }
         }
-        
     }
-    
 }
 
 struct StoryView_Previews: PreviewProvider {
@@ -93,7 +92,6 @@ struct StoryView_Previews: PreviewProvider {
 
 // MARK: components
 extension StoryView {
-    // TODO: Limit the number of StoryPortionViews.
     private var storyPortionViews: some View {
         ZStack {
             ForEach(vm.story.portions) { portion in
@@ -127,7 +125,7 @@ extension StoryView {
             showStroke: false,
             onTapAction: onTapAction
         )
-            .frame(width: 40.0, height: 40.0)
+        .frame(width: 40.0, height: 40.0)
     }
     
     private var nameText: some View {
@@ -161,7 +159,8 @@ extension StoryView {
         .padding(.trailing, 10.0)
     }
     
-    @ViewBuilder private var moreButton: some View {
+    @ViewBuilder 
+    private var moreButton: some View {
         if vm.story.user.isCurrentUser {
             Button {
                 vm.showConfirmationDialog.toggle()

@@ -21,15 +21,13 @@ struct StoryIcon: View {
     let showPlusIcon: Bool
     let plusIconBgColor: Color
     let showStroke: Bool
-    let onTapAction: ((_ storyId: Int) -> Void)?
+    let onTapAction: ((Int) -> Void)?
     
-    init(
-        story: Story,
-        showPlusIcon: Bool = false,
-        plusIconBgColor: Color = .background,
-        showStroke: Bool = true,
-        onTapAction: ((_ storyId: Int) -> Void)? = nil
-    ) {
+    init(story: Story,
+         showPlusIcon: Bool = false,
+         plusIconBgColor: Color = .background,
+         showStroke: Bool = true,
+         onTapAction: ((Int) -> Void)? = nil) {
         self.story = story
         self.showPlusIcon = showPlusIcon
         self.plusIconBgColor = plusIconBgColor
@@ -52,7 +50,7 @@ struct StoryIcon: View {
             }
         }
         .onTapGesture {
-            guard let onTapAction = onTapAction else { return }
+            guard let onTapAction else { return }
             
             withAnimation(.spring()) {
                 isOnTap.toggle()
@@ -77,40 +75,51 @@ struct StoryIcon_Previews: PreviewProvider {
 
 // MARK: components
 extension StoryIcon {
-   @ViewBuilder private var arc: some View {
-       if showStroke {
-           TraceableArc(startAngle: 0, endAngle: endAngle, clockwise: true, traceEndAngle: tracingEndAngle)
-               .strokeBorder(
-                   .linearGradient(
-                       colors: [.red, .orange],
-                       startPoint: .topTrailing,
-                       endPoint: .bottomLeading
-                   ),
-                   lineWidth: 10.0, antialiased: true
-               )
-               .id(arcId)
-       }
-    }
-    
-    private var avatarImage: some View {
-        GeometryReader { geo in
-            Image(story.user.avatar)
-                .resizable()
-                .scaledToFill()
-                .clipShape(Circle())
-                .frame(width: geo.size.width, height: geo.size.width, alignment: .center)
-                .scaleEffect(0.9)
-                .background(
-                    Group {
-                        if showStroke {
-                            Circle().fill(.background).scaleEffect(0.95)
-                        }
-                    }
+    @ViewBuilder
+    private var arc: some View {
+        if showStroke {
+            TraceableArc(startAngle: 0, endAngle: endAngle, clockwise: true, traceEndAngle: tracingEndAngle)
+                .strokeBorder(
+                    .linearGradient(
+                        colors: [.red, .orange],
+                        startPoint: .topTrailing,
+                        endPoint: .bottomLeading
+                    ),
+                    lineWidth: 10.0,
+                    antialiased: true
                 )
+                .id(arcId)
         }
     }
     
-    @ViewBuilder private var plusIcon: some View {
+    private var avatarImage: some View {
+        AsyncImage(url: avatarURL) { image in
+            GeometryReader { geo in
+                image
+                    .resizable()
+                    .scaledToFill()
+                    .clipShape(Circle())
+                    .frame(width: geo.size.width, height: geo.size.width, alignment: .center)
+                    .scaleEffect(0.9)
+                    .background(
+                        Group {
+                            if showStroke {
+                                Circle().fill(.background).scaleEffect(0.95)
+                            }
+                        }
+                    )
+            }
+        } placeholder: {
+            Color.darkGray
+        }
+    }
+    
+    private var avatarURL: URL? {
+        Bundle.main.url(forResource: story.user.avatar, withExtension: "jpg")
+    }
+    
+    @ViewBuilder 
+    private var plusIcon: some View {
         if showPlusIcon {
             Circle().fill(.blue)
                 .scaledToFit()

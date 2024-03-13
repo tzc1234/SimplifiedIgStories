@@ -33,7 +33,7 @@ struct StoryPortionView: View {
             }
         }
         .onChange(of: vm.barPortionAnimationStatusDict[portion.id]) { animationStatus in
-            guard let player = player, let animationStatus = animationStatus else {
+            guard let player, let animationStatus else {
                 return
             }
             
@@ -75,39 +75,42 @@ struct StoryPortionView_Previews: PreviewProvider {
 
 // MARK: components
 extension StoryPortionView {
-    @ViewBuilder private var photoView: some View {
-        GeometryReader { geo in
-            image?
-                .resizable()
-                .scaledToFill()
-                .overlay(.ultraThinMaterial)
-                .clipShape(Rectangle())
+    @ViewBuilder
+    private var photoView: some View {
+        AsyncImage(url: imageURL) { image in
+            ZStack {
+                GeometryReader { _ in
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .overlay(.ultraThinMaterial)
+                        .clipShape(Rectangle())
+                }
+                
+                image
+                    .resizable()
+                    .scaledToFit()
+            }
+        } placeholder: {
+            Color.darkGray
         }
-        
-        image?
-            .resizable()
-            .scaledToFit()
     }
     
-    @ViewBuilder private var videoView: some View {
+    private var imageURL: URL? {
+        if let imageName = portion.imageName {
+            return Bundle.main.url(forResource: imageName, withExtension: "jpg")
+        }
+        
+        return portion.imageUrl
+    }
+    
+    @ViewBuilder 
+    private var videoView: some View {
         if player != nil {
             AVPlayerControllerRepresentable(
                 shouldLoop: false,
                 player: player
             )
         }
-    }
-}
-
-// MARK: helpers
-extension StoryPortionView {
-    private var image: Image? {
-        if let imageName = portion.imageName {
-            return Image(imageName)
-        } else if let imageUrl = portion.imageUrl,
-                  let uiImage = vm.getImage(by: imageUrl) {
-            return Image(uiImage: uiImage)
-        }
-        return nil
     }
 }

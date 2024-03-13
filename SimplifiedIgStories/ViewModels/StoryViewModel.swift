@@ -40,12 +40,10 @@ final class StoryViewModel: ObservableObject {
     private let fileManager: ImageFileManageable
     private let mediaSaver: MediaSaver
     
-    init(
-        storyId: Int,
-        storiesViewModel: StoriesViewModel,
-        fileManager: ImageFileManageable,
-        mediaSaver: MediaSaver
-    ) {
+    init(storyId: Int,
+         storiesViewModel: StoriesViewModel,
+         fileManager: ImageFileManageable,
+         mediaSaver: MediaSaver) {
         self.storyId = storyId
         self.storiesViewModel = storiesViewModel
         self.fileManager = fileManager
