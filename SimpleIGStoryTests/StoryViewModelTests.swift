@@ -160,37 +160,44 @@ final class StoryViewModelTests: XCTestCase {
         XCTAssertEqual(sut.currentPortionAnimationStatus, .resume)
     }
     
-//    func test_startProgressBarAnimation_currentStory_andCurrentPortionIsAnimating_ignore() {
-////        sut.setCurrentBarPortionAnimationStatus(to: .resume)
-//        
-//        XCTAssertEqual(sut.currentPortionAnimationStatus, .resume, "currentPortionAnimationStatus")
-//        
-//        sut.startProgressBarAnimation()
-//        
-//        XCTAssertEqual(sut.currentPortionAnimationStatus, .resume, "currentPortionAnimationStatus")
-//    }
-//    
-//    func test_startProgressBarAnimation_currentStory_andCurrentPortionIsNotAnimating_startAnmation() {
-//        XCTAssertEqual(sut.currentPortionAnimationStatus, .initial, "currentPortionAnimationStatus")
-//        XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
-//        
-//        sut.startProgressBarAnimation()
-//        
-//        XCTAssertEqual(sut.currentPortionAnimationStatus, .start, "currentPortionAnimationStatus")
-//        XCTAssertTrue(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
-//    }
-//    
-//    func test_startProgressBarAnimation_currentStory_andCurrentPortionIsNotAnimating_butNotCurrentStory_ignore() {
-////        sut.setCurrentBarPortionAnimationStatus(to: .pause)
-//        storiesViewModel.moveCurrentStory(to: .next)
-//        XCTAssertEqual(sut.currentPortionAnimationStatus, .pause, "currentPortionAnimationStatus")
-//        XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
-//        
-//        sut.startProgressBarAnimation()
-//        
-//        XCTAssertEqual(sut.currentPortionAnimationStatus, .pause, "currentPortionAnimationStatus")
-//        XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
-//    }
+    func test_startProgressBarAnimation_ignoresWhenIsNotCurrentStory() {
+        let stories = [
+            makeStory(id: 0, portions: [makePortion(id: 0)]),
+            makeStory(id: 1, portions: [makePortion(id: 1)])
+        ]
+        let (sut, spy) = makeSUT(storyId: 1, stories: stories)
+        spy.currentStoryId = 0
+        
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .initial)
+        
+        sut.startProgressBarAnimation()
+        
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .initial)
+    }
+    
+    func test_startProgressBarAnimation_ignoresWhenPortionIsAnimating() {
+        let stories = [makeStory(id: 0, portions: [makePortion(id: 0)])]
+        let (sut, spy) = makeSUT(stories: stories)
+        
+        setupForCurrentPortionAnimationResumesStatus(on: sut, with: spy)
+        
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .resume)
+        
+        sut.startProgressBarAnimation()
+        
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .resume)
+    }
+    
+    func test_startProgressBarAnimation_startsAnimation() {
+        let stories = [makeStory(id: 0, portions: [makePortion(id: 0)])]
+        let (sut, _) = makeSUT(stories: stories)
+        
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .initial)
+        
+        sut.startProgressBarAnimation()
+        
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .start)
+    }
     
     // MARK: - Helpers
     
@@ -209,6 +216,15 @@ final class StoryViewModelTests: XCTestCase {
         trackForMemoryLeaks(spy, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
         return (sut, spy)
+    }
+    
+    private func setupForCurrentPortionAnimationResumesStatus(on sut: StoryViewModel, 
+                                                              with spy: ParentStoryViewModelSpy) {
+        sut.startProgressBarAnimation()
+        spy.setIsDragging(true)
+        
+        spy.isSameStoryAfterDragging = true
+        spy.setIsDragging(false)
     }
     
     private func makePortion(id: Int = 0) -> Portion {
@@ -280,40 +296,3 @@ private extension CGFloat {
         .screenWidth/2 + 1
     }
 }
-
-//extension StoryViewModelTests {
-//    private var hasPortionStories: [Story] {
-//        storiesViewModel.stories.filter { $0.hasPortion }
-//    }
-    
-//    private var nextPortionId: Int? {
-//        let currentPortionIdx = sut.portions.firstIndex { $0.id == sut.currentPortionId }
-//        let nextPortionIdx = currentPortionIdx! + 1
-//        return nextPortionIdx < sut.portions.count ? sut.portions[nextPortionIdx].id : nil
-//    }
-    
-//    private var nextStoryId: Int? {
-//        let storyCount = storiesViewModel.stories.count
-//        let currentStoryIdx = storiesViewModel.currentStoryIndex
-//        let nextStoryIdx = currentStoryIdx! + 1
-//        return nextStoryIdx < storyCount ? storiesViewModel.stories[nextStoryIdx].id : nil
-//    }
-//    
-//    private func setPortionTransitionDirectionForward() {
-//        sut.setPortionTransitionDirection(by: (.screenWidth / 2) + 40)
-//    }
-//    
-//    private func setPortionTransitionDirectionBackward() {
-//        sut.setPortionTransitionDirection(by: (.screenWidth / 2) - 40)
-//    }
-//    
-//    private func make2ndStorySUT() -> StoryViewModel {
-//        let secondStory = hasPortionStories[1]
-//        return StoryViewModel(
-//            storyId: secondStory.id,
-//            parentViewModel: storiesViewModel,
-//            fileManager: LocalImageFileManager(),
-//            mediaSaver: LocalMediaSaver()
-//        )
-//    }
-//}
