@@ -7,18 +7,19 @@
 
 import AVKit
 import UIKit
+import Combine
 
-final class StoriesViewModel: ObservableObject {
+enum StoryMoveDirection {
+    case previous, next
+}
+
+final class StoriesViewModel: ObservableObject, ParentStoryViewModel {
     @Published var stories: [Story] = []
     
     @Published private(set) var currentStoryId = -1
     @Published var shouldCubicRotation = false
     @Published var isDragging = false
     private(set) var storyIdBeforeDragged = 0
-    
-    enum StoryMoveDirection {
-        case previous, next
-    }
     
     private let storiesLoader: StoriesLoader?
     private let fileManager: ImageFileManageable
@@ -58,7 +59,7 @@ extension StoriesViewModel {
         }
     }
     
-    var isSameStoryAfterDragged: Bool {
+    var isSameStoryAfterDragging: Bool {
         currentStoryId == storyIdBeforeDragged
     }
     
@@ -85,7 +86,11 @@ extension StoriesViewModel {
 
 // MARK: internal functions
 extension StoriesViewModel {
-    @MainActor 
+    func getIsDraggingPublisher() -> AnyPublisher<Bool, Never> {
+        $isDragging.eraseToAnyPublisher()
+    }
+    
+    @MainActor
     func fetchStories() async {
         do {
             guard let localStories = try await storiesLoader?.load() else {

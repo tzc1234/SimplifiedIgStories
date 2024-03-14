@@ -22,7 +22,7 @@ struct StoryContainer: View {
                         storyId: story.id,
                         vm: StoryViewModel(
                             storyId: story.id,
-                            storiesViewModel: vm,
+                            parentViewModel: vm,
                             fileManager: LocalImageFileManager(),
                             mediaSaver: LocalMediaSaver()
                         )

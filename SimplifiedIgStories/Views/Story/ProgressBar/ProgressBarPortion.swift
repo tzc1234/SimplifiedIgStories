@@ -39,7 +39,7 @@ struct ProgressBarPortion: View {
                 .id(traceableRectangleId)
                 .onChange(of: tracingEndX.currentEndX) { currentEndX in
                     if currentEndX >= geo.size.width { // Animation finished
-                        vm.barPortionAnimationStatusDict[portionId] = .finish
+                        vm.finishPortionAnimation(for: portionId)
                     }
                 }
                 .onChange(of: vm.barPortionAnimationStatusDict[portionId]) { status in
@@ -109,7 +109,7 @@ struct ProgressBarPortion_Previews: PreviewProvider {
             storyId: story.id,
             storyViewModel: StoryViewModel(
                 storyId: story.id,
-                storiesViewModel: storiesViewModel,
+                parentViewModel: storiesViewModel,
                 fileManager: LocalImageFileManager(),
                 mediaSaver: LocalMediaSaver()
             )

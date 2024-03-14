@@ -61,7 +61,8 @@ struct StoryView: View {
             }
             .background(storyPortionViews)
             .onAppear {
-                vm.initStoryAnimation()
+                print("storyId: \(storyId) view onAppear.")
+                vm.startProgressBarAnimation()
             }
             .cubicTransition(
                 shouldRotate: vm.shouldCubicRotation,
@@ -74,23 +75,6 @@ struct StoryView: View {
     }
 }
 
-struct StoryView_Previews: PreviewProvider {
-    static var previews: some View {
-        let storiesViewModel = StoriesViewModel(fileManager: LocalImageFileManager())
-        let story = storiesViewModel.currentStories[0]
-        StoryView(
-            storyId: story.id,
-            vm: StoryViewModel(
-                storyId: story.id,
-                storiesViewModel: storiesViewModel,
-                fileManager: LocalImageFileManager(),
-                mediaSaver: LocalMediaSaver()
-            )
-        )
-    }
-}
-
-// MARK: components
 extension StoryView {
     private var storyPortionViews: some View {
         ZStack {
@@ -179,5 +163,21 @@ extension StoryView {
         NoticeLabel(message: vm.noticeMsg)
             .opacity(vm.showNoticeLabel ? 1 : 0)
             .animation(.easeIn, value: vm.showNoticeLabel)
+    }
+}
+
+struct StoryView_Previews: PreviewProvider {
+    static var previews: some View {
+        let storiesViewModel = StoriesViewModel(fileManager: LocalImageFileManager())
+        let story = storiesViewModel.currentStories[0]
+        StoryView(
+            storyId: story.id,
+            vm: StoryViewModel(
+                storyId: story.id,
+                parentViewModel: storiesViewModel,
+                fileManager: LocalImageFileManager(),
+                mediaSaver: LocalMediaSaver()
+            )
+        )
     }
 }
