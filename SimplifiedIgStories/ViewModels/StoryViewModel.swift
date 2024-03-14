@@ -239,8 +239,8 @@ extension StoryViewModel {
     private func performProgressBarAnimation(to transitionDirection: PortionTransitionDirection) {
         switch transitionDirection {
         case .forward:
-            setCurrentBarPortionAnimationStatus(to: .finish)
             // Will trigger the onChange of currentPortionAnimationStatus in ProgressBar.
+            setCurrentBarPortionAnimationStatus(to: .finish)
         case .backward:
             if isAtFirstPortion {
                 if isAtFirstStory {
