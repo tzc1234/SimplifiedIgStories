@@ -132,68 +132,34 @@ final class StoryViewModelTests: XCTestCase {
         XCTAssertEqual(spy.loggedStoryMoveDirections, [.previous])
     }
     
-//    func test_updateBarPortionAnimationStatusWhenDrag_isDragging_andAnimationStatusIsStart_pauseAnimation() {
-////        sut.setCurrentBarPortionAnimationStatus(to: .start)
-//        XCTAssertEqual(sut.currentPortionAnimationStatus, .start, "currentPortionAnimationStatus")
-//        XCTAssertTrue(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
-//        
-//        storiesViewModel.isDragging = true
-//        
-//        XCTAssertEqual(sut.currentPortionAnimationStatus, .pause, "currentPortionAnimationStatus")
-//        XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
-//    }
-//    
-//    func test_updateBarPortionAnimationStatusWhenDrag_isDragging_andAnimationStatusIsInital_ignore() {
-//        XCTAssertEqual(sut.currentPortionAnimationStatus, .initial, "currentPortionAnimationStatus")
-//        XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
-//        
-//        storiesViewModel.isDragging = true
-//        
-//        XCTAssertEqual(sut.currentPortionAnimationStatus, .initial, "currentPortionAnimationStatus")
-//        XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
-//    }
-//    
-//    func test_updateBarPortionAnimationStatusWhenDrag_dragged_notSameStoryAndCurrentPortionNotAnimated_startAnimation() {
-//        let secondSUT = make2ndStorySUT()
-////        sut.setCurrentBarPortionAnimationStatus(to: .start)
-//        XCTAssertNotIdentical(sut, secondSUT)
-//        
-//        XCTAssertTrue(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
-//        XCTAssertEqual(storiesViewModel.currentStoryId, sut.storyId, "sut is current")
-//        
-//        storiesViewModel.isDragging = true
-//        
-//        XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
-//        XCTAssertEqual(sut.currentPortionAnimationStatus, .pause, "currentPortionAnimationStatus")
-//        
-//        // simulate dragged from the 1st story to the 2nd story.
-//        storiesViewModel.moveCurrentStory(to: .next)
-//        storiesViewModel.isDragging = false
-//        
-//        XCTAssertEqual(storiesViewModel.currentStoryId, secondSUT.storyId, "secondSUT is now current")
-//        XCTAssertEqual(sut.currentPortionAnimationStatus, .initial, "1st story currentPortionAnimationStatus")
-//        XCTAssertEqual(secondSUT.currentPortionAnimationStatus, .start, "2nd story currentPortionAnimationStatus")
-//    }
-//    
-//    func test_updateBarPortionAnimationStatusWhenDrag_dragged_sameStory_resumeAnimation() {
-//        XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
-//        
-////        sut.setCurrentBarPortionAnimationStatus(to: .start)
-//        
-//        XCTAssertTrue(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
-//        XCTAssertEqual(sut.currentPortionAnimationStatus, .start, "currentPortionAnimationStatus")
-//        
-//        storiesViewModel.isDragging = true
-//        
-//        XCTAssertFalse(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
-//        XCTAssertEqual(sut.currentPortionAnimationStatus, .pause, "currentPortionAnimationStatus")
-//        
-//        storiesViewModel.isDragging = false
-//        
-//        XCTAssertTrue(sut.isCurrentPortionAnimating, "isCurrentPortionAnimating")
-//        XCTAssertEqual(sut.currentPortionAnimationStatus, .resume, "currentPortionAnimationStatus")
-//    }
-//    
+    func test_updateBarPortionAnimationStatusWhenDragging_pausesPortionAnimationWhenIsDragging() {
+        let stories = [makeStory(id: 0, portions: [makePortion(id: 0)])]
+        let (sut, spy) = makeSUT(stories: stories)
+        
+        sut.startProgressBarAnimation()
+        
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .start)
+        
+        spy.setIsDragging(true)
+        
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .pause)
+    }
+    
+    func test_updateBarPortionAnimationStatusWhenDragging_resumesPortionAnimationAfterDraggedAndStayedInSameStory() {
+        let stories = [makeStory(id: 0, portions: [makePortion(id: 0)])]
+        let (sut, spy) = makeSUT(stories: stories)
+        
+        sut.startProgressBarAnimation()
+        spy.setIsDragging(true)
+        
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .pause)
+        
+        spy.isSameStoryAfterDragging = true
+        spy.setIsDragging(false)
+        
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .resume)
+    }
+    
 //    func test_startProgressBarAnimation_currentStory_andCurrentPortionIsAnimating_ignore() {
 ////        sut.setCurrentBarPortionAnimationStatus(to: .resume)
 //        
@@ -229,7 +195,9 @@ final class StoryViewModelTests: XCTestCase {
     // MARK: - Helpers
     
     private func makeSUT(storyId: Int = 0,
-                         stories: [Story] = []) -> (sut: StoryViewModel, spy: ParentStoryViewModelSpy) {
+                         stories: [Story] = [], 
+                         file: StaticString = #filePath,
+                         line: UInt = #line) -> (sut: StoryViewModel, spy: ParentStoryViewModelSpy) {
         let spy = ParentStoryViewModelSpy()
         spy.stories = stories
         let sut = StoryViewModel(
@@ -238,6 +206,8 @@ final class StoryViewModelTests: XCTestCase {
             fileManager: DummyFileManager(),
             mediaSaver: DummyMediaSaver()
         )
+        trackForMemoryLeaks(spy, file: file, line: line)
+        trackForMemoryLeaks(sut, file: file, line: line)
         return (sut, spy)
     }
     
@@ -267,10 +237,15 @@ final class StoryViewModelTests: XCTestCase {
         var isNowAtLastStory = false
         var isSameStoryAfterDragging = false
         
+        private let isDraggingPublisher = CurrentValueSubject<Bool, Never>(false)
         private(set) var loggedStoryMoveDirections = [StoryMoveDirection]()
         
         func getIsDraggingPublisher() -> AnyPublisher<Bool, Never> {
-            CurrentValueSubject(false).eraseToAnyPublisher()
+            isDraggingPublisher.eraseToAnyPublisher()
+        }
+        
+        func setIsDragging(_ isDragging: Bool) {
+            isDraggingPublisher.send(isDragging)
         }
         
         func moveCurrentStory(to direction: StoryMoveDirection) {
