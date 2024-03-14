@@ -11,110 +11,65 @@ import Combine
 
 final class StoryViewModelTests: XCTestCase {
     func test_init_setsCurrentPortionAnimationStatusToInitial() {
-        let (sut, _) = makeSUT()
+        let stories = [makeStory(portions: [makePortion(id: 0)])]
+        let (sut, _) = makeSUT(stories: stories)
         
+        XCTAssertEqual(sut.currentPortionId, 0)
         XCTAssertEqual(sut.currentPortionAnimationStatus, .initial)
     }
     
-//    func test_performNextBarPortionAnimationWhenCurrentPortionFinished_ignoreWhenCurrentPortionIsNotFinished() {
-//        let currentPortionId = sut.currentPortionId
-//        
-////        sut.barPortionAnimationStatusDict[currentPortionId] = .none
-//        
-//        XCTAssertNotEqual(sut.currentPortionAnimationStatus, .finish, "currentPortionAnimationStatus")
-//        
-//        sut.performNextBarPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: {})
-//        
-//        XCTAssertEqual(sut.currentPortionId, currentPortionId, "currentPortionId")
-//    }
+    func test_performNextBarPortionAnimationWhenCurrentPortionFinished_ignoresWhenCurrentPortionAnimationIsNotFinished() {
+        let stories = [makeStory(portions: [makePortion(id: 0)])]
+        let (sut, _) = makeSUT(stories: stories)
+        
+        sut.performNextBarPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: {})
+        
+        XCTAssertNotEqual(sut.currentPortionAnimationStatus, .finish)
+    }
     
-//    func test_performNextBarPortionAnimationWhenCurrentPortionFinished_moveToNextPortion_whenCurrentPortionAnimationFinished() {
-//        let currentPortionId = sut.currentPortionId
-//        let currentPortionIdx = sut.portions.firstIndex { $0.id == currentPortionId }
-//        XCTAssertNotNil(currentPortionIdx, "currentPortionIdx")
-//        
-//        let nextPortionId = nextPortionId
-//        XCTAssertNotNil(nextPortionId, "nextPortionId")
-//        XCTAssertNotEqual(nextPortionId, currentPortionIdx, "nextPortionId != currentPortionIdx")
-//        
-//        sut.barPortionAnimationStatusDict[currentPortionId] = .finish
-//        sut.performNextBarPortionAnimationWhenCurrentPortionFinished(withoutNextStoryAction: {})
-//        
-//        XCTAssertNotEqual(sut.currentPortionId, currentPortionId, "sut.currentPortionId != currentPortionId")
-//        XCTAssertEqual(sut.currentPortionId, nextPortionId, "sut.currentPortionId == nextPortionId")
-//        XCTAssertEqual(sut.barPortionAnimationStatusDict[nextPortionId!], .start, "barPortionAnimationStatus")
-//    }
-//    
-//    func test_performNextBarPortionAnimationWhenCurrentPortionFinished_moveToLastPortion_willGoToNextStory() {
-//        let currentStoryId = storiesViewModel.currentStoryId
-//        var callCount = 0
-//        let withoutNextStoryAction: () -> Void = {
-//            callCount += 1
-//        }
-//        
-//        while let nextPortionId = nextPortionId {
-//            let savedCurrentPortionId = sut.currentPortionId
-//            sut.barPortionAnimationStatusDict[sut.currentPortionId] = .finish
-//            sut.performNextBarPortionAnimationWhenCurrentPortionFinished(withoutNextStoryAction: withoutNextStoryAction)
-//            
-//            XCTAssertNotEqual(sut.currentPortionId, savedCurrentPortionId, "sut.currentPortionId != savedCurrentPortionId")
-//            XCTAssertEqual(sut.currentPortionId, nextPortionId, "sut.currentPortionId == nextPortionId")
-//            XCTAssertEqual(sut.barPortionAnimationStatusDict[nextPortionId], .start, "barPortionAnimationStatus")
-//            
-//            XCTAssertEqual(storiesViewModel.currentStoryId, currentStoryId, "currentStoryId")
-//            XCTAssertEqual(callCount, 0, "callCount")
-//        }
-//        
-//        sut.barPortionAnimationStatusDict[sut.currentPortionId] = .finish
-//        sut.performNextBarPortionAnimationWhenCurrentPortionFinished(withoutNextStoryAction: withoutNextStoryAction)
-//        
-//        XCTAssertNotEqual(storiesViewModel.currentStoryId, currentStoryId, "storiesViewModel.currentStoryId != currentStoryId")
-//        XCTAssertNotNil(nextStoryId, "nextStoryId")
-//        XCTAssertEqual(storiesViewModel.currentStoryId, nextStoryId, "storiesViewModel.currentStoryId == nextStoryId")
-//        XCTAssertEqual(callCount, 0, "callCount")
-//    }
-//    
-//    func test_performNextBarPortionAnimationWhenCurrentPortionFinished_theCompleteFlowFromBeginningToTheLastPortionOfTheLastStory() {
-//        let storyCount = hasPortionStories.count
-//        var savedCurrentStoryId = storiesViewModel.currentStoryId
-//        var callCount = 0
-//        let withoutNextStoryAction: () -> Void = {
-//            callCount += 1
-//        }
-//        
-//        for i in 0..<storyCount {
-//            while let nextPortionId = nextPortionId {
-//                let savedCurrentPortionId = sut.currentPortionId
-//                sut.barPortionAnimationStatusDict[sut.currentPortionId] = .finish
-//                sut.performNextBarPortionAnimationWhenCurrentPortionFinished(withoutNextStoryAction: withoutNextStoryAction)
-//                
-//                XCTAssertNotEqual(sut.currentPortionId, savedCurrentPortionId, "sut.currentPortionId != savedCurrentPortionId")
-//                XCTAssertEqual(sut.currentPortionId, nextPortionId, "sut.currentPortionId == nextPortionId")
-//                XCTAssertEqual(sut.barPortionAnimationStatusDict[nextPortionId], .start, "barPortionAnimationStatus")
-//                
-//                XCTAssertEqual(storiesViewModel.currentStoryId, savedCurrentStoryId, "currentStoryId")
-//                XCTAssertEqual(callCount, 0, "callCount")
-//            }
-//            
-//            if i < storyCount - 1 {
-//                sut.barPortionAnimationStatusDict[sut.currentPortionId] = .finish
-//                sut.performNextBarPortionAnimationWhenCurrentPortionFinished(withoutNextStoryAction: withoutNextStoryAction)
-//                
-//                XCTAssertNotEqual(storiesViewModel.currentStoryId, savedCurrentStoryId, "storiesViewModel.currentStoryId != savedCurrentStoryId")
-//                XCTAssertNotNil(nextStoryId, "nextStoryId")
-//                XCTAssertEqual(storiesViewModel.currentStoryId, nextStoryId, "storiesViewModel.currentStoryId == nextStoryId")
-//                XCTAssertEqual(callCount, 0, "callCount")
-//                
-//                savedCurrentStoryId = storiesViewModel.currentStoryId
-//            } else {
-//                sut.barPortionAnimationStatusDict[sut.currentPortionId] = .finish
-//                sut.performNextBarPortionAnimationWhenCurrentPortionFinished(withoutNextStoryAction: withoutNextStoryAction)
-//                
-//                XCTAssertEqual(callCount, 1, "callCount")
-//            }
-//        }
-//    }
-//    
+    func test_performNextBarPortionAnimationWhenCurrentPortionFinished_movesToNextPortionWhenCurrentPortionAnimationIsFinished() {
+        let stories = [
+            makeStory(portions: [
+                makePortion(id: 0),
+                makePortion(id: 1)
+            ])
+        ]
+        let (sut, _) = makeSUT(stories: stories)
+        
+        sut.finishPortionAnimation(for: 0)
+        sut.performNextBarPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: {})
+        
+        XCTAssertEqual(sut.currentPortionId, 1)
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .start)
+    }
+    
+    func test_performNextBarPortionAnimationWhenCurrentPortionFinished_movesToNextStoryWhenCurrentPortionIsTheLastOne() {
+        let stories = [
+            makeStory(id: 0, portions: [makePortion(id: 0)]),
+            makeStory(id: 1, portions: [makePortion(id: 1)])
+        ]
+        let (sut, spy) = makeSUT(stories: stories)
+        
+        sut.finishPortionAnimation(for: 0)
+        sut.performNextBarPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: {})
+        
+        XCTAssertEqual(spy.loggedStoryMoveDirections, [.next])
+    }
+    
+    func test_performNextBarPortionAnimationWhenCurrentPortionFinished_triggersNoNextStoryBlockWhenCurrentPortionIsTheLastOneAndIsTheLastStoryNow() {
+        let stories = [makeStory(id: 0, portions: [makePortion(id: 0)])]
+        let (sut, spy) = makeSUT(stories: stories)
+        spy.isNowAtLastStory = true
+        
+        sut.finishPortionAnimation(for: 0)
+        
+        let exp = expectation(description: "Wait for whenNoNextStory block")
+        sut.performNextBarPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: {
+            exp.fulfill()
+        })
+        wait(for: [exp], timeout: 1)
+    }
+    
 //    func test_currentStoryId_ensureItIsEqualToStoriesViewModelCurrentStoryId() {
 //        XCTAssertEqual(sut.currentStoryId, storiesViewModel.currentStoryId)
 //    }
@@ -268,55 +223,53 @@ final class StoryViewModelTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func makeSUT() -> (sut: StoryViewModel, stub: ParentStoryViewModelStub) {
-        let stub = ParentStoryViewModelStub()
-        stub.stories = makeStories()
-        
+    private func makeSUT(stories: [Story] = []) -> (sut: StoryViewModel, spy: ParentStoryViewModelSpy) {
+        let spy = ParentStoryViewModelSpy()
+        spy.stories = stories
         let sut = StoryViewModel(
             storyId: 0,
-            parentViewModel: stub,
+            parentViewModel: spy,
             fileManager: DummyFileManager(),
             mediaSaver: DummyMediaSaver()
         )
-        return (sut, stub)
+        return (sut, spy)
     }
     
-    private func makeStories() -> [Story] {
-        [
-            Story(
+    private func makePortion(id: Int = 0) -> Portion {
+        Portion(id: id, duration: 1, resourceURL: nil, type: .image)
+    }
+    
+    private func makeStory(id: Int = 0, portions: [Portion] = []) -> Story {
+        Story(
+            id: id,
+            lastUpdate: nil,
+            portions: portions,
+            user: User(
                 id: 0,
-                lastUpdate: nil,
-                portions: [
-                    Portion(
-                        id: 0,
-                        duration: 1,
-                        resourceURL: nil,
-                        type: .image
-                    )
-                ],
-                user: User(
-                    id: 0,
-                    name: "user",
-                    avatarURL: nil,
-                    isCurrentUser: true
-                )
+                name: "user",
+                avatarURL: nil,
+                isCurrentUser: true
             )
-        ]
+        )
     }
     
-    private class ParentStoryViewModelStub: ObservableObject, ParentStoryViewModel {
+    private class ParentStoryViewModelSpy: ObservableObject, ParentStoryViewModel {
         var stories = [Story]()
         var firstCurrentStoryId: Int? = nil
         var currentStoryId = 0
-        var shouldCubicRotation = true
+        private(set) var shouldCubicRotation = true
         var isNowAtLastStory = false
         var isSameStoryAfterDragging = false
+        
+        private(set) var loggedStoryMoveDirections = [StoryMoveDirection]()
         
         func getIsDraggingPublisher() -> AnyPublisher<Bool, Never> {
             CurrentValueSubject(false).eraseToAnyPublisher()
         }
         
-        func moveCurrentStory(to direction: StoryMoveDirection) {}
+        func moveCurrentStory(to direction: StoryMoveDirection) {
+            loggedStoryMoveDirections.append(direction)
+        }
     }
     
     private class DummyFileManager: ImageFileManageable {
