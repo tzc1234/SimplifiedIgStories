@@ -112,6 +112,7 @@
 		BEEEBBF42B75357500EC85C7 /* FileDataClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEEBBF32B75357500EC85C7 /* FileDataClient.swift */; };
 		BEEEBBF82B75418800EC85C7 /* LocalStoriesLoaderIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEEBBF72B75418800EC85C7 /* LocalStoriesLoaderIntegrationTests.swift */; };
 		BEEEBBFB2B7545B400EC85C7 /* DataServiceTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEEBBFA2B7545B400EC85C7 /* DataServiceTestHelpers.swift */; };
+		BEFE6A972BA36B7100FC307F /* StoryAnimationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEFE6A962BA36B7100FC307F /* StoryAnimationHandler.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -232,6 +233,7 @@
 		BEEEBBF32B75357500EC85C7 /* FileDataClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDataClient.swift; sourceTree = "<group>"; };
 		BEEEBBF72B75418800EC85C7 /* LocalStoriesLoaderIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStoriesLoaderIntegrationTests.swift; sourceTree = "<group>"; };
 		BEEEBBFA2B7545B400EC85C7 /* DataServiceTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataServiceTestHelpers.swift; sourceTree = "<group>"; };
+		BEFE6A962BA36B7100FC307F /* StoryAnimationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryAnimationHandler.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -507,6 +509,7 @@
 				BE8F580927D668E900F9DB92 /* StoriesViewModel.swift */,
 				BE6B73C627D794AD003D2B24 /* StoryViewModel.swift */,
 				BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */,
+				BEFE6A962BA36B7100FC307F /* StoryAnimationHandler.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -783,6 +786,7 @@
 				BE5CDC2D27DF4AAA00352A60 /* NoticeLabel.swift in Sources */,
 				BE93B8C127C8D96900B97C40 /* TraceableRectangle.swift in Sources */,
 				BE8F580A27D668E900F9DB92 /* StoriesViewModel.swift in Sources */,
+				BEFE6A972BA36B7100FC307F /* StoryAnimationHandler.swift in Sources */,
 				BE6B73C727D794AD003D2B24 /* StoryViewModel.swift in Sources */,
 				BE8F580327D641AF00F9DB92 /* Portion.swift in Sources */,
 				BE9EF6C727E36F7D00942976 /* CGFloat+Additions.swift in Sources */,

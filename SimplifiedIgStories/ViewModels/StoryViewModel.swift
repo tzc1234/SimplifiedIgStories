@@ -18,7 +18,7 @@ protocol ParentStoryViewModel {
     var firstCurrentStoryId: Int? { get }
     var currentStoryId: Int { get }
     var shouldCubicRotation: Bool { get }
-    var isNowAtLastStory: Bool { get }
+    var isAtLastStory: Bool { get }
     var isSameStoryAfterDragging: Bool { get }
     
     func getIsDraggingPublisher() -> AnyPublisher<Bool, Never>
@@ -26,14 +26,6 @@ protocol ParentStoryViewModel {
 }
 
 final class StoryViewModel: ObservableObject {
-    enum PortionTransitionDirection {
-        case forward, backward
-    }
-    
-    @Published private(set) var currentPortionId = -1
-    @Published private var portionTransitionDirection: PortionTransitionDirection = .forward
-    @Published private(set) var barPortionAnimationStatusDict: [Int: BarPortionAnimationStatus] = [:]
-    
     @Published var showConfirmationDialog = false
     @Published private(set) var isLoading = false
     @Published private(set) var showNoticeLabel = false
@@ -45,6 +37,7 @@ final class StoryViewModel: ObservableObject {
     private var parentViewModel: ParentStoryViewModel
     private let fileManager: ImageFileManageable
     private let mediaSaver: MediaSaver
+    private var animationHandler: StoryAnimationHandler?
     
     init(storyId: Int,
          parentViewModel: ParentStoryViewModel,
@@ -55,14 +48,32 @@ final class StoryViewModel: ObservableObject {
         self.fileManager = fileManager
         self.mediaSaver = mediaSaver
         
-        initCurrentStoryPortionId()
-        initBarPortionAnimationStatus()
-        subscribeStoriesViewModelPublishers()
-        subscribeSelfPublishers()
-        
         // Reference: https://stackoverflow.com/a/58406402
         // Trigger current ViewModel objectWillChange when parent's published property changed.
         parentViewModel
+            .objectWillChange
+            .sink { [weak self] in
+                self?.objectWillChange.send()
+            }
+            .store(in: &subscriptions)
+        
+        let animationHandler = StoryAnimationHandler(
+            isAtFirstStory: { storyId == parentViewModel.firstCurrentStoryId },
+            isAtLastStory: { parentViewModel.isAtLastStory },
+            isCurrentStory: { parentViewModel.currentStoryId == storyId },
+            moveCurrentStory: parentViewModel.moveCurrentStory,
+            portions: { [weak self] in self?.portions ?? [] },
+            isSameStoryAfterDragging: { parentViewModel.isSameStoryAfterDragging },
+            isDraggingPublisher: parentViewModel.getIsDraggingPublisher,
+            animationShouldPausePublisher: $showConfirmationDialog
+                .combineLatest($showNoticeLabel)
+                .map { $0 || $1 }
+                .eraseToAnyPublisher
+        )
+        
+        self.animationHandler = animationHandler
+        
+        animationHandler
             .objectWillChange
             .sink { [weak self] in
                 self?.objectWillChange.send()
@@ -83,42 +94,20 @@ extension StoryViewModel {
         parentViewModel.stories.first(where: { $0.id == storyId })!
     }
     
-    private var portions: [Portion] {
+    var portions: [Portion] {
         story.portions
     }
     
+    var barPortionAnimationStatusDict: [Int: BarPortionAnimationStatus] {
+        animationHandler?.barPortionAnimationStatusDict ?? [:]
+    }
+    
     var currentPortionAnimationStatus: BarPortionAnimationStatus? {
-        barPortionAnimationStatusDict[currentPortionId]
+        animationHandler?.currentPortionAnimationStatus
     }
     
-    private var isCurrentPortionAnimating: Bool {
-        currentPortionAnimationStatus == .start ||
-        currentPortionAnimationStatus == .restart ||
-        currentPortionAnimationStatus == .resume
-    }
-    
-    private var isAtFirstPortion: Bool {
-        currentPortionId == firstPortionId
-    }
-    
-    private var isAtLastPortion: Bool {
-        currentPortionId == portions.last?.id
-    }
-    
-    private var isAtFirstStory: Bool {
-        storyId == parentViewModel.firstCurrentStoryId
-    }
-    
-    private var firstPortionId: Int? {
-        portions.first?.id
-    }
-    
-    private var currentPortionIndex: Int? {
-        portions.firstIndex(where: { $0.id == currentPortionId })
-    }
-    
-    private var currentPortion: Portion? {
-        portions.first(where: { $0.id == currentPortionId })
+    var currentPortionId: Int? {
+        animationHandler?.currentPortionId
     }
     
     var currentStoryId: Int {
@@ -134,171 +123,46 @@ extension StoryViewModel {
     }
 }
 
-// MARK: Helpers
-extension StoryViewModel {
-    private func initCurrentStoryPortionId() {
-        guard let firstPortionId else { return }
-        
-        currentPortionId = firstPortionId
-    }
-    
-    private func initBarPortionAnimationStatus() {
-        setCurrentBarPortionAnimationStatus(to: .initial)
-    }
-    
-    private func setCurrentBarPortionAnimationStatus(to status: BarPortionAnimationStatus) {
-        barPortionAnimationStatusDict[currentPortionId] = status
-    }
-    
-    private func subscribeStoriesViewModelPublishers() {
-        parentViewModel
-            .getIsDraggingPublisher()
-            .dropFirst()
-            .removeDuplicates()
-            .sink { [weak self] dragging in
-                self?.updateBarPortionAnimationStatusWhenDragging(dragging)
-            }
-            .store(in: &subscriptions)
-    }
-    
-    private func subscribeSelfPublishers() {
-        $showConfirmationDialog
-            .combineLatest($showNoticeLabel)
-            .sink { [weak self] (isConfirmationDialogShown, isNoticeLabelShown) in
-                if isConfirmationDialogShown || isNoticeLabelShown {
-                    self?.pausePortionAnimation()
-                } else {
-                    self?.resumePortionAnimation()
-                }
-            }
-            .store(in: &subscriptions)
-        
-        $portionTransitionDirection
-            .dropFirst()
-            .sink { [weak self] transitionDirection in
-                guard let self else { return }
-                
-                print("storyId: \(storyId) | transits to \(transitionDirection).")
-                performProgressBarAnimation(to: transitionDirection)
-            }
-            .store(in: &subscriptions)
-    }
-}
-
 // MARK: functions for StoryView
 extension StoryViewModel {
     func setPortionTransitionDirection(by pointX: CGFloat) {
-        portionTransitionDirection = pointX <= .screenWidth/2 ? .backward : .forward
+        animationHandler?.setPortionTransitionDirection(by: pointX)
     }
     
     func deleteCurrentPortion(whenNoNextPortion action: () -> Void) {
-        guard let currentPortionIndex else { return }
+        guard let currentPortionIndex = animationHandler?.currentPortionIndex else { return }
 
         // If next portion exists, go next.
         if currentPortionIndex+1 < portions.count {
             deletePortionFromStory(for: currentPortionIndex)
-            moveToNewCurrentPortion(for: currentPortionIndex)
+            animationHandler?.moveToNewCurrentPortion(for: currentPortionIndex)
         } else {
             action()
             deletePortionFromStory(for: currentPortionIndex)
         }
-    }
-    
-    private func moveToNewCurrentPortion(for portionIndex: Int) {
-        currentPortionId = portions[portionIndex].id
-        setCurrentBarPortionAnimationStatus(to: .start)
     }
 }
 
 // MARK: functions for animations
 extension StoryViewModel {
     func startProgressBarAnimation() {
-        guard isCurrentStory && !isCurrentPortionAnimating else {
-            return
-        }
-        
-        setCurrentBarPortionAnimationStatus(to: .start)
+        animationHandler?.startProgressBarAnimation()
     }
     
     func pausePortionAnimation() {
-        if isCurrentStory && isCurrentPortionAnimating {
-            setCurrentBarPortionAnimationStatus(to: .pause)
-        }
+        animationHandler?.pausePortionAnimation()
     }
     
     func resumePortionAnimation() {
-        if isCurrentStory && currentPortionAnimationStatus == .pause {
-            setCurrentBarPortionAnimationStatus(to: .resume)
-        }
+        animationHandler?.resumePortionAnimation()
     }
     
     func finishPortionAnimation(for portionId: Int) {
-        barPortionAnimationStatusDict[portionId] = .finish
-    }
-    
-    private func performProgressBarAnimation(to transitionDirection: PortionTransitionDirection) {
-        switch transitionDirection {
-        case .forward:
-            // Will trigger the onChange of currentPortionAnimationStatus in ProgressBar.
-            setCurrentBarPortionAnimationStatus(to: .finish)
-        case .backward:
-            if isAtFirstPortion {
-                if isAtFirstStory {
-                    // just start the animation.
-                    setCurrentBarPortionAnimationStatus(to: currentPortionAnimationStatus == .start ? .restart : .start)
-                } else { // Not at the first story (that means the previous story must exist.)
-                    setCurrentBarPortionAnimationStatus(to: .initial)
-                    // then go to previous story.
-                    parentViewModel.moveCurrentStory(to: .previous)
-                }
-            } else { // Not at the first portion
-                setCurrentBarPortionAnimationStatus(to: .initial)
-                moveToPreviewPortion()
-            }
-        }
+        animationHandler?.finishPortionAnimation(for: portionId)
     }
     
     func performNextBarPortionAnimationWhenCurrentPortionFinished(whenNoNextStory action: () -> Void) {
-        guard currentPortionAnimationStatus == .finish else { return }
-        
-        if isAtLastPortion {
-            // It's the last story now, noNextStory action perform.
-            if parentViewModel.isNowAtLastStory {
-                action()
-            } else { // Not the last story now, go to next story.
-                parentViewModel.moveCurrentStory(to: .next)
-            }
-        } else { // Not the last portion, go to next portion.
-            moveToNextPortion()
-        }
-    }
-    
-    private func moveToPreviewPortion() {
-        guard let currentPortionIndex else { return }
-        
-        if currentPortionIndex-1 >= 0 {
-            currentPortionId = portions[currentPortionIndex-1].id
-            setCurrentBarPortionAnimationStatus(to: .start)
-        }
-    }
-    
-    private func moveToNextPortion() {
-        guard let currentPortionIndex else { return }
-        
-        if currentPortionIndex+1 < portions.count {
-            currentPortionId = portions[currentPortionIndex+1].id
-            setCurrentBarPortionAnimationStatus(to: .start)
-        }
-    }
-    
-    private func updateBarPortionAnimationStatusWhenDragging(_ isDragging: Bool) {
-        if isDragging {
-            pausePortionAnimation()
-        } else { // Dragged.
-            if parentViewModel.isSameStoryAfterDragging {
-                resumePortionAnimation()
-            }
-        }
+        animationHandler?.performNextBarPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: action)
     }
 }
 
@@ -306,7 +170,7 @@ extension StoryViewModel {
 extension StoryViewModel {
     @MainActor 
     func savePortionImageVideo() async {
-        guard let currentPortion else { return }
+        guard let currentPortion = animationHandler?.currentPortion else { return }
         
         isLoading = true
         var successMessage: String?

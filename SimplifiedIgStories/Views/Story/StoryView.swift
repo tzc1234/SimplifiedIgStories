@@ -78,7 +78,7 @@ struct StoryView: View {
 extension StoryView {
     private var storyPortionViews: some View {
         ZStack {
-            ForEach(vm.story.portions) { portion in
+            ForEach(vm.portions) { portion in
                 if portion.id == vm.currentPortionId {
                     StoryPortionView(
                         portion: portion,

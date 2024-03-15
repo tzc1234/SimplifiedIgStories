@@ -86,7 +86,7 @@ extension StoryContainer {
         let threshold: CGFloat = 0.2
         if vm.isNowAtFirstStory && offset > threshold {
             homeUIActionHandler.closeStoryContainer(storyId: vm.firstCurrentStoryId)
-        } else if vm.isNowAtLastStory && offset < -threshold {
+        } else if vm.isAtLastStory && offset < -threshold {
             homeUIActionHandler.closeStoryContainer(storyId: vm.lastCurrentStoryId)
         } else if abs(offset.rounded()) > 0 {
             vm.moveCurrentStory(to: offset >= 0 ? .previous : .next)

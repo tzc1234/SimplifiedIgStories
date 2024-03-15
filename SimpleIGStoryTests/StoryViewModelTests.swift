@@ -59,7 +59,7 @@ final class StoryViewModelTests: XCTestCase {
     func test_performNextBarPortionAnimationWhenCurrentPortionFinished_triggersNoNextStoryBlockWhenCurrentPortionIsTheLastOneAndIsTheLastStoryNow() {
         let stories = [makeStory(id: 0, portions: [makePortion(id: 0)])]
         let (sut, spy) = makeSUT(stories: stories)
-        spy.isNowAtLastStory = true
+        spy.isAtLastStory = true
         
         sut.finishPortionAnimation(for: 0)
         
@@ -250,7 +250,7 @@ final class StoryViewModelTests: XCTestCase {
         var firstCurrentStoryId: Int? = nil
         var currentStoryId = 0
         private(set) var shouldCubicRotation = true
-        var isNowAtLastStory = false
+        var isAtLastStory = false
         var isSameStoryAfterDragging = false
         
         private let isDraggingPublisher = CurrentValueSubject<Bool, Never>(false)
