@@ -18,16 +18,9 @@ final class StoriesViewModel: ObservableObject, ParentStoryViewModel {
     private let storiesLoader: StoriesLoader?
     private let fileManager: FileManageable
     
-    init(fileManager: FileManageable) {
+    init(fileManager: FileManageable, storiesLoader: StoriesLoader?) {
         self.fileManager = fileManager
-        
-        guard let url = Bundle.main.url(forResource: "storiesData.json", withExtension: nil) else {
-            self.storiesLoader = nil
-            return
-        }
-        
-        let dataClient = FileDataClient(url: url)
-        self.storiesLoader = LocalStoriesLoader(client: dataClient)
+        self.storiesLoader = storiesLoader
     }
 }
 

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject private var handler = HomeUIActionHandler()
-    @StateObject private var storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
+    @StateObject var storiesViewModel: StoriesViewModel
     
     var body: some View {
         ZStack {
@@ -39,7 +39,7 @@ struct HomeView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        HomeView(storiesViewModel: .preview)
     }
 }
 

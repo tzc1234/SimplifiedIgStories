@@ -61,7 +61,7 @@ struct StoryContainer: View {
 
 struct StoryContainer_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = StoriesViewModel(fileManager: LocalFileManager())
+        let vm = StoriesViewModel.preview
         StoryContainer(vm: vm)
             .environmentObject(HomeUIActionHandler())
             .task {
