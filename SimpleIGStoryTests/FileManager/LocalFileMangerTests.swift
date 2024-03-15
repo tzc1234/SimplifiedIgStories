@@ -1,5 +1,5 @@
 //
-//  LocalImageFileMangerTests.swift
+//  LocalFileMangerTests.swift
 //  SimpleIGStoryTests
 //
 //  Created by Tsz-Lung on 12/03/2024.
@@ -8,7 +8,7 @@
 import XCTest
 @testable import Simple_IG_Story
 
-final class LocalImageFileMangerTests: XCTestCase {
+final class LocalFileMangerTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
@@ -46,7 +46,7 @@ final class LocalImageFileMangerTests: XCTestCase {
         let invalidFileName = "invalid://fileName"
         
         XCTAssertThrowsError(try sut.saveImage(image, fileName: invalidFileName)) { error in
-            XCTAssertEqual(error as? ImageFileManageableError, .saveFailed)
+            XCTAssertEqual(error as? FileManageableError, .saveFailed)
         }
     }
     
@@ -55,7 +55,7 @@ final class LocalImageFileMangerTests: XCTestCase {
         let image = UIImage()
         
         XCTAssertThrowsError(try sut.saveImage(image, fileName: imageFileName())) { error in
-            XCTAssertEqual(error as? ImageFileManageableError, .jpegConversionFailed)
+            XCTAssertEqual(error as? FileManageableError, .jpegConversionFailed)
         }
     }
     
@@ -94,8 +94,8 @@ final class LocalImageFileMangerTests: XCTestCase {
     func test_deleteImage_deliversFileForDeletionNotFoundErrorWhenImageFileNotExisted() {
         let sut = makeSUT()
         
-        XCTAssertThrowsError(try sut.deleteImage(for: imageFileURL())) { error in
-            XCTAssertEqual(error as? ImageFileManageableError, .fileForDeletionNotFound)
+        XCTAssertThrowsError(try sut.delete(for: imageFileURL())) { error in
+            XCTAssertEqual(error as? FileManageableError, .fileForDeletionNotFound)
         }
     }
     
@@ -106,8 +106,8 @@ final class LocalImageFileMangerTests: XCTestCase {
         
         _ = try! sut.saveImage(image, fileName: imageFileName())
         
-        XCTAssertThrowsError(try sut.deleteImage(for: imageFileURL())) { error in
-            XCTAssertEqual(error as? ImageFileManageableError, .deleteFailed)
+        XCTAssertThrowsError(try sut.delete(for: imageFileURL())) { error in
+            XCTAssertEqual(error as? FileManageableError, .deleteFailed)
         }
         FileManager.revertSwizzled()
     }
@@ -117,7 +117,7 @@ final class LocalImageFileMangerTests: XCTestCase {
         let image = UIImage.make(withColor: .red)
         
         let receivedURL = try sut.saveImage(image, fileName: imageFileName())
-        try sut.deleteImage(for: receivedURL)
+        try sut.delete(for: receivedURL)
         let receivedImage = sut.getImage(for: receivedURL)
         
         XCTAssertNil(receivedImage)
@@ -126,8 +126,8 @@ final class LocalImageFileMangerTests: XCTestCase {
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #filePath,
-                         line: UInt = #line) -> LocalImageFileManager {
-        let sut = LocalImageFileManager(directory: directory(), fileExtension: imageFileExtension())
+                         line: UInt = #line) -> LocalFileManager {
+        let sut = LocalFileManager(directory: directory(), fileExtension: imageFileExtension())
         trackForMemoryLeaks(sut, file: file, line: line)
         return sut
     }

@@ -22,9 +22,9 @@ final class StoriesViewModel: ObservableObject, ParentStoryViewModel {
     private(set) var storyIdBeforeDragged = 0
     
     private let storiesLoader: StoriesLoader?
-    private let fileManager: ImageFileManageable
+    private let fileManager: FileManageable
     
-    init(fileManager: ImageFileManageable) {
+    init(fileManager: FileManageable) {
         self.fileManager = fileManager
         
         guard let url = Bundle.main.url(forResource: "storiesData.json", withExtension: nil) else {

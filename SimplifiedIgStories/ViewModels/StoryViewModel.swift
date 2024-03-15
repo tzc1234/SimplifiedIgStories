@@ -35,13 +35,13 @@ final class StoryViewModel: ObservableObject {
     
     private let storyId: Int
     private var parentViewModel: ParentStoryViewModel
-    private let fileManager: ImageFileManageable
+    private let fileManager: FileManageable
     private let mediaSaver: MediaSaver
     private var animationHandler: StoryAnimationHandler?
     
     init(storyId: Int,
          parentViewModel: ParentStoryViewModel,
-         fileManager: ImageFileManageable,
+         fileManager: FileManageable,
          mediaSaver: MediaSaver) {
         self.storyId = storyId
         self.parentViewModel = parentViewModel
@@ -221,7 +221,7 @@ extension StoryViewModel {
         
         let portion = portions[portionIndex]
         if let fileUrl = portion.imageURL ?? portion.videoURL {
-            try? fileManager.deleteImage(for: fileUrl)
+            try? fileManager.delete(for: fileUrl)
         }
         
         parentViewModel.stories[currentStoryIndex].portions.remove(at: portionIndex)

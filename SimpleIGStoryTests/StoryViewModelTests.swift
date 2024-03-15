@@ -269,7 +269,7 @@ final class StoryViewModelTests: XCTestCase {
         }
     }
     
-    private class DummyFileManager: ImageFileManageable {
+    private class DummyFileManager: FileManageable {
         func saveImage(_ image: UIImage, fileName: String) throws -> URL {
             URL(string: "file://any-image.jpg")!
         }
@@ -278,7 +278,7 @@ final class StoryViewModelTests: XCTestCase {
             nil
         }
         
-        func deleteImage(for url: URL) throws {}
+        func delete(for url: URL) throws {}
     }
 
     private class DummyMediaSaver: MediaSaver {

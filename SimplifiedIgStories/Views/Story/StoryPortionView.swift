@@ -87,7 +87,7 @@ extension StoryPortionView {
 
 struct StoryPortionView_Previews: PreviewProvider {
     static var previews: some View {
-        let storiesViewModel = StoriesViewModel(fileManager: LocalImageFileManager())
+        let storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
         let story = storiesViewModel.currentStories[0]
         let portion = story.portions[0]
         StoryPortionView(
@@ -95,7 +95,7 @@ struct StoryPortionView_Previews: PreviewProvider {
             storyViewModel: StoryViewModel(
                 storyId: story.id,
                 parentViewModel: storiesViewModel,
-                fileManager: LocalImageFileManager(),
+                fileManager: LocalFileManager(),
                 mediaSaver: LocalMediaSaver()
             )
         )

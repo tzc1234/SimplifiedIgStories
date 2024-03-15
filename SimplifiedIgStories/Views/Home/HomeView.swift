@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject private var handler = HomeUIActionHandler()
-    @StateObject private var storiesViewModel = StoriesViewModel(fileManager: LocalImageFileManager())
+    @StateObject private var storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
     
     var body: some View {
         ZStack {

@@ -168,14 +168,14 @@ extension StoryView {
 
 struct StoryView_Previews: PreviewProvider {
     static var previews: some View {
-        let storiesViewModel = StoriesViewModel(fileManager: LocalImageFileManager())
+        let storiesViewModel = StoriesViewModel(fileManager: LocalFileManager())
         let story = storiesViewModel.currentStories[0]
         StoryView(
             storyId: story.id,
             vm: StoryViewModel(
                 storyId: story.id,
                 parentViewModel: storiesViewModel,
-                fileManager: LocalImageFileManager(),
+                fileManager: LocalFileManager(),
                 mediaSaver: LocalMediaSaver()
             )
         )
