@@ -14,3 +14,7 @@ func anyNSError() -> NSError {
 func anyVideoURL() -> URL {
     URL(string: "file://any-video.mp4")!
 }
+
+func anyImageURL() -> URL {
+    URL(string: "file://any-image.jpg")!
+}

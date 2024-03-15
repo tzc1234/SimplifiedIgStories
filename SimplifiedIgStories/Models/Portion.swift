@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Portion: Identifiable {
+struct Portion: Identifiable, Equatable {
     var id: Int
     var duration: Double
     var resourceURL: URL?

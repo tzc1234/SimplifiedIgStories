@@ -163,8 +163,8 @@ private extension [LocalStory] {
             Story(
                 id: local.id,
                 lastUpdate: local.lastUpdate,
-                portions: local.portions.toPortions(),
-                user: local.user.toUser()
+                user: local.user.toUser(),
+                portions: local.portions.toPortions()
             )
         }
     }

@@ -235,13 +235,13 @@ final class StoryViewModelTests: XCTestCase {
         Story(
             id: id,
             lastUpdate: nil,
-            portions: portions,
             user: User(
                 id: 0,
                 name: "user",
                 avatarURL: nil,
                 isCurrentUser: true
-            )
+            ),
+            portions: portions
         )
     }
     

@@ -9,6 +9,13 @@ import XCTest
 @testable import Simple_IG_Story
 
 class StoriesViewModelTests: XCTestCase {
+    func test_stories_ensuresStoriesConversionCorrect() async {
+        let stories = storiesForTest()
+        let sut = await makeSUT(stories: stories.local)
+        
+        XCTAssertEqual(sut.stories, stories.model)
+    }
+    
     func test_fetchStories_ensuresOneCurrentUserInStories() async {
         let sut = await makeSUT()
         
@@ -40,60 +47,94 @@ class StoriesViewModelTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func makeSUT(file: StaticString = #filePath,
+    private func makeSUT(stories: [LocalStory] = [],
+                         file: StaticString = #filePath,
                          line: UInt = #line) async -> StoriesViewModel {
-        let sut = StoriesViewModel(fileManager: DummyFileManager(), storiesLoader: StoriesLoaderStub())
+        let loader = StoriesLoaderStub(stories: stories.isEmpty ? storiesForTest().local : stories)
+        let sut = StoriesViewModel(fileManager: DummyFileManager(), storiesLoader: loader)
         await sut.fetchStories()
         trackForMemoryLeaks(sut, file: file, line: line)
         return sut
     }
     
+    private func storiesForTest() -> (local: [LocalStory], model: [Story]) {
+        let currentUser = makeUser(id: 0, name: "Current User", isCurrentUser: true)
+        let user1 = makeUser(id: 1, name: "User1")
+        let portion0 = makePortion(id: 0, resourceURL: anyImageURL())
+        let portion1 = makePortion(id: 1, resourceURL: anyVideoURL(), duration: 9, type: .video)
+        let portion2 = makePortion(id: 2)
+        let now = Date.now
+        
+        let local = [
+            LocalStory(
+                id: 0,
+                lastUpdate: nil,
+                user: currentUser.local,
+                portions: [portion0.local, portion1.local]
+            ),
+            LocalStory(
+                id: 1,
+                lastUpdate: now,
+                user: user1.local,
+                portions: [portion2.local]
+            )
+        ]
+        let model = [
+            Story(
+                id: 0,
+                lastUpdate: nil,
+                user: currentUser.user,
+                portions: [portion0.portion, portion1.portion]
+            ),
+            Story(
+                id: 1,
+                lastUpdate: now,
+                user: user1.user,
+                portions: [portion2.portion]
+            )
+        ]
+        
+        return (local, model)
+    }
+    
+    private func makePortion(id: Int,
+                             resourceURL: URL? = nil,
+                             duration: Double = .defaultStoryDuration,
+                             type: LocalResourceType = .image) -> (local: LocalPortion, portion: Portion) {
+        let local = LocalPortion(id: id, resourceURL: resourceURL, duration: duration, type: type)
+        let portion = Portion(
+            id: id,
+            duration: duration,
+            resourceURL: resourceURL,
+            type: .init(rawValue: type.rawValue) ?? .image
+        )
+        return (local, portion)
+    }
+    
+    private func makeUser(id: Int,
+                          name: String,
+                          avatarURL: URL? = nil,
+                          isCurrentUser: Bool = false) -> (local: LocalUser, user: User) {
+        let local = LocalUser(id: id, name: name, avatarURL: avatarURL, isCurrentUser: isCurrentUser)
+        let user = User(id: id, name: name, avatarURL: avatarURL, isCurrentUser: isCurrentUser)
+        return (local, user)
+    }
+    
     private class StoriesLoaderStub: StoriesLoader {
+        private let stories: [LocalStory]
+        
+        init(stories: [LocalStory]) {
+            self.stories = stories
+        }
+        
         func load() async throws -> [LocalStory] {
-            [
-                LocalStory(
-                    id: 0,
-                    lastUpdate: nil,
-                    user: LocalUser(
-                        id: 0,
-                        name: "CurrentUser",
-                        avatarURL: nil,
-                        isCurrentUser: true
-                    ),
-                    portions: [
-                        LocalPortion(
-                            id: 0,
-                            resourceURL: nil,
-                            duration: .defaultStoryDuration,
-                            type: .image
-                        )
-                    ]
-                ),
-                LocalStory(
-                    id: 1,
-                    lastUpdate: .now,
-                    user: LocalUser(
-                        id: 1,
-                        name: "User1",
-                        avatarURL: nil,
-                        isCurrentUser: false
-                    ),
-                    portions: [
-                        LocalPortion(
-                            id: 1,
-                            resourceURL: nil,
-                            duration: .defaultStoryDuration,
-                            type: .image
-                        )
-                    ]
-                )
-            ]
+            stories
         }
     }
     
     private class DummyFileManager: FileManageable {
         func saveImage(_ image: UIImage, fileName: String) throws -> URL {
-            URL(string: "file://any-image.jpg")!
+            anyImageURL()
         }
         
         func getImage(for url: URL) -> UIImage? {
