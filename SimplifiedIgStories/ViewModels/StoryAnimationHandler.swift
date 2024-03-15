@@ -108,7 +108,11 @@ final class StoryAnimationHandler: ObservableObject {
             .dropFirst()
             .removeDuplicates()
             .sink { [weak self] dragging in
-                self?.updateBarPortionAnimationStatusWhenDragging(dragging)
+                if dragging {
+                    self?.pausePortionAnimationWhenDragging()
+                } else {
+                    self?.resumePortionAnimationIfStayAtSameStoryAfterDragged()
+                }
             }
             .store(in: &subscriptions)
         
@@ -143,6 +147,11 @@ final class StoryAnimationHandler: ObservableObject {
     
     func finishPortionAnimation(for portionId: Int) {
         barPortionAnimationStatusDict[portionId] = .finish
+    }
+    
+    func moveToNewCurrentPortion(for portionIndex: Int) {
+        currentPortionId = portions()[portionIndex].id
+        setCurrentBarPortionAnimationStatus(to: .start)
     }
     
     private func performForwardPortionAnimation() {
@@ -202,16 +211,13 @@ final class StoryAnimationHandler: ObservableObject {
         }
     }
     
-    private func updateBarPortionAnimationStatusWhenDragging(_ isDragging: Bool) {
-        if isDragging {
-            pausePortionAnimation()
-        } else if isSameStoryAfterDragging() {
-            resumePortionAnimation()
-        }
+    private func pausePortionAnimationWhenDragging() {
+        pausePortionAnimation()
     }
     
-    func moveToNewCurrentPortion(for portionIndex: Int) {
-        currentPortionId = portions()[portionIndex].id
-        setCurrentBarPortionAnimationStatus(to: .start)
+    private func resumePortionAnimationIfStayAtSameStoryAfterDragged() {
+        if isSameStoryAfterDragging() {
+            resumePortionAnimation()
+        }
     }
 }
