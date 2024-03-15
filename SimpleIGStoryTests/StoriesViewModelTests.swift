@@ -36,8 +36,6 @@ class StoriesViewModelTests: XCTestCase {
         
         XCTAssertNotNil(currentUserStory, "currentUserStory")
         XCTAssertNotNil(currentUserStoryIdx, "currentUserStoryIdx")
-        XCTAssertEqual(sut.yourStoryId, currentUserStory?.id, "yourStoryId == currentUserStory")
-        XCTAssertEqual(sut.yourStoryIdx, currentUserStoryIdx, "yourStoryIdx == currentUserStoryIdx")
     }
     
     func test_currentStories_shouldContainOnlyOneCurrentUserStory_whenCurrentStoryIdIsSetToCurrentUserStoryId() throws {

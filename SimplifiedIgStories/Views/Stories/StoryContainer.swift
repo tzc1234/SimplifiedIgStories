@@ -47,7 +47,7 @@ struct StoryContainer: View {
                     vm.isDragging = true
                 }
                 .updating($translation) { value, state, transaction in
-                    vm.updateStoryIdBeforeDragged()
+                    vm.saveStoryIdBeforeDragged()
                     state = value.translation.width
                 }
                 .onEnded { value in
@@ -89,7 +89,7 @@ extension StoryContainer {
         } else if vm.isAtLastStory && offset < -threshold {
             homeUIActionHandler.closeStoryContainer(storyId: vm.lastCurrentStoryId)
         } else if abs(offset.rounded()) > 0 {
-            vm.moveCurrentStory(to: offset >= 0 ? .previous : .next)
+            offset >= 0 ? vm.moveToPreviousStory() : vm.moveToNextStory()
         }
     }
 }

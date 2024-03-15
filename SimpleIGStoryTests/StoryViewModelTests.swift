@@ -246,6 +246,10 @@ final class StoryViewModelTests: XCTestCase {
     }
     
     private class ParentStoryViewModelSpy: ObservableObject, ParentStoryViewModel {
+        enum StoryMoveDirection {
+            case previous, next
+        }
+        
         var stories = [Story]()
         var firstCurrentStoryId: Int? = nil
         var currentStoryId = 0
@@ -264,8 +268,12 @@ final class StoryViewModelTests: XCTestCase {
             isDraggingPublisher.send(isDragging)
         }
         
-        func moveCurrentStory(to direction: StoryMoveDirection) {
-            loggedStoryMoveDirections.append(direction)
+        func moveToPreviousStory() {
+            loggedStoryMoveDirections.append(.previous)
+        }
+        
+        func moveToNextStory() {
+            loggedStoryMoveDirections.append(.next)
         }
     }
     

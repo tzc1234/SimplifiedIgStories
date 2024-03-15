@@ -48,7 +48,8 @@ final class StoryAnimationHandler: ObservableObject {
     private let isAtFirstStory: () -> Bool
     private let isAtLastStory: () -> Bool
     private let isCurrentStory: () -> Bool
-    private let moveCurrentStory: (StoryMoveDirection) -> Void
+    private let moveToPreviousStory: () -> Void
+    private let moveToNextStory: () -> Void
     private let portions: () -> [Portion]
     private let isSameStoryAfterDragging: () -> Bool
     private let isDraggingPublisher: () -> AnyPublisher<Bool, Never>
@@ -57,7 +58,8 @@ final class StoryAnimationHandler: ObservableObject {
     init(isAtFirstStory: @escaping () -> Bool,
          isAtLastStory: @escaping () -> Bool,
          isCurrentStory: @escaping () -> Bool,
-         moveCurrentStory: @escaping (StoryMoveDirection) -> Void,
+         moveToPreviousStory: @escaping () -> Void,
+         moveToNextStory: @escaping () -> Void,
          portions: @escaping () -> [Portion],
          isSameStoryAfterDragging: @escaping () -> Bool,
          isDraggingPublisher: @escaping () -> AnyPublisher<Bool, Never>,
@@ -65,7 +67,8 @@ final class StoryAnimationHandler: ObservableObject {
         self.isAtFirstStory = isAtFirstStory
         self.isAtLastStory = isAtLastStory
         self.isCurrentStory = isCurrentStory
-        self.moveCurrentStory = moveCurrentStory
+        self.moveToPreviousStory = moveToPreviousStory
+        self.moveToNextStory = moveToNextStory
         self.portions = portions
         self.isSameStoryAfterDragging = isSameStoryAfterDragging
         self.isDraggingPublisher = isDraggingPublisher
@@ -144,7 +147,7 @@ final class StoryAnimationHandler: ObservableObject {
                     restartPortionAnimation()
                 } else { // Not at the first story (that means the previous story must exist.)
                     setCurrentBarPortionAnimationStatus(to: .initial)
-                    moveCurrentStory(.previous)
+                    moveToPreviousStory()
                 }
             } else {
                 setCurrentBarPortionAnimationStatus(to: .initial)
@@ -164,7 +167,7 @@ final class StoryAnimationHandler: ObservableObject {
             if isAtLastStory() {
                 action()
             } else {
-                moveCurrentStory(.next)
+                moveToNextStory()
             }
         } else {
             moveToNextPortion()

@@ -6,20 +6,14 @@
 //
 
 import AVKit
-import UIKit
 import Combine
-
-enum StoryMoveDirection {
-    case previous, next
-}
 
 final class StoriesViewModel: ObservableObject, ParentStoryViewModel {
     @Published var stories: [Story] = []
-    
     @Published private(set) var currentStoryId = -1
     @Published var shouldCubicRotation = false
     @Published var isDragging = false
-    private(set) var storyIdBeforeDragged = 0
+    private var storyIdBeforeDragged = 0
     
     private let storiesLoader: StoriesLoader?
     private let fileManager: FileManageable
@@ -37,13 +31,12 @@ final class StoriesViewModel: ObservableObject, ParentStoryViewModel {
     }
 }
 
-// MARK: computed variables
 extension StoriesViewModel {
-    var yourStoryId: Int? {
+    private var yourStoryId: Int? {
         stories.first(where: { $0.user.isCurrentUser })?.id
     }
     
-    var yourStoryIdx: Int? {
+    private var yourStoryIdx: Int? {
         stories.firstIndex(where: { $0.user.isCurrentUser })
     }
     
@@ -84,7 +77,6 @@ extension StoriesViewModel {
     }
 }
 
-// MARK: internal functions
 extension StoriesViewModel {
     func getIsDraggingPublisher() -> AnyPublisher<Bool, Never> {
         $isDragging.eraseToAnyPublisher()
@@ -105,7 +97,7 @@ extension StoriesViewModel {
         }
     }
     
-    func updateStoryIdBeforeDragged() {
+    func saveStoryIdBeforeDragged() {
         storyIdBeforeDragged = currentStoryId
     }
     
@@ -117,33 +109,35 @@ extension StoriesViewModel {
         currentStoryId = storyId
     }
     
-    func moveCurrentStory(to direction: StoryMoveDirection) {
-        guard let currentStoryIndex else {
-            return
-        }
+    func moveToPreviousStory() {
+        guard let currentStoryIndex else { return }
         
-        switch direction {
-        case .previous:
-            if currentStoryIndex - 1 >= 0 {
-                currentStoryId = currentStories[currentStoryIndex - 1].id
-            }
-        case .next:
-            if currentStoryIndex + 1 < currentStories.count {
-                currentStoryId = currentStories[currentStoryIndex + 1].id
-            }
+        let previousStoryIndex = currentStoryIndex-1
+        if previousStoryIndex >= 0 {
+            currentStoryId = currentStories[previousStoryIndex].id
+        }
+    }
+    
+    func moveToNextStory() {
+        guard let currentStoryIndex else { return }
+        
+        let nextStoryIndex = currentStoryIndex+1
+        if nextStoryIndex < currentStories.count {
+            currentStoryId = currentStories[nextStoryIndex].id
         }
     }
     
     func getStory(by storyId: Int) -> Story? {
         stories.first(where: { $0.id == storyId })
     }
-    
-    // MARK: Post StoryPortion
-    // *** In real environment, the photo or video should be uploaded to server side.
-    // This is a demo app, however, stores them into temp directory.
-    
+}
+
+// MARK: - Post StoryPortion
+// *** In real environment, the photo or video should be uploaded to server side.
+// This is a demo app, however, stores them into temp directory.
+extension StoriesViewModel {
     func postStoryPortion(image: UIImage) {
-        guard let yourStoryIdx = yourStoryIdx,
+        guard let yourStoryIdx,
               let imageURL = try? fileManager.saveImage(image, fileName: "img_\(UUID().uuidString)") else {
             return
         }
@@ -156,9 +150,7 @@ extension StoriesViewModel {
     }
     
     func postStoryPortion(videoUrl: URL) {
-        guard let yourStoryIdx else {
-            return
-        }
+        guard let yourStoryIdx else { return }
 
         var portions = stories[yourStoryIdx].portions
         let asset = AVAsset(url: videoUrl)

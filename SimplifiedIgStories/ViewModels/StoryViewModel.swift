@@ -22,7 +22,8 @@ protocol ParentStoryViewModel {
     var isSameStoryAfterDragging: Bool { get }
     
     func getIsDraggingPublisher() -> AnyPublisher<Bool, Never>
-    func moveCurrentStory(to direction: StoryMoveDirection)
+    func moveToPreviousStory()
+    func moveToNextStory()
 }
 
 final class StoryViewModel: ObservableObject {
@@ -60,8 +61,9 @@ final class StoryViewModel: ObservableObject {
         let animationHandler = StoryAnimationHandler(
             isAtFirstStory: { storyId == parentViewModel.firstCurrentStoryId },
             isAtLastStory: { parentViewModel.isAtLastStory },
-            isCurrentStory: { parentViewModel.currentStoryId == storyId },
-            moveCurrentStory: parentViewModel.moveCurrentStory,
+            isCurrentStory: { parentViewModel.currentStoryId == storyId }, 
+            moveToPreviousStory: parentViewModel.moveToPreviousStory,
+            moveToNextStory: parentViewModel.moveToNextStory,
             portions: { [weak self] in self?.portions ?? [] },
             isSameStoryAfterDragging: { parentViewModel.isSameStoryAfterDragging },
             isDraggingPublisher: parentViewModel.getIsDraggingPublisher,
