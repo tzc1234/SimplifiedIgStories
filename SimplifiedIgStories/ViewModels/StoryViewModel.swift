@@ -8,10 +8,6 @@
 import Combine
 import UIKit
 
-enum BarPortionAnimationStatus: CaseIterable {
-    case initial, start, restart, pause, resume, finish
-}
-
 protocol ParentStoryViewModel {
     var objectWillChange: ObservableObjectPublisher { get }
     var stories: [Story] { get set }

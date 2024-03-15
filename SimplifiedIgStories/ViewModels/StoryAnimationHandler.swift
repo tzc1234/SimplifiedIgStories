@@ -8,6 +8,10 @@
 import Foundation
 import Combine
 
+enum BarPortionAnimationStatus: CaseIterable {
+    case initial, start, restart, pause, resume, finish
+}
+
 final class StoryAnimationHandler: ObservableObject {
     enum PortionTransitionDirection {
         case forward, backward
@@ -90,8 +94,13 @@ final class StoryAnimationHandler: ObservableObject {
     private func subscribePublishers() {
         $portionTransitionDirection
             .dropFirst()
-            .sink { [weak self] transitionDirection in
-                self?.performProgressBarAnimation(to: transitionDirection)
+            .sink { [weak self] direction in
+                switch direction {
+                case .forward:
+                    self?.performForwardPortionAnimation()
+                case .backward:
+                    self?.performBackwardPortionAnimation()
+                }
             }
             .store(in: &subscriptions)
         
@@ -136,23 +145,22 @@ final class StoryAnimationHandler: ObservableObject {
         barPortionAnimationStatusDict[portionId] = .finish
     }
     
-    private func performProgressBarAnimation(to direction: PortionTransitionDirection) {
-        switch direction {
-        case .forward:
-            // Will trigger the onChange of currentPortionAnimationStatus in ProgressBar.
-            setCurrentBarPortionAnimationStatus(to: .finish)
-        case .backward:
-            if isAtFirstPortion {
-                if isAtFirstStory() {
-                    restartPortionAnimation()
-                } else { // Not at the first story (that means the previous story must exist.)
-                    setCurrentBarPortionAnimationStatus(to: .initial)
-                    moveToPreviousStory()
-                }
-            } else {
+    private func performForwardPortionAnimation() {
+        // Will trigger the onChange of currentPortionAnimationStatus in ProgressBar.
+        setCurrentBarPortionAnimationStatus(to: .finish)
+    }
+    
+    private func performBackwardPortionAnimation() {
+        if isAtFirstPortion {
+            if isAtFirstStory() {
+                restartPortionAnimation()
+            } else { // Not at the first story (that means the previous story must exist.)
                 setCurrentBarPortionAnimationStatus(to: .initial)
-                moveToPreviewPortion()
+                moveToPreviousStory()
             }
+        } else {
+            setCurrentBarPortionAnimationStatus(to: .initial)
+            moveToPreviewPortion()
         }
     }
     
