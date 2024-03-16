@@ -13,11 +13,6 @@ enum BarPortionAnimationStatus: CaseIterable {
 }
 
 final class StoryAnimationHandler: ObservableObject {
-    enum PortionTransitionDirection {
-        case forward, backward
-    }
-    
-    @Published private var portionTransitionDirection = PortionTransitionDirection.forward
     @Published private(set) var barPortionAnimationStatusDict = [Int: BarPortionAnimationStatus]()
     
     private var subscriptions = Set<AnyCancellable>()
@@ -92,18 +87,6 @@ final class StoryAnimationHandler: ObservableObject {
     }
     
     private func subscribePublishers() {
-        $portionTransitionDirection
-            .dropFirst()
-            .sink { [weak self] direction in
-                switch direction {
-                case .forward:
-                    self?.performForwardPortionAnimation()
-                case .backward:
-                    self?.performBackwardPortionAnimation()
-                }
-            }
-            .store(in: &subscriptions)
-        
         isDraggingPublisher()
             .dropFirst()
             .removeDuplicates()
@@ -118,13 +101,21 @@ final class StoryAnimationHandler: ObservableObject {
         
         animationShouldPausePublisher()
             .sink { [weak self] shouldPause in
-                shouldPause ? self?.pausePortionAnimation() : self?.resumePortionAnimation()
+                if shouldPause {
+                    self?.pausePortionAnimation()
+                } else {
+                    self?.resumePortionAnimation()
+                }
             }
             .store(in: &subscriptions)
     }
     
     func setPortionTransitionDirection(by pointX: CGFloat) {
-        portionTransitionDirection = pointX <= .screenWidth/2 ? .backward : .forward
+        if pointX <= .screenWidth/2 {
+            performBackwardPortionAnimation()
+        } else {
+            performForwardPortionAnimation()
+        }
     }
     
     func startProgressBarAnimation() {
