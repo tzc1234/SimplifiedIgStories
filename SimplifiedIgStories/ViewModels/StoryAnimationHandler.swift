@@ -72,9 +72,14 @@ final class StoryAnimationHandler: ObservableObject {
         self.isSameStoryAfterDragging = isSameStoryAfterDragging
         self.isDraggingPublisher = isDraggingPublisher
         self.animationShouldPausePublisher = animationShouldPausePublisher
-        self.currentPortionId = portions().first?.id ?? -1
         
-        self.initBarPortionAnimationStatus()
+        if let firstPortionId = portions().first?.id {
+            self.currentPortionId = firstPortionId
+            self.initBarPortionAnimationStatus()
+        } else {
+            self.currentPortionId = -1
+        }
+        
         self.subscribePublishers()
     }
     
