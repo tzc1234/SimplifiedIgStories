@@ -1,5 +1,6 @@
 # Simple IG Story
-A simple version of IG story, this demo app is my **SwiftUI** study record.
+A simple version of IG story, this demo app is my SwiftUI study record.
+**WIP: Refactoring this 2 years ago app.**
 
 ## Screenshots
 <img src="https://github.com/tzc1234/SimplifiedIgStories/blob/main/Screenshots/preview.gif" alt="preview" width="256" height="455"/> <img src="https://github.com/tzc1234/SimplifiedIgStories/blob/main/Screenshots/preview2.jpg" alt="preview2" width="256" height="455"/> <img src="https://github.com/tzc1234/SimplifiedIgStories/blob/main/Screenshots/preview3.jpg" alt="preview3" width="256" height="455"/>
@@ -12,6 +13,11 @@ A simple version of IG story, this demo app is my **SwiftUI** study record.
 5. Async/await
 
 ## Update History
+#### 18/03/2024
+1. Cover most of the code in StoriesViewModel by unite tests
+2. Inject storiesViewModel into HomeView
+3. Extract animation logic from StoryViewModel into StoryAnimationHandler
+
 #### 12/03/2024
 1. WIP: gradually refactor this project
 
