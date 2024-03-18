@@ -9,6 +9,13 @@ import XCTest
 @testable import Simple_IG_Story
 
 class StoriesViewModelTests: XCTestCase {
+    func test_stories_deliversEmptyStoriesWhenNoStoriesAfterFetch() async {
+        let emptyStories = [LocalStory]()
+        let sut = await makeSUT(stories: emptyStories)
+        
+        XCTAssertTrue(sut.stories.isEmpty)
+    }
+    
     func test_stories_ensuresStoriesConversionCorrect() async {
         let stories = storiesForTest()
         let sut = await makeSUT(stories: stories.local)
@@ -47,10 +54,10 @@ class StoriesViewModelTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func makeSUT(stories: [LocalStory] = [],
+    private func makeSUT(stories: [LocalStory]? = nil,
                          file: StaticString = #filePath,
                          line: UInt = #line) async -> StoriesViewModel {
-        let loader = StoriesLoaderStub(stories: stories.isEmpty ? storiesForTest().local : stories)
+        let loader = StoriesLoaderStub(stories: stories == nil ? storiesForTest().local : stories!)
         let sut = StoriesViewModel(fileManager: DummyFileManager(), storiesLoader: loader)
         await sut.fetchStories()
         trackForMemoryLeaks(sut, file: file, line: line)
