@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct Story: Identifiable {
+struct Story: Identifiable, Equatable {
     let id: Int
     var lastUpdate: Date?
-    var portions: [Portion]
     let user: User
+    var portions: [Portion]
     
     var hasPortion: Bool {
         portions.count > 0

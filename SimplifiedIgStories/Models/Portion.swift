@@ -7,28 +7,22 @@
 
 import Foundation
 
-struct Portion: Identifiable {
+struct Portion: Identifiable, Equatable {
     var id: Int
-    var imageName: String?
-    var videoName: String?
-    var videoDuration: Double?
+    var duration: Double
+    var resourceURL: URL?
+    var type: ResourceType
     
-    var imageUrl: URL?
-    var videoUrlFromCam: URL?
-    
-    var videoUrl: URL? {
-        guard let videoName, let videoPath = Bundle.main.path(forResource: videoName, ofType: "mp4") else {
-            return nil
-        }
-        
-        return URL(fileURLWithPath: videoPath)
+    var imageURL: URL? {
+        type == .image ? resourceURL : nil
     }
     
-    var duration: Double {
-        guard let videoDuration = videoDuration else {
-            return .defaultStoryDuration
-        }
-        
-        return videoDuration
+    var videoURL: URL? {
+        type == .video ? resourceURL : nil
     }
+}
+
+enum ResourceType: String {
+    case image
+    case video
 }

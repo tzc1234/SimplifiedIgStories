@@ -7,20 +7,20 @@
 
 import UIKit
 
-protocol ImageFileManageable {
+protocol FileManageable {
     func saveImage(_ image: UIImage, fileName: String) throws -> URL
     func getImage(for url: URL) -> UIImage?
-    func deleteImage(for url: URL) throws
+    func delete(for url: URL) throws
 }
 
-enum ImageFileManageableError: Error {
+enum FileManageableError: Error {
     case saveFailed
     case jpegConversionFailed
     case fileForDeletionNotFound
     case deleteFailed
 }
 
-final class LocalImageFileManager: ImageFileManageable {
+final class LocalFileManager: FileManageable {
     private let directory: URL
     private let fileExtension: String
     
@@ -31,7 +31,7 @@ final class LocalImageFileManager: ImageFileManageable {
     
     func saveImage(_ image: UIImage, fileName: String) throws -> URL {
         guard let data = image.jpegData(compressionQuality: 0.8) else {
-            throw ImageFileManageableError.jpegConversionFailed
+            throw FileManageableError.jpegConversionFailed
         }
         
         let url = directory.appendingPathComponent("\(fileName)").appendingPathExtension(fileExtension)
@@ -40,7 +40,7 @@ final class LocalImageFileManager: ImageFileManageable {
             try data.write(to: url)
             return url
         } catch {
-            throw ImageFileManageableError.saveFailed
+            throw FileManageableError.saveFailed
         }
     }
     
@@ -49,15 +49,15 @@ final class LocalImageFileManager: ImageFileManageable {
         return UIImage(contentsOfFile: url.path)
     }
     
-    func deleteImage(for url: URL) throws {
+    func delete(for url: URL) throws {
         guard FileManager.default.fileExists(atPath: url.path) else {
-            throw ImageFileManageableError.fileForDeletionNotFound
+            throw FileManageableError.fileForDeletionNotFound
         }
         
         do {
             try FileManager.default.removeItem(at: url)
         } catch {
-            throw ImageFileManageableError.deleteFailed
+            throw FileManageableError.deleteFailed
         }
     }
 }

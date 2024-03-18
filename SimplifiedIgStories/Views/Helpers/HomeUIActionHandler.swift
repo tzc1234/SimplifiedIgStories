@@ -8,11 +8,11 @@
 import SwiftUI
 
 final class HomeUIActionHandler: ObservableObject {
-    @Published private(set) var showContainer = false
-    @Published var showStoryCamView = false
-    
     typealias StoryId = Int
     typealias IconFrame = CGRect
+    
+    @Published private(set) var showContainer = false
+    @Published var showStoryCamView = false
     
     var storyIconFrameDict: [StoryId: IconFrame] = [:]
     @Published private(set) var currentIconFrame: IconFrame = .zero
@@ -40,7 +40,7 @@ final class HomeUIActionHandler: ObservableObject {
     }
     
     private func updateCurrentIconFrame(storyId: Int?) {
-        guard let storyId = storyId, let iconFrame = storyIconFrameDict[storyId] else {
+        guard let storyId, let iconFrame = storyIconFrameDict[storyId] else {
             return
         }
         

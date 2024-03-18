@@ -30,7 +30,12 @@ enum LocalStoriesMapper {
             let isCurrentUser: Bool
             
             var local: LocalUser {
-                .init(id: id, name: name, avatar: avatar, isCurrentUser: isCurrentUser)
+                .init(
+                    id: id,
+                    name: name,
+                    avatarURL: Bundle.main.url(forResource: avatar, withExtension: "jpg"),
+                    isCurrentUser: isCurrentUser
+                )
             }
         }
         
@@ -43,7 +48,7 @@ enum LocalStoriesMapper {
             var local: LocalPortion {
                 .init(
                     id: id,
-                    resource: resource,
+                    resourceURL: Bundle.main.url(forResource: resource, withExtension: type == "video" ? "mp4" : "jpg"),
                     duration: duration ?? .defaultStoryDuration,
                     type: .init(rawValue: type) ?? .image
                 )

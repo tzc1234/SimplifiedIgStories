@@ -54,13 +54,15 @@ struct StoryView: View {
                         }
                 }
                 
-                if vm.isLoading { LoadingView() }
+                LoadingView()
+                    .opacity(vm.isLoading ? 1 : 0)
                 
                 noticeLabel
             }
             .background(storyPortionViews)
             .onAppear {
-                vm.initStoryAnimation()
+                print("storyId: \(storyId) view onAppear.")
+                vm.startProgressBarAnimation()
             }
             .cubicTransition(
                 shouldRotate: vm.shouldCubicRotation,
@@ -70,33 +72,13 @@ struct StoryView: View {
                 print("storyId: \(storyId) view onDisappear.")
             }
         }
-        
-    }
-    
-}
-
-struct StoryView_Previews: PreviewProvider {
-    static var previews: some View {
-        let storiesViewModel = StoriesViewModel(fileManager: LocalImageFileManager())
-        let story = storiesViewModel.currentStories[0]
-        StoryView(
-            storyId: story.id,
-            vm: StoryViewModel(
-                storyId: story.id,
-                storiesViewModel: storiesViewModel,
-                fileManager: LocalImageFileManager(),
-                mediaSaver: LocalMediaSaver()
-            )
-        )
     }
 }
 
-// MARK: components
 extension StoryView {
-    // TODO: Limit the number of StoryPortionViews.
     private var storyPortionViews: some View {
         ZStack {
-            ForEach(vm.story.portions) { portion in
+            ForEach(vm.portions) { portion in
                 if portion.id == vm.currentPortionId {
                     StoryPortionView(
                         portion: portion,
@@ -127,7 +109,7 @@ extension StoryView {
             showStroke: false,
             onTapAction: onTapAction
         )
-            .frame(width: 40.0, height: 40.0)
+        .frame(width: 40.0, height: 40.0)
     }
     
     private var nameText: some View {
@@ -161,7 +143,8 @@ extension StoryView {
         .padding(.trailing, 10.0)
     }
     
-    @ViewBuilder private var moreButton: some View {
+    @ViewBuilder 
+    private var moreButton: some View {
         if vm.story.user.isCurrentUser {
             Button {
                 vm.showConfirmationDialog.toggle()
@@ -180,5 +163,21 @@ extension StoryView {
         NoticeLabel(message: vm.noticeMsg)
             .opacity(vm.showNoticeLabel ? 1 : 0)
             .animation(.easeIn, value: vm.showNoticeLabel)
+    }
+}
+
+struct StoryView_Previews: PreviewProvider {
+    static var previews: some View {
+        let storiesViewModel = StoriesViewModel.preview
+        let story = storiesViewModel.currentStories[0]
+        StoryView(
+            storyId: story.id,
+            vm: StoryViewModel(
+                storyId: story.id,
+                parentViewModel: storiesViewModel,
+                fileManager: LocalFileManager(),
+                mediaSaver: LocalMediaSaver()
+            )
+        )
     }
 }

@@ -52,7 +52,7 @@ struct StoryIconsView: View {
 
 struct StoryIconsView_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = StoriesViewModel(fileManager: LocalImageFileManager())
+        let vm = StoriesViewModel.preview
         StoryIconsView(vm: vm)
             .environmentObject(HomeUIActionHandler())
             .task {

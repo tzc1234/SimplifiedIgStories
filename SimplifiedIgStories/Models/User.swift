@@ -7,10 +7,10 @@
 
 import Foundation
 
-struct User: Identifiable {
+struct User: Identifiable, Equatable {
     let id: Int
     let name: String
-    let avatar: String
+    let avatarURL: URL?
     let isCurrentUser: Bool
     
     var title: String {

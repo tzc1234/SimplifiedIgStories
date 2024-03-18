@@ -22,8 +22,8 @@ struct StoryContainer: View {
                         storyId: story.id,
                         vm: StoryViewModel(
                             storyId: story.id,
-                            storiesViewModel: vm,
-                            fileManager: LocalImageFileManager(),
+                            parentViewModel: vm,
+                            fileManager: LocalFileManager(),
                             mediaSaver: LocalMediaSaver()
                         )
                     )
@@ -47,7 +47,7 @@ struct StoryContainer: View {
                     vm.isDragging = true
                 }
                 .updating($translation) { value, state, transaction in
-                    vm.updateStoryIdBeforeDragged()
+                    vm.saveStoryIdBeforeDragged()
                     state = value.translation.width
                 }
                 .onEnded { value in
@@ -61,7 +61,7 @@ struct StoryContainer: View {
 
 struct StoryContainer_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = StoriesViewModel(fileManager: LocalImageFileManager())
+        let vm = StoriesViewModel.preview
         StoryContainer(vm: vm)
             .environmentObject(HomeUIActionHandler())
             .task {
@@ -84,12 +84,12 @@ extension StoryContainer {
         // Imitate the close behaviour of IG story when dragging to right in the first story,
         // or dragging to left in the last story, close the container.
         let threshold: CGFloat = 0.2
-        if vm.isNowAtFirstStory && offset > threshold {
+        if vm.isAtFirstStory && offset > threshold {
             homeUIActionHandler.closeStoryContainer(storyId: vm.firstCurrentStoryId)
-        } else if vm.isNowAtLastStory && offset < -threshold {
+        } else if vm.isAtLastStory && offset < -threshold {
             homeUIActionHandler.closeStoryContainer(storyId: vm.lastCurrentStoryId)
         } else if abs(offset.rounded()) > 0 {
-            vm.moveCurrentStory(to: offset >= 0 ? .previous : .next)
+            offset >= 0 ? vm.moveToPreviousStory() : vm.moveToNextStory()
         }
     }
 }

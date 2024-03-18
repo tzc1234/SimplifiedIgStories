@@ -6,48 +6,35 @@
 //
 
 import AVKit
-import UIKit
+import Combine
 
-final class StoriesViewModel: ObservableObject {
+final class StoriesViewModel: ObservableObject, ParentStoryViewModel {
     @Published var stories: [Story] = []
-    
     @Published private(set) var currentStoryId = -1
     @Published var shouldCubicRotation = false
     @Published var isDragging = false
-    private(set) var storyIdBeforeDragged = 0
-    
-    enum StoryMoveDirection {
-        case previous, next
-    }
+    private var storyIdBeforeDragged = 0
     
     private let storiesLoader: StoriesLoader?
-    private let fileManager: ImageFileManageable
+    private let fileManager: FileManageable
     
-    init(fileManager: ImageFileManageable) {
+    init(fileManager: FileManageable, storiesLoader: StoriesLoader?) {
         self.fileManager = fileManager
-        
-        guard let url = Bundle.main.url(forResource: "storiesData.json", withExtension: nil) else {
-            self.storiesLoader = nil
-            return
-        }
-        
-        let dataClient = FileDataClient(url: url)
-        self.storiesLoader = LocalStoriesLoader(client: dataClient)
+        self.storiesLoader = storiesLoader
     }
 }
 
-// MARK: computed variables
 extension StoriesViewModel {
-    var yourStoryId: Int? {
+    private var yourStoryId: Int? {
         stories.first(where: { $0.user.isCurrentUser })?.id
     }
     
-    var yourStoryIdx: Int? {
+    private var yourStoryIdx: Int? {
         stories.firstIndex(where: { $0.user.isCurrentUser })
     }
     
     private var lastPortionId: Int {
-        currentStories.flatMap(\.portions).map(\.id).max() ?? -1
+        stories.flatMap(\.portions).map(\.id).max() ?? -1
     }
     
     var currentStories: [Story] {
@@ -58,7 +45,7 @@ extension StoriesViewModel {
         }
     }
     
-    var isSameStoryAfterDragged: Bool {
+    var isSameStoryAfterDragging: Bool {
         currentStoryId == storyIdBeforeDragged
     }
     
@@ -74,18 +61,21 @@ extension StoriesViewModel {
         currentStories.last?.id
     }
     
-    var isNowAtFirstStory: Bool {
+    var isAtFirstStory: Bool {
         currentStoryId == firstCurrentStoryId
     }
     
-    var isNowAtLastStory: Bool {
+    var isAtLastStory: Bool {
         currentStoryId == lastCurrentStoryId
     }
 }
 
-// MARK: internal functions
 extension StoriesViewModel {
-    @MainActor 
+    func getIsDraggingPublisher() -> AnyPublisher<Bool, Never> {
+        $isDragging.eraseToAnyPublisher()
+    }
+    
+    @MainActor
     func fetchStories() async {
         do {
             guard let localStories = try await storiesLoader?.load() else {
@@ -100,7 +90,7 @@ extension StoriesViewModel {
         }
     }
     
-    func updateStoryIdBeforeDragged() {
+    func saveStoryIdBeforeDragged() {
         storyIdBeforeDragged = currentStoryId
     }
     
@@ -112,49 +102,48 @@ extension StoriesViewModel {
         currentStoryId = storyId
     }
     
-    func moveCurrentStory(to direction: StoryMoveDirection) {
-        guard let currentStoryIndex else {
-            return
-        }
+    func moveToPreviousStory() {
+        guard let currentStoryIndex else { return }
         
-        switch direction {
-        case .previous:
-            if currentStoryIndex - 1 >= 0 {
-                currentStoryId = currentStories[currentStoryIndex - 1].id
-            }
-        case .next:
-            if currentStoryIndex + 1 < currentStories.count {
-                currentStoryId = currentStories[currentStoryIndex + 1].id
-            }
+        let previousStoryIndex = currentStoryIndex-1
+        if previousStoryIndex >= 0 {
+            currentStoryId = currentStories[previousStoryIndex].id
+        }
+    }
+    
+    func moveToNextStory() {
+        guard let currentStoryIndex else { return }
+        
+        let nextStoryIndex = currentStoryIndex+1
+        if nextStoryIndex < currentStories.count {
+            currentStoryId = currentStories[nextStoryIndex].id
         }
     }
     
     func getStory(by storyId: Int) -> Story? {
         stories.first(where: { $0.id == storyId })
     }
-    
-    // MARK: Post StoryPortion
-    // *** In real environment, the photo or video should be uploaded to server side.
-    // This is a demo app, however, stores them into temp directory.
-    
+}
+
+// MARK: - Post StoryPortion
+// *** In real environment, the photo or video should be uploaded to server side.
+// This is a demo app, however, stores them into temp directory.
+extension StoriesViewModel {
     func postStoryPortion(image: UIImage) {
-        guard let yourStoryIdx = yourStoryIdx,
-              let imageUrl = try? fileManager.saveImage(image, fileName: "img_\(UUID().uuidString)")
-        else {
+        guard let yourStoryIdx,
+              let imageURL = try? fileManager.saveImage(image, fileName: "img_\(UUID().uuidString)") else {
             return
         }
 
         var portions = stories[yourStoryIdx].portions
         // Just append a new Portion instance to current user's potion array.
-        portions.append(Portion(id: lastPortionId + 1, imageUrl: imageUrl))
+        portions.append(Portion(id: lastPortionId+1, duration: .defaultStoryDuration, resourceURL: imageURL, type: .image))
         stories[yourStoryIdx].portions = portions
         stories[yourStoryIdx].lastUpdate = .now
     }
     
     func postStoryPortion(videoUrl: URL) {
-        guard let yourStoryIdx else {
-            return
-        }
+        guard let yourStoryIdx else { return }
 
         var portions = stories[yourStoryIdx].portions
         let asset = AVAsset(url: videoUrl)
@@ -162,7 +151,7 @@ extension StoriesViewModel {
         let durationSeconds = CMTimeGetSeconds(duration)
 
         // Similar to image case.
-        portions.append(Portion(id: lastPortionId + 1, videoDuration: durationSeconds, videoUrlFromCam: videoUrl))
+        portions.append(Portion(id: lastPortionId+1, duration: durationSeconds, resourceURL: videoUrl, type: .video))
         stories[yourStoryIdx].portions = portions
         stories[yourStoryIdx].lastUpdate = .now
     }
@@ -174,8 +163,8 @@ private extension [LocalStory] {
             Story(
                 id: local.id,
                 lastUpdate: local.lastUpdate,
-                portions: local.portions.toPortions(),
-                user: local.user.toUser()
+                user: local.user.toUser(),
+                portions: local.portions.toPortions()
             )
         }
     }
@@ -187,14 +176,17 @@ private extension [LocalPortion] {
             switch local.type {
             case .image:
                 return Portion(
-                    id: local.id,
-                    imageName: local.resource
+                    id: local.id, 
+                    duration: local.duration,
+                    resourceURL: local.resourceURL,
+                    type: .init(rawValue: local.type.rawValue) ?? .image
                 )
             case .video:
                 return Portion(
-                    id: local.id,
-                    videoName: local.resource,
-                    videoDuration: local.duration
+                    id: local.id, 
+                    duration: local.duration,
+                    resourceURL: local.resourceURL,
+                    type: .init(rawValue: local.type.rawValue) ?? .image
                 )
             }
         }
@@ -203,6 +195,6 @@ private extension [LocalPortion] {
 
 private extension LocalUser {
     func toUser() -> User {
-        User(id: id, name: name, avatar: avatar, isCurrentUser: isCurrentUser)
+        User(id: id, name: name, avatarURL: avatarURL, isCurrentUser: isCurrentUser)
     }
 }

@@ -5,8 +5,8 @@
         "portions": [],
         "user": {
             "id": 0,
-            "name": "user0",
-            "avatar": "avatar0",
+            "name": "sea1",
+            "avatar": "sea1",
             "isCurrentUser": true
         }
     },
@@ -16,26 +16,26 @@
         "portions": [
             {
                 "id": 0,
-                "resource": "resource0",
+                "resource": "sea1",
                 "type": "image"
             },
             {
                 "id": 1,
-                "resource": "resource1",
+                "resource": "seaVideo",
                 "duration": 999,
                 "type": "video"
             },
             {
                 "id": 2,
-                "resource": "resource2",
+                "resource": "sea2",
                 "duration": 1,
                 "type": "any"
             }
         ],
         "user": {
             "id": 1,
-            "name": "user1",
-            "avatar": "avatar1",
+            "name": "sea2",
+            "avatar": "sea2",
             "isCurrentUser": false
         }
     }

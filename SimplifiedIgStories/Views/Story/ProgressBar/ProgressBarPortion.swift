@@ -12,7 +12,7 @@ struct ProgressBarPortion: View {
     @State private var endX = 0.0
     
     // ProgressBarPortion will frequently be recreate,
-    // TracingEndX must be a @StateObject to keep it unchanged.
+    // TracingEndX must be a @StateObject to keep the reference.
     @StateObject private var tracingEndX = TracingEndX(currentEndX: 0.0)
     
     // For reset animation!
@@ -38,60 +38,31 @@ struct ProgressBarPortion: View {
                 .cornerRadius(6)
                 .id(traceableRectangleId)
                 .onChange(of: tracingEndX.currentEndX) { currentEndX in
-                    // Finished
-                    if currentEndX >= geo.size.width {
-                        tracingEndX.updateCurrentEndX(0)
-                        vm.barPortionAnimationStatusDict[portionId] = .finish
+                    if currentEndX >= geo.size.width { // Animation finished
+                        vm.finishPortionAnimation(for: portionId)
                     }
                 }
-                .onChange(of: vm.barPortionAnimationStatusDict[portionId]) { newValue in
-                    if let portionAnimationStatus = newValue {
-                        switch portionAnimationStatus {
-                        case .initial:
-                            initializeAnimation()
-                        case .start:
-                            startAnimation(maxWidth: geo.size.width)
-                        case .restart:
-                            restartAnimation(maxWidth: geo.size.width)
-                        case .pause:
-                            pauseAnimation()
-                        case .resume:
-                            resumeAnimation(maxWidth: geo.size.width)
-                        case .finish:
-                            finishAnimation()
-                        }
+                .onChange(of: vm.barPortionAnimationStatusDict[portionId]) { status in
+                    switch status {
+                    case .initial:
+                        initializeAnimation()
+                    case .start, .restart:
+                        startAnimation(maxWidth: geo.size.width)
+                    case .pause:
+                        pauseAnimation()
+                    case .resume:
+                        resumeAnimation(maxWidth: geo.size.width)
+                    case .finish:
+                        finishAnimation()
+                    case .none:
+                        break
                     }
                 }
-
         }
     }
 }
 
-struct ProgressBarPortion_Previews: PreviewProvider {
-    static var previews: some View {
-        let storiesViewModel = StoriesViewModel(fileManager: LocalImageFileManager())
-        let story = storiesViewModel.stories[1]
-        ProgressBarPortion(
-            portionId: story.portions[0].id,
-            duration: .defaultStoryDuration,
-            storyId: story.id,
-            storyViewModel: StoryViewModel(
-                storyId: story.id,
-                storiesViewModel: storiesViewModel,
-                fileManager: LocalImageFileManager(),
-                mediaSaver: LocalMediaSaver()
-            )
-        )
-    }
-}
-
-// MARK: functions
 extension ProgressBarPortion {
-    private func resetTraceableRectangle(toLength endX: Double = 0.0) {
-        self.endX = endX
-        traceableRectangleId = traceableRectangleId == 0 ? 1 : 0
-    }
-    
     private func initializeAnimation() {
         print("storyId: \(storyId), portionId: \(portionId) initial.")
         resetTraceableRectangle()
@@ -105,15 +76,6 @@ extension ProgressBarPortion {
         }
     }
     
-    // TODO: combine restartAnimation and startAnimation
-    private func restartAnimation(maxWidth: Double) {
-        print("storyId: \(storyId), portionId: \(portionId) restart.")
-        resetTraceableRectangle()
-        withAnimation(.linear(duration: duration)) {
-            endX = maxWidth
-        }
-    }
-    
     private func pauseAnimation() {
         print("storyId: \(storyId), portionId: \(portionId) pause.")
         resetTraceableRectangle(toLength: tracingEndX.currentEndX)
@@ -121,7 +83,7 @@ extension ProgressBarPortion {
     
     private func resumeAnimation(maxWidth: Double) {
         print("storyId: \(storyId), portionId: \(portionId) resume.")
-        withAnimation(.linear(duration: duration * (1 - tracingEndX.currentEndX / maxWidth))) {
+        withAnimation(.linear(duration: duration * (1-tracingEndX.currentEndX / maxWidth))) {
             endX = maxWidth
         }
     }
@@ -129,5 +91,28 @@ extension ProgressBarPortion {
     private func finishAnimation() {
         print("storyId: \(storyId), portionId: \(portionId) finish.")
         resetTraceableRectangle(toLength: .screenWidth)
+    }
+    
+    private func resetTraceableRectangle(toLength endX: Double = 0.0) {
+        self.endX = endX
+        traceableRectangleId = traceableRectangleId == 0 ? 1 : 0
+    }
+}
+
+struct ProgressBarPortion_Previews: PreviewProvider {
+    static var previews: some View {
+        let storiesViewModel = StoriesViewModel.preview
+        let story = storiesViewModel.stories[1]
+        ProgressBarPortion(
+            portionId: story.portions[0].id,
+            duration: .defaultStoryDuration,
+            storyId: story.id,
+            storyViewModel: StoryViewModel(
+                storyId: story.id,
+                parentViewModel: storiesViewModel,
+                fileManager: LocalFileManager(),
+                mediaSaver: LocalMediaSaver()
+            )
+        )
     }
 }

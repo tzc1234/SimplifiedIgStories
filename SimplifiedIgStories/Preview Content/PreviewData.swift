@@ -12,10 +12,20 @@ struct PreviewData {
         Story(
             id: 0,
             lastUpdate: .now,
+            user: User(
+                id: 0,
+                name: "User 0",
+                avatarURL: Bundle.main.url(forResource: "sea1", withExtension: "jpg"),
+                isCurrentUser: false
+            ),
             portions: [
-                Portion(id: 0, imageName: "sea1")
-            ],
-            user: User(id: 0, name: "User 0", avatar: "sea1", isCurrentUser: false)
+                Portion(
+                    id: 0,
+                    duration: .defaultStoryDuration,
+                    resourceURL: Bundle.main.url(forResource: "sea1", withExtension: "jpg"),
+                    type: .image
+                )
+            ]
         )
     ]
 }
