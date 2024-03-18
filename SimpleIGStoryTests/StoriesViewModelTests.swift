@@ -62,6 +62,24 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertTrue(sut.isSameStoryAfterDragging)
     }
     
+    func test_getStory_deliversNoStoryWhenStoryNotFound() async {
+        let sut = await makeSUT()
+        let notFoundStoryId = 99
+        
+        let receivedStory = sut.getStory(by: notFoundStoryId)
+        
+        XCTAssertNil(receivedStory)
+    }
+    
+    func test_getStory_deliversCorrectStoryByStoryId() async {
+        let sut = await makeSUT()
+        let storyId = 1
+        
+        let receivedStory = sut.getStory(by: storyId)
+        
+        XCTAssertEqual(receivedStory?.id, storyId)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(stories: [LocalStory]? = nil,
