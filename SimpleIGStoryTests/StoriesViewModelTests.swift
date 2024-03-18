@@ -73,7 +73,7 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertEqual(sut.currentStoryId, initialCurrentStoryId)
     }
     
-    func test_firstCurrentStoryId_deliversFirstStoryIdWhenIsNotCurrentUserStory() async {
+    func test_firstCurrentStoryId_deliversFirstStoryIdWhenItIsNotCurrentUserStory() async {
         let sut = await makeSUT()
         let notCurrentUserStoryId = 2
         
@@ -82,13 +82,31 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertEqual(sut.firstCurrentStoryId, 1)
     }
     
-    func test_firstCurrentStoryId_deliversCurrentUserStoryIdWhenIsCurrentUserStory() async {
+    func test_firstCurrentStoryId_deliversCurrentUserStoryIdWhenItIsCurrentUserStory() async {
         let sut = await makeSUT()
         let currentUserStoryId = 0
         
         sut.setCurrentStoryId(currentUserStoryId)
         
         XCTAssertEqual(sut.firstCurrentStoryId, currentUserStoryId)
+    }
+    
+    func test_lastCurrentStoryId_deliversLastStoryIdWhenItIsNotCurrentUserStory() async {
+        let sut = await makeSUT()
+        let notCurrentUserStoryId = 1
+        
+        sut.setCurrentStoryId(notCurrentUserStoryId)
+        
+        XCTAssertEqual(sut.lastCurrentStoryId, 2)
+    }
+    
+    func test_lastCurrentStoryId_deliversCurrentUserStoryIdWhenItIsCurrentUserStory() async {
+        let sut = await makeSUT()
+        let currentUserStoryId = 0
+        
+        sut.setCurrentStoryId(currentUserStoryId)
+        
+        XCTAssertEqual(sut.lastCurrentStoryId, currentUserStoryId)
     }
     
     func test_getStory_deliversNoStoryWhenStoryNotFound() async {
