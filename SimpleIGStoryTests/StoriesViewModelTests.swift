@@ -146,6 +146,15 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertTrue(sut.isAtLastStory, "The 2nd non-current user story is at the last")
     }
     
+    func test_isAtLastStory_deliversFalseWhenCurrentStoryIsNotTheLastCurrentOne() async {
+        let sut = await makeSUT()
+        
+        let notCurrentUserStoryId = 1
+        sut.setCurrentStoryId(notCurrentUserStoryId)
+        
+        XCTAssertFalse(sut.isAtLastStory)
+    }
+    
     func test_getStory_deliversNoStoryWhenStoryNotFound() async {
         let sut = await makeSUT()
         let notFoundStoryId = 99
