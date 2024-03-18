@@ -274,8 +274,41 @@ class StoriesViewModelTests: XCTestCase {
         
         sut.postStoryPortion(videoUrl: video.url)
         
-        let portions = sut.stories.flatMap(\.portions)
-        XCTAssertTrue(portions.filter({ $0.videoURL == video.url }).isEmpty)
+        XCTAssertTrue(sut.allPortions.filter({ $0.videoURL == video.url }).isEmpty)
+    }
+    
+    func test_deletePortion_ignoresWhenPortionIdNotExisted() async {
+        let sut = await makeSUT()
+        let notFoundStoryId = 99
+        let initialPortions = sut.allPortions
+        
+        sut.deletePortion(byId: notFoundStoryId)
+        
+        XCTAssertEqual(sut.allPortions, initialPortions)
+    }
+    
+    func test_deletePortion_deletesCurrentUserPortionById() async {
+        let sut = await makeSUT()
+        let initialPortions = sut.allPortions
+        
+        let firstCurrentUserPortionId = 0
+        sut.deletePortion(byId: firstCurrentUserPortionId)
+        
+        let expectedPortionsAfterDeleteFirstCurrentUserPortion = initialPortions
+            .filter({ $0.id != firstCurrentUserPortionId })
+        XCTAssertEqual(sut.allPortions, expectedPortionsAfterDeleteFirstCurrentUserPortion)
+        
+        let lastCurrentUserPortionId = 1
+        sut.deletePortion(byId: lastCurrentUserPortionId)
+        
+        let expectedPortionsAfterDeleteLastCurrentUserPortion = expectedPortionsAfterDeleteFirstCurrentUserPortion
+            .filter({ $0.id != lastCurrentUserPortionId })
+        XCTAssertEqual(sut.allPortions, expectedPortionsAfterDeleteLastCurrentUserPortion)
+        
+        let nonCurrentUserPortionId = 2
+        sut.deletePortion(byId: nonCurrentUserPortionId)
+        
+        XCTAssertEqual(sut.allPortions, expectedPortionsAfterDeleteLastCurrentUserPortion, "Ignore non-current user portion")
     }
     
     // MARK: - Helpers
@@ -413,5 +446,11 @@ class StoriesViewModelTests: XCTestCase {
         }
         
         func delete(for url: URL) throws {}
+    }
+}
+
+extension StoriesViewModel {
+    var allPortions: [Portion] {
+        stories.flatMap(\.portions)
     }
 }

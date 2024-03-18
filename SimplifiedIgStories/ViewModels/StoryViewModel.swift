@@ -10,7 +10,7 @@ import UIKit
 
 protocol ParentStoryViewModel {
     var objectWillChange: ObservableObjectPublisher { get }
-    var stories: [Story] { get set }
+    var stories: [Story] { get }
     var firstCurrentStoryId: Int? { get }
     var currentStoryId: Int { get }
     var shouldCubicRotation: Bool { get }
@@ -20,6 +20,7 @@ protocol ParentStoryViewModel {
     func getIsDraggingPublisher() -> AnyPublisher<Bool, Never>
     func moveToPreviousStory()
     func moveToNextStory()
+    func deletePortion(byId portionId: Int)
 }
 
 final class StoryViewModel: ObservableObject {
@@ -213,16 +214,12 @@ extension StoryViewModel {
     // *** In real environment, the photo or video should be deleted by API call,
     // this is a demo app, however, deleting them from temp directory.
     private func deletePortionFromStory(for portionIndex: Int) {
-        guard let currentStoryIndex = parentViewModel.stories.firstIndex(where: { $0.id == storyId }) else {
-            return
-        }
-        
         let portion = portions[portionIndex]
         if let fileUrl = portion.imageURL ?? portion.videoURL {
             try? fileManager.delete(for: fileUrl)
         }
         
-        parentViewModel.stories[currentStoryIndex].portions.remove(at: portionIndex)
+        parentViewModel.deletePortion(byId: portion.id)
     }
     
     func getImage(by url: URL) -> UIImage? {

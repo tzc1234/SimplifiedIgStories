@@ -155,6 +155,15 @@ extension StoriesViewModel {
         stories[yourStoryIdx].portions = portions
         stories[yourStoryIdx].lastUpdate = .now
     }
+    
+    func deletePortion(byId portionId: Int) {
+        guard let yourStoryIdx,
+              let index = stories[yourStoryIdx].portions.firstIndex(where: { $0.id == portionId }) else {
+            return
+        }
+        
+        stories[yourStoryIdx].portions.remove(at: index)
+    }
 }
 
 private extension [LocalStory] {

@@ -275,6 +275,8 @@ final class StoryViewModelTests: XCTestCase {
         func moveToNextStory() {
             loggedStoryMoveDirections.append(.next)
         }
+        
+        func deletePortion(byId portionId: Int) {}
     }
     
     private class DummyFileManager: FileManageable {
