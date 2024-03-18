@@ -9,7 +9,7 @@ import AVKit
 import Combine
 
 final class StoriesViewModel: ObservableObject, ParentStoryViewModel {
-    @Published var stories: [Story] = []
+    @Published private(set) var stories: [Story] = []
     @Published private(set) var currentStoryId = -1
     @Published var shouldCubicRotation = false
     @Published var isDragging = false
