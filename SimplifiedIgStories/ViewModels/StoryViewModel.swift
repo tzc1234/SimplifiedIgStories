@@ -32,7 +32,7 @@ final class StoryViewModel: ObservableObject {
     private var subscriptions = Set<AnyCancellable>()
     
     private let storyId: Int
-    private var parentViewModel: ParentStoryViewModel
+    private let parentViewModel: ParentStoryViewModel
     private let fileManager: FileManageable
     private let mediaSaver: MediaSaver
     private var animationHandler: StoryAnimationHandler?
