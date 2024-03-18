@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import AVKit
 @testable import Simple_IG_Story
 
 class StoriesViewModelTests: XCTestCase {
@@ -117,9 +118,8 @@ class StoriesViewModelTests: XCTestCase {
         
         sut.postStoryPortion(image: anyImage)
         
-        let lastPortionId = try XCTUnwrap(storiesForTest().model.flatMap(\.portions).max(by: { $1.id > $0.id})?.id)
         let expectedPortion = Portion(
-            id: lastPortionId+1,
+            id: lastPortionId()+1,
             duration: .defaultStoryDuration,
             resourceURL: appendedImageURL,
             type: .image
@@ -141,6 +141,24 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertEqual(sut.currentStories.flatMap(\.portions), currentPortions)
     }
     
+    func test_postStoryPortion_appendsVideoPortionAtLast() async throws {
+        let sut = await makeSUT()
+        let video = videoForTest()
+        let currentStoryId = 0
+        sut.setCurrentStoryId(currentStoryId)
+        
+        sut.postStoryPortion(videoUrl: video.url)
+        
+        let expectedPortion = Portion(
+            id: lastPortionId()+1,
+            duration: video.duration,
+            resourceURL: video.url,
+            type: .video
+        )
+        let appendedPortion = try XCTUnwrap(sut.currentStories.last?.portions.last)
+        XCTAssertEqual(appendedPortion, expectedPortion)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(stories: [LocalStory]? = nil,
@@ -153,6 +171,16 @@ class StoriesViewModelTests: XCTestCase {
         await sut.fetchStories()
         trackForMemoryLeaks(sut, file: file, line: line)
         return sut
+    }
+    
+    private func videoForTest() -> (url: URL, duration: Double) {
+        let videoURL = Bundle.main.url(forResource: "seaVideo", withExtension: "mp4")!
+        let duration = CMTimeGetSeconds(AVAsset(url: videoURL).duration)
+        return (videoURL, duration)
+    }
+    
+    private func lastPortionId() -> Int {
+        storiesForTest().model.flatMap(\.portions).max(by: { $1.id > $0.id})!.id
     }
     
     private func storiesForTest() -> (local: [LocalStory], model: [Story]) {
