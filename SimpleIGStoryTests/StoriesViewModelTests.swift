@@ -169,6 +169,8 @@ class StoriesViewModelTests: XCTestCase {
         sut.isDragging = false
         
         XCTAssertEqual(loggedIsDragging, [false, true, false])
+        
+        cancellable.cancel()
     }
     
     func test_getStory_deliversNoStoryWhenStoryNotFound() async {
