@@ -109,7 +109,7 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertEqual(sut.currentStoryId, 2, "Ignores when no next story")
     }
     
-    func test_postStoryPortion_appendsImagePortionAtLast() async throws {
+    func test_postStoryImagePortion_appendsImagePortionAtLast() async throws {
         let appendedImageURL = URL(string: "file://appended-image.jpg")!
         let sut = await makeSUT(imageURLStub: { appendedImageURL })
         let anyImage = UIImage.make(withColor: .red)
@@ -128,7 +128,7 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertEqual(appendedPortion, expectedPortion)
     }
     
-    func test_postStoryPortion_ignoresWhenOnFileMangerError() async {
+    func test_postStoryImagePortion_ignoresWhenOnFileMangerError() async {
         let sut = await makeSUT(imageURLStub: { throw anyNSError() })
         let anyImage = UIImage.make(withColor: .red)
         let currentStoryId = 0
@@ -141,9 +141,9 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertEqual(sut.currentStories.flatMap(\.portions), currentPortions)
     }
     
-    func test_postStoryPortion_appendsVideoPortionAtLast() async throws {
-        let sut = await makeSUT()
+    func test_postStoryVideoPortion_appendsVideoPortionAtLast() async throws {
         let video = videoForTest()
+        let sut = await makeSUT()
         let currentStoryId = 0
         sut.setCurrentStoryId(currentStoryId)
         
@@ -157,6 +157,17 @@ class StoriesViewModelTests: XCTestCase {
         )
         let appendedPortion = try XCTUnwrap(sut.currentStories.last?.portions.last)
         XCTAssertEqual(appendedPortion, expectedPortion)
+    }
+    
+    func test_postStoryVideoPortion_ignoresWhenNoCurrentUserStory() async {
+        let video = videoForTest()
+        let noCurrentUserStories = storiesForTest().local.filter({ !$0.user.isCurrentUser })
+        let sut = await makeSUT(stories: noCurrentUserStories)
+        
+        sut.postStoryPortion(videoUrl: video.url)
+        
+        let portions = sut.stories.flatMap(\.portions)
+        XCTAssertTrue(portions.filter({ $0.videoURL == video.url }).isEmpty)
     }
     
     // MARK: - Helpers
