@@ -80,6 +80,20 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertEqual(receivedStory?.id, storyId)
     }
     
+    func test_moveToNextStory_setsToCorrectStoryId() async {
+        let sut = await makeSUT()
+        let hasNextStoryId = 1
+        sut.setCurrentStoryId(hasNextStoryId)
+        
+        sut.moveToNextStory()
+        
+        XCTAssertEqual(sut.currentStoryId, 2, "Moves to next story after moveToNextStory called")
+        
+        sut.moveToNextStory()
+        
+        XCTAssertEqual(sut.currentStoryId, 2, "Ignores when no next story")
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(stories: [LocalStory]? = nil,
@@ -95,9 +109,11 @@ class StoriesViewModelTests: XCTestCase {
     private func storiesForTest() -> (local: [LocalStory], model: [Story]) {
         let currentUser = makeUser(id: 0, name: "Current User", isCurrentUser: true)
         let user1 = makeUser(id: 1, name: "User1")
+        let user2 = makeUser(id: 2, name: "User2")
         let portion0 = makePortion(id: 0, resourceURL: anyImageURL())
         let portion1 = makePortion(id: 1, resourceURL: anyVideoURL(), duration: 9, type: .video)
         let portion2 = makePortion(id: 2)
+        let portion3 = makePortion(id: 3)
         let now = Date.now
         
         let local = [
@@ -112,6 +128,12 @@ class StoriesViewModelTests: XCTestCase {
                 lastUpdate: now,
                 user: user1.local,
                 portions: [portion2.local]
+            ),
+            LocalStory(
+                id: 2,
+                lastUpdate: now.addingTimeInterval(1),
+                user: user2.local,
+                portions: [portion3.local]
             )
         ]
         let model = [
@@ -126,6 +148,12 @@ class StoriesViewModelTests: XCTestCase {
                 lastUpdate: now,
                 user: user1.user,
                 portions: [portion2.portion]
+            ),
+            Story(
+                id: 2,
+                lastUpdate: now.addingTimeInterval(1),
+                user: user2.user,
+                portions: [portion3.portion]
             )
         ]
         
