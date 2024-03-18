@@ -128,6 +128,19 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertEqual(appendedPortion, expectedPortion)
     }
     
+    func test_postStoryPortion_ignoresWhenOnFileMangerError() async {
+        let sut = await makeSUT(imageURLStub: { throw anyNSError() })
+        let anyImage = UIImage.make(withColor: .red)
+        let currentStoryId = 0
+        sut.setCurrentStoryId(currentStoryId)
+        
+        let currentPortions = sut.currentStories.flatMap(\.portions)
+        
+        sut.postStoryPortion(image: anyImage)
+        
+        XCTAssertEqual(sut.currentStories.flatMap(\.portions), currentPortions)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(stories: [LocalStory]? = nil,
