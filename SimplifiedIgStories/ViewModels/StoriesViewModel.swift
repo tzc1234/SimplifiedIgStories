@@ -15,10 +15,10 @@ final class StoriesViewModel: ObservableObject, ParentStoryViewModel {
     @Published var isDragging = false
     private var storyIdBeforeDragged = 0
     
-    private let storiesLoader: StoriesLoader?
+    private let storiesLoader: StoriesLoader
     private let fileManager: FileManageable
     
-    init(fileManager: FileManageable, storiesLoader: StoriesLoader?) {
+    init(fileManager: FileManageable, storiesLoader: StoriesLoader) {
         self.fileManager = fileManager
         self.storiesLoader = storiesLoader
     }
@@ -78,10 +78,7 @@ extension StoriesViewModel {
     @MainActor
     func fetchStories() async {
         do {
-            guard let localStories = try await storiesLoader?.load() else {
-                return
-            }
-            
+            let localStories = try await storiesLoader.load()
             stories = localStories.toStories()
         } catch StoriesLoaderError.notFound {
             print("JSON file not found.")
