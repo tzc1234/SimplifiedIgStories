@@ -109,12 +109,10 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertEqual(sut.currentStoryId, 2, "Ignores when no next story")
     }
     
-    func test_postStoryImagePortion_appendsImagePortionAtLast() async throws {
+    func test_postStoryImagePortion_appendsImagePortionAtCurrentUserStory() async throws {
         let appendedImageURL = URL(string: "file://appended-image.jpg")!
         let sut = await makeSUT(imageURLStub: { appendedImageURL })
         let anyImage = UIImage.make(withColor: .red)
-        let currentStoryId = 0
-        sut.setCurrentStoryId(currentStoryId)
         
         sut.postStoryPortion(image: anyImage)
         
@@ -124,7 +122,8 @@ class StoriesViewModelTests: XCTestCase {
             resourceURL: appendedImageURL,
             type: .image
         )
-        let appendedPortion = try XCTUnwrap(sut.currentStories.last?.portions.last)
+        let currentUserStory = try XCTUnwrap(sut.stories.first(where: { $0.id == currentUserStoryId() }))
+        let appendedPortion = try XCTUnwrap(currentUserStory.portions.last)
         XCTAssertEqual(appendedPortion, expectedPortion)
     }
     
@@ -141,11 +140,9 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertEqual(sut.currentStories.flatMap(\.portions), currentPortions)
     }
     
-    func test_postStoryVideoPortion_appendsVideoPortionAtLast() async throws {
+    func test_postStoryVideoPortion_appendsVideoPortionAtCurrentUserStory() async throws {
         let video = videoForTest()
         let sut = await makeSUT()
-        let currentStoryId = 0
-        sut.setCurrentStoryId(currentStoryId)
         
         sut.postStoryPortion(videoUrl: video.url)
         
@@ -155,7 +152,8 @@ class StoriesViewModelTests: XCTestCase {
             resourceURL: video.url,
             type: .video
         )
-        let appendedPortion = try XCTUnwrap(sut.currentStories.last?.portions.last)
+        let currentUserStory = try XCTUnwrap(sut.stories.first(where: { $0.id == currentUserStoryId() }))
+        let appendedPortion = try XCTUnwrap(currentUserStory.portions.last)
         XCTAssertEqual(appendedPortion, expectedPortion)
     }
     
@@ -188,6 +186,10 @@ class StoriesViewModelTests: XCTestCase {
         let videoURL = Bundle.main.url(forResource: "seaVideo", withExtension: "mp4")!
         let duration = CMTimeGetSeconds(AVAsset(url: videoURL).duration)
         return (videoURL, duration)
+    }
+    
+    private func currentUserStoryId() -> Int {
+        storiesForTest().model.first(where: { $0.user.isCurrentUser })!.id
     }
     
     private func lastPortionId() -> Int {
