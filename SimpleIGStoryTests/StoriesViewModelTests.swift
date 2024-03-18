@@ -123,6 +123,15 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertTrue(sut.isAtFirstStory, "The 1st non-current user story is at the first")
     }
     
+    func test_isAtFirstStory_deliversFalseWhenCurrentStoryIsNotTheFirstCurrentOne() async {
+        let sut = await makeSUT()
+        
+        let notCurrentUserStoryId = 2
+        sut.setCurrentStoryId(notCurrentUserStoryId)
+        
+        XCTAssertFalse(sut.isAtFirstStory)
+    }
+    
     func test_getStory_deliversNoStoryWhenStoryNotFound() async {
         let sut = await makeSUT()
         let notFoundStoryId = 99
