@@ -108,13 +108,35 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertEqual(sut.currentStoryId, 2, "Ignores when no next story")
     }
     
+    func test_postStoryPortion_appendsImagePortionAtLast() async throws {
+        let appendedImageURL = URL(string: "file://appended-image.jpg")!
+        let sut = await makeSUT(imageURLStub: { appendedImageURL })
+        let anyImage = UIImage.make(withColor: .red)
+        let currentStoryId = 0
+        sut.setCurrentStoryId(currentStoryId)
+        
+        sut.postStoryPortion(image: anyImage)
+        
+        let lastPortionId = try XCTUnwrap(storiesForTest().model.flatMap(\.portions).max(by: { $1.id > $0.id})?.id)
+        let expectedPortion = Portion(
+            id: lastPortionId+1,
+            duration: .defaultStoryDuration,
+            resourceURL: appendedImageURL,
+            type: .image
+        )
+        let appendedPortion = try XCTUnwrap(sut.currentStories.last?.portions.last)
+        XCTAssertEqual(appendedPortion, expectedPortion)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(stories: [LocalStory]? = nil,
+                         imageURLStub: @escaping () throws -> URL = {URL(string: "file://any-image.jpg")! },
                          file: StaticString = #filePath,
                          line: UInt = #line) async -> StoriesViewModel {
         let loader = StoriesLoaderStub(stories: stories == nil ? storiesForTest().local : stories!)
-        let sut = StoriesViewModel(fileManager: DummyFileManager(), storiesLoader: loader)
+        let fileManager = FileManagerStub(savedImageURL: imageURLStub)
+        let sut = StoriesViewModel(fileManager: fileManager, storiesLoader: loader)
         await sut.fetchStories()
         trackForMemoryLeaks(sut, file: file, line: line)
         return sut
@@ -209,9 +231,15 @@ class StoriesViewModelTests: XCTestCase {
         }
     }
     
-    private class DummyFileManager: FileManageable {
+    private class FileManagerStub: FileManageable {
+        private let savedImageURL: () throws -> URL
+        
+        init(savedImageURL: @escaping () throws -> URL) {
+            self.savedImageURL = savedImageURL
+        }
+        
         func saveImage(_ image: UIImage, fileName: String) throws -> URL {
-            anyImageURL()
+            try savedImageURL()
         }
         
         func getImage(for url: URL) -> UIImage? {

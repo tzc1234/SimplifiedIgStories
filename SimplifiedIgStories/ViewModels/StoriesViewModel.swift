@@ -34,7 +34,7 @@ extension StoriesViewModel {
     }
     
     private var lastPortionId: Int {
-        currentStories.flatMap(\.portions).map(\.id).max() ?? -1
+        stories.flatMap(\.portions).map(\.id).max() ?? -1
     }
     
     var currentStories: [Story] {
