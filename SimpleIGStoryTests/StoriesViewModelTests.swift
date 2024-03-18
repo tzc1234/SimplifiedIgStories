@@ -155,6 +155,22 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertFalse(sut.isAtLastStory)
     }
     
+    func test_getIsDraggingPublisher_deliversIsDraggingProperly() async {
+        let sut = await makeSUT()
+        var loggedIsDragging = [Bool]()
+        let cancellable = sut.getIsDraggingPublisher().sink { loggedIsDragging.append($0) }
+        
+        XCTAssertEqual(loggedIsDragging, [false])
+        
+        sut.isDragging = true
+        
+        XCTAssertEqual(loggedIsDragging, [false, true])
+        
+        sut.isDragging = false
+        
+        XCTAssertEqual(loggedIsDragging, [false, true, false])
+    }
+    
     func test_getStory_deliversNoStoryWhenStoryNotFound() async {
         let sut = await makeSUT()
         let notFoundStoryId = 99
@@ -270,6 +286,8 @@ class StoriesViewModelTests: XCTestCase {
         let fileManager = FileManagerStub(savedImageURL: imageURLStub)
         let sut = StoriesViewModel(fileManager: fileManager, storiesLoader: loader)
         await sut.fetchStories()
+        trackForMemoryLeaks(loader, file: file, line: line)
+        trackForMemoryLeaks(fileManager, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
         return sut
     }
