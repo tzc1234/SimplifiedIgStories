@@ -52,6 +52,16 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertEqual(currentUserStoriesInCurrentStories.count, 0)
     }
     
+    func test_saveStoryIdBeforeDragged_savesCurrentStoryId() async {
+        let sut = await makeSUT()
+        
+        XCTAssertFalse(sut.isSameStoryAfterDragging)
+        
+        sut.saveStoryIdBeforeDragged()
+        
+        XCTAssertTrue(sut.isSameStoryAfterDragging)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(stories: [LocalStory]? = nil,
