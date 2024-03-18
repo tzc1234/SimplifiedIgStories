@@ -61,7 +61,7 @@ extension StoriesViewModel {
         currentStories.last?.id
     }
     
-    var isNowAtFirstStory: Bool {
+    var isAtFirstStory: Bool {
         currentStoryId == firstCurrentStoryId
     }
     
