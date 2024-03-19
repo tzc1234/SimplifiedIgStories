@@ -20,7 +20,8 @@ struct StoryContainer: View {
                 // *** A risk of memory leak if too many stories.
                 ForEach(storiesViewModel.currentStories) { story in
                     getStoryView(story)
-                        .opacity(story.id != storiesViewModel.currentStoryId && !storiesViewModel.shouldCubicRotation ? 0.0 : 1.0)
+                        .opacity(story.id != storiesViewModel.currentStoryId && 
+                                 !storiesViewModel.shouldCubicRotation ? 0.0 : 1.0)
                         .frame(width: .screenWidth, height: geo.size.height)
                         .preference(key: FramePreferenceKey.self, value: geo.frame(in: .global))
                         .onPreferenceChange(FramePreferenceKey.self) { preferenceFrame in

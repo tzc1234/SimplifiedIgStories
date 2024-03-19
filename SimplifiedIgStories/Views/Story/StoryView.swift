@@ -11,13 +11,13 @@ struct StoryView: View {
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     
     let storyId: Int
-    @StateObject var vm: StoryViewModel // Injected from StoryContainer
+    @StateObject var storyViewModel: StoryViewModel
     
     var body: some View {
         GeometryReader { geo in
             ZStack {
                 VStack(alignment: .leading) {
-                    ProgressBar(storyId: storyId, storyViewModel: vm)
+                    ProgressBar(storyId: storyId, storyViewModel: storyViewModel)
                         .frame(height: 2.0, alignment: .center)
                         .padding(.top, 12.0)
                     
@@ -33,21 +33,21 @@ struct StoryView: View {
                     Spacer()
                     
                     DetectableTapGesturePositionView { point in
-                        vm.setPortionTransitionDirection(by: point.x)
+                        storyViewModel.setPortionTransitionDirection(by: point.x)
                     }
                     
                     Spacer()
                     
                     moreButton
-                        .confirmationDialog("", isPresented: $vm.showConfirmationDialog, titleVisibility: .hidden) {
+                        .confirmationDialog("", isPresented: $storyViewModel.showConfirmationDialog, titleVisibility: .hidden) {
                             Button("Delete", role: .destructive) {
-                                vm.deleteCurrentPortion {
+                                storyViewModel.deleteCurrentPortion {
                                     homeUIActionHandler.closeStoryContainer(storyId: storyId)
                                 }
                             }
                             Button("Save", role: .none) {
                                 Task {
-                                    await vm.savePortionImageVideo()
+                                    await storyViewModel.savePortionImageVideo()
                                 }
                             }
                             Button("Cancel", role: .cancel, action: {})
@@ -55,17 +55,17 @@ struct StoryView: View {
                 }
                 
                 LoadingView()
-                    .opacity(vm.isLoading ? 1 : 0)
+                    .opacity(storyViewModel.isLoading ? 1 : 0)
                 
                 noticeLabel
             }
             .background(storyPortionViews)
             .onAppear {
                 print("storyId: \(storyId) view onAppear.")
-                vm.startProgressBarAnimation()
+                storyViewModel.startProgressBarAnimation()
             }
             .cubicTransition(
-                shouldRotate: vm.shouldCubicRotation,
+                shouldRotate: storyViewModel.shouldCubicRotation,
                 offsetX: geo.frame(in: .global).minX
             )
             .onDisappear {
@@ -78,11 +78,11 @@ struct StoryView: View {
 extension StoryView {
     private var storyPortionViews: some View {
         ZStack {
-            ForEach(vm.portions) { portion in
-                if portion.id == vm.currentPortionId {
+            ForEach(storyViewModel.portions) { portion in
+                if portion.id == storyViewModel.currentPortionId {
                     StoryPortionView(
                         portion: portion,
-                        storyViewModel: vm
+                        storyViewModel: storyViewModel
                     )
                 }
             }
@@ -92,7 +92,7 @@ extension StoryView {
     
     private var avatarIcon: some View {
         var onTapAction: ((Story) -> Void)?
-        if vm.story.user.isCurrentUser {
+        if storyViewModel.story.user.isCurrentUser {
             onTapAction = { _ in
                 homeUIActionHandler.closeStoryContainer(storyId: storyId)
                 DispatchQueue.main.asyncAfter(
@@ -103,8 +103,8 @@ extension StoryView {
         }
         
         return StoryIcon(
-            story: vm.story,
-            showPlusIcon: vm.story.user.isCurrentUser,
+            story: storyViewModel.story,
+            showPlusIcon: storyViewModel.story.user.isCurrentUser,
             plusIconBgColor: .white,
             showStroke: false,
             onTapAction: onTapAction
@@ -113,7 +113,7 @@ extension StoryView {
     }
     
     private var nameText: some View {
-        Text(vm.story.user.title)
+        Text(storyViewModel.story.user.title)
             .foregroundColor(.white)
             .font(.headline)
             .fontWeight(.bold)
@@ -121,7 +121,7 @@ extension StoryView {
     }
     
     private var dateText: some View {
-        Text(vm.story.lastUpdate?.timeAgoDisplay() ?? "")
+        Text(storyViewModel.story.lastUpdate?.timeAgoDisplay() ?? "")
             .foregroundColor(.white)
             .font(.subheadline)
     }
@@ -145,9 +145,9 @@ extension StoryView {
     
     @ViewBuilder 
     private var moreButton: some View {
-        if vm.story.user.isCurrentUser {
+        if storyViewModel.story.user.isCurrentUser {
             Button {
-                vm.showConfirmationDialog.toggle()
+                storyViewModel.showConfirmationDialog.toggle()
             } label: {
                 Label("More", systemImage: "ellipsis")
                     .foregroundColor(.white)
@@ -160,9 +160,9 @@ extension StoryView {
     }
     
     private var noticeLabel: some View {
-        NoticeLabel(message: vm.noticeMsg)
-            .opacity(vm.showNoticeLabel ? 1 : 0)
-            .animation(.easeIn, value: vm.showNoticeLabel)
+        NoticeLabel(message: storyViewModel.noticeMsg)
+            .opacity(storyViewModel.showNoticeLabel ? 1 : 0)
+            .animation(.easeIn, value: storyViewModel.showNoticeLabel)
     }
 }
 

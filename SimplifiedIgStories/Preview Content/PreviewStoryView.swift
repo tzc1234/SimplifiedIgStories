@@ -11,7 +11,7 @@ extension StoryView {
     static func preview(storyId: Int, parentViewModel: StoriesViewModel) -> StoryView {
         StoryView(
             storyId: storyId,
-            vm: StoryViewModel(
+            storyViewModel: StoryViewModel(
                 storyId: storyId,
                 parentViewModel: parentViewModel,
                 fileManager: DummyFileManager(),
