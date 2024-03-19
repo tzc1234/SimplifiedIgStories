@@ -91,7 +91,7 @@ extension StoryView {
     }
     
     private var avatarIcon: some View {
-        var onTapAction: ((Int) -> Void)?
+        var onTapAction: ((Story) -> Void)?
         if vm.story.user.isCurrentUser {
             onTapAction = { _ in
                 homeUIActionHandler.closeStoryContainer(storyId: storyId)

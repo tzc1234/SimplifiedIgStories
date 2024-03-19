@@ -173,24 +173,6 @@ class StoriesViewModelTests: XCTestCase {
         cancellable.cancel()
     }
     
-    func test_getStory_deliversNoStoryWhenStoryNotFound() async {
-        let sut = await makeSUT()
-        let notFoundStoryId = 99
-        
-        let receivedStory = sut.getStory(by: notFoundStoryId)
-        
-        XCTAssertNil(receivedStory)
-    }
-    
-    func test_getStory_deliversCorrectStoryByStoryId() async {
-        let sut = await makeSUT()
-        let storyId = 1
-        
-        let receivedStory = sut.getStory(by: storyId)
-        
-        XCTAssertEqual(receivedStory?.id, storyId)
-    }
-    
     func test_moveToPreviousStory_setsToCorrectStoryId() async {
         let sut = await makeSUT()
         let hasPreviousStoryId = 2

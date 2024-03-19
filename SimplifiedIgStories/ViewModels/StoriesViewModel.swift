@@ -116,10 +116,6 @@ extension StoriesViewModel {
             currentStoryId = currentStories[nextStoryIndex].id
         }
     }
-    
-    func getStory(by storyId: Int) -> Story? {
-        stories.first(where: { $0.id == storyId })
-    }
 }
 
 // MARK: - Post StoryPortion

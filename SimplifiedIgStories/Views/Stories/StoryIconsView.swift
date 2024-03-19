@@ -36,14 +36,10 @@ struct StoryIconsView: View {
         }
     }
     
-    private func tapIconAction(storyId: Int) {
-        guard let story = vm.getStory(by: storyId) else {
-            return
-        }
-        
+    private func tapIconAction(story: Story) {
         if story.hasPortion {
-            vm.setCurrentStoryId(storyId)
-            homeUIActionHandler.showStoryContainer(storyId: storyId)
+            vm.setCurrentStoryId(story.id)
+            homeUIActionHandler.showStoryContainer(storyId: story.id)
         } else if story.user.isCurrentUser {
             homeUIActionHandler.toggleStoryCamView()
         }
