@@ -56,6 +56,7 @@ final class StoryViewModel: ObservableObject {
             .store(in: &subscriptions)
         
         let animationHandler = StoryAnimationHandler(
+            storyId: storyId, 
             isAtFirstStory: { storyId == parentViewModel.firstCurrentStoryId },
             isAtLastStory: { parentViewModel.isAtLastStory },
             isCurrentStory: { parentViewModel.currentStoryId == storyId }, 

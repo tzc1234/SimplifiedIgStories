@@ -94,6 +94,7 @@
 		BE9EF6C727E36F7D00942976 /* CGFloat+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9EF6C627E36F7D00942976 /* CGFloat+Additions.swift */; };
 		BEA1D95827C3C74D00D0A67A /* Date+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA1D95727C3C74D00D0A67A /* Date+Additions.swift */; };
 		BEA1D95E27C3DA7100D0A67A /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA1D95D27C3DA7100D0A67A /* User.swift */; };
+		BEA6D0292BA9EED800BEDA4A /* StoryAnimationHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA6D0282BA9EED800BEDA4A /* StoryAnimationHandlerTests.swift */; };
 		BEA7D9FF27C6DFFC00DA81E6 /* TraceableArc.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA7D9FE27C6DFFC00DA81E6 /* TraceableArc.swift */; };
 		BEA901D427BC716E00E3362D /* ProgressBarPortion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA901D327BC716E00E3362D /* ProgressBarPortion.swift */; };
 		BEA93F9427D7511000964226 /* VideoRecordButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA8E50E27D0CFD200640B19 /* VideoRecordButton.swift */; };
@@ -219,6 +220,7 @@
 		BE9EF6C627E36F7D00942976 /* CGFloat+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGFloat+Additions.swift"; sourceTree = "<group>"; };
 		BEA1D95727C3C74D00D0A67A /* Date+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Additions.swift"; sourceTree = "<group>"; };
 		BEA1D95D27C3DA7100D0A67A /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		BEA6D0282BA9EED800BEDA4A /* StoryAnimationHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryAnimationHandlerTests.swift; sourceTree = "<group>"; };
 		BEA7D9FE27C6DFFC00DA81E6 /* TraceableArc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TraceableArc.swift; sourceTree = "<group>"; };
 		BEA8E50E27D0CFD200640B19 /* VideoRecordButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRecordButton.swift; sourceTree = "<group>"; };
 		BEA901D327BC716E00E3362D /* ProgressBarPortion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarPortion.swift; sourceTree = "<group>"; };
@@ -413,6 +415,7 @@
 				BEBF32302B74D86600DCD624 /* Helpers */,
 				BE69F50C281974E5001BA4EC /* StoriesViewModelTests.swift */,
 				BE501449288DC7410043DF62 /* StoryViewModelTests.swift */,
+				BEA6D0282BA9EED800BEDA4A /* StoryAnimationHandlerTests.swift */,
 				BE59BF58288803950050EB21 /* StoryCamViewModel */,
 				BEEEBBF62B7540AC00EC85C7 /* DataServices */,
 				BE8B71A82B7651450055C354 /* MediaSaver */,
@@ -886,6 +889,7 @@
 				BE8305062B875BF2002A72C4 /* AVCameraAuxiliaryTests.swift in Sources */,
 				BEBF322F2B74D5DD00DCD624 /* LocalStoriesLoaderTests.swift in Sources */,
 				BEEEBBF82B75418800EC85C7 /* LocalStoriesLoaderIntegrationTests.swift in Sources */,
+				BEA6D0292BA9EED800BEDA4A /* StoryAnimationHandlerTests.swift in Sources */,
 				BEBF32322B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift in Sources */,
 				BE83D1272B850BB5004A1FB4 /* AVVideoRecorderTests.swift in Sources */,
 			);

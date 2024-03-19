@@ -44,6 +44,7 @@ final class StoryAnimationHandler: ObservableObject {
     }
     
     @Published private(set) var currentPortionId: Int
+    private let storyId: Int
     private let isAtFirstStory: () -> Bool
     private let isAtLastStory: () -> Bool
     private let isCurrentStory: () -> Bool
@@ -54,7 +55,8 @@ final class StoryAnimationHandler: ObservableObject {
     private let isDraggingPublisher: () -> AnyPublisher<Bool, Never>
     private let animationShouldPausePublisher: () -> AnyPublisher<Bool, Never>
     
-    init(isAtFirstStory: @escaping () -> Bool,
+    init(storyId: Int,
+         isAtFirstStory: @escaping () -> Bool,
          isAtLastStory: @escaping () -> Bool,
          isCurrentStory: @escaping () -> Bool,
          moveToPreviousStory: @escaping () -> Void,
@@ -63,6 +65,7 @@ final class StoryAnimationHandler: ObservableObject {
          isSameStoryAfterDragging: @escaping () -> Bool,
          isDraggingPublisher: @escaping () -> AnyPublisher<Bool, Never>,
          animationShouldPausePublisher: @escaping () -> AnyPublisher<Bool, Never>) {
+        self.storyId = storyId
         self.isAtFirstStory = isAtFirstStory
         self.isAtLastStory = isAtLastStory
         self.isCurrentStory = isCurrentStory
@@ -215,5 +218,9 @@ final class StoryAnimationHandler: ObservableObject {
         if isSameStoryAfterDragging() {
             resumePortionAnimation()
         }
+    }
+    
+    deinit {
+        print("StoryAnimationHandler: \(storyId) deinit.")
     }
 }
