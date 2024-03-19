@@ -8,11 +8,11 @@
 import SwiftUI
 
 extension StoryView {
-    static func preview(storyId: Int, parentViewModel: StoriesViewModel) -> StoryView {
+    static func preview(story: Story, parentViewModel: StoriesViewModel) -> StoryView {
         StoryView(
-            storyId: storyId,
+            story: story,
             storyViewModel: StoryViewModel(
-                storyId: storyId,
+                storyId: story.id,
                 parentViewModel: parentViewModel,
                 fileManager: DummyFileManager(),
                 mediaSaver: DummyMediaSaver()

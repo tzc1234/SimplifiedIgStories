@@ -11,43 +11,38 @@ struct ProgressBar: View {
     @Environment(\.scenePhase) private var scenePhase
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     
-    let storyId: Int
-    @ObservedObject private var vm: StoryViewModel
-    
-    init(storyId: Int, storyViewModel: StoryViewModel) {
-        self.storyId = storyId
-        self.vm = storyViewModel
-    }
+    let story: Story
+    @ObservedObject var storyViewModel: StoryViewModel
     
     var body: some View {
         HStack {
             Spacer(minLength: 2)
             
-            ForEach(vm.story.portions) { portion in
+            ForEach(story.portions) { portion in
                 ProgressBarPortion(
                     portionId: portion.id,
                     duration: portion.duration,
-                    storyId: storyId,
-                    storyViewModel: vm
+                    storyId: story.id,
+                    storyViewModel: storyViewModel
                 )
                 
                 Spacer(minLength: 2)
             }
         }
         .padding(.horizontal, 10)
-        .onChange(of: vm.currentPortionAnimationStatus) { _ in
-            vm.performNextBarPortionAnimationWhenCurrentPortionFinished {
-                homeUIActionHandler.closeStoryContainer(storyId: storyId)
+        .onChange(of: storyViewModel.currentPortionAnimationStatus) { _ in
+            storyViewModel.performNextBarPortionAnimationWhenCurrentPortionFinished {
+                homeUIActionHandler.closeStoryContainer(storyId: story.id)
             }
         }
-        .onChange(of: vm.currentStoryId) { _ in
-            vm.startProgressBarAnimation()
+        .onChange(of: storyViewModel.currentStoryId) { _ in
+            storyViewModel.startProgressBarAnimation()
         }
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
-                vm.resumePortionAnimation()
+                storyViewModel.resumePortionAnimation()
             } else if newPhase == .inactive {
-                vm.pausePortionAnimation()
+                storyViewModel.pausePortionAnimation()
             }
         }
     }
@@ -59,7 +54,7 @@ struct ProgressBar_Previews: PreviewProvider {
         let storiesViewModel = StoriesViewModel.preview
         let story = storiesViewModel.stories[1]
         ProgressBar(
-            storyId: story.id,
+            story: story,
             storyViewModel: StoryViewModel(
                 storyId: story.id,
                 parentViewModel: storiesViewModel,

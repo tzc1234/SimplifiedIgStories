@@ -83,7 +83,7 @@ struct StoryContainer_Previews: PreviewProvider {
         StoryContainer(
             storiesViewModel: vm,
             getStoryView: { story in
-                .preview(storyId: story.id, parentViewModel: vm)
+                .preview(story: story, parentViewModel: vm)
             })
             .environmentObject(HomeUIActionHandler())
             .task {

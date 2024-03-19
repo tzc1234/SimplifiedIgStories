@@ -89,11 +89,11 @@ final class StoryViewModel: ObservableObject {
 extension StoryViewModel {
     // *** All the stories are from local JSON, not from API,
     // so force unwrap here. Don't do this in real environment!
-    var story: Story {
+    private var story: Story {
         parentViewModel.stories.first(where: { $0.id == storyId })!
     }
     
-    var portions: [Portion] {
+    private var portions: [Portion] {
         story.portions
     }
     

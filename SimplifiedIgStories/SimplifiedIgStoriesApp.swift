@@ -34,7 +34,7 @@ struct SimplifiedIgStoriesApp: App {
                         storiesViewModel: factory.storiesViewModel,
                         getStoryView: { story in
                             StoryView(
-                                storyId: story.id,
+                                story: story,
                                 storyViewModel: StoryViewModel(
                                     storyId: story.id,
                                     parentViewModel: factory.storiesViewModel,

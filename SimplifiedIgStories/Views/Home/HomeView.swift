@@ -86,7 +86,7 @@ struct HomeView_Previews: PreviewProvider {
             StoryContainer(
                 storiesViewModel: storiesViewModel,
                 getStoryView: { story in
-                    .preview(storyId: story.id, parentViewModel: storiesViewModel)
+                    .preview(story: story, parentViewModel: storiesViewModel)
                 }
             )
         })

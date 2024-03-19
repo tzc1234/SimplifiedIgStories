@@ -10,14 +10,14 @@ import SwiftUI
 struct StoryView: View {
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     
-    let storyId: Int
+    let story: Story
     @StateObject var storyViewModel: StoryViewModel
     
     var body: some View {
         GeometryReader { geo in
             ZStack {
                 VStack(alignment: .leading) {
-                    ProgressBar(storyId: storyId, storyViewModel: storyViewModel)
+                    ProgressBar(story: story, storyViewModel: storyViewModel)
                         .frame(height: 2.0, alignment: .center)
                         .padding(.top, 12.0)
                     
@@ -42,7 +42,7 @@ struct StoryView: View {
                         .confirmationDialog("", isPresented: $storyViewModel.showConfirmationDialog, titleVisibility: .hidden) {
                             Button("Delete", role: .destructive) {
                                 storyViewModel.deleteCurrentPortion {
-                                    homeUIActionHandler.closeStoryContainer(storyId: storyId)
+                                    homeUIActionHandler.closeStoryContainer(storyId: story.id)
                                 }
                             }
                             Button("Save", role: .none) {
@@ -61,7 +61,7 @@ struct StoryView: View {
             }
             .background(storyPortionViews)
             .onAppear {
-                print("storyId: \(storyId) view onAppear.")
+                print("storyId: \(story.id) view onAppear.")
                 storyViewModel.startProgressBarAnimation()
             }
             .cubicTransition(
@@ -69,7 +69,7 @@ struct StoryView: View {
                 offsetX: geo.frame(in: .global).minX
             )
             .onDisappear {
-                print("storyId: \(storyId) view onDisappear.")
+                print("storyId: \(story.id) view onDisappear.")
             }
         }
     }
@@ -78,7 +78,7 @@ struct StoryView: View {
 extension StoryView {
     private var storyPortionViews: some View {
         ZStack {
-            ForEach(storyViewModel.portions) { portion in
+            ForEach(story.portions) { portion in
                 if portion.id == storyViewModel.currentPortionId {
                     StoryPortionView(
                         portion: portion,
@@ -92,9 +92,9 @@ extension StoryView {
     
     private var avatarIcon: some View {
         var onTapAction: ((Story) -> Void)?
-        if storyViewModel.story.user.isCurrentUser {
+        if story.user.isCurrentUser {
             onTapAction = { _ in
-                homeUIActionHandler.closeStoryContainer(storyId: storyId)
+                homeUIActionHandler.closeStoryContainer(storyId: story.id)
                 DispatchQueue.main.asyncAfter(
                     deadline: .now() + 0.3,
                     execute: homeUIActionHandler.toggleStoryCamView
@@ -103,8 +103,8 @@ extension StoryView {
         }
         
         return StoryIcon(
-            story: storyViewModel.story,
-            showPlusIcon: storyViewModel.story.user.isCurrentUser,
+            story: story,
+            showPlusIcon: story.user.isCurrentUser,
             plusIconBgColor: .white,
             showStroke: false,
             onTapAction: onTapAction
@@ -113,7 +113,7 @@ extension StoryView {
     }
     
     private var nameText: some View {
-        Text(storyViewModel.story.user.title)
+        Text(story.user.title)
             .foregroundColor(.white)
             .font(.headline)
             .fontWeight(.bold)
@@ -121,14 +121,14 @@ extension StoryView {
     }
     
     private var dateText: some View {
-        Text(storyViewModel.story.lastUpdate?.timeAgoDisplay() ?? "")
+        Text(story.lastUpdate?.timeAgoDisplay() ?? "")
             .foregroundColor(.white)
             .font(.subheadline)
     }
     
     private var closeButton: some View {
         Button {
-            homeUIActionHandler.closeStoryContainer(storyId: storyId)
+            homeUIActionHandler.closeStoryContainer(storyId: story.id)
         } label: {
             ZStack {
                 // Increase close button tap area.
@@ -145,7 +145,7 @@ extension StoryView {
     
     @ViewBuilder 
     private var moreButton: some View {
-        if storyViewModel.story.user.isCurrentUser {
+        if story.user.isCurrentUser {
             Button {
                 storyViewModel.showConfirmationDialog.toggle()
             } label: {
@@ -170,6 +170,6 @@ struct StoryView_Previews: PreviewProvider {
     static var previews: some View {
         let storiesViewModel = StoriesViewModel.preview
         let story = storiesViewModel.currentStories[0]
-        StoryView.preview(storyId: story.id, parentViewModel: storiesViewModel)
+        StoryView.preview(story: story, parentViewModel: storiesViewModel)
     }
 }
