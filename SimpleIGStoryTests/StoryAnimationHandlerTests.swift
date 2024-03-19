@@ -208,15 +208,14 @@ final class StoryAnimationHandlerTests: XCTestCase {
         let spy = ParentStoryViewModelSpy()
         spy.stories = stories
         let sut = StoryAnimationHandler(
-            storyId: storyId,
             isAtFirstStory: { storyId == spy.firstCurrentStoryId },
             isAtLastStory: { spy.isAtLastStory },
             isCurrentStory: { spy.currentStoryId == storyId },
             moveToPreviousStory: spy.moveToPreviousStory,
             moveToNextStory: spy.moveToNextStory,
-            getPortions: { _ in stories[storyId].portions },
+            portions: { stories[storyId].portions },
             isSameStoryAfterDragging: { spy.isSameStoryAfterDragging },
-            isDraggingPublisher: spy.getIsDraggingPublisher
+            isDraggingPublisher: spy.isDraggingPublisher.eraseToAnyPublisher()
         )
         
         trackForMemoryLeaks(spy, file: file, line: line)
@@ -263,12 +262,8 @@ final class StoryAnimationHandlerTests: XCTestCase {
         var isAtLastStory = false
         var isSameStoryAfterDragging = false
         
-        private let isDraggingPublisher = CurrentValueSubject<Bool, Never>(false)
+        let isDraggingPublisher = CurrentValueSubject<Bool, Never>(false)
         private(set) var loggedStoryMoveDirections = [StoryMoveDirection]()
-        
-        func getIsDraggingPublisher() -> AnyPublisher<Bool, Never> {
-            isDraggingPublisher.eraseToAnyPublisher()
-        }
         
         func setIsDragging(_ isDragging: Bool) {
             isDraggingPublisher.send(isDragging)

@@ -16,7 +16,6 @@ extension StoryView {
             parentViewModel: parentViewModel,
             fileManager: DummyFileManager(),
             mediaSaver: DummyMediaSaver(),
-            currentPortion: { animationHandler.currentPortion },
             currentPortionIndex: { animationHandler.currentPortionIndex },
             moveToNewCurrentPortion: animationHandler.moveToNewCurrentPortion
         )
@@ -37,15 +36,14 @@ extension StoryView {
 extension StoryAnimationHandler {
     static func preview(story: Story) -> StoryAnimationHandler {
         StoryAnimationHandler(
-            storyId: story.id,
             isAtFirstStory: { false },
             isAtLastStory: { false },
             isCurrentStory: { false },
             moveToPreviousStory: {},
             moveToNextStory: {},
-            getPortions: { _ in story.portions },
+            portions: { story.portions },
             isSameStoryAfterDragging: { false },
-            isDraggingPublisher: Empty<Bool, Never>().eraseToAnyPublisher
+            isDraggingPublisher: Empty<Bool, Never>().eraseToAnyPublisher()
         )
     }
 }

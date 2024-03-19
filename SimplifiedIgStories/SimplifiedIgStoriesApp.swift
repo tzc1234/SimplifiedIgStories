@@ -22,18 +22,20 @@ final class AppComponentsFactory {
     private(set) lazy var mediaSaver = LocalMediaSaver(store: mediaStore)
 }
 
-final class ComponentCache<T> {
-    private var cache = [Int: T]()
+final class StoryComponentCache<T> {
+    typealias StoryId = Int
     
-    func save(_ component: T, for storyId: Int) {
+    private var cache = [StoryId: T]()
+    
+    func save(_ component: T, for storyId: StoryId) {
         cache[storyId] = component
     }
     
-    func getComponent(for storyId: Int) -> T? {
+    func getComponent(for storyId: StoryId) -> T? {
         cache[storyId]
     }
     
-    func removeComponent(for storyId: Int) {
+    func removeComponent(for storyId: StoryId) {
         cache[storyId] = nil
     }
 }
@@ -41,8 +43,8 @@ final class ComponentCache<T> {
 @main
 struct SimplifiedIgStoriesApp: App {
     private let factory = AppComponentsFactory()
-    private let storyViewModelCache = ComponentCache<StoryViewModel>()
-    private let animationHandlerCache = ComponentCache<StoryAnimationHandler>()
+    private let storyViewModelCache = StoryComponentCache<StoryViewModel>()
+    private let animationHandlerCache = StoryComponentCache<StoryAnimationHandler>()
     
     private var storiesViewModel: StoriesViewModel {
         factory.storiesViewModel
@@ -98,7 +100,6 @@ struct SimplifiedIgStoriesApp: App {
                 parentViewModel: storiesViewModel,
                 fileManager: factory.fileManager,
                 mediaSaver: factory.mediaSaver,
-                currentPortion: { animationHandler.currentPortion },
                 currentPortionIndex: { animationHandler.currentPortionIndex },
                 moveToNewCurrentPortion: animationHandler.moveToNewCurrentPortion
             )
@@ -113,17 +114,14 @@ struct SimplifiedIgStoriesApp: App {
             handler
         } else {
             StoryAnimationHandler(
-                storyId: story.id,
                 isAtFirstStory: { storiesViewModel.firstCurrentStoryId == story.id },
                 isAtLastStory: { storiesViewModel.isAtLastStory },
                 isCurrentStory: { storiesViewModel.currentStoryId == story.id },
                 moveToPreviousStory: storiesViewModel.moveToPreviousStory,
                 moveToNextStory: storiesViewModel.moveToNextStory,
-                getPortions: { storyId in
-                    storiesViewModel.stories.first(where: { $0.id == storyId })?.portions ?? []
-                },
+                portions: { storiesViewModel.stories.first(where: { $0.id == story.id })?.portions ?? [] },
                 isSameStoryAfterDragging: { storiesViewModel.isSameStoryAfterDragging },
-                isDraggingPublisher: storiesViewModel.getIsDraggingPublisher
+                isDraggingPublisher: storiesViewModel.getIsDraggingPublisher()
             )
         }
         
