@@ -9,16 +9,21 @@ import SwiftUI
 
 extension StoryView {
     static func preview(story: Story, parentViewModel: StoriesViewModel) -> StoryView {
-        StoryView(
-            story: story, 
-            currentStoryId: story.id, 
+        let storyViewModel = StoryViewModel(
+            storyId: story.id,
+            parentViewModel: parentViewModel,
+            fileManager: DummyFileManager(),
+            mediaSaver: DummyMediaSaver()
+        )
+        
+        return StoryView(
+            story: story,
             shouldCubicRotation: false,
-            storyViewModel: StoryViewModel(
-                storyId: story.id,
-                parentViewModel: parentViewModel,
-                fileManager: DummyFileManager(),
-                mediaSaver: DummyMediaSaver()
-            )
+            storyViewModel: storyViewModel,
+            getProgressBar: {
+                ProgressBar(story: story, currentStoryId: story.id, storyViewModel: storyViewModel)
+            },
+            onDisappear: { _ in }
         )
     }
 }

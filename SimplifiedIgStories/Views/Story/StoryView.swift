@@ -11,15 +11,16 @@ struct StoryView: View {
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     
     let story: Story
-    let currentStoryId: Int
     let shouldCubicRotation: Bool
     @StateObject var storyViewModel: StoryViewModel
+    let getProgressBar: () -> ProgressBar
+    let onDisappear: (Int) -> Void
     
     var body: some View {
         GeometryReader { geo in
             ZStack {
                 VStack(alignment: .leading) {
-                    ProgressBar(story: story, currentStoryId: currentStoryId, storyViewModel: storyViewModel)
+                    getProgressBar()
                         .frame(height: 2.0, alignment: .center)
                         .padding(.top, 12.0)
                     
@@ -72,6 +73,7 @@ struct StoryView: View {
             )
             .onDisappear {
                 print("storyId: \(story.id) view onDisappear.")
+                onDisappear(story.id)
             }
         }
     }
