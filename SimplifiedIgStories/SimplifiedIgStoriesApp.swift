@@ -17,7 +17,8 @@ final class AppComponentsFactory {
     
     private(set) lazy var storiesViewModel = StoriesViewModel(fileManager: fileManager, storiesLoader: storiesLoader)
     
-    let mediaSaver = LocalMediaSaver()
+    private let mediaStore = PHPPhotoMediaStore()
+    private(set) lazy var mediaSaver = LocalMediaSaver(store: mediaStore)
 }
 
 @main
