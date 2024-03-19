@@ -358,9 +358,9 @@
 		BE47195027D6CFCC004500F2 /* Stories */ = {
 			isa = PBXGroup;
 			children = (
+				BE501446288D4C210043DF62 /* StoryIcon */,
 				BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */,
 				BE8C498E27C674FD000541E0 /* StoryContainer.swift */,
-				BE501446288D4C210043DF62 /* StoryIcon */,
 			);
 			path = Stories;
 			sourceTree = "<group>";

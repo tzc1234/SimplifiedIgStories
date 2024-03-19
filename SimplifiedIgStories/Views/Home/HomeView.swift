@@ -37,12 +37,6 @@ struct HomeView: View {
     }
 }
 
-struct HomeView_Previews: PreviewProvider {
-    static var previews: some View {
-        HomeView(storiesViewModel: .preview)
-    }
-}
-
 // MARK: components
 extension HomeView {
     private var storyCamView: some View {
@@ -50,17 +44,23 @@ extension HomeView {
             if handler.showStoryCamView {
                 StoryCamView { image in
                     storiesViewModel.postStoryPortion(image: image)
-                    showHideStoryCamView()
+                    hideStoryCamView()
                 } postVideoAction: { url in
                     storiesViewModel.postStoryPortion(videoUrl: url)
-                    showHideStoryCamView()
+                    hideStoryCamView()
                 } tapCloseAction: {
-                    showHideStoryCamView()
+                    hideStoryCamView()
                 }
                 .frame(width: .screenWidth)
             }
         }
         .ignoresSafeArea()
+    }
+    
+    private func hideStoryCamView() {
+        withAnimation(.default) {
+            handler.showStoryCamView = false
+        }
     }
     
     private var storyContainer: some View {
@@ -78,11 +78,8 @@ extension HomeView {
     }
 }
 
-// MARK: helper functions
-extension HomeView {
-    private func showHideStoryCamView() {
-        withAnimation(.default) {
-            handler.showStoryCamView.toggle()
-        }
+struct HomeView_Previews: PreviewProvider {
+    static var previews: some View {
+        HomeView(storiesViewModel: .preview)
     }
 }

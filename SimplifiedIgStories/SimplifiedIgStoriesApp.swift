@@ -10,7 +10,7 @@ import SwiftUI
 final class AppComponentsFactory {
     private let fileManager = LocalFileManager()
     
-    // storiesDataURL should not be nil, since it is already embedded in Resource directory.
+    // storiesDataURL should not be nil, since storiesData.json is already embedded in Resource directory.
     private let storiesDataURL = Bundle.main.url(forResource: "storiesData.json", withExtension: nil)!
     private lazy var dataClient = FileDataClient(url: storiesDataURL)
     private lazy var storiesLoader = LocalStoriesLoader(client: dataClient)

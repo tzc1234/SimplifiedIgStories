@@ -46,7 +46,7 @@ struct StoryContainer: View {
                 .onChanged { _ in
                     vm.isDragging = true
                 }
-                .updating($translation) { value, state, transaction in
+                .updating($translation) { value, state, _ in
                     vm.saveStoryIdBeforeDragged()
                     state = value.translation.width
                 }
