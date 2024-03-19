@@ -84,7 +84,7 @@ struct HomeView_Previews: PreviewProvider {
         let storiesViewModel = StoriesViewModel.preview
         HomeView(storiesViewModel: storiesViewModel, getStoryContainer: {
             StoryContainer(
-                vm: storiesViewModel,
+                storiesViewModel: storiesViewModel,
                 getStoryView: { story in
                     .preview(storyId: story.id, parentViewModel: storiesViewModel)
                 }
