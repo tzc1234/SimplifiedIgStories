@@ -170,14 +170,6 @@ struct StoryView_Previews: PreviewProvider {
     static var previews: some View {
         let storiesViewModel = StoriesViewModel.preview
         let story = storiesViewModel.currentStories[0]
-        StoryView(
-            storyId: story.id,
-            vm: StoryViewModel(
-                storyId: story.id,
-                parentViewModel: storiesViewModel,
-                fileManager: LocalFileManager(),
-                mediaSaver: LocalMediaSaver()
-            )
-        )
+        StoryView.preview(storyId: story.id, parentViewModel: storiesViewModel)
     }
 }

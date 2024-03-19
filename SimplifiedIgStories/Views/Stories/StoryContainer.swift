@@ -82,15 +82,7 @@ struct StoryContainer_Previews: PreviewProvider {
         StoryContainer(
             vm: vm,
             getStoryView: { story in
-                StoryView(
-                    storyId: story.id,
-                    vm: StoryViewModel(
-                        storyId: story.id,
-                        parentViewModel: vm,
-                        fileManager: LocalFileManager(),
-                        mediaSaver: LocalMediaSaver()
-                    )
-                )
+                .preview(storyId: story.id, parentViewModel: vm)
             })
             .environmentObject(HomeUIActionHandler())
             .task {

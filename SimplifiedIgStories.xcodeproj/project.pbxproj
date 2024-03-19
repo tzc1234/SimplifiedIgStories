@@ -32,6 +32,8 @@
 		BE5F4FA82BA49BD700138F87 /* DummyFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5F4FA72BA49BD700138F87 /* DummyFileManager.swift */; };
 		BE5F4FAA2BA49DBA00138F87 /* PreviewStoriesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5F4FA92BA49DBA00138F87 /* PreviewStoriesViewModel.swift */; };
 		BE5F521E28832923001CB2B1 /* StoryCamViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5F521D28832923001CB2B1 /* StoryCamViewModelTests.swift */; };
+		BE692D142BA9AA3200CE8C32 /* PreviewStoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE692D132BA9AA3200CE8C32 /* PreviewStoryView.swift */; };
+		BE692D162BA9AB3D00CE8C32 /* DummyMediaSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE692D152BA9AB3D00CE8C32 /* DummyMediaSaver.swift */; };
 		BE69F50D281974E5001BA4EC /* StoriesViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE69F50C281974E5001BA4EC /* StoriesViewModelTests.swift */; };
 		BE6B73C727D794AD003D2B24 /* StoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6B73C627D794AD003D2B24 /* StoryViewModel.swift */; };
 		BE7079492B86744A00365260 /* CaptureMovieFileOutputSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE7079482B86744A00365260 /* CaptureMovieFileOutputSpy.swift */; };
@@ -154,6 +156,8 @@
 		BE5F4FA92BA49DBA00138F87 /* PreviewStoriesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewStoriesViewModel.swift; sourceTree = "<group>"; };
 		BE5F521B2882F74C001CB2B1 /* CameraSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSpy.swift; sourceTree = "<group>"; };
 		BE5F521D28832923001CB2B1 /* StoryCamViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCamViewModelTests.swift; sourceTree = "<group>"; };
+		BE692D132BA9AA3200CE8C32 /* PreviewStoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewStoryView.swift; sourceTree = "<group>"; };
+		BE692D152BA9AB3D00CE8C32 /* DummyMediaSaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DummyMediaSaver.swift; sourceTree = "<group>"; };
 		BE69F503281973B3001BA4EC /* SimpleIGStoryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SimpleIGStoryTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE69F50C281974E5001BA4EC /* StoriesViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesViewModelTests.swift; sourceTree = "<group>"; };
 		BE6B73C627D794AD003D2B24 /* StoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryViewModel.swift; sourceTree = "<group>"; };
@@ -301,7 +305,9 @@
 				BE090B5E27B9562D00B6F906 /* Preview Assets.xcassets */,
 				BE77C89928895CF000E1FA0A /* PreviewData.swift */,
 				BE5F4FA72BA49BD700138F87 /* DummyFileManager.swift */,
+				BE692D152BA9AB3D00CE8C32 /* DummyMediaSaver.swift */,
 				BE5F4FA92BA49DBA00138F87 /* PreviewStoriesViewModel.swift */,
+				BE692D132BA9AA3200CE8C32 /* PreviewStoryView.swift */,
 			);
 			path = "Preview Content";
 			sourceTree = "<group>";
@@ -808,6 +814,7 @@
 				BE8B973827DAAC6600A59292 /* FramePreferenceKey.swift in Sources */,
 				BEB8752927DA120300D60110 /* LocalFileManager.swift in Sources */,
 				BE77C89A28895CF000E1FA0A /* PreviewData.swift in Sources */,
+				BE692D162BA9AB3D00CE8C32 /* DummyMediaSaver.swift in Sources */,
 				BE8A758127BC107000E9F745 /* HomeView.swift in Sources */,
 				BE5F4FA82BA49BD700138F87 /* DummyFileManager.swift in Sources */,
 				BEEEBBF42B75357500EC85C7 /* FileDataClient.swift in Sources */,
@@ -830,6 +837,7 @@
 				BEA901D427BC716E00E3362D /* ProgressBarPortion.swift in Sources */,
 				BE84C2CA27C78E5400C42165 /* AnyTransition+Additions.swift in Sources */,
 				BE8B71B22B765ED80055C354 /* MediaStore.swift in Sources */,
+				BE692D142BA9AA3200CE8C32 /* PreviewStoryView.swift in Sources */,
 				BED0F60D27BBF64B00D93F15 /* StoryIconsView.swift in Sources */,
 				BEC3B4C427DE585F00B44BDF /* StoryCamViewModel.swift in Sources */,
 				BE8D954527C44CA200D9D6DB /* Story.swift in Sources */,

@@ -86,15 +86,7 @@ struct HomeView_Previews: PreviewProvider {
             StoryContainer(
                 vm: storiesViewModel,
                 getStoryView: { story in
-                    StoryView(
-                        storyId: story.id,
-                        vm: StoryViewModel(
-                            storyId: story.id,
-                            parentViewModel: storiesViewModel,
-                            fileManager: LocalFileManager(),
-                            mediaSaver: LocalMediaSaver()
-                        )
-                    )
+                    .preview(storyId: story.id, parentViewModel: storiesViewModel)
                 }
             )
         })
