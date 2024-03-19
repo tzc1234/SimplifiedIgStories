@@ -109,14 +109,6 @@ extension StoryViewModel {
         animationHandler?.currentPortionId
     }
     
-    var currentStoryId: Int {
-        parentViewModel.currentStoryId
-    }
-    
-    private var isCurrentStory: Bool {
-        currentStoryId == storyId
-    }
-    
     var shouldCubicRotation: Bool {
         parentViewModel.shouldCubicRotation
     }

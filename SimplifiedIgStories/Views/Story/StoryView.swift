@@ -11,13 +11,14 @@ struct StoryView: View {
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     
     let story: Story
+    let currentStoryId: Int
     @StateObject var storyViewModel: StoryViewModel
     
     var body: some View {
         GeometryReader { geo in
             ZStack {
                 VStack(alignment: .leading) {
-                    ProgressBar(story: story, storyViewModel: storyViewModel)
+                    ProgressBar(story: story, currentStoryId: currentStoryId, storyViewModel: storyViewModel)
                         .frame(height: 2.0, alignment: .center)
                         .padding(.top, 12.0)
                     

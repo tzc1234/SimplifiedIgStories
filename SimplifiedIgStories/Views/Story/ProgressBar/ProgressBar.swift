@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import Combine
 
 struct ProgressBar: View {
     @Environment(\.scenePhase) private var scenePhase
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     
     let story: Story
+    let currentStoryId: Int
     @ObservedObject var storyViewModel: StoryViewModel
     
     var body: some View {
@@ -35,7 +37,7 @@ struct ProgressBar: View {
                 homeUIActionHandler.closeStoryContainer(storyId: story.id)
             }
         }
-        .onChange(of: storyViewModel.currentStoryId) { _ in
+        .onChange(of: currentStoryId) { _ in
             storyViewModel.startProgressBarAnimation()
         }
         .onChange(of: scenePhase) { newPhase in
@@ -54,7 +56,8 @@ struct ProgressBar_Previews: PreviewProvider {
         let storiesViewModel = StoriesViewModel.preview
         let story = storiesViewModel.stories[1]
         ProgressBar(
-            story: story,
+            story: story, 
+            currentStoryId: story.id,
             storyViewModel: StoryViewModel(
                 storyId: story.id,
                 parentViewModel: storiesViewModel,
