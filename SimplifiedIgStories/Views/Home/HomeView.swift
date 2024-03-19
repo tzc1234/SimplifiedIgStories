@@ -10,6 +10,7 @@ import SwiftUI
 struct HomeView: View {
     @StateObject private var handler = HomeUIActionHandler()
     @StateObject var storiesViewModel: StoriesViewModel
+    let getStoryContainer: () -> StoryContainer
     
     var body: some View {
         ZStack {
@@ -69,7 +70,7 @@ extension HomeView {
                 let iconFrame = handler.currentIconFrame
                 let offsetX = -(geo.size.width / 2 - iconFrame.midX)
                 let offsetY = iconFrame.minY - geo.safeAreaInsets.top
-                StoryContainer(vm: storiesViewModel)
+                getStoryContainer()
                     .zIndex(1.0)
                     .frame(maxHeight: .infinity, alignment: .top)
                     .openAppImitationTransition(scale: iconFrame.height / .screenHeight, offsetX: offsetX, offsetY: offsetY)
@@ -80,6 +81,9 @@ extension HomeView {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView(storiesViewModel: .preview)
+        let vm = StoriesViewModel.preview
+        HomeView(storiesViewModel: vm, getStoryContainer: {
+            StoryContainer(vm: vm)
+        })
     }
 }

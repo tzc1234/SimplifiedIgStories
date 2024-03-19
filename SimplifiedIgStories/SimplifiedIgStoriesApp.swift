@@ -24,7 +24,12 @@ struct SimplifiedIgStoriesApp: App {
     
     var body: some Scene {
         WindowGroup {
-            HomeView(storiesViewModel: factory.storiesViewModel)
+            HomeView(
+                storiesViewModel: factory.storiesViewModel,
+                getStoryContainer: {
+                    StoryContainer(vm: factory.storiesViewModel)
+                }
+            )
         }
     }
 }
