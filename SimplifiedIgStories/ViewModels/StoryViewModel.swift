@@ -35,45 +35,28 @@ final class StoryViewModel: ObservableObject {
     private let parentViewModel: ParentStoryViewModel
     private let fileManager: FileManageable
     private let mediaSaver: MediaSaver
-    private var animationHandler: StoryAnimationHandler?
+    private let currentPortion: () -> Portion?
+    private let currentPortionIndex: () -> Int?
+    private let moveToNewCurrentPortion: (Int) -> Void
     
     init(storyId: Int,
          parentViewModel: ParentStoryViewModel,
          fileManager: FileManageable,
-         mediaSaver: MediaSaver) {
+         mediaSaver: MediaSaver,
+         currentPortion: @escaping () -> Portion?,
+         currentPortionIndex: @escaping () -> Int?,
+         moveToNewCurrentPortion: @escaping (Int) -> Void) {
         self.storyId = storyId
         self.parentViewModel = parentViewModel
         self.fileManager = fileManager
         self.mediaSaver = mediaSaver
+        self.currentPortion = currentPortion
+        self.currentPortionIndex = currentPortionIndex
+        self.moveToNewCurrentPortion = moveToNewCurrentPortion
         
         // Reference: https://stackoverflow.com/a/58406402
         // Trigger current ViewModel objectWillChange when parent's published property changed.
         parentViewModel
-            .objectWillChange
-            .sink { [weak self] in
-                self?.objectWillChange.send()
-            }
-            .store(in: &subscriptions)
-        
-        let animationHandler = StoryAnimationHandler(
-            storyId: storyId, 
-            isAtFirstStory: { storyId == parentViewModel.firstCurrentStoryId },
-            isAtLastStory: { parentViewModel.isAtLastStory },
-            isCurrentStory: { parentViewModel.currentStoryId == storyId }, 
-            moveToPreviousStory: parentViewModel.moveToPreviousStory,
-            moveToNextStory: parentViewModel.moveToNextStory,
-            portions: { [weak self] in self?.portions ?? [] },
-            isSameStoryAfterDragging: { parentViewModel.isSameStoryAfterDragging },
-            isDraggingPublisher: parentViewModel.getIsDraggingPublisher,
-            animationShouldPausePublisher: $showConfirmationDialog
-                .combineLatest($showNoticeLabel)
-                .map { $0 || $1 }
-                .eraseToAnyPublisher
-        )
-        
-        self.animationHandler = animationHandler
-        
-        animationHandler
             .objectWillChange
             .sink { [weak self] in
                 self?.objectWillChange.send()
@@ -97,60 +80,22 @@ extension StoryViewModel {
     private var portions: [Portion] {
         story.portions
     }
-    
-    var barPortionAnimationStatusDict: [Int: BarPortionAnimationStatus] {
-        animationHandler?.barPortionAnimationStatusDict ?? [:]
-    }
-    
-    var currentPortionAnimationStatus: BarPortionAnimationStatus? {
-        animationHandler?.currentPortionAnimationStatus
-    }
-    
-    var currentPortionId: Int? {
-        animationHandler?.currentPortionId
-    }
 }
 
 // MARK: functions for StoryView
 extension StoryViewModel {
-    func setPortionTransitionDirection(by pointX: CGFloat) {
-        animationHandler?.setPortionTransitionDirection(by: pointX)
-    }
-    
     func deleteCurrentPortion(whenNoNextPortion action: () -> Void) {
-        guard let currentPortionIndex = animationHandler?.currentPortionIndex else { return }
+        guard let currentPortionIndex = currentPortionIndex() else { return }
 
         // If next portion exists, go next.
+        let portion = portions[currentPortionIndex]
         if currentPortionIndex+1 < portions.count {
-            deletePortionFromStory(for: currentPortionIndex)
-            animationHandler?.moveToNewCurrentPortion(for: currentPortionIndex)
+            deletePortionFromStory(portion)
+            moveToNewCurrentPortion(currentPortionIndex)
         } else {
             action()
-            deletePortionFromStory(for: currentPortionIndex)
+            deletePortionFromStory(portion)
         }
-    }
-}
-
-// MARK: functions for animations
-extension StoryViewModel {
-    func startProgressBarAnimation() {
-        animationHandler?.startProgressBarAnimation()
-    }
-    
-    func pausePortionAnimation() {
-        animationHandler?.pausePortionAnimation()
-    }
-    
-    func resumePortionAnimation() {
-        animationHandler?.resumePortionAnimation()
-    }
-    
-    func finishPortionAnimation(for portionId: Int) {
-        animationHandler?.finishPortionAnimation(for: portionId)
-    }
-    
-    func performNextBarPortionAnimationWhenCurrentPortionFinished(whenNoNextStory action: () -> Void) {
-        animationHandler?.performNextBarPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: action)
     }
 }
 
@@ -158,7 +103,7 @@ extension StoryViewModel {
 extension StoryViewModel {
     @MainActor 
     func savePortionImageVideo() async {
-        guard let currentPortion = animationHandler?.currentPortion else { return }
+        guard let currentPortion = currentPortion() else { return }
         
         isLoading = true
         var successMessage: String?
@@ -202,8 +147,7 @@ extension StoryViewModel {
     
     // *** In real environment, the photo or video should be deleted by API call,
     // this is a demo app, however, deleting them from temp directory.
-    private func deletePortionFromStory(for portionIndex: Int) {
-        let portion = portions[portionIndex]
+    private func deletePortionFromStory(_ portion: Portion) {
         if let fileUrl = portion.imageURL ?? portion.videoURL {
             try? fileManager.delete(for: fileUrl)
         }

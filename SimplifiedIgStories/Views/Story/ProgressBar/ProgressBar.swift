@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Combine
 
 struct ProgressBar: View {
     @Environment(\.scenePhase) private var scenePhase
@@ -14,7 +13,7 @@ struct ProgressBar: View {
     
     let story: Story
     let currentStoryId: Int
-    @ObservedObject var storyViewModel: StoryViewModel
+    @ObservedObject var animationHandler: StoryAnimationHandler
     
     var body: some View {
         HStack {
@@ -25,26 +24,26 @@ struct ProgressBar: View {
                     portionId: portion.id,
                     duration: portion.duration,
                     storyId: story.id,
-                    storyViewModel: storyViewModel
+                    animationHandler: animationHandler
                 )
                 
                 Spacer(minLength: 2)
             }
         }
         .padding(.horizontal, 10)
-        .onChange(of: storyViewModel.currentPortionAnimationStatus) { _ in
-            storyViewModel.performNextBarPortionAnimationWhenCurrentPortionFinished {
+        .onChange(of: animationHandler.currentPortionAnimationStatus) { _ in
+            animationHandler.performNextBarPortionAnimationWhenCurrentPortionFinished {
                 homeUIActionHandler.closeStoryContainer(storyId: story.id)
             }
         }
         .onChange(of: currentStoryId) { _ in
-            storyViewModel.startProgressBarAnimation()
+            animationHandler.startProgressBarAnimation()
         }
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
-                storyViewModel.resumePortionAnimation()
+                animationHandler.resumePortionAnimation()
             } else if newPhase == .inactive {
-                storyViewModel.pausePortionAnimation()
+                animationHandler.pausePortionAnimation()
             }
         }
     }
@@ -58,12 +57,7 @@ struct ProgressBar_Previews: PreviewProvider {
         ProgressBar(
             story: story, 
             currentStoryId: story.id,
-            storyViewModel: StoryViewModel(
-                storyId: story.id,
-                parentViewModel: storiesViewModel,
-                fileManager: LocalFileManager(),
-                mediaSaver: DummyMediaSaver()
-            )
+            animationHandler: .preview(story: story)
         )
     }
 }

@@ -21,14 +21,7 @@ struct ProgressBarPortion: View {
     let portionId: Int
     let duration: Double
     let storyId: Int
-    @ObservedObject private var vm: StoryViewModel
-    
-    init(portionId: Int, duration: Double, storyId: Int, storyViewModel: StoryViewModel) {
-        self.portionId = portionId
-        self.duration = duration
-        self.storyId = storyId
-        self.vm = storyViewModel
-    }
+    @ObservedObject var animationHandler: StoryAnimationHandler
     
     var body: some View {
         GeometryReader { geo in
@@ -39,10 +32,10 @@ struct ProgressBarPortion: View {
                 .id(traceableRectangleId)
                 .onChange(of: tracingEndX.currentEndX) { currentEndX in
                     if currentEndX >= geo.size.width { // Animation finished
-                        vm.finishPortionAnimation(for: portionId)
+                        animationHandler.finishPortionAnimation(for: portionId)
                     }
                 }
-                .onChange(of: vm.barPortionAnimationStatusDict[portionId]) { status in
+                .onChange(of: animationHandler.barPortionAnimationStatusDict[portionId]) { status in
                     switch status {
                     case .initial:
                         initializeAnimation()
@@ -107,12 +100,7 @@ struct ProgressBarPortion_Previews: PreviewProvider {
             portionId: story.portions[0].id,
             duration: .defaultStoryDuration,
             storyId: story.id,
-            storyViewModel: StoryViewModel(
-                storyId: story.id,
-                parentViewModel: storiesViewModel,
-                fileManager: LocalFileManager(),
-                mediaSaver: DummyMediaSaver()
-            )
+            animationHandler: .preview(story: story)
         )
     }
 }

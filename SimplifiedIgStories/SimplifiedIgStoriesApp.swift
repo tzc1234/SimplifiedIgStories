@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 final class AppComponentsFactory {
     let fileManager = LocalFileManager()
@@ -21,64 +22,112 @@ final class AppComponentsFactory {
     private(set) lazy var mediaSaver = LocalMediaSaver(store: mediaStore)
 }
 
-final class StoryViewModelCache {
-    private var storyViewModelCache = [Int: StoryViewModel]()
+final class ComponentCache<T> {
+    private var cache = [Int: T]()
     
-    func saveStoryViewModel(_ storyViewModel: StoryViewModel, for storyId: Int) {
-        storyViewModelCache[storyId] = storyViewModel
+    func save(_ component: T, for storyId: Int) {
+        cache[storyId] = component
     }
     
-    func getStoryViewModel(for storyId: Int) -> StoryViewModel? {
-        storyViewModelCache[storyId]
+    func getComponent(for storyId: Int) -> T? {
+        cache[storyId]
     }
     
-    func removeStoryViewModel(for storyId: Int) {
-        storyViewModelCache[storyId] = nil
+    func removeComponent(for storyId: Int) {
+        cache[storyId] = nil
     }
 }
 
 @main
 struct SimplifiedIgStoriesApp: App {
     private let factory = AppComponentsFactory()
-    private let cache = StoryViewModelCache()
+    private let storyViewModelCache = ComponentCache<StoryViewModel>()
+    private let animationHandlerCache = ComponentCache<StoryAnimationHandler>()
+    
+    private var storiesViewModel: StoriesViewModel {
+        factory.storiesViewModel
+    }
     
     var body: some Scene {
         WindowGroup {
             HomeView(
-                storiesViewModel: factory.storiesViewModel,
+                storiesViewModel: storiesViewModel,
                 getStoryContainer: {
                     StoryContainer(
-                        storiesViewModel: factory.storiesViewModel,
+                        storiesViewModel: storiesViewModel,
                         getStoryView: { story in
-                            let storyViewModel = if let viewModel = cache.getStoryViewModel(for: story.id) {
-                                viewModel
-                            } else {
-                                StoryViewModel(
-                                    storyId: story.id,
-                                    parentViewModel: factory.storiesViewModel,
-                                    fileManager: factory.fileManager,
-                                    mediaSaver: factory.mediaSaver
-                                )
-                            }
+                            let animationHandler = getAnimationHandler(for: story)
+                            let storyViewModel = getStoryViewModel(for: story.id, animationHandler: animationHandler)
                             
-                            cache.saveStoryViewModel(storyViewModel, for: story.id)
+                            animationHandler.subscribe(
+                                animationShouldPausePublisher: storyViewModel.$showConfirmationDialog
+                                    .combineLatest(storyViewModel.$showNoticeLabel)
+                                    .map { $0 || $1 }
+                                    .eraseToAnyPublisher()
+                            )
                             
                             return StoryView(
                                 story: story,
-                                shouldCubicRotation: factory.storiesViewModel.shouldCubicRotation,
+                                shouldCubicRotation: storiesViewModel.shouldCubicRotation,
                                 storyViewModel: storyViewModel, 
+                                animationHandler: animationHandler,
                                 getProgressBar: {
                                     ProgressBar(
                                         story: story,
-                                        currentStoryId: factory.storiesViewModel.currentStoryId,
-                                        storyViewModel: storyViewModel
+                                        currentStoryId: storiesViewModel.currentStoryId,
+                                        animationHandler: animationHandler
                                     )
                                 },
-                                onDisappear: cache.removeStoryViewModel
+                                onDisappear: { storyId in
+                                    storyViewModelCache.removeComponent(for: storyId)
+                                    animationHandlerCache.removeComponent(for: storyId)
+                                }
                             )
                         })
                 }
             )
         }
+    }
+    
+    private func getStoryViewModel(for storyId: Int, animationHandler: StoryAnimationHandler) -> StoryViewModel {
+        let storyViewModel = if let viewModel = storyViewModelCache.getComponent(for: storyId) {
+            viewModel
+        } else {
+            StoryViewModel(
+                storyId: storyId,
+                parentViewModel: storiesViewModel,
+                fileManager: factory.fileManager,
+                mediaSaver: factory.mediaSaver,
+                currentPortion: { animationHandler.currentPortion },
+                currentPortionIndex: { animationHandler.currentPortionIndex },
+                moveToNewCurrentPortion: animationHandler.moveToNewCurrentPortion
+            )
+        }
+        
+        storyViewModelCache.save(storyViewModel, for: storyId)
+        return storyViewModel
+    }
+    
+    private func getAnimationHandler(for story: Story) -> StoryAnimationHandler {
+        let animationHandler = if let handler = animationHandlerCache.getComponent(for: story.id) {
+            handler
+        } else {
+            StoryAnimationHandler(
+                storyId: story.id,
+                isAtFirstStory: { storiesViewModel.firstCurrentStoryId == story.id },
+                isAtLastStory: { storiesViewModel.isAtLastStory },
+                isCurrentStory: { storiesViewModel.currentStoryId == story.id },
+                moveToPreviousStory: storiesViewModel.moveToPreviousStory,
+                moveToNextStory: storiesViewModel.moveToNextStory,
+                getPortions: { storyId in
+                    storiesViewModel.stories.first(where: { $0.id == storyId })?.portions ?? []
+                },
+                isSameStoryAfterDragging: { storiesViewModel.isSameStoryAfterDragging },
+                isDraggingPublisher: storiesViewModel.getIsDraggingPublisher
+            )
+        }
+        
+        animationHandlerCache.save(animationHandler, for: story.id)
+        return animationHandler
     }
 }

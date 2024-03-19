@@ -13,12 +13,7 @@ struct StoryPortionView: View {
     @State private var player: AVPlayer?
     
     let portion: Portion
-    @ObservedObject private var vm: StoryViewModel
-    
-    init(portion: Portion, storyViewModel: StoryViewModel) {
-        self.portion = portion
-        self.vm = storyViewModel
-    }
+    @ObservedObject var animationHandler: StoryAnimationHandler
     
     var body: some View {
         ZStack {
@@ -31,7 +26,7 @@ struct StoryPortionView: View {
                 player = AVPlayer(url: videoURL)
             }
         }
-        .onChange(of: vm.barPortionAnimationStatusDict[portion.id]) { status in
+        .onChange(of: animationHandler.barPortionAnimationStatusDict[portion.id]) { status in
             guard let player else { return }
             
             switch status {
@@ -92,12 +87,7 @@ struct StoryPortionView_Previews: PreviewProvider {
         let portion = story.portions[0]
         StoryPortionView(
             portion: portion,
-            storyViewModel: StoryViewModel(
-                storyId: story.id,
-                parentViewModel: storiesViewModel,
-                fileManager: LocalFileManager(),
-                mediaSaver: DummyMediaSaver()
-            )
+            animationHandler: .preview(story: story)
         )
     }
 }

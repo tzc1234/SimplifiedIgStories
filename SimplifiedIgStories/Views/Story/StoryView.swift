@@ -13,6 +13,7 @@ struct StoryView: View {
     let story: Story
     let shouldCubicRotation: Bool
     @StateObject var storyViewModel: StoryViewModel
+    @StateObject var animationHandler: StoryAnimationHandler
     let getProgressBar: () -> ProgressBar
     let onDisappear: (Int) -> Void
     
@@ -36,7 +37,7 @@ struct StoryView: View {
                     Spacer()
                     
                     DetectableTapGesturePositionView { point in
-                        storyViewModel.setPortionTransitionDirection(by: point.x)
+                        animationHandler.setPortionTransitionDirection(by: point.x)
                     }
                     
                     Spacer()
@@ -65,7 +66,7 @@ struct StoryView: View {
             .background(storyPortionViews)
             .onAppear {
                 print("storyId: \(story.id) view onAppear.")
-                storyViewModel.startProgressBarAnimation()
+                animationHandler.startProgressBarAnimation()
             }
             .cubicTransition(
                 shouldRotate: shouldCubicRotation,
@@ -83,10 +84,10 @@ extension StoryView {
     private var storyPortionViews: some View {
         ZStack {
             ForEach(story.portions) { portion in
-                if portion.id == storyViewModel.currentPortionId {
+                if portion.id == animationHandler.currentPortionId {
                     StoryPortionView(
                         portion: portion,
-                        storyViewModel: storyViewModel
+                        animationHandler: animationHandler
                     )
                 }
             }
