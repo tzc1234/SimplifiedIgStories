@@ -81,9 +81,22 @@ extension HomeView {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = StoriesViewModel.preview
-        HomeView(storiesViewModel: vm, getStoryContainer: {
-            StoryContainer(vm: vm)
+        let storiesViewModel = StoriesViewModel.preview
+        HomeView(storiesViewModel: storiesViewModel, getStoryContainer: {
+            StoryContainer(
+                vm: storiesViewModel,
+                getStoryView: { story in
+                    StoryView(
+                        storyId: story.id,
+                        vm: StoryViewModel(
+                            storyId: story.id,
+                            parentViewModel: storiesViewModel,
+                            fileManager: LocalFileManager(),
+                            mediaSaver: LocalMediaSaver()
+                        )
+                    )
+                }
+            )
         })
     }
 }

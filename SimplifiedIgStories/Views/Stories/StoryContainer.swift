@@ -12,27 +12,20 @@ struct StoryContainer: View {
     @GestureState private var translation: CGFloat = 0
     
     @ObservedObject var vm: StoriesViewModel // Injected from HomeView
+    let getStoryView: (Story) -> StoryView
     
     var body: some View {
         GeometryReader { geo in
             HStack(alignment: .top, spacing: 0) {
                 // *** A risk of memory leak if too many stories.
                 ForEach(vm.currentStories) { story in
-                    StoryView(
-                        storyId: story.id,
-                        vm: StoryViewModel(
-                            storyId: story.id,
-                            parentViewModel: vm,
-                            fileManager: LocalFileManager(),
-                            mediaSaver: LocalMediaSaver()
-                        )
-                    )
-                    .opacity(story.id != vm.currentStoryId && !vm.shouldCubicRotation ? 0.0 : 1.0)
-                    .frame(width: .screenWidth, height: geo.size.height)
-                    .preference(key: FramePreferenceKey.self, value: geo.frame(in: .global))
-                    .onPreferenceChange(FramePreferenceKey.self) { preferenceFrame in
-                        vm.shouldCubicRotation = preferenceFrame.width == .screenWidth
-                    }
+                    getStoryView(story)
+                        .opacity(story.id != vm.currentStoryId && !vm.shouldCubicRotation ? 0.0 : 1.0)
+                        .frame(width: .screenWidth, height: geo.size.height)
+                        .preference(key: FramePreferenceKey.self, value: geo.frame(in: .global))
+                        .onPreferenceChange(FramePreferenceKey.self) { preferenceFrame in
+                            vm.shouldCubicRotation = preferenceFrame.width == .screenWidth
+                        }
                 }
             }
         }
@@ -59,17 +52,6 @@ struct StoryContainer: View {
     }
 }
 
-struct StoryContainer_Previews: PreviewProvider {
-    static var previews: some View {
-        let vm = StoriesViewModel.preview
-        StoryContainer(vm: vm)
-            .environmentObject(HomeUIActionHandler())
-            .task {
-                await vm.fetchStories()
-            }
-    }
-}
-
 // MARK: helper functions
 extension StoryContainer {
     private func getContainerOffset(by width: CGFloat) -> CGFloat {
@@ -91,5 +73,28 @@ extension StoryContainer {
         } else if abs(offset.rounded()) > 0 {
             offset >= 0 ? vm.moveToPreviousStory() : vm.moveToNextStory()
         }
+    }
+}
+
+struct StoryContainer_Previews: PreviewProvider {
+    static var previews: some View {
+        let vm = StoriesViewModel.preview
+        StoryContainer(
+            vm: vm,
+            getStoryView: { story in
+                StoryView(
+                    storyId: story.id,
+                    vm: StoryViewModel(
+                        storyId: story.id,
+                        parentViewModel: vm,
+                        fileManager: LocalFileManager(),
+                        mediaSaver: LocalMediaSaver()
+                    )
+                )
+            })
+            .environmentObject(HomeUIActionHandler())
+            .task {
+                await vm.fetchStories()
+            }
     }
 }
