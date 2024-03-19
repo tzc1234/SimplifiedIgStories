@@ -108,10 +108,6 @@ extension StoryViewModel {
     var currentPortionId: Int? {
         animationHandler?.currentPortionId
     }
-    
-    var shouldCubicRotation: Bool {
-        parentViewModel.shouldCubicRotation
-    }
 }
 
 // MARK: functions for StoryView

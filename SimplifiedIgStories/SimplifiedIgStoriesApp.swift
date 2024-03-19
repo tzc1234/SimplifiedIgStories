@@ -34,8 +34,9 @@ struct SimplifiedIgStoriesApp: App {
                         storiesViewModel: factory.storiesViewModel,
                         getStoryView: { story in
                             StoryView(
-                                story: story, 
+                                story: story,
                                 currentStoryId: factory.storiesViewModel.currentStoryId,
+                                shouldCubicRotation: factory.storiesViewModel.shouldCubicRotation,
                                 storyViewModel: StoryViewModel(
                                     storyId: story.id,
                                     parentViewModel: factory.storiesViewModel,

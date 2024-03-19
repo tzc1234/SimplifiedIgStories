@@ -11,7 +11,8 @@ extension StoryView {
     static func preview(story: Story, parentViewModel: StoriesViewModel) -> StoryView {
         StoryView(
             story: story, 
-            currentStoryId: story.id,
+            currentStoryId: story.id, 
+            shouldCubicRotation: false,
             storyViewModel: StoryViewModel(
                 storyId: story.id,
                 parentViewModel: parentViewModel,

@@ -12,6 +12,7 @@ struct StoryView: View {
     
     let story: Story
     let currentStoryId: Int
+    let shouldCubicRotation: Bool
     @StateObject var storyViewModel: StoryViewModel
     
     var body: some View {
@@ -66,7 +67,7 @@ struct StoryView: View {
                 storyViewModel.startProgressBarAnimation()
             }
             .cubicTransition(
-                shouldRotate: storyViewModel.shouldCubicRotation,
+                shouldRotate: shouldCubicRotation,
                 offsetX: geo.frame(in: .global).minX
             )
             .onDisappear {
