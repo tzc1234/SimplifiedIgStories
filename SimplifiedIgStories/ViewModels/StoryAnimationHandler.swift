@@ -32,7 +32,7 @@ final class StoryAnimationHandler: ObservableObject {
     private var isDragging = false
     private var subscriptions = Set<AnyCancellable>()
     
-    private let storyId: Int
+    let storyId: Int
     private let currentStoryHandler: CurrentStoryHandler
     private let animationShouldPausePublisher: AnyPublisher<Bool, Never>
     

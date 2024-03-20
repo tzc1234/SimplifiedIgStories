@@ -18,9 +18,12 @@ struct ProgressBarPortion: View {
     // For reset animation!
     @State private var traceableRectangleId = 0
     
+    private var storyId: Int {
+        animationHandler.storyId
+    }
+    
     let portionId: Int
     let duration: Double
-    let storyId: Int
     @ObservedObject var animationHandler: StoryAnimationHandler
     
     var body: some View {
@@ -99,7 +102,6 @@ struct ProgressBarPortion_Previews: PreviewProvider {
         ProgressBarPortion(
             portionId: story.portions[0].id,
             duration: .defaultStoryDuration,
-            storyId: story.id,
             animationHandler: .preview
         )
     }

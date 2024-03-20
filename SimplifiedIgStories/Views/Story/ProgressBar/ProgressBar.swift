@@ -23,7 +23,6 @@ struct ProgressBar: View {
                 ProgressBarPortion(
                     portionId: portion.id,
                     duration: portion.duration,
-                    storyId: story.id,
                     animationHandler: animationHandler
                 )
                 
