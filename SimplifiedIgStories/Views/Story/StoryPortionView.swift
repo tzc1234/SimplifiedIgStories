@@ -22,9 +22,7 @@ struct StoryPortionView: View {
             videoView
         }
         .onAppear {
-            if let videoURL = portion.videoURL {
-                player = AVPlayer(url: videoURL)
-            }
+            player = portion.videoURL.map(AVPlayer.init)
         }
         .onChange(of: animationHandler.barPortionAnimationStatusDict[portion.id]) { status in
             guard let player else { return }
@@ -82,8 +80,7 @@ extension StoryPortionView {
 
 struct StoryPortionView_Previews: PreviewProvider {
     static var previews: some View {
-        let storiesViewModel = StoriesViewModel.preview
-        let story = storiesViewModel.stories[0]
+        let story = PreviewData.stories[0]
         let portion = story.portions[0]
         StoryPortionView(
             portion: portion,

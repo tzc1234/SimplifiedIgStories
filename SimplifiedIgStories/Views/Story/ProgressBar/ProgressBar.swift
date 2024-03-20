@@ -50,8 +50,7 @@ struct ProgressBar: View {
 
 struct ProgressBar_Previews: PreviewProvider {
     static var previews: some View {
-        let storiesViewModel = StoriesViewModel.preview
-        let story = storiesViewModel.stories[1]
+        let story = PreviewData.stories[0]
         ProgressBar(
             story: story, 
             currentStoryId: story.id,

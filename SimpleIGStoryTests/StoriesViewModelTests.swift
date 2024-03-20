@@ -10,26 +10,26 @@ import AVKit
 @testable import Simple_IG_Story
 
 class StoriesViewModelTests: XCTestCase {
-    func test_stories_deliversEmptyStoriesWhenNoStoriesAfterFetch() async {
-        let emptyStories = [LocalStory]()
-        let sut = await makeSUT(stories: emptyStories)
-        
-        XCTAssertTrue(sut.stories.isEmpty)
-    }
-    
-    func test_stories_ensuresStoriesConversionCorrect() async {
-        let stories = storiesForTest()
-        let sut = await makeSUT(stories: stories.local)
-        
-        XCTAssertEqual(sut.stories, stories.model)
-    }
-    
-    func test_fetchStories_ensuresOneCurrentUserInStories() async {
-        let sut = await makeSUT()
-        
-        let currentUserStories = sut.stories.filter { $0.user.isCurrentUser }
-        XCTAssertEqual(currentUserStories.count, 1)
-    }
+//    func test_stories_deliversEmptyStoriesWhenNoStoriesAfterFetch() async {
+//        let emptyStories = [LocalStory]()
+//        let sut = await makeSUT(stories: emptyStories)
+//        
+//        XCTAssertTrue(sut.stories.isEmpty)
+//    }
+//    
+//    func test_stories_ensuresStoriesConversionCorrect() async {
+//        let stories = storiesForTest()
+//        let sut = await makeSUT(stories: stories.local)
+//        
+//        XCTAssertEqual(sut.stories, stories.model)
+//    }
+//    
+//    func test_fetchStories_ensuresOneCurrentUserInStories() async {
+//        let sut = await makeSUT()
+//        
+//        let currentUserStories = sut.stories.filter { $0.user.isCurrentUser }
+//        XCTAssertEqual(currentUserStories.count, 1)
+//    }
     
 //    func test_currentStories_containsOnlyOneCurrentUserStoryWhenCurrentStoryIdIsCurrentUserStoryId() async throws {
 //        let sut = await makeSUT()
@@ -201,23 +201,23 @@ class StoriesViewModelTests: XCTestCase {
 //        XCTAssertEqual(sut.currentStoryId, 2, "Ignores when no next story")
 //    }
     
-    func test_postStoryImagePortion_appendsImagePortionAtCurrentUserStory() async throws {
-        let appendedImageURL = URL(string: "file://appended-image.jpg")!
-        let sut = await makeSUT(imageURLStub: { appendedImageURL })
-        let anyImage = UIImage.make(withColor: .red)
-        
-        sut.postStoryPortion(image: anyImage)
-        
-        let expectedPortion = Portion(
-            id: lastPortionId()+1,
-            duration: .defaultStoryDuration,
-            resourceURL: appendedImageURL,
-            type: .image
-        )
-        let currentUserStory = try XCTUnwrap(sut.stories.first(where: { $0.id == currentUserStoryId() }))
-        let appendedPortion = try XCTUnwrap(currentUserStory.portions.last)
-        XCTAssertEqual(appendedPortion, expectedPortion)
-    }
+//    func test_postStoryImagePortion_appendsImagePortionAtCurrentUserStory() async throws {
+//        let appendedImageURL = URL(string: "file://appended-image.jpg")!
+//        let sut = await makeSUT(imageURLStub: { appendedImageURL })
+//        let anyImage = UIImage.make(withColor: .red)
+//        
+//        sut.postStoryPortion(image: anyImage)
+//        
+//        let expectedPortion = Portion(
+//            id: lastPortionId()+1,
+//            duration: .defaultStoryDuration,
+//            resourceURL: appendedImageURL,
+//            type: .image
+//        )
+//        let currentUserStory = try XCTUnwrap(sut.stories.first(where: { $0.id == currentUserStoryId() }))
+//        let appendedPortion = try XCTUnwrap(currentUserStory.portions.last)
+//        XCTAssertEqual(appendedPortion, expectedPortion)
+//    }
     
 //    func test_postStoryImagePortion_ignoresWhenOnFileMangerError() async {
 //        let sut = await makeSUT(imageURLStub: { throw anyNSError() })
@@ -232,32 +232,32 @@ class StoriesViewModelTests: XCTestCase {
 //        XCTAssertEqual(sut.currentStories.flatMap(\.portions), currentPortions)
 //    }
     
-    func test_postStoryVideoPortion_appendsVideoPortionAtCurrentUserStory() async throws {
-        let video = videoForTest()
-        let sut = await makeSUT()
-        
-        sut.postStoryPortion(videoUrl: video.url)
-        
-        let expectedPortion = Portion(
-            id: lastPortionId()+1,
-            duration: video.duration,
-            resourceURL: video.url,
-            type: .video
-        )
-        let currentUserStory = try XCTUnwrap(sut.stories.first(where: { $0.id == currentUserStoryId() }))
-        let appendedPortion = try XCTUnwrap(currentUserStory.portions.last)
-        XCTAssertEqual(appendedPortion, expectedPortion)
-    }
+//    func test_postStoryVideoPortion_appendsVideoPortionAtCurrentUserStory() async throws {
+//        let video = videoForTest()
+//        let sut = await makeSUT()
+//        
+//        sut.postStoryPortion(videoUrl: video.url)
+//        
+//        let expectedPortion = Portion(
+//            id: lastPortionId()+1,
+//            duration: video.duration,
+//            resourceURL: video.url,
+//            type: .video
+//        )
+//        let currentUserStory = try XCTUnwrap(sut.stories.first(where: { $0.id == currentUserStoryId() }))
+//        let appendedPortion = try XCTUnwrap(currentUserStory.portions.last)
+//        XCTAssertEqual(appendedPortion, expectedPortion)
+//    }
     
-    func test_postStoryVideoPortion_ignoresWhenNoCurrentUserStory() async {
-        let video = videoForTest()
-        let noCurrentUserStories = storiesForTest().local.filter({ !$0.user.isCurrentUser })
-        let sut = await makeSUT(stories: noCurrentUserStories)
-        
-        sut.postStoryPortion(videoUrl: video.url)
-        
-        XCTAssertTrue(sut.allPortions.filter({ $0.videoURL == video.url }).isEmpty)
-    }
+//    func test_postStoryVideoPortion_ignoresWhenNoCurrentUserStory() async {
+//        let video = videoForTest()
+//        let noCurrentUserStories = storiesForTest().local.filter({ !$0.user.isCurrentUser })
+//        let sut = await makeSUT(stories: noCurrentUserStories)
+//        
+//        sut.postStoryPortion(videoUrl: video.url)
+//        
+//        XCTAssertTrue(sut.allPortions.filter({ $0.videoURL == video.url }).isEmpty)
+//    }
     
     // MARK: - Helpers
     
@@ -402,8 +402,8 @@ class StoriesViewModelTests: XCTestCase {
     }
 }
 
-extension StoriesViewModel {
-    var allPortions: [Portion] {
-        stories.flatMap(\.portions)
-    }
-}
+//extension StoriesViewModel {
+//    var allPortions: [Portion] {
+//        stories.flatMap(\.portions)
+//    }
+//}

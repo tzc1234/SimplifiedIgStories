@@ -9,7 +9,7 @@ import AVKit
 import Combine
 
 final class StoriesViewModel: ObservableObject, PortionMutationHandler {
-    @Published private(set) var stories: [Story] = []
+    @Published private var stories: [Story] = []
     
     private let storiesLoader: StoriesLoader
     private let fileManager: FileManageable
