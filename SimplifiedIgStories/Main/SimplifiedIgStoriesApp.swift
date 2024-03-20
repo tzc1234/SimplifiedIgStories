@@ -27,7 +27,7 @@ struct SimplifiedIgStoriesApp: App {
                         storiesViewModel: storiesViewModel,
                         getStoryView: { story in
                             let storyViewModel = getStoryViewModel(for: story.id)
-                            let animationHandler = getAnimationHandler(for: story, storyViewModel: storyViewModel)
+                            let animationHandler = getAnimationHandler(for: story.id, storyViewModel: storyViewModel)
                             
                             return StoryView(
                                 story: story,
@@ -65,12 +65,12 @@ struct SimplifiedIgStoriesApp: App {
         return storyViewModel
     }
     
-    private func getAnimationHandler(for story: Story, storyViewModel: StoryViewModel) -> StoryAnimationHandler {
-        let animationHandler = if let handler = animationHandlerCache.getComponent(for: story.id) {
+    private func getAnimationHandler(for storyId: Int, storyViewModel: StoryViewModel) -> StoryAnimationHandler {
+        let animationHandler = if let handler = animationHandlerCache.getComponent(for: storyId) {
             handler
         } else {
             StoryAnimationHandler(
-                storyId: story.id,
+                storyId: storyId,
                 currentStoryHandler: storiesViewModel,
                 animationShouldPausePublisher: storyViewModel.$showConfirmationDialog
                     .combineLatest(storyViewModel.$showNoticeLabel)
@@ -79,7 +79,7 @@ struct SimplifiedIgStoriesApp: App {
             )
         }
         
-        animationHandlerCache.save(animationHandler, for: story.id)
+        animationHandlerCache.save(animationHandler, for: storyId)
         return animationHandler
     }
 }
