@@ -8,7 +8,7 @@
 import Foundation
 
 final class AppComponentsFactory {
-    let fileManager = LocalFileManager()
+    private let fileManager = LocalFileManager()
     
     private let mediaStore = PHPPhotoMediaStore()
     private(set) lazy var mediaSaver = LocalMediaSaver(store: mediaStore)

@@ -65,7 +65,7 @@ struct SimplifiedIgStoriesApp: App {
         let storyViewModel = if let viewModel = storyViewModelCache.getComponent(for: storyId) {
             viewModel
         } else {
-            StoryViewModel(storyId: storyId, fileManager: factory.fileManager)
+            StoryViewModel(storyId: storyId)
         }
         
         storyViewModelCache.save(storyViewModel, for: storyId)

@@ -12,11 +12,9 @@ final class StoryViewModel: ObservableObject {
     @Published private(set) var noticeMsg = ""
     
     private let storyId: Int
-    private let fileManager: FileManageable
     
-    init(storyId: Int, fileManager: FileManageable) {
+    init(storyId: Int) {
         self.storyId = storyId
-        self.fileManager = fileManager
     }
     
     func showNotice(message: String) {

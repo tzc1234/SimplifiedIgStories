@@ -13,7 +13,7 @@ extension StoryView {
         let story = PreviewData.stories[0]
         let storiesViewModel = StoriesViewModel.preview
         let animationHandler = StoryAnimationHandler.preview
-        let storyViewModel = StoryViewModel(storyId: story.id, fileManager: DummyFileManager())
+        let storyViewModel = StoryViewModel(storyId: story.id)
         
         return StoryView(
             story: story,
