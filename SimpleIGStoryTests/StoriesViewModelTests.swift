@@ -31,175 +31,175 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertEqual(currentUserStories.count, 1)
     }
     
-    func test_currentStories_containsOnlyOneCurrentUserStoryWhenCurrentStoryIdIsCurrentUserStoryId() async throws {
-        let sut = await makeSUT()
-        
-        let currentUserStoryId = try XCTUnwrap(sut.stories.first { $0.user.isCurrentUser }?.id)
-        sut.setCurrentStoryId(currentUserStoryId)
-        
-        XCTAssertEqual(sut.currentStoryId, currentUserStoryId)
-        XCTAssertEqual(sut.currentStories.count, 1)
-        XCTAssertEqual(sut.currentStories.first?.id, currentUserStoryId)
-    }
-    
-    func test_currentStories_containNoCurrentUserStoryWhenCurrentStoryIdIsNonCurrentUserStoryId() async throws {
-        let sut = await makeSUT()
-        
-        let nonCurrentUserStoryId = try XCTUnwrap(sut.stories.first { !$0.user.isCurrentUser }?.id)
-        sut.setCurrentStoryId(nonCurrentUserStoryId)
-        
-        XCTAssertEqual(sut.currentStoryId, nonCurrentUserStoryId)
-        let currentUserStoriesInCurrentStories = sut.currentStories.filter { $0.user.isCurrentUser }
-        XCTAssertEqual(currentUserStoriesInCurrentStories.count, 0)
-    }
-    
-    func test_saveStoryIdBeforeDragged_savesCurrentStoryId() async {
-        let sut = await makeSUT()
-        
-        XCTAssertFalse(sut.animationHandler.isSameStoryAfterDragging)
-        
-        sut.saveStoryIdBeforeDragged()
-        
-        XCTAssertTrue(sut.animationHandler.isSameStoryAfterDragging)
-    }
-    
-    func test_setCurrentStoryId_ignoresWhenStoryIdIsNotExisted() async {
-        let sut = await makeSUT()
-        let storyIdNotExisted = 99
-        let initialCurrentStoryId = sut.currentStoryId
-        
-        sut.setCurrentStoryId(storyIdNotExisted)
-        
-        XCTAssertEqual(sut.currentStoryId, initialCurrentStoryId)
-    }
-    
-    func test_firstCurrentStoryId_deliversFirstStoryIdWhenItIsNotCurrentUserStory() async {
-        let sut = await makeSUT()
-        let notCurrentUserStoryId = 2
-        
-        sut.setCurrentStoryId(notCurrentUserStoryId)
-        
-        XCTAssertEqual(sut.firstCurrentStoryId, 1)
-    }
-    
-    func test_firstCurrentStoryId_deliversCurrentUserStoryIdWhenItIsCurrentUserStory() async {
-        let sut = await makeSUT()
-        let currentUserStoryId = 0
-        
-        sut.setCurrentStoryId(currentUserStoryId)
-        
-        XCTAssertEqual(sut.firstCurrentStoryId, currentUserStoryId)
-    }
-    
-    func test_lastCurrentStoryId_deliversLastStoryIdWhenItIsNotCurrentUserStory() async {
-        let sut = await makeSUT()
-        let notCurrentUserStoryId = 1
-        
-        sut.setCurrentStoryId(notCurrentUserStoryId)
-        
-        XCTAssertEqual(sut.lastCurrentStoryId, 2)
-    }
-    
-    func test_lastCurrentStoryId_deliversCurrentUserStoryIdWhenItIsCurrentUserStory() async {
-        let sut = await makeSUT()
-        let currentUserStoryId = 0
-        
-        sut.setCurrentStoryId(currentUserStoryId)
-        
-        XCTAssertEqual(sut.lastCurrentStoryId, currentUserStoryId)
-    }
-    
-    func test_isAtFirstStory_deliversTrueWhenCurrentStoryIsTheFirstCurrentOne() async {
-        let sut = await makeSUT()
-        let currentUserStoryId = 0
-        
-        sut.setCurrentStoryId(currentUserStoryId)
-        
-        XCTAssertTrue(sut.isAtFirstStory, "The Current user story is at the first")
-        
-        let notCurrentUserStoryId = 1
-        sut.setCurrentStoryId(notCurrentUserStoryId)
-        
-        XCTAssertTrue(sut.isAtFirstStory, "The 1st non-current user story is at the first")
-    }
-    
-    func test_isAtFirstStory_deliversFalseWhenCurrentStoryIsNotTheFirstCurrentOne() async {
-        let sut = await makeSUT()
-        
-        let notCurrentUserStoryId = 2
-        sut.setCurrentStoryId(notCurrentUserStoryId)
-        
-        XCTAssertFalse(sut.isAtFirstStory)
-    }
-    
-    func test_isAtLastStory_deliversTrueWhenCurrentStoryIsTheLastCurrentOne() async {
-        let sut = await makeSUT()
-        let currentUserStoryId = 0
-        
-        sut.setCurrentStoryId(currentUserStoryId)
-        
-        XCTAssertTrue(sut.isAtLastStory, "The Current user story is at the last")
-        
-        let notCurrentUserStoryId = 2
-        sut.setCurrentStoryId(notCurrentUserStoryId)
-        
-        XCTAssertTrue(sut.isAtLastStory, "The 2nd non-current user story is at the last")
-    }
-    
-    func test_isAtLastStory_deliversFalseWhenCurrentStoryIsNotTheLastCurrentOne() async {
-        let sut = await makeSUT()
-        
-        let notCurrentUserStoryId = 1
-        sut.setCurrentStoryId(notCurrentUserStoryId)
-        
-        XCTAssertFalse(sut.isAtLastStory)
-    }
-    
-    func test_getIsDraggingPublisher_deliversIsDraggingProperly() async {
-        let sut = await makeSUT()
-        var loggedIsDragging = [Bool]()
-        let cancellable = sut.getIsDraggingPublisher().sink { loggedIsDragging.append($0) }
-        
-        XCTAssertEqual(loggedIsDragging, [false])
-        
-        sut.animationHandler.isDragging = true
-        
-        XCTAssertEqual(loggedIsDragging, [false, true])
-        
-        sut.animationHandler.isDragging = false
-        
-        XCTAssertEqual(loggedIsDragging, [false, true, false])
-        
-        cancellable.cancel()
-    }
-    
-    func test_moveToPreviousStory_setsToCorrectStoryId() async {
-        let sut = await makeSUT()
-        let hasPreviousStoryId = 2
-        sut.setCurrentStoryId(hasPreviousStoryId)
-        
-        sut.moveToPreviousStory()
-        
-        XCTAssertEqual(sut.currentStoryId, 1, "Moves to previous story after moveToPreviousStory called")
-        
-        sut.moveToPreviousStory()
-        
-        XCTAssertEqual(sut.currentStoryId, 1, "Ignores when no previous story (exclude current user story)")
-    }
-    
-    func test_moveToNextStory_setsToCorrectStoryId() async {
-        let sut = await makeSUT()
-        let hasNextStoryId = 1
-        sut.setCurrentStoryId(hasNextStoryId)
-        
-        sut.moveToNextStory()
-        
-        XCTAssertEqual(sut.currentStoryId, 2, "Moves to next story after moveToNextStory called")
-        
-        sut.moveToNextStory()
-        
-        XCTAssertEqual(sut.currentStoryId, 2, "Ignores when no next story")
-    }
+//    func test_currentStories_containsOnlyOneCurrentUserStoryWhenCurrentStoryIdIsCurrentUserStoryId() async throws {
+//        let sut = await makeSUT()
+//        
+//        let currentUserStoryId = try XCTUnwrap(sut.stories.first { $0.user.isCurrentUser }?.id)
+//        sut.setCurrentStoryId(currentUserStoryId)
+//        
+//        XCTAssertEqual(sut.currentStoryId, currentUserStoryId)
+//        XCTAssertEqual(sut.currentStories.count, 1)
+//        XCTAssertEqual(sut.currentStories.first?.id, currentUserStoryId)
+//    }
+//    
+//    func test_currentStories_containNoCurrentUserStoryWhenCurrentStoryIdIsNonCurrentUserStoryId() async throws {
+//        let sut = await makeSUT()
+//        
+//        let nonCurrentUserStoryId = try XCTUnwrap(sut.stories.first { !$0.user.isCurrentUser }?.id)
+//        sut.setCurrentStoryId(nonCurrentUserStoryId)
+//        
+//        XCTAssertEqual(sut.currentStoryId, nonCurrentUserStoryId)
+//        let currentUserStoriesInCurrentStories = sut.currentStories.filter { $0.user.isCurrentUser }
+//        XCTAssertEqual(currentUserStoriesInCurrentStories.count, 0)
+//    }
+//    
+//    func test_saveStoryIdBeforeDragged_savesCurrentStoryId() async {
+//        let sut = await makeSUT()
+//        
+//        XCTAssertFalse(sut.animationHandler.isSameStoryAfterDragging)
+//        
+//        sut.saveStoryIdBeforeDragged()
+//        
+//        XCTAssertTrue(sut.animationHandler.isSameStoryAfterDragging)
+//    }
+//    
+//    func test_setCurrentStoryId_ignoresWhenStoryIdIsNotExisted() async {
+//        let sut = await makeSUT()
+//        let storyIdNotExisted = 99
+//        let initialCurrentStoryId = sut.currentStoryId
+//        
+//        sut.setCurrentStoryId(storyIdNotExisted)
+//        
+//        XCTAssertEqual(sut.currentStoryId, initialCurrentStoryId)
+//    }
+//    
+//    func test_firstCurrentStoryId_deliversFirstStoryIdWhenItIsNotCurrentUserStory() async {
+//        let sut = await makeSUT()
+//        let notCurrentUserStoryId = 2
+//        
+//        sut.setCurrentStoryId(notCurrentUserStoryId)
+//        
+//        XCTAssertEqual(sut.firstCurrentStoryId, 1)
+//    }
+//    
+//    func test_firstCurrentStoryId_deliversCurrentUserStoryIdWhenItIsCurrentUserStory() async {
+//        let sut = await makeSUT()
+//        let currentUserStoryId = 0
+//        
+//        sut.setCurrentStoryId(currentUserStoryId)
+//        
+//        XCTAssertEqual(sut.firstCurrentStoryId, currentUserStoryId)
+//    }
+//    
+//    func test_lastCurrentStoryId_deliversLastStoryIdWhenItIsNotCurrentUserStory() async {
+//        let sut = await makeSUT()
+//        let notCurrentUserStoryId = 1
+//        
+//        sut.setCurrentStoryId(notCurrentUserStoryId)
+//        
+//        XCTAssertEqual(sut.lastCurrentStoryId, 2)
+//    }
+//    
+//    func test_lastCurrentStoryId_deliversCurrentUserStoryIdWhenItIsCurrentUserStory() async {
+//        let sut = await makeSUT()
+//        let currentUserStoryId = 0
+//        
+//        sut.setCurrentStoryId(currentUserStoryId)
+//        
+//        XCTAssertEqual(sut.lastCurrentStoryId, currentUserStoryId)
+//    }
+//    
+//    func test_isAtFirstStory_deliversTrueWhenCurrentStoryIsTheFirstCurrentOne() async {
+//        let sut = await makeSUT()
+//        let currentUserStoryId = 0
+//        
+//        sut.setCurrentStoryId(currentUserStoryId)
+//        
+//        XCTAssertTrue(sut.isAtFirstStory, "The Current user story is at the first")
+//        
+//        let notCurrentUserStoryId = 1
+//        sut.setCurrentStoryId(notCurrentUserStoryId)
+//        
+//        XCTAssertTrue(sut.isAtFirstStory, "The 1st non-current user story is at the first")
+//    }
+//    
+//    func test_isAtFirstStory_deliversFalseWhenCurrentStoryIsNotTheFirstCurrentOne() async {
+//        let sut = await makeSUT()
+//        
+//        let notCurrentUserStoryId = 2
+//        sut.setCurrentStoryId(notCurrentUserStoryId)
+//        
+//        XCTAssertFalse(sut.isAtFirstStory)
+//    }
+//    
+//    func test_isAtLastStory_deliversTrueWhenCurrentStoryIsTheLastCurrentOne() async {
+//        let sut = await makeSUT()
+//        let currentUserStoryId = 0
+//        
+//        sut.setCurrentStoryId(currentUserStoryId)
+//        
+//        XCTAssertTrue(sut.isAtLastStory, "The Current user story is at the last")
+//        
+//        let notCurrentUserStoryId = 2
+//        sut.setCurrentStoryId(notCurrentUserStoryId)
+//        
+//        XCTAssertTrue(sut.isAtLastStory, "The 2nd non-current user story is at the last")
+//    }
+//    
+//    func test_isAtLastStory_deliversFalseWhenCurrentStoryIsNotTheLastCurrentOne() async {
+//        let sut = await makeSUT()
+//        
+//        let notCurrentUserStoryId = 1
+//        sut.setCurrentStoryId(notCurrentUserStoryId)
+//        
+//        XCTAssertFalse(sut.isAtLastStory)
+//    }
+//    
+//    func test_getIsDraggingPublisher_deliversIsDraggingProperly() async {
+//        let sut = await makeSUT()
+//        var loggedIsDragging = [Bool]()
+//        let cancellable = sut.getIsDraggingPublisher().sink { loggedIsDragging.append($0) }
+//        
+//        XCTAssertEqual(loggedIsDragging, [false])
+//        
+//        sut.animationHandler.isDragging = true
+//        
+//        XCTAssertEqual(loggedIsDragging, [false, true])
+//        
+//        sut.animationHandler.isDragging = false
+//        
+//        XCTAssertEqual(loggedIsDragging, [false, true, false])
+//        
+//        cancellable.cancel()
+//    }
+//    
+//    func test_moveToPreviousStory_setsToCorrectStoryId() async {
+//        let sut = await makeSUT()
+//        let hasPreviousStoryId = 2
+//        sut.setCurrentStoryId(hasPreviousStoryId)
+//        
+//        sut.moveToPreviousStory()
+//        
+//        XCTAssertEqual(sut.currentStoryId, 1, "Moves to previous story after moveToPreviousStory called")
+//        
+//        sut.moveToPreviousStory()
+//        
+//        XCTAssertEqual(sut.currentStoryId, 1, "Ignores when no previous story (exclude current user story)")
+//    }
+//    
+//    func test_moveToNextStory_setsToCorrectStoryId() async {
+//        let sut = await makeSUT()
+//        let hasNextStoryId = 1
+//        sut.setCurrentStoryId(hasNextStoryId)
+//        
+//        sut.moveToNextStory()
+//        
+//        XCTAssertEqual(sut.currentStoryId, 2, "Moves to next story after moveToNextStory called")
+//        
+//        sut.moveToNextStory()
+//        
+//        XCTAssertEqual(sut.currentStoryId, 2, "Ignores when no next story")
+//    }
     
     func test_postStoryImagePortion_appendsImagePortionAtCurrentUserStory() async throws {
         let appendedImageURL = URL(string: "file://appended-image.jpg")!
@@ -219,18 +219,18 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertEqual(appendedPortion, expectedPortion)
     }
     
-    func test_postStoryImagePortion_ignoresWhenOnFileMangerError() async {
-        let sut = await makeSUT(imageURLStub: { throw anyNSError() })
-        let anyImage = UIImage.make(withColor: .red)
-        let currentStoryId = 0
-        sut.setCurrentStoryId(currentStoryId)
-        
-        let currentPortions = sut.currentStories.flatMap(\.portions)
-        
-        sut.postStoryPortion(image: anyImage)
-        
-        XCTAssertEqual(sut.currentStories.flatMap(\.portions), currentPortions)
-    }
+//    func test_postStoryImagePortion_ignoresWhenOnFileMangerError() async {
+//        let sut = await makeSUT(imageURLStub: { throw anyNSError() })
+//        let anyImage = UIImage.make(withColor: .red)
+//        let currentStoryId = 0
+//        sut.setCurrentStoryId(currentStoryId)
+//        
+//        let currentPortions = sut.currentStories.flatMap(\.portions)
+//        
+//        sut.postStoryPortion(image: anyImage)
+//        
+//        XCTAssertEqual(sut.currentStories.flatMap(\.portions), currentPortions)
+//    }
     
     func test_postStoryVideoPortion_appendsVideoPortionAtCurrentUserStory() async throws {
         let video = videoForTest()

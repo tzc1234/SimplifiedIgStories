@@ -195,8 +195,6 @@ extension StoryView {
 
 struct StoryView_Previews: PreviewProvider {
     static var previews: some View {
-        let storiesViewModel = StoriesViewModel.preview
-        let story = storiesViewModel.currentStories[0]
-        StoryView.preview(story: story, parentViewModel: storiesViewModel)
+        StoryView.preview
     }
 }

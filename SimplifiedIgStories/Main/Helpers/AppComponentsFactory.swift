@@ -23,4 +23,10 @@ final class AppComponentsFactory {
         fileManager: fileManager,
         mediaSaver: mediaSaver
     )
+    
+    private(set) lazy var storiesAnimationHandler = StoriesAnimationHandler(
+        getStories: { [weak storiesViewModel] in
+            storiesViewModel?.stories ?? []
+        }
+    )
 }

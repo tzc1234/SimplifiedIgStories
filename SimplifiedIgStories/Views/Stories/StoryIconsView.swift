@@ -11,7 +11,8 @@ struct StoryIconsView: View {
     private let spacing: Double = 8.0
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     
-    @ObservedObject var vm: StoriesViewModel // Injected from HomeView
+    @ObservedObject var vm: StoriesViewModel
+    @ObservedObject var animationHandler: StoriesAnimationHandler
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -38,7 +39,7 @@ struct StoryIconsView: View {
     
     private func tapIconAction(story: Story) {
         if story.hasPortion {
-            vm.setCurrentStoryId(story.id)
+            animationHandler.setCurrentStoryId(story.id)
             homeUIActionHandler.showStoryContainer(storyId: story.id)
         } else if story.user.isCurrentUser {
             homeUIActionHandler.toggleStoryCamView()
@@ -49,7 +50,7 @@ struct StoryIconsView: View {
 struct StoryIconsView_Previews: PreviewProvider {
     static var previews: some View {
         let vm = StoriesViewModel.preview
-        StoryIconsView(vm: vm)
+        StoryIconsView(vm: vm, animationHandler: .preview)
             .environmentObject(HomeUIActionHandler())
             .task {
                 await vm.fetchStories()

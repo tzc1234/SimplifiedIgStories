@@ -8,17 +8,21 @@
 import Foundation
 import Combine
 
-final class StoriesAnimationHandler: ObservableObject {
+final class StoriesAnimationHandler: ObservableObject, CurrentStoryHandler {
     @Published private(set) var currentStoryId = -1
     @Published var shouldCubicRotation = false
     @Published var isDragging = false
     private var storyIdBeforeDragged: Int?
     
-    var getStories: () -> [Story] = { [] }
+    private let getStories: () -> [Story]
+    
+    init(getStories: @escaping () -> [Story]) {
+        self.getStories = getStories
+    }
 }
 
 extension StoriesAnimationHandler {
-    private var stories: [Story] {
+    var stories: [Story] {
         getStories()
     }
     

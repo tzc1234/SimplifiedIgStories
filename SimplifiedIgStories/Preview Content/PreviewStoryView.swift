@@ -9,9 +9,10 @@ import SwiftUI
 import Combine
 
 extension StoryView {
-    static func preview(story: Story, parentViewModel: StoriesViewModel) -> StoryView {
+    static let preview: StoryView = {
+        let story = PreviewData.stories[0]
         let storiesViewModel = StoriesViewModel.preview
-        let animationHandler = StoryAnimationHandler.preview(story: story, currentStoryHandler: storiesViewModel)
+        let animationHandler = StoryAnimationHandler.preview
         let storyViewModel = StoryViewModel(storyId: story.id, fileManager: DummyFileManager())
         
         return StoryView(
@@ -25,15 +26,17 @@ extension StoryView {
             },
             onDisappear: { _ in }
         )
-    }
+    }()
 }
 
 extension StoryAnimationHandler {
-    static func preview(story: Story, currentStoryHandler: CurrentStoryHandler) -> StoryAnimationHandler {
-        StoryAnimationHandler(
-            storyId: story.id,
-            currentStoryHandler: currentStoryHandler,
-            animationShouldPausePublisher: Empty<Bool, Never>().eraseToAnyPublisher()
-        )
-    }
+    static let preview: StoryAnimationHandler = StoryAnimationHandler(
+        storyId: PreviewData.stories[0].id,
+        currentStoryHandler: StoriesAnimationHandler.preview,
+        animationShouldPausePublisher: Empty<Bool, Never>().eraseToAnyPublisher()
+    )
+}
+
+extension StoriesAnimationHandler {
+    static let preview: StoriesAnimationHandler = StoriesAnimationHandler(getStories: { PreviewData.stories })
 }

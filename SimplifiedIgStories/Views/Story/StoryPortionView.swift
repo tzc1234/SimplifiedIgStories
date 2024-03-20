@@ -83,11 +83,11 @@ extension StoryPortionView {
 struct StoryPortionView_Previews: PreviewProvider {
     static var previews: some View {
         let storiesViewModel = StoriesViewModel.preview
-        let story = storiesViewModel.currentStories[0]
+        let story = storiesViewModel.stories[0]
         let portion = story.portions[0]
         StoryPortionView(
             portion: portion,
-            animationHandler: .preview(story: story, currentStoryHandler: storiesViewModel)
+            animationHandler: .preview
         )
     }
 }

@@ -6,38 +6,22 @@
 //
 
 import AVKit
-import Combine
 
-final class StoriesViewModel: ObservableObject, PortionMutationHandler, CurrentStoryHandler {
+final class StoriesViewModel: ObservableObject, PortionMutationHandler {
     @Published private(set) var stories: [Story] = []
-    
-    private var subscription: AnyCancellable?
     
     private let storiesLoader: StoriesLoader
     private let fileManager: FileManageable
     private let mediaSaver: MediaSaver
-    let animationHandler: StoriesAnimationHandler
     
     init(storiesLoader: StoriesLoader, fileManager: FileManageable, mediaSaver: MediaSaver) {
         self.storiesLoader = storiesLoader
         self.fileManager = fileManager
         self.mediaSaver = mediaSaver
-        self.animationHandler = StoriesAnimationHandler()
-        self.animationHandler.getStories = { [weak self] in self?.stories ?? [] }
-        
-        self.subscription = self.animationHandler
-            .objectWillChange
-            .sink { [weak self] in
-                self?.objectWillChange.send()
-            }
     }
 }
 
 extension StoriesViewModel {
-    var currentStoryId: Int {
-        animationHandler.currentStoryId
-    }
-    
     private var yourStoryId: Int? {
         stories.first(where: { $0.user.isCurrentUser })?.id
     }
@@ -50,44 +34,12 @@ extension StoriesViewModel {
         stories.flatMap(\.portions).map(\.id).max() ?? -1
     }
     
-    var currentStories: [Story] {
-        animationHandler.currentStories
-    }
-    
-    var isSameStoryAfterDragging: Bool {
-        animationHandler.isSameStoryAfterDragging
-    }
-    
-    var currentStoryIndex: Int? {
-        animationHandler.currentStoryIndex
-    }
-    
-    var firstCurrentStoryId: Int? {
-        animationHandler.firstCurrentStoryId
-    }
-    
-    var lastCurrentStoryId: Int? {
-        animationHandler.lastCurrentStoryId
-    }
-    
-    var isAtFirstStory: Bool {
-        animationHandler.isAtFirstStory
-    }
-    
-    var isAtLastStory: Bool {
-        animationHandler.isAtLastStory
-    }
-    
     private var currentUserPortions: [Portion] {
         stories.first(where: { $0.id == yourStoryId })?.portions ?? []
     }
 }
 
 extension StoriesViewModel {
-    func getIsDraggingPublisher() -> AnyPublisher<Bool, Never> {
-        animationHandler.getIsDraggingPublisher()
-    }
-    
     @MainActor
     func fetchStories() async {
         do {
@@ -98,22 +50,6 @@ extension StoriesViewModel {
         } catch {
             print("JSON data invalid.")
         }
-    }
-    
-    func saveStoryIdBeforeDragged() {
-        animationHandler.saveStoryIdBeforeDragged()
-    }
-    
-    func setCurrentStoryId(_ storyId: Int) {
-        animationHandler.setCurrentStoryId(storyId)
-    }
-    
-    func moveToPreviousStory() {
-        animationHandler.moveToPreviousStory()
-    }
-    
-    func moveToNextStory() {
-        animationHandler.moveToNextStory()
     }
 }
 
@@ -210,6 +146,7 @@ extension StoriesViewModel {
 }
 
 // MARK: - Local models conversion
+
 private extension [LocalStory] {
     func toStories() -> [Story] {
         map { local in

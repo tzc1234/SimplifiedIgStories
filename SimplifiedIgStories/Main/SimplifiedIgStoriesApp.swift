@@ -18,27 +18,32 @@ struct SimplifiedIgStoriesApp: App {
         factory.storiesViewModel
     }
     
+    private var storiesAnimationHandler: StoriesAnimationHandler {
+        factory.storiesAnimationHandler
+    }
+    
     var body: some Scene {
         WindowGroup {
             HomeView(
-                storiesViewModel: storiesViewModel,
+                storiesViewModel: storiesViewModel, 
+                animationHandler: storiesAnimationHandler,
                 getStoryContainer: {
                     StoryContainer(
-                        storiesViewModel: storiesViewModel,
+                        animationHandler: storiesAnimationHandler,
                         getStoryView: { story in
                             let storyViewModel = getStoryViewModel(for: story.id)
                             let animationHandler = getAnimationHandler(for: story.id, storyViewModel: storyViewModel)
                             
                             return StoryView(
                                 story: story,
-                                shouldCubicRotation: storiesViewModel.animationHandler.shouldCubicRotation,
-                                storyViewModel: storyViewModel, 
+                                shouldCubicRotation: storiesAnimationHandler.shouldCubicRotation,
+                                storyViewModel: storyViewModel,
                                 animationHandler: animationHandler, 
                                 portionMutationHandler: storiesViewModel,
                                 getProgressBar: {
                                     ProgressBar(
                                         story: story,
-                                        currentStoryId: storiesViewModel.currentStoryId,
+                                        currentStoryId: storiesAnimationHandler.currentStoryId,
                                         animationHandler: animationHandler
                                     )
                                 },
@@ -71,7 +76,7 @@ struct SimplifiedIgStoriesApp: App {
         } else {
             StoryAnimationHandler(
                 storyId: storyId,
-                currentStoryHandler: storiesViewModel,
+                currentStoryHandler: storiesAnimationHandler,
                 animationShouldPausePublisher: storyViewModel.$showConfirmationDialog
                     .combineLatest(storyViewModel.$showNoticeLabel)
                     .map { $0 || $1 }
