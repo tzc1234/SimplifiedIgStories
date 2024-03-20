@@ -215,7 +215,8 @@ final class StoryAnimationHandlerTests: XCTestCase {
             moveToNextStory: spy.moveToNextStory,
             portions: { stories[storyId].portions },
             isSameStoryAfterDragging: { spy.isSameStoryAfterDragging },
-            isDraggingPublisher: spy.isDraggingPublisher.eraseToAnyPublisher()
+            isDraggingPublisher: spy.isDraggingPublisher.eraseToAnyPublisher(), 
+            animationShouldPausePublisher: Empty<Bool, Never>().eraseToAnyPublisher()
         )
         
         trackForMemoryLeaks(spy, file: file, line: line)

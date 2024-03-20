@@ -62,15 +62,8 @@ struct SimplifiedIgStoriesApp: App {
                     StoryContainer(
                         storiesViewModel: storiesViewModel,
                         getStoryView: { story in
-                            let animationHandler = getAnimationHandler(for: story)
-                            let storyViewModel = getStoryViewModel(for: story.id, animationHandler: animationHandler)
-                            
-                            animationHandler.subscribe(
-                                animationShouldPausePublisher: storyViewModel.$showConfirmationDialog
-                                    .combineLatest(storyViewModel.$showNoticeLabel)
-                                    .map { $0 || $1 }
-                                    .eraseToAnyPublisher()
-                            )
+                            let storyViewModel = getStoryViewModel(for: story.id)
+                            let animationHandler = getAnimationHandler(for: story, storyViewModel: storyViewModel)
                             
                             return StoryView(
                                 story: story,
@@ -97,7 +90,7 @@ struct SimplifiedIgStoriesApp: App {
         }
     }
     
-    private func getStoryViewModel(for storyId: Int, animationHandler: StoryAnimationHandler) -> StoryViewModel {
+    private func getStoryViewModel(for storyId: Int) -> StoryViewModel {
         let storyViewModel = if let viewModel = storyViewModelCache.getComponent(for: storyId) {
             viewModel
         } else {
@@ -108,7 +101,7 @@ struct SimplifiedIgStoriesApp: App {
         return storyViewModel
     }
     
-    private func getAnimationHandler(for story: Story) -> StoryAnimationHandler {
+    private func getAnimationHandler(for story: Story, storyViewModel: StoryViewModel) -> StoryAnimationHandler {
         let animationHandler = if let handler = animationHandlerCache.getComponent(for: story.id) {
             handler
         } else {
@@ -120,7 +113,11 @@ struct SimplifiedIgStoriesApp: App {
                 moveToNextStory: storiesViewModel.moveToNextStory,
                 portions: { storiesViewModel.stories.first(where: { $0.id == story.id })?.portions ?? [] },
                 isSameStoryAfterDragging: { storiesViewModel.isSameStoryAfterDragging },
-                isDraggingPublisher: storiesViewModel.getIsDraggingPublisher()
+                isDraggingPublisher: storiesViewModel.getIsDraggingPublisher(), 
+                animationShouldPausePublisher: storyViewModel.$showConfirmationDialog
+                    .combineLatest(storyViewModel.$showNoticeLabel)
+                    .map { $0 || $1 }
+                    .eraseToAnyPublisher()
             )
         }
         

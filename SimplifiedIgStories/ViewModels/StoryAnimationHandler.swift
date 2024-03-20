@@ -18,6 +18,7 @@ final class StoryAnimationHandler: ObservableObject {
     @Published private(set) var barPortionAnimationStatusDict = [PortionId: BarPortionAnimationStatus]()
     @Published private(set) var currentPortionId: PortionId = -1
     
+    private var isDragging = false
     private var subscriptions = Set<AnyCancellable>()
     
     var currentPortionAnimationStatus: BarPortionAnimationStatus? {
@@ -50,6 +51,7 @@ final class StoryAnimationHandler: ObservableObject {
     private let portions: () -> [Portion]
     private let isSameStoryAfterDragging: () -> Bool
     private let isDraggingPublisher: AnyPublisher<Bool, Never>
+    private let animationShouldPausePublisher: AnyPublisher<Bool, Never>
     
     init(isAtFirstStory: @escaping () -> Bool,
          isAtLastStory: @escaping () -> Bool,
@@ -58,7 +60,8 @@ final class StoryAnimationHandler: ObservableObject {
          moveToNextStory: @escaping () -> Void,
          portions: @escaping () -> [Portion],
          isSameStoryAfterDragging: @escaping () -> Bool,
-         isDraggingPublisher: AnyPublisher<Bool, Never>) {
+         isDraggingPublisher: AnyPublisher<Bool, Never>,
+         animationShouldPausePublisher: AnyPublisher<Bool, Never>) {
         self.isAtFirstStory = isAtFirstStory
         self.isAtLastStory = isAtLastStory
         self.isCurrentStory = isCurrentStory
@@ -67,6 +70,7 @@ final class StoryAnimationHandler: ObservableObject {
         self.portions = portions
         self.isSameStoryAfterDragging = isSameStoryAfterDragging
         self.isDraggingPublisher = isDraggingPublisher
+        self.animationShouldPausePublisher = animationShouldPausePublisher
         
         if let firstPortionId = portions().first?.id {
             self.currentPortionId = firstPortionId
@@ -89,22 +93,25 @@ final class StoryAnimationHandler: ObservableObject {
             .dropFirst()
             .removeDuplicates()
             .sink { [weak self] dragging in
+                guard let self else { return }
+                
+                isDragging = dragging
                 if dragging {
-                    self?.pausePortionAnimationWhenDragging()
+                    pausePortionAnimationWhenDragging()
                 } else {
-                    self?.resumePortionAnimationIfStayAtSameStoryAfterDragged()
+                    resumePortionAnimationIfStayAtSameStoryAfterDragged()
                 }
             }
             .store(in: &subscriptions)
-    }
-    
-    func subscribe(animationShouldPausePublisher: AnyPublisher<Bool, Never>) {
+        
         animationShouldPausePublisher
             .sink { [weak self] shouldPause in
+                guard let self else { return }
+                
                 if shouldPause {
-                    self?.pausePortionAnimation()
-                } else {
-                    self?.resumePortionAnimation()
+                    pausePortionAnimation()
+                } else if !isDragging {
+                    resumePortionAnimation()
                 }
             }
             .store(in: &subscriptions)

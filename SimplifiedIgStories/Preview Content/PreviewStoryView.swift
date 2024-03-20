@@ -37,7 +37,8 @@ extension StoryAnimationHandler {
             moveToNextStory: {},
             portions: { story.portions },
             isSameStoryAfterDragging: { false },
-            isDraggingPublisher: Empty<Bool, Never>().eraseToAnyPublisher()
+            isDraggingPublisher: Empty<Bool, Never>().eraseToAnyPublisher(), 
+            animationShouldPausePublisher: Empty<Bool, Never>().eraseToAnyPublisher()
         )
     }
 }
