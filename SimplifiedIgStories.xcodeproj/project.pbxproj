@@ -20,6 +20,7 @@
 		BE2D7796285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2D7795285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift */; };
 		BE35051B2B7ABB4800348B4B /* PhotoTaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE35051A2B7ABB4800348B4B /* PhotoTaker.swift */; };
 		BE36D6E82BAB375A009240EE /* StoryComponentCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE36D6E72BAB375A009240EE /* StoryComponentCache.swift */; };
+		BE36D6EA2BAB3785009240EE /* AppComponentsFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE36D6E92BAB3785009240EE /* AppComponentsFactory.swift */; };
 		BE38F7AD2B83649300F42C71 /* AVPhotoTakerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE38F7AC2B83649300F42C71 /* AVPhotoTakerTests.swift */; };
 		BE38F7B02B83672400F42C71 /* StatusSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE38F7AF2B83672400F42C71 /* StatusSpy.swift */; };
 		BE38F7B22B837CC400F42C71 /* CaptureSessionSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE38F7B12B837CC400F42C71 /* CaptureSessionSpy.swift */; };
@@ -146,6 +147,7 @@
 		BE2D7795285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVCaptureVideoPreviewRepresentable.swift; sourceTree = "<group>"; };
 		BE35051A2B7ABB4800348B4B /* PhotoTaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoTaker.swift; sourceTree = "<group>"; };
 		BE36D6E72BAB375A009240EE /* StoryComponentCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryComponentCache.swift; sourceTree = "<group>"; };
+		BE36D6E92BAB3785009240EE /* AppComponentsFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppComponentsFactory.swift; sourceTree = "<group>"; };
 		BE38F7AC2B83649300F42C71 /* AVPhotoTakerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPhotoTakerTests.swift; sourceTree = "<group>"; };
 		BE38F7AF2B83672400F42C71 /* StatusSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusSpy.swift; sourceTree = "<group>"; };
 		BE38F7B12B837CC400F42C71 /* CaptureSessionSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSessionSpy.swift; sourceTree = "<group>"; };
@@ -362,6 +364,7 @@
 		BE36D6E62BAB374C009240EE /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				BE36D6E92BAB3785009240EE /* AppComponentsFactory.swift */,
 				BE36D6E72BAB375A009240EE /* StoryComponentCache.swift */,
 			);
 			path = Helpers;
@@ -815,6 +818,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE36D6EA2BAB3785009240EE /* AppComponentsFactory.swift in Sources */,
 				BEBF323C2B75133700DCD624 /* LocalStoriesLoader.swift in Sources */,
 				BE5F4FAA2BA49DBA00138F87 /* PreviewStoriesViewModel.swift in Sources */,
 				BEA7D9FF27C6DFFC00DA81E6 /* TraceableArc.swift in Sources */,
