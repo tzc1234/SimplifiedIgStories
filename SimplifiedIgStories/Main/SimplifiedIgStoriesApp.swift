@@ -80,8 +80,8 @@ struct SimplifiedIgStoriesApp: App {
                 storyId: storyId,
                 currentStoryHandler: storiesAnimationHandler,
                 animationShouldPausePublisher: storyViewModel.$showConfirmationDialog
-                    .combineLatest(storyViewModel.$showNoticeLabel)
-                    .map { $0 || $1 }
+                    .combineLatest(storyViewModel.$noticeMsg)
+                    .map { $0 || !$1.isEmpty }
                     .eraseToAnyPublisher()
             )
         }

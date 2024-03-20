@@ -120,11 +120,11 @@ extension StoriesViewModel {
     }
     
     @MainActor
-    func savePortionMedia(for portionIndex: Int, loading: () -> Void, completion: (String?) -> Void) async {
+    func savePortionMedia(for portionIndex: Int, loading: () -> Void, completion: (String) -> Void) async {
         let currentPortion = currentUserPortions[portionIndex]
         loading()
         
-        var successMessage: String?
+        var successMessage = ""
         if let imageUrl = currentPortion.imageURL,
            let data = fileManager.getImage(for: imageUrl)?.jpegData(compressionQuality: 1) {
             do {

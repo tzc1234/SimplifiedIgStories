@@ -9,7 +9,6 @@ import UIKit
 
 final class StoryViewModel: ObservableObject {
     @Published var showConfirmationDialog = false
-    @Published private(set) var showNoticeLabel = false
     @Published private(set) var noticeMsg = ""
     
     private let storyId: Int
@@ -20,14 +19,11 @@ final class StoryViewModel: ObservableObject {
         self.fileManager = fileManager
     }
     
-    func showNotice(message: String?) {
-        guard let message else { return }
-        
-        noticeMsg = message
+    func showNotice(message: String) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            self?.showNoticeLabel = true
+            self?.noticeMsg = message
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
-                self?.showNoticeLabel = false
+                self?.noticeMsg = ""
             }
         }
     }

@@ -11,7 +11,7 @@ protocol PortionMutationHandler {
     func deleteCurrentPortion(for portionIndex: Int,
                               afterDeletion: () -> Void,
                               whenNoNextPortionAfterDeletion: () -> Void)
-    func savePortionMedia(for portionIndex: Int, loading: () -> Void, completion: (String?) -> Void) async
+    func savePortionMedia(for portionIndex: Int, loading: () -> Void, completion: (String) -> Void) async
 }
 
 struct StoryView: View {
@@ -188,8 +188,8 @@ extension StoryView {
     
     private var noticeLabel: some View {
         NoticeLabel(message: storyViewModel.noticeMsg)
-            .opacity(storyViewModel.showNoticeLabel ? 1 : 0)
-            .animation(.easeIn, value: storyViewModel.showNoticeLabel)
+            .opacity(storyViewModel.noticeMsg.isEmpty ? 0 : 1)
+            .animation(.easeIn, value: storyViewModel.noticeMsg)
     }
 }
 
