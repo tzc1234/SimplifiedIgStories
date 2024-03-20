@@ -9,23 +9,23 @@ import Foundation
 import Combine
 
 final class StoriesAnimationHandler: ObservableObject, CurrentStoryHandler {
+    @Published private(set) var stories: [Story] = []
     @Published private(set) var currentStoryId = -1
     @Published var shouldCubicRotation = false
     @Published var isDragging = false
     private var storyIdBeforeDragged: Int?
     
-    private let getStories: () -> [Story]
+    private var cancellable: AnyCancellable?
     
-    init(getStories: @escaping () -> [Story]) {
-        self.getStories = getStories
+    init(storiesPublisher: AnyPublisher<[Story], Never>) {
+        cancellable = storiesPublisher
+            .sink(receiveValue: { [weak self] stories in
+                self?.stories = stories
+            })
     }
 }
 
 extension StoriesAnimationHandler {
-    var stories: [Story] {
-        getStories()
-    }
-    
     private var yourStoryId: Int? {
         stories.first(where: { $0.user.isCurrentUser })?.id
     }

@@ -47,7 +47,6 @@ struct ProgressBar: View {
             }
         }
     }
-    
 }
 
 struct ProgressBar_Previews: PreviewProvider {

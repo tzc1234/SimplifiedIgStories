@@ -27,7 +27,7 @@ struct SimplifiedIgStoriesApp: App {
             HomeView(
                 storiesViewModel: storiesViewModel, 
                 getStoryIconsView: {
-                    StoryIconsView(storiesViewModel: storiesViewModel, animationHandler: storiesAnimationHandler)
+                    StoryIconsView(animationHandler: storiesAnimationHandler)
                 },
                 getStoryContainer: {
                     StoryContainer(

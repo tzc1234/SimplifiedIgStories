@@ -25,8 +25,6 @@ final class AppComponentsFactory {
     )
     
     private(set) lazy var storiesAnimationHandler = StoriesAnimationHandler(
-        getStories: { [weak storiesViewModel] in
-            storiesViewModel?.stories ?? []
-        }
+        storiesPublisher: storiesViewModel.storiesPublisher()
     )
 }

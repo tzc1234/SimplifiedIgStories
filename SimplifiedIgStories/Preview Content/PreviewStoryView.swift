@@ -38,5 +38,7 @@ extension StoryAnimationHandler {
 }
 
 extension StoriesAnimationHandler {
-    static let preview: StoriesAnimationHandler = StoriesAnimationHandler(getStories: { PreviewData.stories })
+    static let preview: StoriesAnimationHandler = StoriesAnimationHandler(
+        storiesPublisher: CurrentValueSubject(PreviewData.stories).eraseToAnyPublisher()
+    )
 }

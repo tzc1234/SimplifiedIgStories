@@ -37,6 +37,9 @@ struct HomeView: View {
         }
         .frame(width: .screenWidth)
         .environmentObject(handler)
+        .task {
+            await storiesViewModel.fetchStories()
+        }
     }
 }
 
@@ -86,7 +89,7 @@ struct HomeView_Previews: PreviewProvider {
         HomeView(
             storiesViewModel: .preview,
             getStoryIconsView: {
-                StoryIconsView(storiesViewModel: .preview, animationHandler: .preview)
+                StoryIconsView(animationHandler: .preview)
             },
             getStoryContainer: {
                 StoryContainer(
