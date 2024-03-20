@@ -18,13 +18,16 @@ struct StoryView: View {
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     @State private var isLoading = false
     
-    let story: Story
     let shouldCubicRotation: Bool
     @StateObject var storyViewModel: StoryViewModel
     @StateObject var animationHandler: StoryAnimationHandler
     let portionMutationHandler: PortionMutationHandler
     let getProgressBar: () -> ProgressBar
     let onDisappear: (Int) -> Void
+    
+    private var story: Story {
+        storyViewModel.story
+    }
     
     var body: some View {
         GeometryReader { geo in

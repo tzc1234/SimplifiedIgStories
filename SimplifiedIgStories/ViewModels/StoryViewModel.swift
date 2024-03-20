@@ -11,10 +11,10 @@ final class StoryViewModel: ObservableObject {
     @Published var showConfirmationDialog = false
     @Published private(set) var noticeMsg = ""
     
-    private let storyId: Int
+    let story: Story
     
-    init(storyId: Int) {
-        self.storyId = storyId
+    init(story: Story) {
+        self.story = story
     }
     
     func showNotice(message: String) {
@@ -27,6 +27,6 @@ final class StoryViewModel: ObservableObject {
     }
     
     deinit {
-        print("StoryViewModel: \(storyId) deinit.")
+        print("StoryViewModel: \(story.id) deinit.")
     }
 }

@@ -33,20 +33,22 @@ struct SimplifiedIgStoriesApp: App {
                     StoryContainer(
                         animationHandler: storiesAnimationHandler,
                         getStoryView: { story in
-                            let storyViewModel = getStoryViewModel(for: story.id)
-                            let animationHandler = getAnimationHandler(for: story.id, storyViewModel: storyViewModel)
+                            let storyViewModel = getStoryViewModel(for: story)
+                            let storyAnimationHandler = getStoryAnimationHandler(
+                                for: story.id,
+                                storyViewModel: storyViewModel
+                            )
                             
                             return StoryView(
-                                story: story,
                                 shouldCubicRotation: storiesAnimationHandler.shouldCubicRotation,
                                 storyViewModel: storyViewModel,
-                                animationHandler: animationHandler, 
+                                animationHandler: storyAnimationHandler, 
                                 portionMutationHandler: storiesViewModel,
                                 getProgressBar: {
                                     ProgressBar(
                                         story: story,
                                         currentStoryId: storiesAnimationHandler.currentStoryId,
-                                        animationHandler: animationHandler
+                                        animationHandler: storyAnimationHandler
                                     )
                                 },
                                 onDisappear: { storyId in
@@ -61,18 +63,18 @@ struct SimplifiedIgStoriesApp: App {
         }
     }
     
-    private func getStoryViewModel(for storyId: Int) -> StoryViewModel {
-        let storyViewModel = if let viewModel = storyViewModelCache.getComponent(for: storyId) {
+    private func getStoryViewModel(for story: Story) -> StoryViewModel {
+        let storyViewModel = if let viewModel = storyViewModelCache.getComponent(for: story.id) {
             viewModel
         } else {
-            StoryViewModel(storyId: storyId)
+            StoryViewModel(story: story)
         }
         
-        storyViewModelCache.save(storyViewModel, for: storyId)
+        storyViewModelCache.save(storyViewModel, for: story.id)
         return storyViewModel
     }
     
-    private func getAnimationHandler(for storyId: Int, storyViewModel: StoryViewModel) -> StoryAnimationHandler {
+    private func getStoryAnimationHandler(for storyId: Int, storyViewModel: StoryViewModel) -> StoryAnimationHandler {
         let animationHandler = if let handler = animationHandlerCache.getComponent(for: storyId) {
             handler
         } else {

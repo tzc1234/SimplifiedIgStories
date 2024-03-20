@@ -13,10 +13,9 @@ extension StoryView {
         let story = PreviewData.stories[0]
         let storiesViewModel = StoriesViewModel.preview
         let animationHandler = StoryAnimationHandler.preview
-        let storyViewModel = StoryViewModel(storyId: story.id)
+        let storyViewModel = StoryViewModel(story: story)
         
         return StoryView(
-            story: story,
             shouldCubicRotation: false,
             storyViewModel: storyViewModel,
             animationHandler: animationHandler, 
