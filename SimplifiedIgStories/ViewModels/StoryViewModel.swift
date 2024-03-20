@@ -32,10 +32,6 @@ final class StoryViewModel: ObservableObject {
         }
     }
     
-    func getImage(by url: URL) -> UIImage? {
-        fileManager.getImage(for: url)
-    }
-    
     deinit {
         print("StoryViewModel: \(storyId) deinit.")
     }
