@@ -57,7 +57,7 @@ struct StoryView: View {
                                 guard let portionIndex = animationHandler.currentPortionIndex else { return }
                                 
                                 portionMutationHandler.deleteCurrentPortion(for: portionIndex) {
-                                    animationHandler.moveToNewCurrentPortion(for: portionIndex)
+                                    animationHandler.moveToCurrentPortion(for: portionIndex)
                                 } whenNoNextPortionAfterDeletion: {
                                     homeUIActionHandler.closeStoryContainer(storyId: story.id)
                                 }

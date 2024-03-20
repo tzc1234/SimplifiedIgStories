@@ -21,28 +21,6 @@ final class StoryAnimationHandler: ObservableObject {
     private var isDragging = false
     private var subscriptions = Set<AnyCancellable>()
     
-    var currentPortionAnimationStatus: BarPortionAnimationStatus? {
-        barPortionAnimationStatusDict[currentPortionId]
-    }
-    
-    private var isCurrentPortionAnimating: Bool {
-        currentPortionAnimationStatus == .start ||
-        currentPortionAnimationStatus == .restart ||
-        currentPortionAnimationStatus == .resume
-    }
-    
-    var currentPortionIndex: Int? {
-        portions().firstIndex(where: { $0.id == currentPortionId })
-    }
-    
-    private var isAtFirstPortion: Bool {
-        currentPortionId == portions().first?.id
-    }
-    
-    private var isAtLastPortion: Bool {
-        currentPortionId == portions().last?.id
-    }
-    
     private let isAtFirstStory: () -> Bool
     private let isAtLastStory: () -> Bool
     private let isCurrentStory: () -> Bool
@@ -79,7 +57,33 @@ final class StoryAnimationHandler: ObservableObject {
         
         self.subscribePublishers()
     }
+}
+
+extension StoryAnimationHandler {
+    var currentPortionAnimationStatus: BarPortionAnimationStatus? {
+        barPortionAnimationStatusDict[currentPortionId]
+    }
     
+    private var isCurrentPortionAnimating: Bool {
+        currentPortionAnimationStatus == .start ||
+        currentPortionAnimationStatus == .restart ||
+        currentPortionAnimationStatus == .resume
+    }
+    
+    var currentPortionIndex: Int? {
+        portions().firstIndex(where: { $0.id == currentPortionId })
+    }
+    
+    private var isAtFirstPortion: Bool {
+        currentPortionId == portions().first?.id
+    }
+    
+    private var isAtLastPortion: Bool {
+        currentPortionId == portions().last?.id
+    }
+}
+
+extension StoryAnimationHandler {
     private func initBarPortionAnimationStatus() {
         setCurrentBarPortionAnimationStatus(to: .initial)
     }
@@ -97,7 +101,7 @@ final class StoryAnimationHandler: ObservableObject {
                 
                 isDragging = dragging
                 if dragging {
-                    pausePortionAnimationWhenDragging()
+                    pausePortionAnimation()
                 } else {
                     resumePortionAnimationIfStayAtSameStoryAfterDragged()
                 }
@@ -125,6 +129,39 @@ final class StoryAnimationHandler: ObservableObject {
         }
     }
     
+    private func performBackwardPortionAnimation() {
+        if isAtFirstPortion {
+            if isAtFirstStory() {
+                restartPortionAnimation()
+            } else { // Not at the first story (that means the previous story must exist.)
+                setCurrentBarPortionAnimationStatus(to: .initial)
+                moveToPreviousStory()
+            }
+        } else {
+            setCurrentBarPortionAnimationStatus(to: .initial)
+            moveToPreviewPortion()
+        }
+    }
+    
+    private func restartPortionAnimation() {
+        setCurrentBarPortionAnimationStatus(to: currentPortionAnimationStatus == .start ? .restart : .start)
+    }
+    
+    private func moveToPreviewPortion() {
+        guard let currentPortionIndex else { return }
+        
+        let previousPortionIndex = currentPortionIndex-1
+        if previousPortionIndex >= 0 {
+            currentPortionId = portions()[previousPortionIndex].id
+            setCurrentBarPortionAnimationStatus(to: .start)
+        }
+    }
+    
+    private func performForwardPortionAnimation() {
+        // Will trigger the onChange of currentPortionAnimationStatus in ProgressBar.
+        setCurrentBarPortionAnimationStatus(to: .finish)
+    }
+    
     func startProgressBarAnimation() {
         guard isCurrentStory() && !isCurrentPortionAnimating else { return }
         
@@ -147,32 +184,11 @@ final class StoryAnimationHandler: ObservableObject {
         barPortionAnimationStatusDict[portionId] = .finish
     }
     
-    func moveToNewCurrentPortion(for portionIndex: Int) {
+    func moveToCurrentPortion(for portionIndex: Int) {
+        guard portionIndex < portions().count else { return }
+        
         currentPortionId = portions()[portionIndex].id
         setCurrentBarPortionAnimationStatus(to: .start)
-    }
-    
-    private func performForwardPortionAnimation() {
-        // Will trigger the onChange of currentPortionAnimationStatus in ProgressBar.
-        setCurrentBarPortionAnimationStatus(to: .finish)
-    }
-    
-    private func performBackwardPortionAnimation() {
-        if isAtFirstPortion {
-            if isAtFirstStory() {
-                restartPortionAnimation()
-            } else { // Not at the first story (that means the previous story must exist.)
-                setCurrentBarPortionAnimationStatus(to: .initial)
-                moveToPreviousStory()
-            }
-        } else {
-            setCurrentBarPortionAnimationStatus(to: .initial)
-            moveToPreviewPortion()
-        }
-    }
-    
-    private func restartPortionAnimation() {
-        setCurrentBarPortionAnimationStatus(to: currentPortionAnimationStatus == .start ? .restart : .start)
     }
     
     func performNextBarPortionAnimationWhenCurrentPortionFinished(whenNoNextStory action: () -> Void) {
@@ -189,16 +205,6 @@ final class StoryAnimationHandler: ObservableObject {
         }
     }
     
-    private func moveToPreviewPortion() {
-        guard let currentPortionIndex else { return }
-        
-        let previousPortionIndex = currentPortionIndex-1
-        if previousPortionIndex >= 0 {
-            currentPortionId = portions()[previousPortionIndex].id
-            setCurrentBarPortionAnimationStatus(to: .start)
-        }
-    }
-    
     private func moveToNextPortion() {
         guard let currentPortionIndex else { return }
         
@@ -207,10 +213,6 @@ final class StoryAnimationHandler: ObservableObject {
             currentPortionId = portions()[nextPortionIndex].id
             setCurrentBarPortionAnimationStatus(to: .start)
         }
-    }
-    
-    private func pausePortionAnimationWhenDragging() {
-        pausePortionAnimation()
     }
     
     private func resumePortionAnimationIfStayAtSameStoryAfterDragged() {
