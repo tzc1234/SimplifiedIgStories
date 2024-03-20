@@ -11,7 +11,7 @@ struct StoryIconsView: View {
     private let spacing: Double = 8.0
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     
-    @ObservedObject var vm: StoriesViewModel
+    @ObservedObject var storiesViewModel: StoriesViewModel
     @ObservedObject var animationHandler: StoriesAnimationHandler
     
     var body: some View {
@@ -19,7 +19,7 @@ struct StoryIconsView: View {
             HStack(alignment: .center, spacing: 0) {
                 Spacer(minLength: spacing)
                 
-                ForEach(vm.stories) { story in
+                ForEach(storiesViewModel.stories) { story in
                     StoryIconTitleView(
                         story: story,
                         showPlusIcon: story.user.isCurrentUser && !story.hasPortion,
@@ -33,7 +33,7 @@ struct StoryIconsView: View {
             }
         }
         .task {
-            await vm.fetchStories()
+            await storiesViewModel.fetchStories()
         }
     }
     
@@ -50,7 +50,7 @@ struct StoryIconsView: View {
 struct StoryIconsView_Previews: PreviewProvider {
     static var previews: some View {
         let vm = StoriesViewModel.preview
-        StoryIconsView(vm: vm, animationHandler: .preview)
+        StoryIconsView(storiesViewModel: vm, animationHandler: .preview)
             .environmentObject(HomeUIActionHandler())
             .task {
                 await vm.fetchStories()

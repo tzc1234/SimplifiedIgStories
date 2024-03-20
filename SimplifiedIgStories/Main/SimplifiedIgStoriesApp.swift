@@ -26,7 +26,9 @@ struct SimplifiedIgStoriesApp: App {
         WindowGroup {
             HomeView(
                 storiesViewModel: storiesViewModel, 
-                animationHandler: storiesAnimationHandler,
+                getStoryIconsView: {
+                    StoryIconsView(storiesViewModel: storiesViewModel, animationHandler: storiesAnimationHandler)
+                },
                 getStoryContainer: {
                     StoryContainer(
                         animationHandler: storiesAnimationHandler,

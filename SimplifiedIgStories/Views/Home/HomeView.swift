@@ -9,8 +9,9 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject private var handler = HomeUIActionHandler()
-    @StateObject var storiesViewModel: StoriesViewModel
-    @StateObject var animationHandler: StoriesAnimationHandler
+    
+    @ObservedObject var storiesViewModel: StoriesViewModel
+    let getStoryIconsView: () -> StoryIconsView
     let getStoryContainer: () -> StoryContainer
     
     var body: some View {
@@ -20,7 +21,7 @@ struct HomeView: View {
                 
                 NavigationView {
                     VStack {
-                        StoryIconsView(vm: storiesViewModel, animationHandler: animationHandler)
+                        getStoryIconsView()
                             .onPreferenceChange(IdFramePreferenceKey.self) { idFrameDict in
                                 handler.storyIconFrameDict = idFrameDict
                             }
@@ -82,12 +83,16 @@ extension HomeView {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        let storiesViewModel = StoriesViewModel.preview
-        HomeView(storiesViewModel: storiesViewModel, animationHandler: .preview, getStoryContainer: {
-            StoryContainer(
-                animationHandler: .preview,
-                getStoryView: { _ in .preview }
-            )
+        HomeView(
+            storiesViewModel: .preview,
+            getStoryIconsView: {
+                StoryIconsView(storiesViewModel: .preview, animationHandler: .preview)
+            },
+            getStoryContainer: {
+                StoryContainer(
+                    animationHandler: .preview,
+                    getStoryView: { _ in .preview }
+                )
         })
     }
 }
