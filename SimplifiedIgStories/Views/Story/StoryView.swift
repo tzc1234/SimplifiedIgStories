@@ -7,13 +7,22 @@
 
 import SwiftUI
 
+protocol PortionMutationHandler {
+    func deleteCurrentPortion(for portionIndex: Int,
+                              afterDeletion: () -> Void,
+                              whenNoNextPortionAfterDeletion: () -> Void)
+    func savePortionMedia(for portionIndex: Int, loading: () -> Void, completion: (String?) -> Void) async
+}
+
 struct StoryView: View {
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
+    @State private var isLoading = false
     
     let story: Story
     let shouldCubicRotation: Bool
     @StateObject var storyViewModel: StoryViewModel
     @StateObject var animationHandler: StoryAnimationHandler
+    let portionMutationHandler: PortionMutationHandler
     let getProgressBar: () -> ProgressBar
     let onDisappear: (Int) -> Void
     
@@ -45,21 +54,34 @@ struct StoryView: View {
                     moreButton
                         .confirmationDialog("", isPresented: $storyViewModel.showConfirmationDialog, titleVisibility: .hidden) {
                             Button("Delete", role: .destructive) {
-                                storyViewModel.deleteCurrentPortion {
+                                guard let portionIndex = animationHandler.currentPortionIndex else { return }
+                                
+                                portionMutationHandler.deleteCurrentPortion(for: portionIndex) {
+                                    animationHandler.moveToNewCurrentPortion(for: portionIndex)
+                                } whenNoNextPortionAfterDeletion: {
                                     homeUIActionHandler.closeStoryContainer(storyId: story.id)
                                 }
                             }
+                            
                             Button("Save", role: .none) {
                                 Task {
-                                    await storyViewModel.savePortionImageVideo()
+                                    guard let portionIndex = animationHandler.currentPortionIndex else { return }
+                                    
+                                    await portionMutationHandler.savePortionMedia(for: portionIndex) {
+                                        isLoading = true
+                                    } completion: { message in
+                                        isLoading = false
+                                        storyViewModel.showNotice(message: message)
+                                    }
                                 }
                             }
+                            
                             Button("Cancel", role: .cancel, action: {})
                         }
                 }
                 
                 LoadingView()
-                    .opacity(storyViewModel.isLoading ? 1 : 0)
+                    .opacity(isLoading ? 1 : 0)
                 
                 noticeLabel
             }

@@ -11,15 +11,19 @@ import Combine
 final class AppComponentsFactory {
     let fileManager = LocalFileManager()
     
+    private let mediaStore = PHPPhotoMediaStore()
+    private(set) lazy var mediaSaver = LocalMediaSaver(store: mediaStore)
+    
     // storiesDataURL should not be nil, since storiesData.json is already embedded in Resource directory.
     private let storiesDataURL = Bundle.main.url(forResource: "storiesData.json", withExtension: nil)!
     private lazy var dataClient = FileDataClient(url: storiesDataURL)
     private lazy var storiesLoader = LocalStoriesLoader(client: dataClient)
     
-    private(set) lazy var storiesViewModel = StoriesViewModel(fileManager: fileManager, storiesLoader: storiesLoader)
-    
-    private let mediaStore = PHPPhotoMediaStore()
-    private(set) lazy var mediaSaver = LocalMediaSaver(store: mediaStore)
+    private(set) lazy var storiesViewModel = StoriesViewModel(
+        storiesLoader: storiesLoader,
+        fileManager: fileManager,
+        mediaSaver: mediaSaver
+    )
 }
 
 final class StoryComponentCache<T> {
@@ -72,7 +76,8 @@ struct SimplifiedIgStoriesApp: App {
                                 story: story,
                                 shouldCubicRotation: storiesViewModel.shouldCubicRotation,
                                 storyViewModel: storyViewModel, 
-                                animationHandler: animationHandler,
+                                animationHandler: animationHandler, 
+                                portionMutationHandler: storiesViewModel,
                                 getProgressBar: {
                                     ProgressBar(
                                         story: story,
@@ -85,7 +90,8 @@ struct SimplifiedIgStoriesApp: App {
                                     animationHandlerCache.removeComponent(for: storyId)
                                 }
                             )
-                        })
+                        }
+                    )
                 }
             )
         }
@@ -95,14 +101,7 @@ struct SimplifiedIgStoriesApp: App {
         let storyViewModel = if let viewModel = storyViewModelCache.getComponent(for: storyId) {
             viewModel
         } else {
-            StoryViewModel(
-                storyId: storyId,
-                parentViewModel: storiesViewModel,
-                fileManager: factory.fileManager,
-                mediaSaver: factory.mediaSaver,
-                currentPortionIndex: { animationHandler.currentPortionIndex },
-                moveToNewCurrentPortion: animationHandler.moveToNewCurrentPortion
-            )
+            StoryViewModel(storyId: storyId, fileManager: factory.fileManager)
         }
         
         storyViewModelCache.save(storyViewModel, for: storyId)

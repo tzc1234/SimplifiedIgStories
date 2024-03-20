@@ -1053,7 +1053,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.4;
-				PRODUCT_BUNDLE_IDENTIFIER = com.tszlung.SimplifiedIgStories;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tszlung.SimplifyIgStories;
 				PRODUCT_NAME = "Simple IG Story";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1089,7 +1089,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.4;
-				PRODUCT_BUNDLE_IDENTIFIER = com.tszlung.SimplifiedIgStories;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tszlung.SimplifyIgStories;
 				PRODUCT_NAME = "Simple IG Story";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;

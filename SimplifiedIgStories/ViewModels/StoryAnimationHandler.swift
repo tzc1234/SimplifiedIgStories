@@ -140,7 +140,7 @@ final class StoryAnimationHandler: ObservableObject {
         barPortionAnimationStatusDict[portionId] = .finish
     }
     
-    func moveToNewCurrentPortion(for portionIndex: PortionId) {
+    func moveToNewCurrentPortion(for portionIndex: Int) {
         currentPortionId = portions()[portionIndex].id
         setCurrentBarPortionAnimationStatus(to: .start)
     }

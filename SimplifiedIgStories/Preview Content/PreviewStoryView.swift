@@ -11,20 +11,14 @@ import Combine
 extension StoryView {
     static func preview(story: Story, parentViewModel: StoriesViewModel) -> StoryView {
         let animationHandler = StoryAnimationHandler.preview(story: story)
-        let storyViewModel = StoryViewModel(
-            storyId: story.id,
-            parentViewModel: parentViewModel,
-            fileManager: DummyFileManager(),
-            mediaSaver: DummyMediaSaver(),
-            currentPortionIndex: { animationHandler.currentPortionIndex },
-            moveToNewCurrentPortion: animationHandler.moveToNewCurrentPortion
-        )
+        let storyViewModel = StoryViewModel(storyId: story.id, fileManager: DummyFileManager())
         
         return StoryView(
             story: story,
             shouldCubicRotation: false,
             storyViewModel: storyViewModel,
-            animationHandler: animationHandler,
+            animationHandler: animationHandler, 
+            portionMutationHandler: StoriesViewModel.preview,
             getProgressBar: {
                 ProgressBar(story: story, currentStoryId: story.id, animationHandler: animationHandler)
             },

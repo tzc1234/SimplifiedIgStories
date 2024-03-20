@@ -8,7 +8,7 @@
 import AVKit
 import Combine
 
-final class StoriesViewModel: ObservableObject, ParentStoryViewModel {
+final class StoriesViewModel: ObservableObject, PortionMutationHandler {
     @Published private(set) var stories: [Story] = []
     @Published private(set) var currentStoryId = -1
     @Published var shouldCubicRotation = false
@@ -17,10 +17,12 @@ final class StoriesViewModel: ObservableObject, ParentStoryViewModel {
     
     private let storiesLoader: StoriesLoader
     private let fileManager: FileManageable
+    private let mediaSaver: MediaSaver
     
-    init(fileManager: FileManageable, storiesLoader: StoriesLoader) {
-        self.fileManager = fileManager
+    init(storiesLoader: StoriesLoader, fileManager: FileManageable, mediaSaver: MediaSaver) {
         self.storiesLoader = storiesLoader
+        self.fileManager = fileManager
+        self.mediaSaver = mediaSaver
     }
 }
 
@@ -67,6 +69,10 @@ extension StoriesViewModel {
     
     var isAtLastStory: Bool {
         currentStoryId == lastCurrentStoryId
+    }
+    
+    private var currentUserPortions: [Portion] {
+        stories.first(where: { $0.id == yourStoryId })?.portions ?? []
     }
 }
 
@@ -118,7 +124,7 @@ extension StoriesViewModel {
     }
 }
 
-// MARK: - Post StoryPortion
+// MARK: - Post/Delete Portion
 // *** In real environment, the photo or video should be uploaded to server side.
 // This is a demo app, however, stores them into temp directory.
 extension StoriesViewModel {
@@ -149,16 +155,68 @@ extension StoriesViewModel {
         stories[yourStoryIdx].lastUpdate = .now
     }
     
-    func deletePortion(byId portionId: Int) {
-        guard let yourStoryIdx,
-              let index = stories[yourStoryIdx].portions.firstIndex(where: { $0.id == portionId }) else {
-            return
+    func deleteCurrentPortion(for portionIndex: Int,
+                              afterDeletion: () -> Void,
+                              whenNoNextPortionAfterDeletion: () -> Void) {
+        // If next portion exists, go next.
+        if portionIndex+1 < currentUserPortions.count {
+            deletePortionFromStory(by: portionIndex)
+            afterDeletion()
+        } else {
+            whenNoNextPortionAfterDeletion()
+            deletePortionFromStory(by: portionIndex)
+        }
+    }
+    
+    // *** In real environment, the photo or video should be deleted by API call,
+    // this is a demo app, however, deleting them from temp directory.
+    private func deletePortionFromStory(by portionIndex: Int) {
+        let portion = currentUserPortions[portionIndex]
+        if let fileURL = portion.imageURL ?? portion.videoURL {
+            try? fileManager.delete(for: fileURL)
         }
         
-        stories[yourStoryIdx].portions.remove(at: index)
+        deletePortion(by: portionIndex)
+    }
+    
+    private func deletePortion(by portionIndex: Int) {
+        guard let yourStoryIdx else { return }
+        
+        stories[yourStoryIdx].portions.remove(at: portionIndex)
+    }
+    
+    @MainActor
+    func savePortionMedia(for portionIndex: Int, loading: () -> Void, completion: (String?) -> Void) async {
+        let currentPortion = currentUserPortions[portionIndex]
+        loading()
+        
+        var successMessage: String?
+        if let imageUrl = currentPortion.imageURL,
+           let data = fileManager.getImage(for: imageUrl)?.jpegData(compressionQuality: 1) {
+            do {
+                try await mediaSaver.saveImageData(data)
+                successMessage = "Saved."
+            } catch MediaSaverError.noPermission {
+                successMessage = "Couldn't save. No add photo permission."
+            } catch {
+                successMessage = "Save failed."
+            }
+        } else if let videoUrl = currentPortion.videoURL {
+            do {
+                try await mediaSaver.saveVideo(by: videoUrl)
+                successMessage = "Saved."
+            } catch MediaSaverError.noPermission {
+                successMessage = "Couldn't save. No add photo permission."
+            } catch {
+                successMessage = "Save failed."
+            }
+        }
+        
+        completion(successMessage)
     }
 }
 
+// MARK: - Local models conversion
 private extension [LocalStory] {
     func toStories() -> [Story] {
         map { local in

@@ -250,7 +250,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
         )
     }
     
-    private class ParentStoryViewModelSpy: ObservableObject, ParentStoryViewModel {
+    private class ParentStoryViewModelSpy: ObservableObject {
         enum StoryMoveDirection {
             case previous, next
         }
