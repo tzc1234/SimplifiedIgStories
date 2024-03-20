@@ -10,7 +10,8 @@ import Combine
 
 extension StoryView {
     static func preview(story: Story, parentViewModel: StoriesViewModel) -> StoryView {
-        let animationHandler = StoryAnimationHandler.preview(story: story)
+        let storiesViewModel = StoriesViewModel.preview
+        let animationHandler = StoryAnimationHandler.preview(story: story, currentStoryHandler: storiesViewModel)
         let storyViewModel = StoryViewModel(storyId: story.id, fileManager: DummyFileManager())
         
         return StoryView(
@@ -28,16 +29,10 @@ extension StoryView {
 }
 
 extension StoryAnimationHandler {
-    static func preview(story: Story) -> StoryAnimationHandler {
+    static func preview(story: Story, currentStoryHandler: CurrentStoryHandler) -> StoryAnimationHandler {
         StoryAnimationHandler(
-            isAtFirstStory: { false },
-            isAtLastStory: { false },
-            isCurrentStory: { false },
-            moveToPreviousStory: {},
-            moveToNextStory: {},
-            portions: { story.portions },
-            isSameStoryAfterDragging: { false },
-            isDraggingPublisher: Empty<Bool, Never>().eraseToAnyPublisher(), 
+            storyId: story.id,
+            currentStoryHandler: currentStoryHandler,
             animationShouldPausePublisher: Empty<Bool, Never>().eraseToAnyPublisher()
         )
     }

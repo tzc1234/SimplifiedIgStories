@@ -106,14 +106,8 @@ struct SimplifiedIgStoriesApp: App {
             handler
         } else {
             StoryAnimationHandler(
-                isAtFirstStory: { storiesViewModel.firstCurrentStoryId == story.id },
-                isAtLastStory: { storiesViewModel.isAtLastStory },
-                isCurrentStory: { storiesViewModel.currentStoryId == story.id },
-                moveToPreviousStory: storiesViewModel.moveToPreviousStory,
-                moveToNextStory: storiesViewModel.moveToNextStory,
-                portions: { storiesViewModel.stories.first(where: { $0.id == story.id })?.portions ?? [] },
-                isSameStoryAfterDragging: { storiesViewModel.isSameStoryAfterDragging },
-                isDraggingPublisher: storiesViewModel.getIsDraggingPublisher(), 
+                storyId: story.id,
+                currentStoryHandler: storiesViewModel,
                 animationShouldPausePublisher: storyViewModel.$showConfirmationDialog
                     .combineLatest(storyViewModel.$showNoticeLabel)
                     .map { $0 || $1 }

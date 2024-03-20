@@ -8,7 +8,7 @@
 import AVKit
 import Combine
 
-final class StoriesViewModel: ObservableObject, PortionMutationHandler {
+final class StoriesViewModel: ObservableObject, PortionMutationHandler, CurrentStoryHandler {
     @Published private(set) var stories: [Story] = []
     @Published private(set) var currentStoryId = -1
     @Published var shouldCubicRotation = false

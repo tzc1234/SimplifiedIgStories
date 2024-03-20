@@ -87,7 +87,7 @@ struct StoryPortionView_Previews: PreviewProvider {
         let portion = story.portions[0]
         StoryPortionView(
             portion: portion,
-            animationHandler: .preview(story: story)
+            animationHandler: .preview(story: story, currentStoryHandler: storiesViewModel)
         )
     }
 }

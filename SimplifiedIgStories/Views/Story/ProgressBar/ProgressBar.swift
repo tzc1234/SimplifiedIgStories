@@ -57,7 +57,7 @@ struct ProgressBar_Previews: PreviewProvider {
         ProgressBar(
             story: story, 
             currentStoryId: story.id,
-            animationHandler: .preview(story: story)
+            animationHandler: .preview(story: story, currentStoryHandler: storiesViewModel)
         )
     }
 }

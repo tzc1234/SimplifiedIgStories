@@ -208,14 +208,8 @@ final class StoryAnimationHandlerTests: XCTestCase {
         let spy = ParentStoryViewModelSpy()
         spy.stories = stories
         let sut = StoryAnimationHandler(
-            isAtFirstStory: { storyId == spy.firstCurrentStoryId },
-            isAtLastStory: { spy.isAtLastStory },
-            isCurrentStory: { spy.currentStoryId == storyId },
-            moveToPreviousStory: spy.moveToPreviousStory,
-            moveToNextStory: spy.moveToNextStory,
-            portions: { stories[storyId].portions },
-            isSameStoryAfterDragging: { spy.isSameStoryAfterDragging },
-            isDraggingPublisher: spy.isDraggingPublisher.eraseToAnyPublisher(), 
+            storyId: storyId,
+            currentStoryHandler: spy,
             animationShouldPausePublisher: Empty<Bool, Never>().eraseToAnyPublisher()
         )
         
@@ -251,20 +245,23 @@ final class StoryAnimationHandlerTests: XCTestCase {
         )
     }
     
-    private class ParentStoryViewModelSpy: ObservableObject {
+    private class ParentStoryViewModelSpy: CurrentStoryHandler {
         enum StoryMoveDirection {
             case previous, next
         }
         
-        var stories = [Story]()
         var firstCurrentStoryId: Int? = nil
-        var currentStoryId = 0
-        private(set) var shouldCubicRotation = true
         var isAtLastStory = false
+        var currentStoryId = 0
+        var stories = [Story]()
         var isSameStoryAfterDragging = false
         
-        let isDraggingPublisher = CurrentValueSubject<Bool, Never>(false)
+        private let isDraggingPublisher = CurrentValueSubject<Bool, Never>(false)
         private(set) var loggedStoryMoveDirections = [StoryMoveDirection]()
+        
+        func getIsDraggingPublisher() -> AnyPublisher<Bool, Never> {
+            isDraggingPublisher.eraseToAnyPublisher()
+        }
         
         func setIsDragging(_ isDragging: Bool) {
             isDraggingPublisher.send(isDragging)
@@ -277,8 +274,6 @@ final class StoryAnimationHandlerTests: XCTestCase {
         func moveToNextStory() {
             loggedStoryMoveDirections.append(.next)
         }
-        
-        func deletePortion(byId portionId: Int) {}
     }
     
     private class DummyFileManager: FileManageable {

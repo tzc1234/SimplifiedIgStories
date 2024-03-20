@@ -12,45 +12,38 @@ enum BarPortionAnimationStatus: CaseIterable {
     case initial, start, restart, pause, resume, finish
 }
 
+protocol CurrentStoryHandler {
+    var firstCurrentStoryId: Int? { get }
+    var isAtLastStory: Bool { get }
+    var currentStoryId: Int { get }
+    var stories: [Story] { get }
+    var isSameStoryAfterDragging: Bool { get }
+    
+    func moveToPreviousStory()
+    func moveToNextStory()
+    func getIsDraggingPublisher() -> AnyPublisher<Bool, Never>
+}
+
 final class StoryAnimationHandler: ObservableObject {
     typealias PortionId = Int
     
     @Published private(set) var barPortionAnimationStatusDict = [PortionId: BarPortionAnimationStatus]()
     @Published private(set) var currentPortionId: PortionId = -1
-    
     private var isDragging = false
     private var subscriptions = Set<AnyCancellable>()
     
-    private let isAtFirstStory: () -> Bool
-    private let isAtLastStory: () -> Bool
-    private let isCurrentStory: () -> Bool
-    private let moveToPreviousStory: () -> Void
-    private let moveToNextStory: () -> Void
-    private let portions: () -> [Portion]
-    private let isSameStoryAfterDragging: () -> Bool
-    private let isDraggingPublisher: AnyPublisher<Bool, Never>
+    private let storyId: Int
+    private let currentStoryHandler: CurrentStoryHandler
     private let animationShouldPausePublisher: AnyPublisher<Bool, Never>
     
-    init(isAtFirstStory: @escaping () -> Bool,
-         isAtLastStory: @escaping () -> Bool,
-         isCurrentStory: @escaping () -> Bool,
-         moveToPreviousStory: @escaping () -> Void,
-         moveToNextStory: @escaping () -> Void,
-         portions: @escaping () -> [Portion],
-         isSameStoryAfterDragging: @escaping () -> Bool,
-         isDraggingPublisher: AnyPublisher<Bool, Never>,
+    init(storyId: Int,
+         currentStoryHandler: CurrentStoryHandler,
          animationShouldPausePublisher: AnyPublisher<Bool, Never>) {
-        self.isAtFirstStory = isAtFirstStory
-        self.isAtLastStory = isAtLastStory
-        self.isCurrentStory = isCurrentStory
-        self.moveToPreviousStory = moveToPreviousStory
-        self.moveToNextStory = moveToNextStory
-        self.portions = portions
-        self.isSameStoryAfterDragging = isSameStoryAfterDragging
-        self.isDraggingPublisher = isDraggingPublisher
+        self.storyId = storyId
+        self.currentStoryHandler = currentStoryHandler
         self.animationShouldPausePublisher = animationShouldPausePublisher
         
-        if let firstPortionId = portions().first?.id {
+        if let firstPortionId = portions.first?.id {
             self.currentPortionId = firstPortionId
             self.initBarPortionAnimationStatus()
         }
@@ -70,16 +63,28 @@ extension StoryAnimationHandler {
         currentPortionAnimationStatus == .resume
     }
     
+    private var isAtFirstStory: Bool {
+        currentStoryHandler.firstCurrentStoryId == storyId
+    }
+    
+    private var isCurrentStory: Bool {
+        currentStoryHandler.currentStoryId == storyId
+    }
+    
+    private var portions: [Portion] {
+        currentStoryHandler.stories.first(where: { $0.id == storyId })?.portions ?? []
+    }
+    
     var currentPortionIndex: Int? {
-        portions().firstIndex(where: { $0.id == currentPortionId })
+        portions.firstIndex(where: { $0.id == currentPortionId })
     }
     
     private var isAtFirstPortion: Bool {
-        currentPortionId == portions().first?.id
+        currentPortionId == portions.first?.id
     }
     
     private var isAtLastPortion: Bool {
-        currentPortionId == portions().last?.id
+        currentPortionId == portions.last?.id
     }
 }
 
@@ -93,7 +98,7 @@ extension StoryAnimationHandler {
     }
     
     private func subscribePublishers() {
-        isDraggingPublisher
+        currentStoryHandler.getIsDraggingPublisher()
             .dropFirst()
             .removeDuplicates()
             .sink { [weak self] dragging in
@@ -131,11 +136,11 @@ extension StoryAnimationHandler {
     
     private func performBackwardPortionAnimation() {
         if isAtFirstPortion {
-            if isAtFirstStory() {
+            if isAtFirstStory {
                 restartPortionAnimation()
             } else { // Not at the first story (that means the previous story must exist.)
                 setCurrentBarPortionAnimationStatus(to: .initial)
-                moveToPreviousStory()
+                currentStoryHandler.moveToPreviousStory()
             }
         } else {
             setCurrentBarPortionAnimationStatus(to: .initial)
@@ -152,7 +157,7 @@ extension StoryAnimationHandler {
         
         let previousPortionIndex = currentPortionIndex-1
         if previousPortionIndex >= 0 {
-            currentPortionId = portions()[previousPortionIndex].id
+            currentPortionId = portions[previousPortionIndex].id
             setCurrentBarPortionAnimationStatus(to: .start)
         }
     }
@@ -163,19 +168,19 @@ extension StoryAnimationHandler {
     }
     
     func startProgressBarAnimation() {
-        guard isCurrentStory() && !isCurrentPortionAnimating else { return }
+        guard isCurrentStory && !isCurrentPortionAnimating else { return }
         
         setCurrentBarPortionAnimationStatus(to: .start)
     }
     
     func pausePortionAnimation() {
-        if isCurrentStory() && isCurrentPortionAnimating {
+        if isCurrentStory && isCurrentPortionAnimating {
             setCurrentBarPortionAnimationStatus(to: .pause)
         }
     }
     
     func resumePortionAnimation() {
-        if isCurrentStory() && currentPortionAnimationStatus == .pause {
+        if isCurrentStory && currentPortionAnimationStatus == .pause {
             setCurrentBarPortionAnimationStatus(to: .resume)
         }
     }
@@ -185,9 +190,9 @@ extension StoryAnimationHandler {
     }
     
     func moveToCurrentPortion(for portionIndex: Int) {
-        guard portionIndex < portions().count else { return }
+        guard portionIndex < portions.count else { return }
         
-        currentPortionId = portions()[portionIndex].id
+        currentPortionId = portions[portionIndex].id
         setCurrentBarPortionAnimationStatus(to: .start)
     }
     
@@ -195,10 +200,10 @@ extension StoryAnimationHandler {
         guard currentPortionAnimationStatus == .finish else { return }
         
         if isAtLastPortion {
-            if isAtLastStory() {
+            if currentStoryHandler.isAtLastStory {
                 action()
             } else {
-                moveToNextStory()
+                currentStoryHandler.moveToNextStory()
             }
         } else {
             moveToNextPortion()
@@ -209,14 +214,14 @@ extension StoryAnimationHandler {
         guard let currentPortionIndex else { return }
         
         let nextPortionIndex = currentPortionIndex+1
-        if nextPortionIndex < portions().count {
-            currentPortionId = portions()[nextPortionIndex].id
+        if nextPortionIndex < portions.count {
+            currentPortionId = portions[nextPortionIndex].id
             setCurrentBarPortionAnimationStatus(to: .start)
         }
     }
     
     private func resumePortionAnimationIfStayAtSameStoryAfterDragged() {
-        if isSameStoryAfterDragging() {
+        if currentStoryHandler.isSameStoryAfterDragging {
             resumePortionAnimation()
         }
     }
