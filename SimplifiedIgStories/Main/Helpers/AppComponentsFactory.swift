@@ -11,7 +11,7 @@ final class AppComponentsFactory {
     private let fileManager = LocalFileManager()
     
     private let mediaStore = PHPPhotoMediaStore()
-    private(set) lazy var mediaSaver = LocalMediaSaver(store: mediaStore)
+    private lazy var mediaSaver = LocalMediaSaver(store: mediaStore)
     
     // storiesDataURL should not be nil, since storiesData.json is already embedded in Resource directory.
     private let storiesDataURL = Bundle.main.url(forResource: "storiesData.json", withExtension: nil)!
