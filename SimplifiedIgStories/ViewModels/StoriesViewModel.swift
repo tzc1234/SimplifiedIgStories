@@ -10,23 +10,34 @@ import Combine
 
 final class StoriesViewModel: ObservableObject, PortionMutationHandler, CurrentStoryHandler {
     @Published private(set) var stories: [Story] = []
-    @Published private(set) var currentStoryId = -1
-    @Published var shouldCubicRotation = false
-    @Published var isDragging = false
-    private var storyIdBeforeDragged = 0
+    
+    private var subscription: AnyCancellable?
     
     private let storiesLoader: StoriesLoader
     private let fileManager: FileManageable
     private let mediaSaver: MediaSaver
+    let animationHandler: StoriesAnimationHandler
     
     init(storiesLoader: StoriesLoader, fileManager: FileManageable, mediaSaver: MediaSaver) {
         self.storiesLoader = storiesLoader
         self.fileManager = fileManager
         self.mediaSaver = mediaSaver
+        self.animationHandler = StoriesAnimationHandler()
+        self.animationHandler.getStories = { [weak self] in self?.stories ?? [] }
+        
+        self.subscription = self.animationHandler
+            .objectWillChange
+            .sink { [weak self] in
+                self?.objectWillChange.send()
+            }
     }
 }
 
 extension StoriesViewModel {
+    var currentStoryId: Int {
+        animationHandler.currentStoryId
+    }
+    
     private var yourStoryId: Int? {
         stories.first(where: { $0.user.isCurrentUser })?.id
     }
@@ -40,35 +51,31 @@ extension StoriesViewModel {
     }
     
     var currentStories: [Story] {
-        if currentStoryId == yourStoryId {
-            return stories.filter { $0.user.isCurrentUser }
-        } else {
-            return stories.filter { !$0.user.isCurrentUser }
-        }
+        animationHandler.currentStories
     }
     
     var isSameStoryAfterDragging: Bool {
-        currentStoryId == storyIdBeforeDragged
+        animationHandler.isSameStoryAfterDragging
     }
     
     var currentStoryIndex: Int? {
-        currentStories.firstIndex(where: { $0.id == currentStoryId })
+        animationHandler.currentStoryIndex
     }
     
     var firstCurrentStoryId: Int? {
-        currentStories.first?.id
+        animationHandler.firstCurrentStoryId
     }
     
     var lastCurrentStoryId: Int? {
-        currentStories.last?.id
+        animationHandler.lastCurrentStoryId
     }
     
     var isAtFirstStory: Bool {
-        currentStoryId == firstCurrentStoryId
+        animationHandler.isAtFirstStory
     }
     
     var isAtLastStory: Bool {
-        currentStoryId == lastCurrentStoryId
+        animationHandler.isAtLastStory
     }
     
     private var currentUserPortions: [Portion] {
@@ -78,7 +85,7 @@ extension StoriesViewModel {
 
 extension StoriesViewModel {
     func getIsDraggingPublisher() -> AnyPublisher<Bool, Never> {
-        $isDragging.eraseToAnyPublisher()
+        animationHandler.getIsDraggingPublisher()
     }
     
     @MainActor
@@ -94,33 +101,19 @@ extension StoriesViewModel {
     }
     
     func saveStoryIdBeforeDragged() {
-        storyIdBeforeDragged = currentStoryId
+        animationHandler.saveStoryIdBeforeDragged()
     }
     
     func setCurrentStoryId(_ storyId: Int) {
-        guard stories.map(\.id).contains(storyId) else {
-            return
-        }
-        
-        currentStoryId = storyId
+        animationHandler.setCurrentStoryId(storyId)
     }
     
     func moveToPreviousStory() {
-        guard let currentStoryIndex else { return }
-        
-        let previousStoryIndex = currentStoryIndex-1
-        if previousStoryIndex >= 0 {
-            currentStoryId = currentStories[previousStoryIndex].id
-        }
+        animationHandler.moveToPreviousStory()
     }
     
     func moveToNextStory() {
-        guard let currentStoryIndex else { return }
-        
-        let nextStoryIndex = currentStoryIndex+1
-        if nextStoryIndex < currentStories.count {
-            currentStoryId = currentStories[nextStoryIndex].id
-        }
+        animationHandler.moveToNextStory()
     }
 }
 

@@ -21,11 +21,11 @@ struct StoryContainer: View {
                 ForEach(storiesViewModel.currentStories) { story in
                     getStoryView(story)
                         .opacity(story.id != storiesViewModel.currentStoryId && 
-                                 !storiesViewModel.shouldCubicRotation ? 0.0 : 1.0)
+                                 !storiesViewModel.animationHandler.shouldCubicRotation ? 0.0 : 1.0)
                         .frame(width: .screenWidth, height: geo.size.height)
                         .preference(key: FramePreferenceKey.self, value: geo.frame(in: .global))
                         .onPreferenceChange(FramePreferenceKey.self) { preferenceFrame in
-                            storiesViewModel.shouldCubicRotation = preferenceFrame.width == .screenWidth
+                            storiesViewModel.animationHandler.shouldCubicRotation = preferenceFrame.width == .screenWidth
                         }
                 }
             }
@@ -38,7 +38,7 @@ struct StoryContainer: View {
         .gesture(
             DragGesture()
                 .onChanged { _ in
-                    storiesViewModel.isDragging = true
+                    storiesViewModel.animationHandler.isDragging = true
                 }
                 .updating($translation) { value, state, _ in
                     storiesViewModel.saveStoryIdBeforeDragged()
@@ -46,7 +46,7 @@ struct StoryContainer: View {
                 }
                 .onEnded { value in
                     endDraggingStoryContainerWith(offset: value.translation.width / .screenWidth)
-                    storiesViewModel.isDragging = false
+                    storiesViewModel.animationHandler.isDragging = false
                 }
         )
         .statusBar(hidden: true)

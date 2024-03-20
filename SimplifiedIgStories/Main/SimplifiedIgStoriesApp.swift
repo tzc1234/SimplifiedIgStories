@@ -31,7 +31,7 @@ struct SimplifiedIgStoriesApp: App {
                             
                             return StoryView(
                                 story: story,
-                                shouldCubicRotation: storiesViewModel.shouldCubicRotation,
+                                shouldCubicRotation: storiesViewModel.animationHandler.shouldCubicRotation,
                                 storyViewModel: storyViewModel, 
                                 animationHandler: animationHandler, 
                                 portionMutationHandler: storiesViewModel,

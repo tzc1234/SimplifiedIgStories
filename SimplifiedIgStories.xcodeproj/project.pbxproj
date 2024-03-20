@@ -21,6 +21,7 @@
 		BE35051B2B7ABB4800348B4B /* PhotoTaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE35051A2B7ABB4800348B4B /* PhotoTaker.swift */; };
 		BE36D6E82BAB375A009240EE /* StoryComponentCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE36D6E72BAB375A009240EE /* StoryComponentCache.swift */; };
 		BE36D6EA2BAB3785009240EE /* AppComponentsFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE36D6E92BAB3785009240EE /* AppComponentsFactory.swift */; };
+		BE36D6EC2BAB4A54009240EE /* StoriesAnimationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE36D6EB2BAB4A54009240EE /* StoriesAnimationHandler.swift */; };
 		BE38F7AD2B83649300F42C71 /* AVPhotoTakerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE38F7AC2B83649300F42C71 /* AVPhotoTakerTests.swift */; };
 		BE38F7B02B83672400F42C71 /* StatusSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE38F7AF2B83672400F42C71 /* StatusSpy.swift */; };
 		BE38F7B22B837CC400F42C71 /* CaptureSessionSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE38F7B12B837CC400F42C71 /* CaptureSessionSpy.swift */; };
@@ -148,6 +149,7 @@
 		BE35051A2B7ABB4800348B4B /* PhotoTaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoTaker.swift; sourceTree = "<group>"; };
 		BE36D6E72BAB375A009240EE /* StoryComponentCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryComponentCache.swift; sourceTree = "<group>"; };
 		BE36D6E92BAB3785009240EE /* AppComponentsFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppComponentsFactory.swift; sourceTree = "<group>"; };
+		BE36D6EB2BAB4A54009240EE /* StoriesAnimationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesAnimationHandler.swift; sourceTree = "<group>"; };
 		BE38F7AC2B83649300F42C71 /* AVPhotoTakerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPhotoTakerTests.swift; sourceTree = "<group>"; };
 		BE38F7AF2B83672400F42C71 /* StatusSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusSpy.swift; sourceTree = "<group>"; };
 		BE38F7B12B837CC400F42C71 /* CaptureSessionSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSessionSpy.swift; sourceTree = "<group>"; };
@@ -547,6 +549,7 @@
 				BE6B73C627D794AD003D2B24 /* StoryViewModel.swift */,
 				BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */,
 				BEFE6A962BA36B7100FC307F /* StoryAnimationHandler.swift */,
+				BE36D6EB2BAB4A54009240EE /* StoriesAnimationHandler.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -877,6 +880,7 @@
 				BE9336C727D22628009E5370 /* Color+Additions.swift in Sources */,
 				BE2D7796285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift in Sources */,
 				BE35051B2B7ABB4800348B4B /* PhotoTaker.swift in Sources */,
+				BE36D6EC2BAB4A54009240EE /* StoriesAnimationHandler.swift in Sources */,
 				BEAFE90E2817F81C004C4D43 /* Double+Additions.swift in Sources */,
 				BEA1D95827C3C74D00D0A67A /* Date+Additions.swift in Sources */,
 				BEA1D95E27C3DA7100D0A67A /* User.swift in Sources */,

@@ -56,11 +56,11 @@ class StoriesViewModelTests: XCTestCase {
     func test_saveStoryIdBeforeDragged_savesCurrentStoryId() async {
         let sut = await makeSUT()
         
-        XCTAssertFalse(sut.isSameStoryAfterDragging)
+        XCTAssertFalse(sut.animationHandler.isSameStoryAfterDragging)
         
         sut.saveStoryIdBeforeDragged()
         
-        XCTAssertTrue(sut.isSameStoryAfterDragging)
+        XCTAssertTrue(sut.animationHandler.isSameStoryAfterDragging)
     }
     
     func test_setCurrentStoryId_ignoresWhenStoryIdIsNotExisted() async {
@@ -162,11 +162,11 @@ class StoriesViewModelTests: XCTestCase {
         
         XCTAssertEqual(loggedIsDragging, [false])
         
-        sut.isDragging = true
+        sut.animationHandler.isDragging = true
         
         XCTAssertEqual(loggedIsDragging, [false, true])
         
-        sut.isDragging = false
+        sut.animationHandler.isDragging = false
         
         XCTAssertEqual(loggedIsDragging, [false, true, false])
         
