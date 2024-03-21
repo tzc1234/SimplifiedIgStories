@@ -25,6 +25,6 @@ final class AppComponentsFactory {
     )
     
     private(set) lazy var storiesAnimationHandler = StoriesAnimationHandler(
-        storiesPublisher: storiesViewModel.storiesPublisher()
+        storiesPublisher: storiesViewModel.$stories.eraseToAnyPublisher()
     )
 }

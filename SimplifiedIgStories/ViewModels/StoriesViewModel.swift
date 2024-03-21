@@ -6,10 +6,9 @@
 //
 
 import AVKit
-import Combine
 
 final class StoriesViewModel: ObservableObject, PortionMutationHandler {
-    @Published private var stories: [Story] = []
+    @Published private(set) var stories: [Story] = []
     
     private let storiesLoader: StoriesLoader
     private let fileManager: FileManageable
@@ -41,10 +40,6 @@ extension StoriesViewModel {
 }
 
 extension StoriesViewModel {
-    func storiesPublisher() -> AnyPublisher<[Story], Never> {
-        $stories.eraseToAnyPublisher()
-    }
-    
     @MainActor
     func fetchStories() async {
         do {
