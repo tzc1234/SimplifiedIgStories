@@ -126,7 +126,7 @@ extension StoryAnimationHandler {
             .store(in: &subscriptions)
     }
     
-    func setPortionTransitionDirection(by pointX: CGFloat) {
+    func performPortionTransitionAnimation(by pointX: CGFloat) {
         if pointX <= .screenWidth/2 {
             performBackwardPortionAnimation()
         } else {

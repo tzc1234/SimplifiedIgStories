@@ -47,7 +47,7 @@ struct StoryView: View {
                 Spacer()
                 
                 DetectableTapGesturePositionView { point in
-                    animationHandler.setPortionTransitionDirection(by: point.x)
+                    animationHandler.performPortionTransitionAnimation(by: point.x)
                 }
                 
                 Spacer()

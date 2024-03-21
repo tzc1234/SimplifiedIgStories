@@ -77,7 +77,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
         
         XCTAssertEqual(sut.currentPortionAnimationStatus, .initial)
         
-        sut.setPortionTransitionDirection(by: .forwardValue)
+        sut.performPortionTransitionAnimation(by: .forwardValue)
         
         XCTAssertEqual(sut.currentPortionAnimationStatus, .finish)
     }
@@ -92,7 +92,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
         
         XCTAssertEqual(sut.currentPortionId, 1)
         
-        sut.setPortionTransitionDirection(by: .backwardValue)
+        sut.performPortionTransitionAnimation(by: .backwardValue)
         
         XCTAssertEqual(sut.currentPortionId, 0)
         XCTAssertEqual(sut.currentPortionAnimationStatus, .start)
@@ -103,12 +103,12 @@ final class StoryAnimationHandlerTests: XCTestCase {
         let (sut, spy) = makeSUT(stories: stories)
         spy.firstCurrentStoryId = 0
         
-        sut.setPortionTransitionDirection(by: .backwardValue)
+        sut.performPortionTransitionAnimation(by: .backwardValue)
         
         XCTAssertEqual(sut.currentPortionId, 0)
         XCTAssertEqual(sut.currentPortionAnimationStatus, .start)
         
-        sut.setPortionTransitionDirection(by: .backwardValue)
+        sut.performPortionTransitionAnimation(by: .backwardValue)
         
         XCTAssertEqual(sut.currentPortionId, 0)
         XCTAssertEqual(sut.currentPortionAnimationStatus, .restart)
@@ -125,7 +125,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
         XCTAssertEqual(sut.currentPortionId, 1)
         XCTAssertEqual(spy.loggedStoryMoveDirections, [])
         
-        sut.setPortionTransitionDirection(by: .backwardValue)
+        sut.performPortionTransitionAnimation(by: .backwardValue)
         
         XCTAssertEqual(sut.currentPortionId, 1)
         XCTAssertEqual(sut.currentPortionAnimationStatus, .initial)
