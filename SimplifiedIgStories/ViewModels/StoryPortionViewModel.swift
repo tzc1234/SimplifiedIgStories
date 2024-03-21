@@ -8,6 +8,11 @@
 import UIKit
 import Combine
 
+protocol PortionAnimationHandler {
+    func pausePortionAnimation()
+    func resumePortionAnimation()
+}
+
 final class StoryPortionViewModel: ObservableObject {
     @Published var showConfirmationDialog = false
     @Published private(set) var noticeMsg = ""
@@ -19,22 +24,19 @@ final class StoryPortionViewModel: ObservableObject {
     let portion: Portion
     private let fileManager: FileManageable
     private let mediaSaver: MediaSaver
-    private let pauseAnimation: () -> Void
-    private let resumeAnimation: () -> Void
+    private let portionAnimationHandler: PortionAnimationHandler
     
     init(story: Story,
          portion: Portion,
          fileManager: FileManageable,
          mediaSaver: MediaSaver,
-         pauseAnimation: @escaping () -> Void,
-         resumeAnimation: @escaping () -> Void) {
+         portionAnimationHandler: PortionAnimationHandler) {
         self.storyId = story.id
         self.isCurrentUser = story.user.isCurrentUser
         self.portion = portion
         self.fileManager = fileManager
         self.mediaSaver = mediaSaver
-        self.pauseAnimation = pauseAnimation
-        self.resumeAnimation = resumeAnimation
+        self.portionAnimationHandler = portionAnimationHandler
         self.subscribePublisher()
     }
     
@@ -44,9 +46,9 @@ final class StoryPortionViewModel: ObservableObject {
             .map { $0 || !$1.isEmpty }
             .sink { [weak self] animationShouldPause in
                 if animationShouldPause {
-                    self?.pauseAnimation()
+                    self?.portionAnimationHandler.pausePortionAnimation()
                 } else {
-                    self?.resumeAnimation()
+                    self?.portionAnimationHandler.resumePortionAnimation()
                 }
             }
     }

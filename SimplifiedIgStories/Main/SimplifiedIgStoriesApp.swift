@@ -75,9 +75,8 @@ struct SimplifiedIgStoriesApp: App {
                 story: story,
                 portion: portion,
                 fileManager: factory.fileManager,
-                mediaSaver: factory.mediaSaver,
-                pauseAnimation: animationHandler.pausePortionAnimation,
-                resumeAnimation: animationHandler.resumePortionAnimation
+                mediaSaver: factory.mediaSaver, 
+                portionAnimationHandler: animationHandler
             )
         }
         

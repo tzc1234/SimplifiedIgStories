@@ -158,8 +158,7 @@ struct StoryPortionView_Previews: PreviewProvider {
                 portion: portion,
                 fileManager: DummyFileManager(),
                 mediaSaver: DummyMediaSaver(),
-                pauseAnimation: {},
-                resumeAnimation: {}
+                portionAnimationHandler: StoryAnimationHandler.preview
             ),
             animationHandler: .preview,
             deletePortion: StoriesViewModel.preview.deletePortion,

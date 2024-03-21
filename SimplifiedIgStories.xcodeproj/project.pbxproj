@@ -548,8 +548,8 @@
 				BE8F580927D668E900F9DB92 /* StoriesViewModel.swift */,
 				BE6B73C627D794AD003D2B24 /* StoryPortionViewModel.swift */,
 				BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */,
-				BEFE6A962BA36B7100FC307F /* StoryAnimationHandler.swift */,
 				BE36D6EB2BAB4A54009240EE /* StoriesAnimationHandler.swift */,
+				BEFE6A962BA36B7100FC307F /* StoryAnimationHandler.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
