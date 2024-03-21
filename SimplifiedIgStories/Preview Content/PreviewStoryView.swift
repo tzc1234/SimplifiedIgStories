@@ -29,7 +29,7 @@ extension StoryView {
                 StoryPortionView(
                     storyPortionViewModel: storyPortionViewModel,
                     animationHandler: animationHandler,
-                    portionMutationHandler: StoriesViewModel.preview, 
+                    deletePortion: StoriesViewModel.preview.deletePortion, 
                     onDisappear: { _ in }
                 )
             },

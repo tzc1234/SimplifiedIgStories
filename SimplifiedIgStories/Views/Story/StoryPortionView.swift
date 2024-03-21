@@ -8,12 +8,6 @@
 import SwiftUI
 import AVKit
 
-protocol PortionMutationHandler {
-    func deleteCurrentPortion(for portionId: Int,
-                              afterDeletion: (_ portionIndex: Int) -> Void,
-                              whenNoNextPortionAfterDeletion: () -> Void)
-}
-
 // *** In real environment, images are loaded through internet. The failure case should be considered.
 struct StoryPortionView: View {
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
@@ -22,7 +16,7 @@ struct StoryPortionView: View {
     
     @ObservedObject var storyPortionViewModel: StoryPortionViewModel
     @ObservedObject var animationHandler: StoryAnimationHandler
-    let portionMutationHandler: PortionMutationHandler
+    let deletePortion: (Int, (Int) -> Void, () -> Void) -> Void
     let onDisappear: (Int) -> Void
     
     private var portion: Portion {
@@ -47,14 +41,11 @@ struct StoryPortionView: View {
                     moreButton
                         .confirmationDialog("", isPresented: $storyPortionViewModel.showConfirmationDialog, titleVisibility: .hidden) {
                             Button("Delete", role: .destructive) {
-                                portionMutationHandler.deleteCurrentPortion(
-                                    for: portion.id,
-                                    afterDeletion: { portionIndex in
-                                        animationHandler.moveToCurrentPortion(for: portionIndex)
-                                    },
-                                    whenNoNextPortionAfterDeletion: {
-                                        homeUIActionHandler.closeStoryContainer(storyId: storyPortionViewModel.storyId)
-                                    })
+                                deletePortion(portion.id, { portionIndex in
+                                    animationHandler.moveToCurrentPortion(for: portionIndex)
+                                }, {
+                                    homeUIActionHandler.closeStoryContainer(storyId: storyPortionViewModel.storyId)
+                                })
                             }
                             
                             Button("Save", role: .none) {
@@ -171,7 +162,7 @@ struct StoryPortionView_Previews: PreviewProvider {
                 resumeAnimation: {}
             ),
             animationHandler: .preview,
-            portionMutationHandler: StoriesViewModel.preview,
+            deletePortion: StoriesViewModel.preview.deletePortion,
             onDisappear: { _ in }
         )
     }

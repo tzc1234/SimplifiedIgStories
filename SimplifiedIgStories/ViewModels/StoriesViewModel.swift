@@ -7,7 +7,7 @@
 
 import AVKit
 
-final class StoriesViewModel: ObservableObject, PortionMutationHandler {
+final class StoriesViewModel: ObservableObject {
     @Published private(set) var stories: [Story] = []
     
     private let storiesLoader: StoriesLoader
@@ -84,9 +84,9 @@ extension StoriesViewModel {
         stories[yourStoryIdx].lastUpdate = .now
     }
     
-    func deleteCurrentPortion(for portionId: Int,
-                              afterDeletion: (_ portionIndex: Int) -> Void,
-                              whenNoNextPortionAfterDeletion: () -> Void) {
+    func deletePortion(for portionId: Int,
+                       afterDeletion: (_ portionIndex: Int) -> Void,
+                       whenNoNextPortionAfterDeletion: () -> Void) {
         guard let portionIndex = currentUserPortions.firstIndex(where: { $0.id == portionId }) else { return }
         
         // If next portion exists, go next.
