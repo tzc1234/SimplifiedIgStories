@@ -209,7 +209,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
         spy.stories = stories
         let sut = StoryAnimationHandler(
             storyId: storyId,
-            currentStoryHandler: spy,
+            currentStoryAnimationHandler: spy,
             animationShouldPausePublisher: Empty<Bool, Never>().eraseToAnyPublisher()
         )
         
@@ -245,7 +245,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
         )
     }
     
-    private class ParentStoryViewModelSpy: CurrentStoryAnimationHandler {
+    private class ParentStoryViewModelSpy: ObservableObject, CurrentStoryAnimationHandler {
         enum StoryMoveDirection {
             case previous, next
         }

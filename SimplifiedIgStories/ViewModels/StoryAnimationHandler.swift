@@ -13,6 +13,7 @@ enum BarPortionAnimationStatus: CaseIterable {
 }
 
 protocol CurrentStoryAnimationHandler {
+    var objectWillChange: ObservableObjectPublisher { get }
     var firstCurrentStoryId: Int? { get }
     var isAtLastStory: Bool { get }
     var currentStoryId: Int { get }
@@ -37,10 +38,10 @@ final class StoryAnimationHandler: ObservableObject {
     private let animationShouldPausePublisher: AnyPublisher<Bool, Never>
     
     init(storyId: Int,
-         currentStoryHandler: CurrentStoryAnimationHandler,
+         currentStoryAnimationHandler: CurrentStoryAnimationHandler,
          animationShouldPausePublisher: AnyPublisher<Bool, Never>) {
         self.storyId = storyId
-        self.currentStoryAnimationHandler = currentStoryHandler
+        self.currentStoryAnimationHandler = currentStoryAnimationHandler
         self.animationShouldPausePublisher = animationShouldPausePublisher
         
         if let firstPortionId = portions.first?.id {
@@ -63,12 +64,16 @@ extension StoryAnimationHandler {
         currentPortionAnimationStatus == .resume
     }
     
+    var currentStoryId: Int {
+        currentStoryAnimationHandler.currentStoryId
+    }
+    
     private var isAtFirstStory: Bool {
         currentStoryAnimationHandler.firstCurrentStoryId == storyId
     }
     
     private var isCurrentStory: Bool {
-        currentStoryAnimationHandler.currentStoryId == storyId
+        currentStoryId == storyId
     }
     
     private var portions: [Portion] {
@@ -98,6 +103,12 @@ extension StoryAnimationHandler {
     }
     
     private func subscribePublishers() {
+        currentStoryAnimationHandler.objectWillChange
+            .sink { [weak self] _ in
+                self?.objectWillChange.send()
+            }
+            .store(in: &subscriptions)
+        
         currentStoryAnimationHandler.getIsDraggingPublisher()
             .dropFirst()
             .removeDuplicates()

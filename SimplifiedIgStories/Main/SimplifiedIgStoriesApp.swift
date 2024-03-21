@@ -43,13 +43,6 @@ struct SimplifiedIgStoriesApp: App {
                                 storyViewModel: storyViewModel,
                                 animationHandler: storyAnimationHandler, 
                                 portionMutationHandler: storiesViewModel,
-                                getProgressBar: {
-                                    ProgressBar(
-                                        story: story,
-                                        currentStoryId: storiesAnimationHandler.currentStoryId,
-                                        animationHandler: storyAnimationHandler
-                                    )
-                                },
                                 onDisappear: { storyId in
                                     storyViewModelCache.removeComponent(for: storyId)
                                     animationHandlerCache.removeComponent(for: storyId)
@@ -79,7 +72,7 @@ struct SimplifiedIgStoriesApp: App {
         } else {
             StoryAnimationHandler(
                 storyId: storyId,
-                currentStoryHandler: storiesAnimationHandler,
+                currentStoryAnimationHandler: storiesAnimationHandler,
                 animationShouldPausePublisher: storyViewModel.$showConfirmationDialog
                     .combineLatest(storyViewModel.$noticeMsg)
                     .map { $0 || !$1.isEmpty }

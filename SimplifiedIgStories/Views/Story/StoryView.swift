@@ -21,7 +21,6 @@ struct StoryView: View {
     @StateObject var storyViewModel: StoryViewModel
     @StateObject var animationHandler: StoryAnimationHandler
     let portionMutationHandler: PortionMutationHandler
-    let getProgressBar: () -> ProgressBar
     let onDisappear: (Int) -> Void
     
     private var story: Story {
@@ -31,7 +30,7 @@ struct StoryView: View {
     var body: some View {
         ZStack {
             VStack(alignment: .leading) {
-                getProgressBar()
+                ProgressBar(story: story, animationHandler: animationHandler)
                     .frame(height: 2.0, alignment: .center)
                     .padding(.top, 12.0)
                 

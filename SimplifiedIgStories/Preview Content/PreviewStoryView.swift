@@ -19,9 +19,6 @@ extension StoryView {
             storyViewModel: storyViewModel,
             animationHandler: animationHandler, 
             portionMutationHandler: StoriesViewModel.preview,
-            getProgressBar: {
-                ProgressBar(story: story, currentStoryId: story.id, animationHandler: animationHandler)
-            },
             onDisappear: { _ in }
         )
     }()
@@ -30,7 +27,7 @@ extension StoryView {
 extension StoryAnimationHandler {
     static let preview: StoryAnimationHandler = StoryAnimationHandler(
         storyId: PreviewData.stories[0].id,
-        currentStoryHandler: StoriesAnimationHandler.preview,
+        currentStoryAnimationHandler: StoriesAnimationHandler.preview,
         animationShouldPausePublisher: Empty<Bool, Never>().eraseToAnyPublisher()
     )
 }
