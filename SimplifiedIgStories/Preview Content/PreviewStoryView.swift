@@ -16,7 +16,6 @@ extension StoryView {
         let storyViewModel = StoryViewModel(story: story)
         
         return StoryView(
-            shouldCubicRotation: false,
             storyViewModel: storyViewModel,
             animationHandler: animationHandler, 
             portionMutationHandler: StoriesViewModel.preview,

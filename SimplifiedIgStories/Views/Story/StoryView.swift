@@ -18,7 +18,6 @@ struct StoryView: View {
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     @State private var isLoading = false
     
-    let shouldCubicRotation: Bool
     @StateObject var storyViewModel: StoryViewModel
     @StateObject var animationHandler: StoryAnimationHandler
     let portionMutationHandler: PortionMutationHandler
@@ -30,76 +29,70 @@ struct StoryView: View {
     }
     
     var body: some View {
-        GeometryReader { geo in
-            ZStack {
-                VStack(alignment: .leading) {
-                    getProgressBar()
-                        .frame(height: 2.0, alignment: .center)
-                        .padding(.top, 12.0)
-                    
-                    HStack {
-                        avatarIcon
-                        nameText
-                        dateText
-                        Spacer()
-                        closeButton
-                    }
-                    .padding(.leading, 20.0)
-                    
+        ZStack {
+            VStack(alignment: .leading) {
+                getProgressBar()
+                    .frame(height: 2.0, alignment: .center)
+                    .padding(.top, 12.0)
+                
+                HStack {
+                    avatarIcon
+                    nameText
+                    dateText
                     Spacer()
-                    
-                    DetectableTapGesturePositionView { point in
-                        animationHandler.setPortionTransitionDirection(by: point.x)
-                    }
-                    
-                    Spacer()
-                    
-                    moreButton
-                        .confirmationDialog("", isPresented: $storyViewModel.showConfirmationDialog, titleVisibility: .hidden) {
-                            Button("Delete", role: .destructive) {
-                                guard let portionIndex = animationHandler.currentPortionIndex else { return }
-                                
-                                portionMutationHandler.deleteCurrentPortion(for: portionIndex) {
-                                    animationHandler.moveToCurrentPortion(for: portionIndex)
-                                } whenNoNextPortionAfterDeletion: {
-                                    homeUIActionHandler.closeStoryContainer(storyId: story.id)
-                                }
-                            }
-                            
-                            Button("Save", role: .none) {
-                                Task {
-                                    guard let portionIndex = animationHandler.currentPortionIndex else { return }
-                                    
-                                    isLoading = true
-                                    let message = await portionMutationHandler.savePortionMedia(for: portionIndex)
-                                    
-                                    isLoading = false
-                                    storyViewModel.showNotice(message: message)
-                                }
-                            }
-                            
-                            Button("Cancel", role: .cancel, action: {})
-                        }
+                    closeButton
+                }
+                .padding(.leading, 20.0)
+                
+                Spacer()
+                
+                DetectableTapGesturePositionView { point in
+                    animationHandler.setPortionTransitionDirection(by: point.x)
                 }
                 
-                LoadingView()
-                    .opacity(isLoading ? 1 : 0)
+                Spacer()
                 
-                noticeLabel
+                moreButton
+                    .confirmationDialog("", isPresented: $storyViewModel.showConfirmationDialog, titleVisibility: .hidden) {
+                        Button("Delete", role: .destructive) {
+                            guard let portionIndex = animationHandler.currentPortionIndex else { return }
+                            
+                            portionMutationHandler.deleteCurrentPortion(for: portionIndex) {
+                                animationHandler.moveToCurrentPortion(for: portionIndex)
+                            } whenNoNextPortionAfterDeletion: {
+                                homeUIActionHandler.closeStoryContainer(storyId: story.id)
+                            }
+                        }
+                        
+                        Button("Save", role: .none) {
+                            Task {
+                                guard let portionIndex = animationHandler.currentPortionIndex else { return }
+                                
+                                isLoading = true
+                                let message = await portionMutationHandler.savePortionMedia(for: portionIndex)
+                                
+                                isLoading = false
+                                storyViewModel.showNotice(message: message)
+                            }
+                        }
+                        
+                        Button("Cancel", role: .cancel, action: {})
+                    }
             }
-            .background(storyPortionViews)
-            .onAppear {
-                print("storyId: \(story.id) view onAppear.")
-                animationHandler.startProgressBarAnimation()
-            }
-            .cubicTransition(
-                shouldRotate: shouldCubicRotation,
-                offsetX: geo.frame(in: .global).minX
-            )
-            .onDisappear {
-                print("storyId: \(story.id) view onDisappear.")
-                onDisappear(story.id)
-            }
+            
+            LoadingView()
+                .opacity(isLoading ? 1 : 0)
+            
+            noticeLabel
+        }
+        .background(storyPortionViews)
+        .onAppear {
+            print("storyId: \(story.id) view onAppear.")
+            animationHandler.startProgressBarAnimation()
+        }
+        .onDisappear {
+            print("storyId: \(story.id) view onDisappear.")
+            onDisappear(story.id)
         }
     }
 }

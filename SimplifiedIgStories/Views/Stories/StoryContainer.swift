@@ -20,14 +20,20 @@ struct StoryContainer: View {
             HStack(alignment: .top, spacing: 0) {
                 // *** A risk of memory leak if too many stories.
                 ForEach(animationHandler.currentStories) { story in
-                    getStoryView(story)
-                        .opacity(story.id != animationHandler.currentStoryId &&
-                                 !animationHandler.shouldCubicRotation ? 0.0 : 1.0)
-                        .frame(width: .screenWidth, height: geo.size.height)
-                        .preference(key: FramePreferenceKey.self, value: geo.frame(in: .global))
-                        .onPreferenceChange(FramePreferenceKey.self) { preferenceFrame in
-                            animationHandler.shouldCubicRotation = preferenceFrame.width == .screenWidth
-                        }
+                    GeometryReader { innerGeo in
+                        getStoryView(story)
+                            .cubicTransition(
+                                shouldRotate: animationHandler.shouldCubicRotation,
+                                offsetX: innerGeo.frame(in: .global).minX
+                            )
+                    }
+                    .opacity(story.id != animationHandler.currentStoryId &&
+                             !animationHandler.shouldCubicRotation ? 0.0 : 1.0)
+                    .frame(width: .screenWidth, height: geo.size.height)
+                    .preference(key: FramePreferenceKey.self, value: geo.frame(in: .global))
+                    .onPreferenceChange(FramePreferenceKey.self) { preferenceFrame in
+                        animationHandler.shouldCubicRotation = preferenceFrame.width == .screenWidth
+                    }
                 }
             }
         }
