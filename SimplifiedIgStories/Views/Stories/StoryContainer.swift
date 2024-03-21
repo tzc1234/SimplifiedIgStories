@@ -10,6 +10,7 @@ import SwiftUI
 struct StoryContainer: View {
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     @GestureState private var translation: CGFloat = 0
+    @State private var shouldCubicRotation = false
     
     @ObservedObject var animationHandler: StoriesAnimationHandler
     
@@ -23,16 +24,15 @@ struct StoryContainer: View {
                     GeometryReader { innerGeo in
                         getStoryView(story)
                             .cubicTransition(
-                                shouldRotate: animationHandler.shouldCubicRotation,
+                                shouldRotate: shouldCubicRotation,
                                 offsetX: innerGeo.frame(in: .global).minX
                             )
                     }
-                    .opacity(story.id != animationHandler.currentStoryId &&
-                             !animationHandler.shouldCubicRotation ? 0.0 : 1.0)
+                    .opacity(story.id != animationHandler.currentStoryId && !shouldCubicRotation ? 0.0 : 1.0)
                     .frame(width: .screenWidth, height: geo.size.height)
                     .preference(key: FramePreferenceKey.self, value: geo.frame(in: .global))
                     .onPreferenceChange(FramePreferenceKey.self) { preferenceFrame in
-                        animationHandler.shouldCubicRotation = preferenceFrame.width == .screenWidth
+                        shouldCubicRotation = preferenceFrame.width == .screenWidth
                     }
                 }
             }

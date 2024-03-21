@@ -11,10 +11,9 @@ import Combine
 final class StoriesAnimationHandler: ObservableObject, CurrentStoryAnimationHandler {
     @Published private(set) var stories: [Story] = []
     @Published private(set) var currentStoryId = -1
-    @Published var shouldCubicRotation = false
     @Published var isDragging = false
-    private var storyIdBeforeDragged: Int?
     
+    private var storyIdBeforeDragged: Int?
     private var cancellable: AnyCancellable?
     
     init(storiesPublisher: AnyPublisher<[Story], Never>) {
