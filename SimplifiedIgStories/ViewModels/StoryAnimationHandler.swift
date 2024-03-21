@@ -16,9 +16,9 @@ protocol CurrentStoryHandler {
     var firstCurrentStoryId: Int? { get }
     var isAtLastStory: Bool { get }
     var currentStoryId: Int { get }
-    var stories: [Story] { get }
     var isSameStoryAfterDragging: Bool { get }
     
+    func getPortions(by storyId: Int) -> [Portion]
     func moveToPreviousStory()
     func moveToNextStory()
     func getIsDraggingPublisher() -> AnyPublisher<Bool, Never>
@@ -72,7 +72,7 @@ extension StoryAnimationHandler {
     }
     
     private var portions: [Portion] {
-        currentStoryHandler.stories.first(where: { $0.id == storyId })?.portions ?? []
+        currentStoryHandler.getPortions(by: storyId)
     }
     
     var currentPortionIndex: Int? {
