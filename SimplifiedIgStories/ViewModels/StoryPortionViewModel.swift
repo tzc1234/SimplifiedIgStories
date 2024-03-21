@@ -9,6 +9,7 @@ import UIKit
 
 final class StoryPortionViewModel: ObservableObject {
     @Published var showConfirmationDialog = false
+    @Published private(set) var isLoading = false
     @Published private(set) var noticeMsg = ""
     
     let storyId: Int
@@ -30,6 +31,8 @@ final class StoryPortionViewModel: ObservableObject {
     
     @MainActor
     func saveMedia() async {
+        isLoading = true
+        
         var successMessage = ""
         if let imageUrl = portion.imageURL,
            let data = fileManager.getImage(for: imageUrl)?.jpegData(compressionQuality: 1) {
@@ -52,6 +55,7 @@ final class StoryPortionViewModel: ObservableObject {
             }
         }
         
+        isLoading = false
         showNotice(message: successMessage)
     }
     

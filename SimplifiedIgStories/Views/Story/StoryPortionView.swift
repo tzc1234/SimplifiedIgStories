@@ -13,7 +13,6 @@ import Combine
 struct StoryPortionView: View {
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     @State private var player: AVPlayer?
-    @State private var isLoading = false
     
     @ObservedObject var storyPortionViewModel: StoryPortionViewModel
     @ObservedObject var animationHandler: StoryAnimationHandler
@@ -48,19 +47,19 @@ struct StoryPortionView: View {
                     Spacer()
                     moreButton
                         .confirmationDialog("", isPresented: $storyPortionViewModel.showConfirmationDialog, titleVisibility: .hidden) {
-                            Button("Delete", role: .destructive) {
-                                deletePortion(portion.id, { portionIndex in
-                                    animationHandler.moveToCurrentPortion(for: portionIndex)
-                                }, {
-                                    homeUIActionHandler.closeStoryContainer(storyId: storyPortionViewModel.storyId)
-                                })
+                            if storyPortionViewModel.isCurrentUser {
+                                Button("Delete", role: .destructive) {
+                                    deletePortion(portion.id, { portionIndex in
+                                        animationHandler.moveToCurrentPortion(for: portionIndex)
+                                    }, {
+                                        homeUIActionHandler.closeStoryContainer(storyId: storyPortionViewModel.storyId)
+                                    })
+                                }
                             }
                             
                             Button("Save", role: .none) {
                                 Task {
-                                    isLoading = true
                                     await storyPortionViewModel.saveMedia()
-                                    isLoading = false
                                 }
                             }
                             
@@ -70,7 +69,7 @@ struct StoryPortionView: View {
             }
             
             LoadingView()
-                .opacity(isLoading ? 1 : 0)
+                .opacity(storyPortionViewModel.isLoading ? 1 : 0)
             
             noticeLabel
         }
@@ -140,20 +139,18 @@ extension StoryPortionView {
         }
     }
     
-    @ViewBuilder
     private var moreButton: some View {
-        if storyPortionViewModel.isCurrentUser {
-            Button {
-                storyPortionViewModel.showConfirmationDialog.toggle()
-            } label: {
-                Label("More", systemImage: "ellipsis")
-                    .foregroundColor(.white)
-                    .font(.subheadline)
-                    .labelStyle(.verticalLabelStyle)
-            }
-            .padding([.bottom, .horizontal])
-            .background(Color.blue.opacity(0.01))
+        Button {
+            storyPortionViewModel.showConfirmationDialog.toggle()
+        } label: {
+            Label("More", systemImage: "ellipsis")
+                .foregroundColor(.white)
+                .font(.subheadline)
+                .labelStyle(.verticalLabelStyle)
         }
+        .padding([.bottom, .horizontal])
+        .background(Color.blue.opacity(0.01))
+        
     }
     
     private var noticeLabel: some View {
