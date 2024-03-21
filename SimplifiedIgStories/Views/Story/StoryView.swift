@@ -11,7 +11,7 @@ protocol PortionMutationHandler {
     func deleteCurrentPortion(for portionIndex: Int,
                               afterDeletion: () -> Void,
                               whenNoNextPortionAfterDeletion: () -> Void)
-    func savePortionMedia(for portionIndex: Int, loading: () -> Void, completion: (String) -> Void) async
+    func savePortionMedia(for portionIndex: Int) async -> String
 }
 
 struct StoryView: View {
@@ -70,12 +70,11 @@ struct StoryView: View {
                                 Task {
                                     guard let portionIndex = animationHandler.currentPortionIndex else { return }
                                     
-                                    await portionMutationHandler.savePortionMedia(for: portionIndex) {
-                                        isLoading = true
-                                    } completion: { message in
-                                        isLoading = false
-                                        storyViewModel.showNotice(message: message)
-                                    }
+                                    isLoading = true
+                                    let message = await portionMutationHandler.savePortionMedia(for: portionIndex)
+                                    
+                                    isLoading = false
+                                    storyViewModel.showNotice(message: message)
                                 }
                             }
                             

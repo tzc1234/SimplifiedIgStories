@@ -120,9 +120,8 @@ extension StoriesViewModel {
     }
     
     @MainActor
-    func savePortionMedia(for portionIndex: Int, loading: () -> Void, completion: (String) -> Void) async {
+    func savePortionMedia(for portionIndex: Int) async -> String {
         let currentPortion = currentUserPortions[portionIndex]
-        loading()
         
         var successMessage = ""
         if let imageUrl = currentPortion.imageURL,
@@ -146,7 +145,7 @@ extension StoriesViewModel {
             }
         }
         
-        completion(successMessage)
+        return successMessage
     }
 }
 
