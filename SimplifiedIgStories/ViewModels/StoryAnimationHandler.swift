@@ -51,9 +51,17 @@ final class StoryAnimationHandler: ObservableObject {
         
         self.subscribePublishers()
     }
+    
+    deinit{
+        print("\(String(describing: Self.self)): \(storyId) deinit.")
+    }
 }
 
 extension StoryAnimationHandler {
+    var currentStoryId: Int {
+        currentStoryAnimationHandler.currentStoryId
+    }
+    
     var currentPortionAnimationStatus: BarPortionAnimationStatus? {
         barPortionAnimationStatusDict[currentPortionId]
     }
@@ -62,10 +70,6 @@ extension StoryAnimationHandler {
         currentPortionAnimationStatus == .start ||
         currentPortionAnimationStatus == .restart ||
         currentPortionAnimationStatus == .resume
-    }
-    
-    var currentStoryId: Int {
-        currentStoryAnimationHandler.currentStoryId
     }
     
     private var isAtFirstStory: Bool {
@@ -80,7 +84,7 @@ extension StoryAnimationHandler {
         currentStoryAnimationHandler.getPortions(by: storyId)
     }
     
-    var currentPortionIndex: Int? {
+    private var currentPortionIndex: Int? {
         portions.firstIndex(where: { $0.id == currentPortionId })
     }
     

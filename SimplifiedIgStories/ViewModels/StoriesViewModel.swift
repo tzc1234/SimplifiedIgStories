@@ -84,13 +84,15 @@ extension StoriesViewModel {
         stories[yourStoryIdx].lastUpdate = .now
     }
     
-    func deleteCurrentPortion(for portionIndex: Int,
-                              afterDeletion: () -> Void,
+    func deleteCurrentPortion(for portionId: Int,
+                              afterDeletion: (_ portionIndex: Int) -> Void,
                               whenNoNextPortionAfterDeletion: () -> Void) {
+        guard let portionIndex = currentUserPortions.firstIndex(where: { $0.id == portionId }) else { return }
+        
         // If next portion exists, go next.
         if portionIndex+1 < currentUserPortions.count {
             deletePortionFromStory(by: portionIndex)
-            afterDeletion()
+            afterDeletion(portionIndex)
         } else {
             whenNoNextPortionAfterDeletion()
             deletePortionFromStory(by: portionIndex)
@@ -115,8 +117,10 @@ extension StoriesViewModel {
     }
     
     @MainActor
-    func savePortionMedia(for portionIndex: Int) async -> String {
-        let currentPortion = currentUserPortions[portionIndex]
+    func savePortionMedia(for portionId: Int) async -> String {
+        guard let currentPortion = currentUserPortions.first(where: { $0.id == portionId }) else {
+            return ""
+        }
         
         var successMessage = ""
         if let imageUrl = currentPortion.imageURL,

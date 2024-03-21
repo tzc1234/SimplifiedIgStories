@@ -16,9 +16,16 @@ extension StoryView {
         let storyViewModel = StoryViewModel(story: story)
         
         return StoryView(
-            storyViewModel: storyViewModel,
-            animationHandler: animationHandler, 
-            portionMutationHandler: StoriesViewModel.preview,
+            story: story,
+            animationHandler: animationHandler,
+            getStoryPortionView: { portion in
+                StoryPortionView(
+                    portion: portion,
+                    storyViewModel: storyViewModel,
+                    animationHandler: animationHandler,
+                    portionMutationHandler: StoriesViewModel.preview
+                )
+            },
             onDisappear: { _ in }
         )
     }()

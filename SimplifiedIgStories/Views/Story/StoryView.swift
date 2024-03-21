@@ -7,25 +7,13 @@
 
 import SwiftUI
 
-protocol PortionMutationHandler {
-    func deleteCurrentPortion(for portionIndex: Int,
-                              afterDeletion: () -> Void,
-                              whenNoNextPortionAfterDeletion: () -> Void)
-    func savePortionMedia(for portionIndex: Int) async -> String
-}
-
 struct StoryView: View {
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
-    @State private var isLoading = false
     
-    @StateObject var storyViewModel: StoryViewModel
+    let story: Story
     @StateObject var animationHandler: StoryAnimationHandler
-    let portionMutationHandler: PortionMutationHandler
+    let getStoryPortionView: (Portion) -> StoryPortionView
     let onDisappear: (Int) -> Void
-    
-    private var story: Story {
-        storyViewModel.story
-    }
     
     var body: some View {
         ZStack {
@@ -44,45 +32,7 @@ struct StoryView: View {
                 .padding(.leading, 20.0)
                 
                 Spacer()
-                
-                DetectableTapGesturePositionView { point in
-                    animationHandler.performPortionTransitionAnimation(by: point.x)
-                }
-                
-                Spacer()
-                
-                moreButton
-                    .confirmationDialog("", isPresented: $storyViewModel.showConfirmationDialog, titleVisibility: .hidden) {
-                        Button("Delete", role: .destructive) {
-                            guard let portionIndex = animationHandler.currentPortionIndex else { return }
-                            
-                            portionMutationHandler.deleteCurrentPortion(for: portionIndex) {
-                                animationHandler.moveToCurrentPortion(for: portionIndex)
-                            } whenNoNextPortionAfterDeletion: {
-                                homeUIActionHandler.closeStoryContainer(storyId: story.id)
-                            }
-                        }
-                        
-                        Button("Save", role: .none) {
-                            Task {
-                                guard let portionIndex = animationHandler.currentPortionIndex else { return }
-                                
-                                isLoading = true
-                                let message = await portionMutationHandler.savePortionMedia(for: portionIndex)
-                                
-                                isLoading = false
-                                storyViewModel.showNotice(message: message)
-                            }
-                        }
-                        
-                        Button("Cancel", role: .cancel, action: {})
-                    }
             }
-            
-            LoadingView()
-                .opacity(isLoading ? 1 : 0)
-            
-            noticeLabel
         }
         .background(storyPortionViews)
         .onAppear {
@@ -101,10 +51,7 @@ extension StoryView {
         ZStack {
             ForEach(story.portions) { portion in
                 if portion.id == animationHandler.currentPortionId {
-                    StoryPortionView(
-                        portion: portion,
-                        animationHandler: animationHandler
-                    )
+                    getStoryPortionView(portion)
                 }
             }
         }
@@ -162,28 +109,6 @@ extension StoryView {
             .contentShape(Rectangle())
         }
         .padding(.trailing, 10.0)
-    }
-    
-    @ViewBuilder 
-    private var moreButton: some View {
-        if story.user.isCurrentUser {
-            Button {
-                storyViewModel.showConfirmationDialog.toggle()
-            } label: {
-                Label("More", systemImage: "ellipsis")
-                    .foregroundColor(.white)
-                    .font(.subheadline)
-                    .labelStyle(.verticalLabelStyle)
-            }
-            .frame(maxWidth: .infinity, alignment: .trailing)
-            .padding([.bottom, .horizontal])
-        }
-    }
-    
-    private var noticeLabel: some View {
-        NoticeLabel(message: storyViewModel.noticeMsg)
-            .opacity(storyViewModel.noticeMsg.isEmpty ? 0 : 1)
-            .animation(.easeIn, value: storyViewModel.noticeMsg)
     }
 }
 

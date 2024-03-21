@@ -8,18 +8,75 @@
 import SwiftUI
 import AVKit
 
+protocol PortionMutationHandler {
+    func deleteCurrentPortion(for portionId: Int,
+                              afterDeletion: (_ portionIndex: Int) -> Void,
+                              whenNoNextPortionAfterDeletion: () -> Void)
+    func savePortionMedia(for portionId: Int) async -> String
+}
+
 // *** In real environment, images are loaded through internet. The failure case should be considered.
 struct StoryPortionView: View {
+    @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     @State private var player: AVPlayer?
+    @State private var isLoading = false
     
     let portion: Portion
+    @ObservedObject var storyViewModel: StoryViewModel
     @ObservedObject var animationHandler: StoryAnimationHandler
+    let portionMutationHandler: PortionMutationHandler
+    
+    private var story: Story {
+        storyViewModel.story
+    }
     
     var body: some View {
         ZStack {
             Color.darkGray
             photoView
             videoView
+            
+            DetectableTapGesturePositionView { point in
+                animationHandler.performPortionTransitionAnimation(by: point.x)
+            }
+            
+            VStack {
+                Spacer()
+                
+                HStack {
+                    Spacer()
+                    moreButton
+                        .confirmationDialog("", isPresented: $storyViewModel.showConfirmationDialog, titleVisibility: .hidden) {
+                            Button("Delete", role: .destructive) {
+                                portionMutationHandler.deleteCurrentPortion(
+                                    for: portion.id,
+                                    afterDeletion: { portionIndex in
+                                        animationHandler.moveToCurrentPortion(for: portionIndex)
+                                    },
+                                    whenNoNextPortionAfterDeletion: {
+                                        homeUIActionHandler.closeStoryContainer(storyId: story.id)
+                                    })
+                            }
+                            
+                            Button("Save", role: .none) {
+                                Task {
+                                    isLoading = true
+                                    let message = await portionMutationHandler.savePortionMedia(for: portion.id)
+                                    
+                                    isLoading = false
+                                    storyViewModel.showNotice(message: message)
+                                }
+                            }
+                            
+                            Button("Cancel", role: .cancel, action: {})
+                        }
+                }
+            }
+            
+            LoadingView()
+                .opacity(isLoading ? 1 : 0)
+            
+            noticeLabel
         }
         .onAppear {
             player = portion.videoURL.map(AVPlayer.init)
@@ -76,6 +133,28 @@ extension StoryPortionView {
             )
         }
     }
+    
+    @ViewBuilder
+    private var moreButton: some View {
+        if story.user.isCurrentUser {
+            Button {
+                storyViewModel.showConfirmationDialog.toggle()
+            } label: {
+                Label("More", systemImage: "ellipsis")
+                    .foregroundColor(.white)
+                    .font(.subheadline)
+                    .labelStyle(.verticalLabelStyle)
+            }
+            .padding([.bottom, .horizontal])
+            .background(Color.blue.opacity(0.01))
+        }
+    }
+    
+    private var noticeLabel: some View {
+        NoticeLabel(message: storyViewModel.noticeMsg)
+            .opacity(storyViewModel.noticeMsg.isEmpty ? 0 : 1)
+            .animation(.easeIn, value: storyViewModel.noticeMsg)
+    }
 }
 
 struct StoryPortionView_Previews: PreviewProvider {
@@ -84,7 +163,9 @@ struct StoryPortionView_Previews: PreviewProvider {
         let portion = story.portions[0]
         StoryPortionView(
             portion: portion,
-            animationHandler: .preview
+            storyViewModel: StoryViewModel(story: story),
+            animationHandler: .preview,
+            portionMutationHandler: StoriesViewModel.preview
         )
     }
 }

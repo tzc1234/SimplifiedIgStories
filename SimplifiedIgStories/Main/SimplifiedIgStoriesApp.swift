@@ -40,9 +40,16 @@ struct SimplifiedIgStoriesApp: App {
                             )
                             
                             return StoryView(
-                                storyViewModel: storyViewModel,
+                                story: story,
                                 animationHandler: storyAnimationHandler, 
-                                portionMutationHandler: storiesViewModel,
+                                getStoryPortionView: { portion in
+                                    StoryPortionView(
+                                        portion: portion,
+                                        storyViewModel: storyViewModel,
+                                        animationHandler: storyAnimationHandler,
+                                        portionMutationHandler: storiesViewModel
+                                    )
+                                },
                                 onDisappear: { storyId in
                                     storyViewModelCache.removeComponent(for: storyId)
                                     animationHandlerCache.removeComponent(for: storyId)
