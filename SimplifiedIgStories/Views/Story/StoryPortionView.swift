@@ -20,13 +20,13 @@ struct StoryPortionView: View {
     @State private var player: AVPlayer?
     @State private var isLoading = false
     
-    @ObservedObject var storyViewModel: StoryViewModel
+    @ObservedObject var storyPortionViewModel: StoryPortionViewModel
     @ObservedObject var animationHandler: StoryAnimationHandler
     let portionMutationHandler: PortionMutationHandler
     let onDisappear: (Int) -> Void
     
     private var portion: Portion {
-        storyViewModel.portion
+        storyPortionViewModel.portion
     }
     
     var body: some View {
@@ -45,7 +45,7 @@ struct StoryPortionView: View {
                 HStack {
                     Spacer()
                     moreButton
-                        .confirmationDialog("", isPresented: $storyViewModel.showConfirmationDialog, titleVisibility: .hidden) {
+                        .confirmationDialog("", isPresented: $storyPortionViewModel.showConfirmationDialog, titleVisibility: .hidden) {
                             Button("Delete", role: .destructive) {
                                 portionMutationHandler.deleteCurrentPortion(
                                     for: portion.id,
@@ -53,14 +53,14 @@ struct StoryPortionView: View {
                                         animationHandler.moveToCurrentPortion(for: portionIndex)
                                     },
                                     whenNoNextPortionAfterDeletion: {
-                                        homeUIActionHandler.closeStoryContainer(storyId: storyViewModel.storyId)
+                                        homeUIActionHandler.closeStoryContainer(storyId: storyPortionViewModel.storyId)
                                     })
                             }
                             
                             Button("Save", role: .none) {
                                 Task {
                                     isLoading = true
-                                    await storyViewModel.saveMedia()
+                                    await storyPortionViewModel.saveMedia()
                                     isLoading = false
                                 }
                             }
@@ -136,9 +136,9 @@ extension StoryPortionView {
     
     @ViewBuilder
     private var moreButton: some View {
-        if storyViewModel.isCurrentUser {
+        if storyPortionViewModel.isCurrentUser {
             Button {
-                storyViewModel.showConfirmationDialog.toggle()
+                storyPortionViewModel.showConfirmationDialog.toggle()
             } label: {
                 Label("More", systemImage: "ellipsis")
                     .foregroundColor(.white)
@@ -151,9 +151,9 @@ extension StoryPortionView {
     }
     
     private var noticeLabel: some View {
-        NoticeLabel(message: storyViewModel.noticeMsg)
-            .opacity(storyViewModel.noticeMsg.isEmpty ? 0 : 1)
-            .animation(.easeIn, value: storyViewModel.noticeMsg)
+        NoticeLabel(message: storyPortionViewModel.noticeMsg)
+            .opacity(storyPortionViewModel.noticeMsg.isEmpty ? 0 : 1)
+            .animation(.easeIn, value: storyPortionViewModel.noticeMsg)
     }
 }
 
@@ -162,7 +162,7 @@ struct StoryPortionView_Previews: PreviewProvider {
         let story = PreviewData.stories[0]
         let portion = story.portions[0]
         StoryPortionView(
-            storyViewModel: StoryViewModel(
+            storyPortionViewModel: StoryPortionViewModel(
                 story: story,
                 portion: portion,
                 fileManager: DummyFileManager(),

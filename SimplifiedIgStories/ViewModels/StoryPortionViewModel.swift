@@ -1,5 +1,5 @@
 //
-//  StoryViewModel.swift
+//  StoryPortionViewModel.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 08/03/2022.
@@ -8,7 +8,7 @@
 import UIKit
 import Combine
 
-final class StoryViewModel: ObservableObject {
+final class StoryPortionViewModel: ObservableObject {
     @Published var showConfirmationDialog = false
     @Published private(set) var noticeMsg = ""
     
