@@ -12,7 +12,6 @@ protocol PortionMutationHandler {
     func deleteCurrentPortion(for portionId: Int,
                               afterDeletion: (_ portionIndex: Int) -> Void,
                               whenNoNextPortionAfterDeletion: () -> Void)
-    func savePortionMedia(for portionId: Int) async -> String
 }
 
 // *** In real environment, images are loaded through internet. The failure case should be considered.
@@ -21,13 +20,13 @@ struct StoryPortionView: View {
     @State private var player: AVPlayer?
     @State private var isLoading = false
     
-    let portion: Portion
     @ObservedObject var storyViewModel: StoryViewModel
     @ObservedObject var animationHandler: StoryAnimationHandler
     let portionMutationHandler: PortionMutationHandler
+    let onDisappear: (Int) -> Void
     
-    private var story: Story {
-        storyViewModel.story
+    private var portion: Portion {
+        storyViewModel.portion
     }
     
     var body: some View {
@@ -54,17 +53,15 @@ struct StoryPortionView: View {
                                         animationHandler.moveToCurrentPortion(for: portionIndex)
                                     },
                                     whenNoNextPortionAfterDeletion: {
-                                        homeUIActionHandler.closeStoryContainer(storyId: story.id)
+                                        homeUIActionHandler.closeStoryContainer(storyId: storyViewModel.storyId)
                                     })
                             }
                             
                             Button("Save", role: .none) {
                                 Task {
                                     isLoading = true
-                                    let message = await portionMutationHandler.savePortionMedia(for: portion.id)
-                                    
+                                    await storyViewModel.saveMedia()
                                     isLoading = false
-                                    storyViewModel.showNotice(message: message)
                                 }
                             }
                             
@@ -98,6 +95,9 @@ struct StoryPortionView: View {
             case .none:
                 break
             }
+        }
+        .onDisappear {
+            onDisappear(portion.id)
         }
     }
 }
@@ -136,7 +136,7 @@ extension StoryPortionView {
     
     @ViewBuilder
     private var moreButton: some View {
-        if story.user.isCurrentUser {
+        if storyViewModel.isCurrentUser {
             Button {
                 storyViewModel.showConfirmationDialog.toggle()
             } label: {
@@ -162,10 +162,17 @@ struct StoryPortionView_Previews: PreviewProvider {
         let story = PreviewData.stories[0]
         let portion = story.portions[0]
         StoryPortionView(
-            portion: portion,
-            storyViewModel: StoryViewModel(story: story),
+            storyViewModel: StoryViewModel(
+                story: story,
+                portion: portion,
+                fileManager: DummyFileManager(),
+                mediaSaver: DummyMediaSaver(),
+                pauseAnimation: {},
+                resumeAnimation: {}
+            ),
             animationHandler: .preview,
-            portionMutationHandler: StoriesViewModel.preview
+            portionMutationHandler: StoriesViewModel.preview,
+            onDisappear: { _ in }
         )
     }
 }

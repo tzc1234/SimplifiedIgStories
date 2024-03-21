@@ -115,37 +115,6 @@ extension StoriesViewModel {
         
         stories[yourStoryIdx].portions.remove(at: portionIndex)
     }
-    
-    @MainActor
-    func savePortionMedia(for portionId: Int) async -> String {
-        guard let currentPortion = currentUserPortions.first(where: { $0.id == portionId }) else {
-            return ""
-        }
-        
-        var successMessage = ""
-        if let imageUrl = currentPortion.imageURL,
-           let data = fileManager.getImage(for: imageUrl)?.jpegData(compressionQuality: 1) {
-            do {
-                try await mediaSaver.saveImageData(data)
-                successMessage = "Saved."
-            } catch MediaSaverError.noPermission {
-                successMessage = "Couldn't save. No add photo permission."
-            } catch {
-                successMessage = "Save failed."
-            }
-        } else if let videoUrl = currentPortion.videoURL {
-            do {
-                try await mediaSaver.saveVideo(by: videoUrl)
-                successMessage = "Saved."
-            } catch MediaSaverError.noPermission {
-                successMessage = "Couldn't save. No add photo permission."
-            } catch {
-                successMessage = "Save failed."
-            }
-        }
-        
-        return successMessage
-    }
 }
 
 // MARK: - Local models conversion

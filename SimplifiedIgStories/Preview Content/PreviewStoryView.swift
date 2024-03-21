@@ -13,17 +13,24 @@ extension StoryView {
         let story = PreviewData.stories[0]
         let storiesViewModel = StoriesViewModel.preview
         let animationHandler = StoryAnimationHandler.preview
-        let storyViewModel = StoryViewModel(story: story)
+        let storyViewModel = StoryViewModel(
+            story: story,
+            portion: story.portions[0],
+            fileManager: DummyFileManager(),
+            mediaSaver: DummyMediaSaver(),
+            pauseAnimation: {},
+            resumeAnimation: {}
+        )
         
         return StoryView(
             story: story,
             animationHandler: animationHandler,
             getStoryPortionView: { portion in
                 StoryPortionView(
-                    portion: portion,
                     storyViewModel: storyViewModel,
                     animationHandler: animationHandler,
-                    portionMutationHandler: StoriesViewModel.preview
+                    portionMutationHandler: StoriesViewModel.preview, 
+                    onDisappear: { _ in }
                 )
             },
             onDisappear: { _ in }
@@ -34,8 +41,7 @@ extension StoryView {
 extension StoryAnimationHandler {
     static let preview: StoryAnimationHandler = StoryAnimationHandler(
         storyId: PreviewData.stories[0].id,
-        currentStoryAnimationHandler: StoriesAnimationHandler.preview,
-        animationShouldPausePublisher: Empty<Bool, Never>().eraseToAnyPublisher()
+        currentStoryAnimationHandler: StoriesAnimationHandler.preview
     )
 }
 

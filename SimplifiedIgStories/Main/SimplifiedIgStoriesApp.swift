@@ -11,8 +11,8 @@ import Combine
 @main
 struct SimplifiedIgStoriesApp: App {
     private let factory = AppComponentsFactory()
-    private let storyViewModelCache = StoryComponentCache<StoryViewModel>()
-    private let animationHandlerCache = StoryComponentCache<StoryAnimationHandler>()
+    private let storyViewModelCache = ComponentCache<Int, StoryViewModel>()
+    private let storyAnimationHandlerCache = ComponentCache<Int, StoryAnimationHandler>()
     
     private var storiesViewModel: StoriesViewModel {
         factory.storiesViewModel
@@ -33,26 +33,29 @@ struct SimplifiedIgStoriesApp: App {
                     StoryContainer(
                         animationHandler: storiesAnimationHandler,
                         getStoryView: { story in
-                            let storyViewModel = getStoryViewModel(for: story)
-                            let storyAnimationHandler = getStoryAnimationHandler(
-                                for: story.id,
-                                storyViewModel: storyViewModel
-                            )
+                            let storyAnimationHandler = getStoryAnimationHandler(for: story.id)
                             
                             return StoryView(
                                 story: story,
                                 animationHandler: storyAnimationHandler, 
                                 getStoryPortionView: { portion in
-                                    StoryPortionView(
+                                    let storyViewModel = getStoryViewModel(
+                                        for: story,
                                         portion: portion,
+                                        animationHandler: storyAnimationHandler
+                                    )
+                                    
+                                    return StoryPortionView(
                                         storyViewModel: storyViewModel,
                                         animationHandler: storyAnimationHandler,
-                                        portionMutationHandler: storiesViewModel
+                                        portionMutationHandler: storiesViewModel, 
+                                        onDisappear: { portionId in
+                                            storyViewModelCache.removeComponent(for: portionId)
+                                        }
                                     )
                                 },
                                 onDisappear: { storyId in
-                                    storyViewModelCache.removeComponent(for: storyId)
-                                    animationHandlerCache.removeComponent(for: storyId)
+                                    storyAnimationHandlerCache.removeComponent(for: storyId)
                                 }
                             )
                         }
@@ -62,32 +65,35 @@ struct SimplifiedIgStoriesApp: App {
         }
     }
     
-    private func getStoryViewModel(for story: Story) -> StoryViewModel {
-        let storyViewModel = if let viewModel = storyViewModelCache.getComponent(for: story.id) {
+    private func getStoryViewModel(for story: Story, portion: Portion, animationHandler: StoryAnimationHandler) -> StoryViewModel {
+        let storyViewModel = if let viewModel = storyViewModelCache.getComponent(for: portion.id) {
             viewModel
         } else {
-            StoryViewModel(story: story)
+            StoryViewModel(
+                story: story,
+                portion: portion,
+                fileManager: factory.fileManager,
+                mediaSaver: factory.mediaSaver,
+                pauseAnimation: animationHandler.pausePortionAnimation,
+                resumeAnimation: animationHandler.resumePortionAnimation
+            )
         }
         
-        storyViewModelCache.save(storyViewModel, for: story.id)
+        storyViewModelCache.save(storyViewModel, for: portion.id)
         return storyViewModel
     }
     
-    private func getStoryAnimationHandler(for storyId: Int, storyViewModel: StoryViewModel) -> StoryAnimationHandler {
-        let animationHandler = if let handler = animationHandlerCache.getComponent(for: storyId) {
+    private func getStoryAnimationHandler(for storyId: Int) -> StoryAnimationHandler {
+        let animationHandler = if let handler = storyAnimationHandlerCache.getComponent(for: storyId) {
             handler
         } else {
             StoryAnimationHandler(
                 storyId: storyId,
-                currentStoryAnimationHandler: storiesAnimationHandler,
-                animationShouldPausePublisher: storyViewModel.$showConfirmationDialog
-                    .combineLatest(storyViewModel.$noticeMsg)
-                    .map { $0 || !$1.isEmpty }
-                    .eraseToAnyPublisher()
+                currentStoryAnimationHandler: storiesAnimationHandler
             )
         }
         
-        animationHandlerCache.save(animationHandler, for: storyId)
+        storyAnimationHandlerCache.save(animationHandler, for: storyId)
         return animationHandler
     }
 }

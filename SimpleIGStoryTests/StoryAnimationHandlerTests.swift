@@ -209,8 +209,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
         spy.stories = stories
         let sut = StoryAnimationHandler(
             storyId: storyId,
-            currentStoryAnimationHandler: spy,
-            animationShouldPausePublisher: Empty<Bool, Never>().eraseToAnyPublisher()
+            currentStoryAnimationHandler: spy
         )
         
         trackForMemoryLeaks(spy, file: file, line: line)

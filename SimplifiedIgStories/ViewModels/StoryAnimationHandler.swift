@@ -30,19 +30,15 @@ final class StoryAnimationHandler: ObservableObject {
     
     @Published private(set) var barPortionAnimationStatusDict = [PortionId: BarPortionAnimationStatus]()
     @Published private(set) var currentPortionId: PortionId = -1
-    private var isDragging = false
+    
     private var subscriptions = Set<AnyCancellable>()
     
     let storyId: Int
     private let currentStoryAnimationHandler: CurrentStoryAnimationHandler
-    private let animationShouldPausePublisher: AnyPublisher<Bool, Never>
     
-    init(storyId: Int,
-         currentStoryAnimationHandler: CurrentStoryAnimationHandler,
-         animationShouldPausePublisher: AnyPublisher<Bool, Never>) {
+    init(storyId: Int, currentStoryAnimationHandler: CurrentStoryAnimationHandler) {
         self.storyId = storyId
         self.currentStoryAnimationHandler = currentStoryAnimationHandler
-        self.animationShouldPausePublisher = animationShouldPausePublisher
         
         if let firstPortionId = portions.first?.id {
             self.currentPortionId = firstPortionId
@@ -117,25 +113,10 @@ extension StoryAnimationHandler {
             .dropFirst()
             .removeDuplicates()
             .sink { [weak self] dragging in
-                guard let self else { return }
-                
-                isDragging = dragging
                 if dragging {
-                    pausePortionAnimation()
+                    self?.pausePortionAnimation()
                 } else {
-                    resumePortionAnimationIfStayAtSameStoryAfterDragged()
-                }
-            }
-            .store(in: &subscriptions)
-        
-        animationShouldPausePublisher
-            .sink { [weak self] shouldPause in
-                guard let self else { return }
-                
-                if shouldPause {
-                    pausePortionAnimation()
-                } else if !isDragging {
-                    resumePortionAnimation()
+                    self?.resumePortionAnimationIfStayAtSameStoryAfterDragged()
                 }
             }
             .store(in: &subscriptions)
