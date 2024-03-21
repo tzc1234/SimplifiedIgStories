@@ -11,6 +11,7 @@ import Combine
 
 // *** In real environment, images are loaded through internet. The failure case should be considered.
 struct StoryPortionView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     @State private var player: AVPlayer?
     
@@ -27,6 +28,8 @@ struct StoryPortionView: View {
         storyPortionViewModel.$showConfirmationDialog
             .combineLatest(storyPortionViewModel.$noticeMsg)
             .map { $0 || !$1.isEmpty }
+            .dropFirst()
+            .removeDuplicates()
             .eraseToAnyPublisher()
     }
     
@@ -42,7 +45,6 @@ struct StoryPortionView: View {
             
             VStack {
                 Spacer()
-                
                 HStack {
                     Spacer()
                     moreButton
@@ -92,6 +94,13 @@ struct StoryPortionView: View {
                 player.finish()
             case .none:
                 break
+            }
+        }
+        .onChange(of: scenePhase) { newPhase in
+            if newPhase == .active {
+                animationHandler.resumePortionAnimation()
+            } else if newPhase == .inactive {
+                animationHandler.pausePortionAnimation()
             }
         }
         .onReceive(animationShouldPausePublisher, perform: { shouldPause in

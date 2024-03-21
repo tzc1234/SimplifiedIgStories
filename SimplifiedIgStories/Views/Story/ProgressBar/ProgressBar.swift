@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct ProgressBar: View {
-    @Environment(\.scenePhase) private var scenePhase
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     
     let story: Story
@@ -36,13 +35,6 @@ struct ProgressBar: View {
         }
         .onChange(of: animationHandler.currentStoryId) { _ in
             animationHandler.startProgressBarAnimation()
-        }
-        .onChange(of: scenePhase) { newPhase in
-            if newPhase == .active {
-                animationHandler.resumePortionAnimation()
-            } else if newPhase == .inactive {
-                animationHandler.pausePortionAnimation()
-            }
         }
     }
 }
