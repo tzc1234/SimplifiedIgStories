@@ -41,8 +41,7 @@ struct SimplifiedIgStoriesApp: App {
                                 getStoryPortionView: { portion in
                                     let portionViewModel = getStoryPortionViewModel(
                                         for: story,
-                                        portion: portion,
-                                        animationHandler: storyAnimationHandler
+                                        portion: portion
                                     )
                                     
                                     return StoryPortionView(
@@ -66,8 +65,7 @@ struct SimplifiedIgStoriesApp: App {
     }
     
     private func getStoryPortionViewModel(for story: Story, 
-                                          portion: Portion,
-                                          animationHandler: StoryAnimationHandler) -> StoryPortionViewModel {
+                                          portion: Portion) -> StoryPortionViewModel {
         let portionViewModel = if let viewModel = portionViewModelCache.getComponent(for: portion.id) {
             viewModel
         } else {
@@ -75,8 +73,7 @@ struct SimplifiedIgStoriesApp: App {
                 story: story,
                 portion: portion,
                 fileManager: factory.fileManager,
-                mediaSaver: factory.mediaSaver, 
-                portionAnimationHandler: animationHandler
+                mediaSaver: factory.mediaSaver
             )
         }
         

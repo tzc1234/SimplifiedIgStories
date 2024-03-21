@@ -17,8 +17,7 @@ extension StoryView {
             story: story,
             portion: story.portions[0],
             fileManager: DummyFileManager(),
-            mediaSaver: DummyMediaSaver(),
-            portionAnimationHandler: animationHandler
+            mediaSaver: DummyMediaSaver()
         )
         
         return StoryView(

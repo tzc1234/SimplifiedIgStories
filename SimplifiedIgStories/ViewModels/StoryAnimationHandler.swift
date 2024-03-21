@@ -25,7 +25,7 @@ protocol CurrentStoryAnimationHandler {
     func getIsDraggingPublisher() -> AnyPublisher<Bool, Never>
 }
 
-final class StoryAnimationHandler: ObservableObject, PortionAnimationHandler {
+final class StoryAnimationHandler: ObservableObject {
     typealias PortionId = Int
     
     @Published private(set) var barPortionAnimationStatusDict = [PortionId: BarPortionAnimationStatus]()

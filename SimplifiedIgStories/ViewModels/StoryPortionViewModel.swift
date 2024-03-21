@@ -6,51 +6,26 @@
 //
 
 import UIKit
-import Combine
-
-protocol PortionAnimationHandler {
-    func pausePortionAnimation()
-    func resumePortionAnimation()
-}
 
 final class StoryPortionViewModel: ObservableObject {
     @Published var showConfirmationDialog = false
     @Published private(set) var noticeMsg = ""
-    
-    private var cancellable: AnyCancellable?
     
     let storyId: Int
     let isCurrentUser: Bool
     let portion: Portion
     private let fileManager: FileManageable
     private let mediaSaver: MediaSaver
-    private let portionAnimationHandler: PortionAnimationHandler
     
     init(story: Story,
          portion: Portion,
          fileManager: FileManageable,
-         mediaSaver: MediaSaver,
-         portionAnimationHandler: PortionAnimationHandler) {
+         mediaSaver: MediaSaver) {
         self.storyId = story.id
         self.isCurrentUser = story.user.isCurrentUser
         self.portion = portion
         self.fileManager = fileManager
         self.mediaSaver = mediaSaver
-        self.portionAnimationHandler = portionAnimationHandler
-        self.subscribePublisher()
-    }
-    
-    private func subscribePublisher() {
-        cancellable = $showConfirmationDialog
-            .combineLatest($noticeMsg)
-            .map { $0 || !$1.isEmpty }
-            .sink { [weak self] animationShouldPause in
-                if animationShouldPause {
-                    self?.portionAnimationHandler.pausePortionAnimation()
-                } else {
-                    self?.portionAnimationHandler.resumePortionAnimation()
-                }
-            }
     }
     
     @MainActor

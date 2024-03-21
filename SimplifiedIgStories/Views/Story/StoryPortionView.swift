@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AVKit
+import Combine
 
 // *** In real environment, images are loaded through internet. The failure case should be considered.
 struct StoryPortionView: View {
@@ -21,6 +22,13 @@ struct StoryPortionView: View {
     
     private var portion: Portion {
         storyPortionViewModel.portion
+    }
+    
+    private var animationShouldPausePublisher: AnyPublisher<Bool, Never> {
+        storyPortionViewModel.$showConfirmationDialog
+            .combineLatest(storyPortionViewModel.$noticeMsg)
+            .map { $0 || !$1.isEmpty }
+            .eraseToAnyPublisher()
     }
     
     var body: some View {
@@ -87,6 +95,13 @@ struct StoryPortionView: View {
                 break
             }
         }
+        .onReceive(animationShouldPausePublisher, perform: { shouldPause in
+            if shouldPause {
+                animationHandler.pausePortionAnimation()
+            } else {
+                animationHandler.resumePortionAnimation()
+            }
+        })
         .onDisappear {
             onDisappear(portion.id)
         }
@@ -157,8 +172,7 @@ struct StoryPortionView_Previews: PreviewProvider {
                 story: story,
                 portion: portion,
                 fileManager: DummyFileManager(),
-                mediaSaver: DummyMediaSaver(),
-                portionAnimationHandler: StoryAnimationHandler.preview
+                mediaSaver: DummyMediaSaver()
             ),
             animationHandler: .preview,
             deletePortion: StoriesViewModel.preview.deletePortion,
