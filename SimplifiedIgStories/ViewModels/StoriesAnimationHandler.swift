@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-final class StoriesAnimationHandler: ObservableObject, CurrentStoryHandler {
+final class StoriesAnimationHandler: ObservableObject, CurrentStoryAnimationHandler {
     @Published private(set) var stories: [Story] = []
     @Published private(set) var currentStoryId = -1
     @Published var shouldCubicRotation = false

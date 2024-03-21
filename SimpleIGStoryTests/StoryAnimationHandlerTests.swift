@@ -245,7 +245,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
         )
     }
     
-    private class ParentStoryViewModelSpy: CurrentStoryHandler {
+    private class ParentStoryViewModelSpy: CurrentStoryAnimationHandler {
         enum StoryMoveDirection {
             case previous, next
         }
