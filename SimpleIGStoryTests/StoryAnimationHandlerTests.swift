@@ -199,6 +199,27 @@ final class StoryAnimationHandlerTests: XCTestCase {
         XCTAssertEqual(sut.currentPortionAnimationStatus, .start)
     }
     
+    func test_pausePortionAnimation_ignoresWhenNotAnimating() {
+        let stories = [makeStory(id: 0, portions: [makePortion(id: 0)])]
+        let (sut, _) = makeSUT(stories: stories)
+        
+        XCTAssertNotEqual(sut.currentPortionAnimationStatus, .pause)
+        
+        sut.pausePortionAnimation()
+        
+        XCTAssertNotEqual(sut.currentPortionAnimationStatus, .pause)
+    }
+    
+    func test_pausePortionAnimation_pausesWhenAnimating() {
+        let stories = [makeStory(id: 0, portions: [makePortion(id: 0)])]
+        let (sut, _) = makeSUT(stories: stories)
+        
+        sut.startProgressBarAnimation()
+        sut.pausePortionAnimation()
+        
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .pause)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(storyId: Int = 0,

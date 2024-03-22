@@ -170,15 +170,15 @@ extension StoryAnimationHandler {
     }
     
     func pausePortionAnimation() {
-        if isCurrentStory && isCurrentPortionAnimating {
-            setCurrentBarPortionAnimationStatus(to: .pause)
-        }
+        guard isCurrentPortionAnimating else { return }
+        
+        setCurrentBarPortionAnimationStatus(to: .pause)
     }
     
     func resumePortionAnimation() {
-        if isCurrentStory && currentPortionAnimationStatus == .pause {
-            setCurrentBarPortionAnimationStatus(to: .resume)
-        }
+        guard currentPortionAnimationStatus == .pause else { return }
+        
+        setCurrentBarPortionAnimationStatus(to: .resume)
     }
     
     func finishPortionAnimation(for portionId: PortionId) {
