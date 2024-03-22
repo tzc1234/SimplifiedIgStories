@@ -71,6 +71,30 @@ final class StoriesAnimationHandlerTests: XCTestCase {
         XCTAssertEqual(sut.currentStoryId, initialCurrentStoryId)
     }
     
+    func test_currentStoryIndex_deliversStoryIndexCorrectly() {
+        let stories = [
+            makeStory(id: 0, portions: [makePortion(id: 0)], isCurrentUser: true),
+            makeStory(id: 1, portions: [makePortion(id: 1)]),
+            makeStory(id: 2, portions: [makePortion(id: 2)])
+        ]
+        let sut = makeSUT(stories: stories)
+        
+        let currentUserStoryId = 0
+        sut.setCurrentStoryId(currentUserStoryId)
+        
+        XCTAssertEqual(sut.currentStoryIndex, 0)
+        
+        let nonCurrentUserStoryId1 = 1
+        sut.setCurrentStoryId(nonCurrentUserStoryId1)
+        
+        XCTAssertEqual(sut.currentStoryIndex, 0)
+        
+        let nonCurrentUserStoryId2 = 2
+        sut.setCurrentStoryId(nonCurrentUserStoryId2)
+        
+        XCTAssertEqual(sut.currentStoryIndex, 1)
+    }
+    
     func test_firstCurrentStoryId_deliversFirstStoryIdWhenItIsNotCurrentUserStory() {
         let stories = [
             makeStory(id: 0, portions: [makePortion(id: 0)], isCurrentUser: true),
@@ -78,9 +102,9 @@ final class StoriesAnimationHandlerTests: XCTestCase {
             makeStory(id: 2, portions: [makePortion(id: 2)])
         ]
         let sut = makeSUT(stories: stories)
-        let notCurrentUserStoryId = 2
+        let nonCurrentUserStoryId = 2
         
-        sut.setCurrentStoryId(notCurrentUserStoryId)
+        sut.setCurrentStoryId(nonCurrentUserStoryId)
         
         XCTAssertEqual(sut.firstCurrentStoryId, 1)
     }
@@ -106,9 +130,9 @@ final class StoriesAnimationHandlerTests: XCTestCase {
             makeStory(id: 2, portions: [makePortion(id: 2)])
         ]
         let sut = makeSUT(stories: stories)
-        let notCurrentUserStoryId = 1
+        let nonCurrentUserStoryId = 1
         
-        sut.setCurrentStoryId(notCurrentUserStoryId)
+        sut.setCurrentStoryId(nonCurrentUserStoryId)
         
         XCTAssertEqual(sut.lastCurrentStoryId, 2)
     }
@@ -140,8 +164,8 @@ final class StoriesAnimationHandlerTests: XCTestCase {
         
         XCTAssertTrue(sut.isAtFirstStory, "The Current user story is at the first")
         
-        let notCurrentUserStoryId = 1
-        sut.setCurrentStoryId(notCurrentUserStoryId)
+        let nonCurrentUserStoryId = 1
+        sut.setCurrentStoryId(nonCurrentUserStoryId)
         
         XCTAssertTrue(sut.isAtFirstStory, "The 1st non-current user story is at the first")
     }
@@ -154,8 +178,8 @@ final class StoriesAnimationHandlerTests: XCTestCase {
         ]
         let sut = makeSUT(stories: stories)
         
-        let notCurrentUserStoryId = 2
-        sut.setCurrentStoryId(notCurrentUserStoryId)
+        let nonCurrentUserStoryId = 2
+        sut.setCurrentStoryId(nonCurrentUserStoryId)
         
         XCTAssertFalse(sut.isAtFirstStory)
     }
@@ -173,8 +197,8 @@ final class StoriesAnimationHandlerTests: XCTestCase {
         
         XCTAssertTrue(sut.isAtLastStory, "The Current user story is at the last")
         
-        let notCurrentUserStoryId = 2
-        sut.setCurrentStoryId(notCurrentUserStoryId)
+        let nonCurrentUserStoryId = 2
+        sut.setCurrentStoryId(nonCurrentUserStoryId)
         
         XCTAssertTrue(sut.isAtLastStory, "The 2nd non-current user story is at the last")
     }
@@ -187,8 +211,8 @@ final class StoriesAnimationHandlerTests: XCTestCase {
         ]
         let sut = makeSUT(stories: stories)
         
-        let notCurrentUserStoryId = 1
-        sut.setCurrentStoryId(notCurrentUserStoryId)
+        let nonCurrentUserStoryId = 1
+        sut.setCurrentStoryId(nonCurrentUserStoryId)
         
         XCTAssertFalse(sut.isAtLastStory)
     }
