@@ -250,6 +250,32 @@ final class StoryAnimationHandlerTests: XCTestCase {
         XCTAssertEqual(sut.currentPortionAnimationStatus, .resume)
     }
     
+    func test_moveToCurrentPortion_ignoresWhenPortionIndexInvalid() {
+        let stories = [makeStory(id: 0, portions: [makePortion(id: 0), makePortion(id: 1)])]
+        let (sut, _) = makeSUT(stories: stories)
+        
+        XCTAssertEqual(sut.currentPortionId, 0)
+        
+        let invalidPortionIndex = 2
+        sut.moveToCurrentPortion(for: invalidPortionIndex)
+        
+        XCTAssertEqual(sut.currentPortionId, 0)
+    }
+    
+    func test_moveToCurrentPortion_movesToCorrectPortionWhenPortionIndexValid() {
+        let stories = [makeStory(id: 0, portions: [makePortion(id: 0), makePortion(id: 1)])]
+        let (sut, _) = makeSUT(stories: stories)
+        
+        XCTAssertEqual(sut.currentPortionId, 0)
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .initial)
+        
+        let validPortionIndex = 1
+        sut.moveToCurrentPortion(for: validPortionIndex)
+        
+        XCTAssertEqual(sut.currentPortionId, 1)
+        XCTAssertEqual(sut.currentPortionAnimationStatus, .start)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(storyId: Int = 0,
