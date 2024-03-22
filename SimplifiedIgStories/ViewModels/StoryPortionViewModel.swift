@@ -5,7 +5,7 @@
 //  Created by Tsz-Lung on 08/03/2022.
 //
 
-import UIKit
+import Foundation
 
 final class StoryPortionViewModel: ObservableObject {
     @Published var showConfirmationDialog = false

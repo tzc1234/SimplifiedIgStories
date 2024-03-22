@@ -8,23 +8,35 @@
 import Foundation
 import Combine
 
+protocol StoriesHolder {
+    var objectWillChange: ObservableObjectPublisher { get }
+    var stories: [Story] { get }
+}
+
 final class StoriesAnimationHandler: ObservableObject, CurrentStoryAnimationHandler {
-    @Published private(set) var stories: [Story] = []
     @Published private(set) var currentStoryId = -1
     @Published var isDragging = false
     
     private var storyIdBeforeDragged: Int?
     private var cancellable: AnyCancellable?
     
-    init(storiesPublisher: AnyPublisher<[Story], Never>) {
-        cancellable = storiesPublisher
-            .sink(receiveValue: { [weak self] stories in
-                self?.stories = stories
+    private let storiesHolder: StoriesHolder
+    
+    init(storiesHolder: StoriesHolder) {
+        self.storiesHolder = storiesHolder
+        
+        cancellable = storiesHolder.objectWillChange
+            .sink(receiveValue: { [weak self] _ in
+                self?.objectWillChange.send()
             })
     }
 }
 
 extension StoriesAnimationHandler {
+    var stories: [Story] {
+        storiesHolder.stories
+    }
+    
     private var yourStoryId: Int? {
         stories.first(where: { $0.user.isCurrentUser })?.id
     }

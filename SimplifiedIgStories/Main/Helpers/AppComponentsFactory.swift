@@ -24,7 +24,5 @@ final class AppComponentsFactory {
         mediaSaver: mediaSaver
     )
     
-    private(set) lazy var storiesAnimationHandler = StoriesAnimationHandler(
-        storiesPublisher: storiesViewModel.$stories.eraseToAnyPublisher()
-    )
+    private(set) lazy var storiesAnimationHandler = StoriesAnimationHandler(storiesHolder: storiesViewModel)
 }

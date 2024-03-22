@@ -7,7 +7,7 @@
 
 import AVKit
 
-final class StoriesViewModel: ObservableObject {
+final class StoriesViewModel: ObservableObject, StoriesHolder {
     @Published private(set) var stories: [Story] = []
     
     private let storiesLoader: StoriesLoader
