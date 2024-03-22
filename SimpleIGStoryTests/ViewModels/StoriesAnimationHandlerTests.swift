@@ -99,6 +99,34 @@ final class StoriesAnimationHandlerTests: XCTestCase {
         XCTAssertEqual(sut.firstCurrentStoryId, currentUserStoryId)
     }
     
+    func test_lastCurrentStoryId_deliversLastStoryIdWhenItIsNotCurrentUserStory() {
+        let stories = [
+            makeStory(id: 0, portions: [makePortion(id: 0)], isCurrentUser: true),
+            makeStory(id: 1, portions: [makePortion(id: 1)]),
+            makeStory(id: 2, portions: [makePortion(id: 2)])
+        ]
+        let sut = makeSUT(stories: stories)
+        let notCurrentUserStoryId = 1
+        
+        sut.setCurrentStoryId(notCurrentUserStoryId)
+        
+        XCTAssertEqual(sut.lastCurrentStoryId, 2)
+    }
+    
+    func test_lastCurrentStoryId_deliversCurrentUserStoryIdWhenItIsCurrentUserStory() {
+        let stories = [
+            makeStory(id: 0, portions: [makePortion(id: 0)], isCurrentUser: true),
+            makeStory(id: 1, portions: [makePortion(id: 1)]),
+            makeStory(id: 2, portions: [makePortion(id: 2)])
+        ]
+        let sut = makeSUT(stories: stories)
+        let currentUserStoryId = 0
+        
+        sut.setCurrentStoryId(currentUserStoryId)
+        
+        XCTAssertEqual(sut.lastCurrentStoryId, currentUserStoryId)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(stories: [Story] = [], 
