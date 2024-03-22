@@ -217,6 +217,24 @@ final class StoriesAnimationHandlerTests: XCTestCase {
         XCTAssertFalse(sut.isAtLastStory)
     }
     
+    func test_getIsDraggingPublisher_deliversIsDraggingProperly() {
+        let sut = makeSUT()
+        var loggedIsDragging = [Bool]()
+        let cancellable = sut.getIsDraggingPublisher().sink { loggedIsDragging.append($0) }
+        
+        XCTAssertEqual(loggedIsDragging, [false])
+        
+        sut.isDragging = true
+        
+        XCTAssertEqual(loggedIsDragging, [false, true])
+        
+        sut.isDragging = false
+        
+        XCTAssertEqual(loggedIsDragging, [false, true, false])
+        
+        cancellable.cancel()
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(stories: [Story] = [], 

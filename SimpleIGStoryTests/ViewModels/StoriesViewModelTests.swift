@@ -31,24 +31,6 @@ class StoriesViewModelTests: XCTestCase {
 //        XCTAssertEqual(currentUserStories.count, 1)
 //    }
 //    
-//    func test_getIsDraggingPublisher_deliversIsDraggingProperly() async {
-//        let sut = await makeSUT()
-//        var loggedIsDragging = [Bool]()
-//        let cancellable = sut.getIsDraggingPublisher().sink { loggedIsDragging.append($0) }
-//        
-//        XCTAssertEqual(loggedIsDragging, [false])
-//        
-//        sut.animationHandler.isDragging = true
-//        
-//        XCTAssertEqual(loggedIsDragging, [false, true])
-//        
-//        sut.animationHandler.isDragging = false
-//        
-//        XCTAssertEqual(loggedIsDragging, [false, true, false])
-//        
-//        cancellable.cancel()
-//    }
-//    
 //    func test_moveToPreviousStory_setsToCorrectStoryId() async {
 //        let sut = await makeSUT()
 //        let hasPreviousStoryId = 2
