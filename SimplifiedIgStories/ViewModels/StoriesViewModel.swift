@@ -86,31 +86,20 @@ extension StoriesViewModel {
     
     func deletePortion(for portionId: Int,
                        afterDeletion: (_ portionIndex: Int) -> Void,
-                       whenNoNextPortionAfterDeletion: () -> Void) {
+                       noNextPortionAfterDeletion: () -> Void) {
         guard let portionIndex = currentUserPortions.firstIndex(where: { $0.id == portionId }) else { return }
         
-        // If next portion exists, go next.
-        if portionIndex+1 < currentUserPortions.count {
-            deletePortionFromStory(by: portionIndex)
+        let hasNextPortion = portionIndex+1 < currentUserPortions.count
+        removePortionInStories(at: portionIndex)
+        
+        if hasNextPortion {
             afterDeletion(portionIndex)
         } else {
-            whenNoNextPortionAfterDeletion()
-            deletePortionFromStory(by: portionIndex)
+            noNextPortionAfterDeletion()
         }
     }
     
-    // *** In real environment, the photo or video should be deleted by API call,
-    // this is a demo app, however, deleting them from temp directory.
-    private func deletePortionFromStory(by portionIndex: Int) {
-        let portion = currentUserPortions[portionIndex]
-        if let fileURL = portion.imageURL ?? portion.videoURL {
-            try? fileManager.delete(for: fileURL)
-        }
-        
-        deletePortion(by: portionIndex)
-    }
-    
-    private func deletePortion(by portionIndex: Int) {
+    private func removePortionInStories(at portionIndex: Int) {
         guard let yourStoryIdx else { return }
         
         stories[yourStoryIdx].portions.remove(at: portionIndex)

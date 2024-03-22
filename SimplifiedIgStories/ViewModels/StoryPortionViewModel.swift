@@ -68,6 +68,14 @@ final class StoryPortionViewModel: ObservableObject {
         }
     }
     
+    // *** In real environment, the photo or video should be deleted by API call,
+    // this is a demo app, however, deleting them from temp directory.
+    func deletePortionMedia() {
+        guard let fileURL = portion.imageURL ?? portion.videoURL else { return }
+        
+        try? fileManager.delete(for: fileURL)
+    }
+    
     deinit {
         print("\(String(describing: Self.self)): \(portion.id) deinit.")
     }

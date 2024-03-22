@@ -51,6 +51,7 @@ struct StoryPortionView: View {
                         .confirmationDialog("", isPresented: $storyPortionViewModel.showConfirmationDialog, titleVisibility: .hidden) {
                             if storyPortionViewModel.isCurrentUser {
                                 Button("Delete", role: .destructive) {
+                                    storyPortionViewModel.deletePortionMedia()
                                     deletePortion(portion.id, { portionIndex in
                                         animationHandler.moveToCurrentPortion(for: portionIndex)
                                     }, {
