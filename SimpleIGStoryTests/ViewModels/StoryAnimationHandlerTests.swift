@@ -313,24 +313,6 @@ final class StoryAnimationHandlerTests: XCTestCase {
         spy.setIsDragging(false)
     }
     
-    private func makePortion(id: Int = 0) -> Portion {
-        Portion(id: id, duration: 1, resourceURL: nil, type: .image)
-    }
-    
-    private func makeStory(id: Int = 0, portions: [Portion] = []) -> Story {
-        Story(
-            id: id,
-            lastUpdate: nil,
-            user: User(
-                id: 0,
-                name: "user",
-                avatarURL: nil,
-                isCurrentUser: true
-            ),
-            portions: portions
-        )
-    }
-    
     private class ParentStoryViewModelSpy: ObservableObject, CurrentStoryAnimationHandler {
         enum StoryMoveDirection {
             case previous, next
