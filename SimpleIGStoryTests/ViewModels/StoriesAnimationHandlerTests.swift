@@ -9,6 +9,13 @@ import XCTest
 @testable import Simple_IG_Story
 
 final class StoriesAnimationHandlerTests: XCTestCase {
+    func test_init_deliversEmptyStoriesWhenNoStoriesHolderStories() {
+        let emptyStories = [Story]()
+        let sut = makeSUT(stories: emptyStories)
+        
+        XCTAssertEqual(sut.stories, emptyStories)
+    }
+    
     func test_init_deliversStoriesAsStoriesHolderStories() {
         let stories = [makeStory(portions: [makePortion(id: 0)])]
         let sut = makeSUT(stories: stories)
