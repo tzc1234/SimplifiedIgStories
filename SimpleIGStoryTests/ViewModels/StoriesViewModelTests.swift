@@ -30,21 +30,7 @@ class StoriesViewModelTests: XCTestCase {
 //        let currentUserStories = sut.stories.filter { $0.user.isCurrentUser }
 //        XCTAssertEqual(currentUserStories.count, 1)
 //    }
-//    
-//    func test_moveToNextStory_setsToCorrectStoryId() async {
-//        let sut = await makeSUT()
-//        let hasNextStoryId = 1
-//        sut.setCurrentStoryId(hasNextStoryId)
-//        
-//        sut.moveToNextStory()
-//        
-//        XCTAssertEqual(sut.currentStoryId, 2, "Moves to next story after moveToNextStory called")
-//        
-//        sut.moveToNextStory()
-//        
-//        XCTAssertEqual(sut.currentStoryId, 2, "Ignores when no next story")
-//    }
-    
+//
 //    func test_postStoryImagePortion_appendsImagePortionAtCurrentUserStory() async throws {
 //        let appendedImageURL = URL(string: "file://appended-image.jpg")!
 //        let sut = await makeSUT(imageURLStub: { appendedImageURL })
