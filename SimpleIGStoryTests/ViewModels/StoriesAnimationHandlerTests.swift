@@ -60,6 +60,17 @@ final class StoriesAnimationHandlerTests: XCTestCase {
         XCTAssertTrue(sut.isSameStoryAfterDragging)
     }
     
+    func test_setCurrentStoryId_ignoresWhenStoryIdIsNotExisted() {
+        let stories = [makeStory(portions: [makePortion(id: 0)])]
+        let sut = makeSUT(stories: stories)
+        let initialCurrentStoryId = sut.currentStoryId
+        let storyIdNotExisted = 99
+        
+        sut.setCurrentStoryId(storyIdNotExisted)
+        
+        XCTAssertEqual(sut.currentStoryId, initialCurrentStoryId)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(stories: [Story] = [], 

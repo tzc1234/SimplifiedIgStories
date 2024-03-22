@@ -31,16 +31,6 @@ class StoriesViewModelTests: XCTestCase {
 //        XCTAssertEqual(currentUserStories.count, 1)
 //    }
 //    
-//    func test_setCurrentStoryId_ignoresWhenStoryIdIsNotExisted() async {
-//        let sut = await makeSUT()
-//        let storyIdNotExisted = 99
-//        let initialCurrentStoryId = sut.currentStoryId
-//        
-//        sut.setCurrentStoryId(storyIdNotExisted)
-//        
-//        XCTAssertEqual(sut.currentStoryId, initialCurrentStoryId)
-//    }
-//    
 //    func test_firstCurrentStoryId_deliversFirstStoryIdWhenItIsNotCurrentUserStory() async {
 //        let sut = await makeSUT()
 //        let notCurrentUserStoryId = 2
