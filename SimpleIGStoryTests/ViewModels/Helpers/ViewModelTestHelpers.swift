@@ -12,7 +12,7 @@ func makePortion(id: Int = 0) -> Portion {
     Portion(id: id, duration: 1, resourceURL: nil, type: .image)
 }
 
-func makeStory(id: Int = 0, portions: [Portion] = []) -> Story {
+func makeStory(id: Int = 0, portions: [Portion] = [], isCurrentUser: Bool = false) -> Story {
     Story(
         id: id,
         lastUpdate: nil,
@@ -20,7 +20,7 @@ func makeStory(id: Int = 0, portions: [Portion] = []) -> Story {
             id: 0,
             name: "user",
             avatarURL: nil,
-            isCurrentUser: true
+            isCurrentUser: isCurrentUser
         ),
         portions: portions
     )

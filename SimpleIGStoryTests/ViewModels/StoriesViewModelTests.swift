@@ -30,28 +30,6 @@ class StoriesViewModelTests: XCTestCase {
 //        let currentUserStories = sut.stories.filter { $0.user.isCurrentUser }
 //        XCTAssertEqual(currentUserStories.count, 1)
 //    }
-    
-//    func test_currentStories_containsOnlyOneCurrentUserStoryWhenCurrentStoryIdIsCurrentUserStoryId() async throws {
-//        let sut = await makeSUT()
-//        
-//        let currentUserStoryId = try XCTUnwrap(sut.stories.first { $0.user.isCurrentUser }?.id)
-//        sut.setCurrentStoryId(currentUserStoryId)
-//        
-//        XCTAssertEqual(sut.currentStoryId, currentUserStoryId)
-//        XCTAssertEqual(sut.currentStories.count, 1)
-//        XCTAssertEqual(sut.currentStories.first?.id, currentUserStoryId)
-//    }
-//    
-//    func test_currentStories_containNoCurrentUserStoryWhenCurrentStoryIdIsNonCurrentUserStoryId() async throws {
-//        let sut = await makeSUT()
-//        
-//        let nonCurrentUserStoryId = try XCTUnwrap(sut.stories.first { !$0.user.isCurrentUser }?.id)
-//        sut.setCurrentStoryId(nonCurrentUserStoryId)
-//        
-//        XCTAssertEqual(sut.currentStoryId, nonCurrentUserStoryId)
-//        let currentUserStoriesInCurrentStories = sut.currentStories.filter { $0.user.isCurrentUser }
-//        XCTAssertEqual(currentUserStoriesInCurrentStories.count, 0)
-//    }
 //    
 //    func test_saveStoryIdBeforeDragged_savesCurrentStoryId() async {
 //        let sut = await makeSUT()
