@@ -31,16 +31,6 @@ class StoriesViewModelTests: XCTestCase {
 //        XCTAssertEqual(currentUserStories.count, 1)
 //    }
 //    
-//    func test_saveStoryIdBeforeDragged_savesCurrentStoryId() async {
-//        let sut = await makeSUT()
-//        
-//        XCTAssertFalse(sut.animationHandler.isSameStoryAfterDragging)
-//        
-//        sut.saveStoryIdBeforeDragged()
-//        
-//        XCTAssertTrue(sut.animationHandler.isSameStoryAfterDragging)
-//    }
-//    
 //    func test_setCurrentStoryId_ignoresWhenStoryIdIsNotExisted() async {
 //        let sut = await makeSUT()
 //        let storyIdNotExisted = 99
