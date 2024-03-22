@@ -273,6 +273,36 @@ final class StoriesAnimationHandlerTests: XCTestCase {
         XCTAssertEqual(sut.currentStoryId, 2, "Ignores when no next story")
     }
     
+    func test_getPortions_deliversEmptyPortionsWithInvalidStoryId() {
+        let stories = [
+            makeStory(id: 0, portions: [makePortion(id: 0)], isCurrentUser: true),
+            makeStory(id: 1, portions: [makePortion(id: 1), makePortion(id: 2)])
+        ]
+        let sut = makeSUT(stories: stories)
+        
+        let receivedPortions = sut.getPortions(by: 2)
+        
+        XCTAssertTrue(receivedPortions.isEmpty)
+    }
+    
+    func test_getPortions_deliversPortionsCorrectly() {
+        let expectedPortions0 = [makePortion(id: 0)]
+        let expectedPortions1 = [makePortion(id: 1), makePortion(id: 2)]
+        let stories = [
+            makeStory(id: 0, portions: expectedPortions0, isCurrentUser: true),
+            makeStory(id: 1, portions: expectedPortions1)
+        ]
+        let sut = makeSUT(stories: stories)
+        
+        let receivedPortions0 = sut.getPortions(by: 0)
+        
+        XCTAssertEqual(receivedPortions0, expectedPortions0)
+        
+        let receivedPortions1 = sut.getPortions(by: 1)
+        
+        XCTAssertEqual(receivedPortions1, expectedPortions1)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(stories: [Story] = [], 
