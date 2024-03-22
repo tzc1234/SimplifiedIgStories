@@ -303,6 +303,21 @@ final class StoriesAnimationHandlerTests: XCTestCase {
         XCTAssertEqual(receivedPortions1, expectedPortions1)
     }
     
+    func test_subscribeObjectWillChange_triggersSelfObjectWillChangeWhenStoriesHolderObjectWillChangeGetTriggered() {
+        let storiesHolder = StoriesHolderStub(stories: [])
+        let sut = StoriesAnimationHandler(storiesHolder: storiesHolder)
+        var objectWillChangeCount = 0
+        let cancellable = sut.objectWillChange.sink { _ in objectWillChangeCount += 1 }
+        
+        XCTAssertEqual(objectWillChangeCount, 0)
+        
+        storiesHolder.objectWillChange.send()
+        
+        XCTAssertEqual(objectWillChangeCount, 1)
+        
+        cancellable.cancel()
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(stories: [Story] = [], 
