@@ -31,20 +31,6 @@ class StoriesViewModelTests: XCTestCase {
 //        XCTAssertEqual(currentUserStories.count, 1)
 //    }
 //    
-//    func test_moveToPreviousStory_setsToCorrectStoryId() async {
-//        let sut = await makeSUT()
-//        let hasPreviousStoryId = 2
-//        sut.setCurrentStoryId(hasPreviousStoryId)
-//        
-//        sut.moveToPreviousStory()
-//        
-//        XCTAssertEqual(sut.currentStoryId, 1, "Moves to previous story after moveToPreviousStory called")
-//        
-//        sut.moveToPreviousStory()
-//        
-//        XCTAssertEqual(sut.currentStoryId, 1, "Ignores when no previous story (exclude current user story)")
-//    }
-//    
 //    func test_moveToNextStory_setsToCorrectStoryId() async {
 //        let sut = await makeSUT()
 //        let hasNextStoryId = 1

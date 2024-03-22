@@ -235,6 +235,25 @@ final class StoriesAnimationHandlerTests: XCTestCase {
         cancellable.cancel()
     }
     
+    func test_moveToPreviousStory_setsToCorrectStoryId() {
+        let stories = [
+            makeStory(id: 0, portions: [makePortion(id: 0)], isCurrentUser: true),
+            makeStory(id: 1, portions: [makePortion(id: 1)]),
+            makeStory(id: 2, portions: [makePortion(id: 2)])
+        ]
+        let sut = makeSUT(stories: stories)
+        let hasPreviousStoryId = 2
+        sut.setCurrentStoryId(hasPreviousStoryId)
+        
+        sut.moveToPreviousStory()
+        
+        XCTAssertEqual(sut.currentStoryId, 1, "Moves to previous story after moveToPreviousStory called")
+        
+        sut.moveToPreviousStory()
+        
+        XCTAssertEqual(sut.currentStoryId, 1, "Ignores when no previous story (exclude current user story)")
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(stories: [Story] = [], 
