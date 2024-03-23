@@ -188,7 +188,7 @@ extension StoryAnimationHandler {
         setCurrentBarPortionAnimationStatus(to: .start)
     }
     
-    func performNextBarPortionAnimationWhenCurrentPortionFinished(whenNoNextStory action: () -> Void) {
+    func performNextPortionAnimationWhenCurrentPortionFinished(whenNoNextStory action: () -> Void) {
         guard currentPortionAnimationStatus == .finish else { return }
         
         if isAtLastPortion {

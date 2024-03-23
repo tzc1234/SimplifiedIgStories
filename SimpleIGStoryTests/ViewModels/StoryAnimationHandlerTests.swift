@@ -22,7 +22,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
         let stories = [makeStory(portions: [makePortion(id: 0)])]
         let (sut, _) = makeSUT(stories: stories)
         
-        sut.performNextBarPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: {})
+        sut.performNextPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: {})
         
         XCTAssertNotEqual(sut.currentPortionAnimationStatus, .finish)
     }
@@ -37,7 +37,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
         let (sut, _) = makeSUT(stories: stories)
         
         sut.finishPortionAnimation(for: 0)
-        sut.performNextBarPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: {})
+        sut.performNextPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: {})
         
         XCTAssertEqual(sut.currentPortionId, 1)
         XCTAssertEqual(sut.currentPortionAnimationStatus, .start)
@@ -51,7 +51,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
         let (sut, spy) = makeSUT(stories: stories)
         
         sut.finishPortionAnimation(for: 0)
-        sut.performNextBarPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: {})
+        sut.performNextPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: {})
         
         XCTAssertEqual(spy.loggedStoryMoveDirections, [.next])
     }
@@ -64,7 +64,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
         sut.finishPortionAnimation(for: 0)
         
         let exp = expectation(description: "Wait for whenNoNextStory block")
-        sut.performNextBarPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: {
+        sut.performNextPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: {
             exp.fulfill()
         })
         wait(for: [exp], timeout: 1)
@@ -88,7 +88,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
         spy.isAtFirstStory = true
         
         sut.finishPortionAnimation(for: 0)
-        sut.performNextBarPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: {})
+        sut.performNextPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: {})
         
         XCTAssertEqual(sut.currentPortionId, 1)
         

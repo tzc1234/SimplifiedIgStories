@@ -29,7 +29,7 @@ struct ProgressBar: View {
         }
         .padding(.horizontal, 10)
         .onChange(of: animationHandler.currentPortionAnimationStatus) { _ in
-            animationHandler.performNextBarPortionAnimationWhenCurrentPortionFinished {
+            animationHandler.performNextPortionAnimationWhenCurrentPortionFinished {
                 homeUIActionHandler.closeStoryContainer(storyId: story.id)
             }
         }
