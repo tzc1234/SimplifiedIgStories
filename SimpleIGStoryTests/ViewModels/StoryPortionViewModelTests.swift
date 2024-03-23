@@ -28,6 +28,16 @@ final class StoryPortionViewModelTests: XCTestCase {
         XCTAssertEqual(fileManager.loggedURLsForDeletion, [imageURL])
     }
     
+    func test_deletePortionMedia_deletesMediaWhenVideoTypePortionResourceURLIsExisted() {
+        let fileManager = FileManagerSpy()
+        let videoURL = anyVideoURL()
+        let sut = makeSUT(portion: makePortion(resourceURL: videoURL, type: .video), fileManager: fileManager)
+        
+        sut.deletePortionMedia()
+        
+        XCTAssertEqual(fileManager.loggedURLsForDeletion, [videoURL])
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(portion: Portion, 
