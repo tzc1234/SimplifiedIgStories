@@ -8,8 +8,8 @@
 import Foundation
 @testable import Simple_IG_Story
 
-func makePortion(id: Int = 0) -> Portion {
-    Portion(id: id, duration: 1, resourceURL: nil, type: .image)
+func makePortion(id: Int = 0, resourceURL: URL? = nil) -> Portion {
+    Portion(id: id, duration: 1, resourceURL: resourceURL, type: .image)
 }
 
 func makeStory(id: Int = 0, portions: [Portion] = [], isCurrentUser: Bool = false) -> Story {
