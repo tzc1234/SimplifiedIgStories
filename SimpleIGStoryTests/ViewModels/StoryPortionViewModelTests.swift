@@ -38,7 +38,7 @@ final class StoryPortionViewModelTests: XCTestCase {
         XCTAssertEqual(fileManager.loggedURLsForDeletion, [videoURL])
     }
     
-    func test_saveMedia_doesNotSaveImageWhenNoImageData() async {
+    func test_saveImageMedia_doesNotSaveImageWhenNoImageData() async {
         let fileManager = FileManagerSpy(getImageStub: { _ in nil })
         let mediaSaver = MediaSaverSpy()
         let imageURL = anyImageURL()
@@ -53,7 +53,7 @@ final class StoryPortionViewModelTests: XCTestCase {
         XCTAssertEqual(mediaSaver.saveImageDataCallCount, 0)
     }
     
-    func test_saveMedia_showsNoPermissionMessageOnNoPermissionError() async {
+    func test_saveImageMedia_showsNoPermissionMessageOnNoPermissionError() async {
         let fileManager = FileManagerSpy(getImageStub: { _ in self.anyUIImage() })
         let mediaSaver = MediaSaverSpy(saveImageDataStub: { throw MediaSaverError.noPermission })
         let imageURL = anyImageURL()
@@ -69,19 +69,37 @@ final class StoryPortionViewModelTests: XCTestCase {
         XCTAssertEqual(sut.noticeMsg, "Couldn't save. No add photo permission.")
     }
     
-    func test_saveMedia_savesImageSuccessfully() async {
+    func test_saveImageMedia_showsSavedFailedMessageOnOtherError() async {
+        let fileManager = FileManagerSpy(getImageStub: { _ in self.anyUIImage() })
+        let mediaSaver = MediaSaverSpy(saveImageDataStub: { throw anyNSError() })
+        let imageURL = anyImageURL()
+        let sut = makeSUT(
+            portion: makePortion(resourceURL: imageURL, type: .image),
+            fileManager: fileManager,
+            mediaSaver: mediaSaver,
+            performAfterOnePointFiveSecond: { _ in }
+        )
+        
+        await sut.saveMedia()
+        
+        XCTAssertEqual(sut.noticeMsg, "Save failed.")
+    }
+    
+    func test_saveImageMedia_savesImageSuccessfully() async {
         let fileManager = FileManagerSpy(getImageStub: { _ in self.anyUIImage() })
         let mediaSaver = MediaSaverSpy()
         let imageURL = anyImageURL()
         let sut = makeSUT(
             portion: makePortion(resourceURL: imageURL, type: .image),
             fileManager: fileManager,
-            mediaSaver: mediaSaver
+            mediaSaver: mediaSaver,
+            performAfterOnePointFiveSecond: { _ in }
         )
         
         await sut.saveMedia()
         
         XCTAssertEqual(mediaSaver.saveImageDataCallCount, 1)
+        XCTAssertEqual(sut.noticeMsg, "Saved.")
     }
     
     // MARK: - Helpers
@@ -89,7 +107,6 @@ final class StoryPortionViewModelTests: XCTestCase {
     private func makeSUT(portion: Portion, 
                          fileManager: FileManageable = FileManagerSpy(getImageStub: { _ in nil }),
                          mediaSaver: MediaSaver = MediaSaverSpy(),
-                         performAfterPointOneSecond: @escaping (@escaping () -> Void) -> Void = { $0() },
                          performAfterOnePointFiveSecond: @escaping (@escaping () -> Void) -> Void = { $0() }
     ) -> StoryPortionViewModel {
         let sut = StoryPortionViewModel(
@@ -97,7 +114,7 @@ final class StoryPortionViewModelTests: XCTestCase {
             portion: portion,
             fileManager: fileManager,
             mediaSaver: mediaSaver,
-            performAfterPointOneSecond: performAfterPointOneSecond,
+            performAfterPointOneSecond: { $0() },
             performAfterOnePointFiveSecond: performAfterOnePointFiveSecond
         )
         return sut
