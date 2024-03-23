@@ -53,8 +53,24 @@ final class StoryPortionViewModelTests: XCTestCase {
         XCTAssertEqual(mediaSaver.saveImageDataCallCount, 0)
     }
     
+    func test_saveMedia_showsNoPermissionMessageOnNoPermissionError() async {
+        let fileManager = FileManagerSpy(getImageStub: { _ in self.anyUIImage() })
+        let mediaSaver = MediaSaverSpy(saveImageDataStub: { throw MediaSaverError.noPermission })
+        let imageURL = anyImageURL()
+        let sut = makeSUT(
+            portion: makePortion(resourceURL: imageURL, type: .image),
+            fileManager: fileManager,
+            mediaSaver: mediaSaver,
+            performAfterOnePointFiveSecond: { _ in }
+        )
+        
+        await sut.saveMedia()
+        
+        XCTAssertEqual(sut.noticeMsg, "Couldn't save. No add photo permission.")
+    }
+    
     func test_saveMedia_savesImageSuccessfully() async {
-        let fileManager = FileManagerSpy(getImageStub: { url in UIImage.make(withColor: .red) })
+        let fileManager = FileManagerSpy(getImageStub: { _ in self.anyUIImage() })
         let mediaSaver = MediaSaverSpy()
         let imageURL = anyImageURL()
         let sut = makeSUT(
@@ -72,14 +88,23 @@ final class StoryPortionViewModelTests: XCTestCase {
     
     private func makeSUT(portion: Portion, 
                          fileManager: FileManageable = FileManagerSpy(getImageStub: { _ in nil }),
-                         mediaSaver: MediaSaver = MediaSaverSpy()) -> StoryPortionViewModel {
+                         mediaSaver: MediaSaver = MediaSaverSpy(),
+                         performAfterPointOneSecond: @escaping (@escaping () -> Void) -> Void = { $0() },
+                         performAfterOnePointFiveSecond: @escaping (@escaping () -> Void) -> Void = { $0() }
+    ) -> StoryPortionViewModel {
         let sut = StoryPortionViewModel(
             story: makeStory(),
             portion: portion,
             fileManager: fileManager,
-            mediaSaver: mediaSaver
+            mediaSaver: mediaSaver,
+            performAfterPointOneSecond: performAfterPointOneSecond,
+            performAfterOnePointFiveSecond: performAfterOnePointFiveSecond
         )
         return sut
+    }
+    
+    private func anyUIImage() -> UIImage {
+        UIImage.make(withColor: .red)
     }
 }
 
@@ -106,9 +131,15 @@ final class FileManagerSpy: FileManageable {
 
 final class MediaSaverSpy: MediaSaver {
     private(set) var saveImageDataCallCount = 0
+    private let saveImageDataStub: () async throws -> Void
+    
+    init(saveImageDataStub: @escaping () async throws -> Void = {}) {
+        self.saveImageDataStub = saveImageDataStub
+    }
     
     func saveImageData(_ data: Data) async throws {
         saveImageDataCallCount += 1
+        try await saveImageDataStub()
     }
     
     func saveVideo(by url: URL) async throws {

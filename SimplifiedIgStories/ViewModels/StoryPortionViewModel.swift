@@ -17,16 +17,27 @@ final class StoryPortionViewModel: ObservableObject {
     let portion: Portion
     private let fileManager: FileManageable
     private let mediaSaver: MediaSaver
+    private let performAfterPointOneSecond: (@escaping () -> Void) -> Void
+    private let performAfterOnePointFiveSecond: (@escaping () -> Void) -> Void
     
     init(story: Story,
          portion: Portion,
          fileManager: FileManageable,
-         mediaSaver: MediaSaver) {
+         mediaSaver: MediaSaver,
+         performAfterPointOneSecond: @escaping (@escaping () -> Void) -> Void = { action in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { action() }
+         },
+         performAfterOnePointFiveSecond: @escaping (@escaping () -> Void) -> Void = { action in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { action() }
+         }
+    ) {
         self.storyId = story.id
         self.isCurrentUser = story.user.isCurrentUser
         self.portion = portion
         self.fileManager = fileManager
         self.mediaSaver = mediaSaver
+        self.performAfterPointOneSecond = performAfterPointOneSecond
+        self.performAfterOnePointFiveSecond = performAfterOnePointFiveSecond
     }
     
     @MainActor
@@ -60,9 +71,9 @@ final class StoryPortionViewModel: ObservableObject {
     }
     
     private func showNotice(message: String) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+        performAfterPointOneSecond { [weak self] in
             self?.noticeMsg = message
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+            self?.performAfterOnePointFiveSecond { [weak self] in
                 self?.noticeMsg = ""
             }
         }
