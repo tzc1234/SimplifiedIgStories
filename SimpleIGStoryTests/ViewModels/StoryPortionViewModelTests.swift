@@ -38,10 +38,40 @@ final class StoryPortionViewModelTests: XCTestCase {
         XCTAssertEqual(fileManager.loggedURLsForDeletion, [videoURL])
     }
     
+    func test_saveMedia_doesNotSaveImageWhenNoImageData() async {
+        let fileManager = FileManagerSpy(getImageStub: { _ in nil })
+        let mediaSaver = MediaSaverSpy()
+        let imageURL = anyImageURL()
+        let sut = makeSUT(
+            portion: makePortion(resourceURL: imageURL, type: .image),
+            fileManager: fileManager,
+            mediaSaver: mediaSaver
+        )
+        
+        await sut.saveMedia()
+        
+        XCTAssertEqual(mediaSaver.saveImageDataCallCount, 0)
+    }
+    
+    func test_saveMedia_savesImageSuccessfully() async {
+        let fileManager = FileManagerSpy(getImageStub: { url in UIImage.make(withColor: .red) })
+        let mediaSaver = MediaSaverSpy()
+        let imageURL = anyImageURL()
+        let sut = makeSUT(
+            portion: makePortion(resourceURL: imageURL, type: .image),
+            fileManager: fileManager,
+            mediaSaver: mediaSaver
+        )
+        
+        await sut.saveMedia()
+        
+        XCTAssertEqual(mediaSaver.saveImageDataCallCount, 1)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(portion: Portion, 
-                         fileManager: FileManageable = FileManagerSpy(),
+                         fileManager: FileManageable = FileManagerSpy(getImageStub: { _ in nil }),
                          mediaSaver: MediaSaver = MediaSaverSpy()) -> StoryPortionViewModel {
         let sut = StoryPortionViewModel(
             story: makeStory(),
@@ -55,13 +85,18 @@ final class StoryPortionViewModelTests: XCTestCase {
 
 final class FileManagerSpy: FileManageable {
     private(set) var loggedURLsForDeletion = [URL]()
+    private let getImageStub: (URL) -> UIImage?
+    
+    init(getImageStub: @escaping (URL) -> UIImage? = { _ in nil }) {
+        self.getImageStub = getImageStub
+    }
     
     func saveImage(_ image: UIImage, fileName: String) throws -> URL {
         anyImageURL()
     }
     
     func getImage(for url: URL) -> UIImage? {
-        nil
+        getImageStub(url)
     }
     
     func delete(for url: URL) throws {
@@ -70,8 +105,10 @@ final class FileManagerSpy: FileManageable {
 }
 
 final class MediaSaverSpy: MediaSaver {
+    private(set) var saveImageDataCallCount = 0
+    
     func saveImageData(_ data: Data) async throws {
-        
+        saveImageDataCallCount += 1
     }
     
     func saveVideo(by url: URL) async throws {
