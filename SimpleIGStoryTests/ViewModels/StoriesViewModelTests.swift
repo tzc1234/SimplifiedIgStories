@@ -89,6 +89,67 @@ class StoriesViewModelTests: XCTestCase {
         XCTAssertEqual(appendedPortion, expectedPortion)
     }
     
+    func test_deletePortion_ignoresWhenInvalidPortionId() async {
+        let stories = storiesForTest().local
+        let sut = await makeSUT(stories: stories)
+        let initialPortions = sut.allPortions
+        
+        let invalidPortionId = 99
+        sut.deletePortion(for: invalidPortionId, afterDeletion: { _ in }, noNextPortionAfterDeletion: {})
+        
+        XCTAssertEqual(sut.allPortions, initialPortions)
+    }
+    
+    func test_deletePortion_ignoresWhenValidPortionIdButNonCurrentUserStoryPortion() async {
+        let nonCurrentUserStory = hasNextPortionStory(isCurrentUser: false)
+        let sut = await makeSUT(stories: [nonCurrentUserStory])
+        let initialPortions = sut.allPortions
+        
+        let validPortionId = 0
+        sut.deletePortion(for: validPortionId, afterDeletion: { _ in }, noNextPortionAfterDeletion: {})
+        
+        XCTAssertEqual(sut.allPortions, initialPortions)
+    }
+    
+    func test_deletePortion_triggersAfterDeletionAfterPortionRemovedWhenNextPortionIsExisted() async {
+        let stories = [hasNextPortionStory(isCurrentUser: true)]
+        let sut = await makeSUT(stories: stories)
+        var hasNextPortions = sut.stories[0].portions
+        
+        let willBeDeletedPortionId = 0
+        var loggedPortionIndices = [Int]()
+        var noNextPortionAfterDeletionCallCount = 0
+        sut.deletePortion(
+            for: willBeDeletedPortionId,
+            afterDeletion: { loggedPortionIndices.append($0) },
+            noNextPortionAfterDeletion: { noNextPortionAfterDeletionCallCount += 1 }
+        )
+        
+        hasNextPortions.removeFirst()
+        let expectedPortionsAfterDeletion = hasNextPortions
+        XCTAssertEqual(sut.stories[0].portions, expectedPortionsAfterDeletion)
+        XCTAssertEqual(loggedPortionIndices, [0])
+        XCTAssertEqual(noNextPortionAfterDeletionCallCount, 0)
+    }
+    
+    func test_deletePortion_triggersNoNextPortionAfterDeletionWhenNoNextPortionIsExisted() async {
+        let stories = [noNextPortionStory(isCurrentUser: true)]
+        let sut = await makeSUT(stories: stories)
+        
+        let willBeDeletedPortionId = 0
+        var afterDeletionCallCount = 0
+        var noNextPortionAfterDeletionCallCount = 0
+        sut.deletePortion(
+            for: willBeDeletedPortionId,
+            afterDeletion: { _ in afterDeletionCallCount += 1 },
+            noNextPortionAfterDeletion: { noNextPortionAfterDeletionCallCount += 1 }
+        )
+        
+        XCTAssertEqual(sut.stories[0].portions, [])
+        XCTAssertEqual(afterDeletionCallCount, 0)
+        XCTAssertEqual(noNextPortionAfterDeletionCallCount, 1)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(stories: [LocalStory] = [],
@@ -119,6 +180,19 @@ class StoriesViewModelTests: XCTestCase {
         storiesForTest().model.flatMap(\.portions).max(by: { $1.id > $0.id})!.id
     }
     
+    private func noNextPortionStory(isCurrentUser: Bool) -> LocalStory {
+        let user = makeUser(id: 0, name: "User", isCurrentUser: isCurrentUser)
+        let portion = makePortion(id: 0, resourceURL: anyImageURL())
+        return makeStory(id: 0, user: user, portions: [portion]).local
+    }
+    
+    private func hasNextPortionStory(isCurrentUser: Bool) -> LocalStory {
+        let user = makeUser(id: 0, name: "User", isCurrentUser: isCurrentUser)
+        let portion0 = makePortion(id: 0, resourceURL: anyImageURL())
+        let portion1 = makePortion(id: 1, resourceURL: anyVideoURL(), duration: 9, type: .video)
+        return makeStory(id: 0, user: user, portions: [portion0, portion1]).local
+    }
+    
     private func storiesForTest() -> (local: [LocalStory], model: [Story]) {
         let currentUser = makeUser(id: 0, name: "Current User", isCurrentUser: true)
         let user1 = makeUser(id: 1, name: "User1")
@@ -127,50 +201,20 @@ class StoriesViewModelTests: XCTestCase {
         let portion1 = makePortion(id: 1, resourceURL: anyVideoURL(), duration: 9, type: .video)
         let portion2 = makePortion(id: 2)
         let portion3 = makePortion(id: 3)
-        let now = Date.now
-        
-        let local = [
-            LocalStory(
-                id: 0,
-                lastUpdate: nil,
-                user: currentUser.local,
-                portions: [portion0.local, portion1.local]
-            ),
-            LocalStory(
-                id: 1,
-                lastUpdate: now,
-                user: user1.local,
-                portions: [portion2.local]
-            ),
-            LocalStory(
-                id: 2,
-                lastUpdate: now.addingTimeInterval(1),
-                user: user2.local,
-                portions: [portion3.local]
-            )
+        let stories = [
+            makeStory(id: 0, user: currentUser, portions: [portion0, portion1]),
+            makeStory(id: 1, user: user1, portions: [portion2]),
+            makeStory(id: 2, user: user2, portions: [portion3]),
         ]
-        
-        let model = [
-            Story(
-                id: 0,
-                lastUpdate: nil,
-                user: currentUser.user,
-                portions: [portion0.portion, portion1.portion]
-            ),
-            Story(
-                id: 1,
-                lastUpdate: now,
-                user: user1.user,
-                portions: [portion2.portion]
-            ),
-            Story(
-                id: 2,
-                lastUpdate: now.addingTimeInterval(1),
-                user: user2.user,
-                portions: [portion3.portion]
-            )
-        ]
-        
+        return (stories.map(\.local), stories.map(\.model))
+    }
+    
+    private func makeStory(id: Int,
+                           lastUpdate: Date = .now,
+                           user: (local: LocalUser, user: User),
+                           portions: [(local: LocalPortion, portion: Portion)]) -> (local: LocalStory, model: Story) {
+        let local = LocalStory(id: id, lastUpdate: lastUpdate, user: user.local, portions: portions.map(\.local))
+        let model = Story(id: id, lastUpdate: lastUpdate, user: user.user, portions: portions.map(\.portion))
         return (local, model)
     }
     
@@ -189,7 +233,7 @@ class StoriesViewModelTests: XCTestCase {
     }
     
     private func makeUser(id: Int,
-                          name: String,
+                          name: String = "user",
                           avatarURL: URL? = nil,
                           isCurrentUser: Bool = false) -> (local: LocalUser, user: User) {
         let local = LocalUser(id: id, name: name, avatarURL: avatarURL, isCurrentUser: isCurrentUser)
