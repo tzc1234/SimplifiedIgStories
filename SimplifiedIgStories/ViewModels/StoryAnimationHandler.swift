@@ -14,7 +14,7 @@ enum BarPortionAnimationStatus: CaseIterable {
 
 protocol CurrentStoryAnimationHandler {
     var objectWillChange: ObservableObjectPublisher { get }
-    var firstCurrentStoryId: Int? { get }
+    var isAtFirstStory: Bool { get }
     var isAtLastStory: Bool { get }
     var currentStoryId: Int { get }
     var isSameStoryAfterDragging: Bool { get }
@@ -66,10 +66,6 @@ extension StoryAnimationHandler {
         currentPortionAnimationStatus == .start ||
         currentPortionAnimationStatus == .restart ||
         currentPortionAnimationStatus == .resume
-    }
-    
-    private var isAtFirstStory: Bool {
-        currentStoryAnimationHandler.firstCurrentStoryId == storyId
     }
     
     private var isCurrentStory: Bool {
@@ -132,7 +128,7 @@ extension StoryAnimationHandler {
     
     private func performBackwardPortionAnimation() {
         if isAtFirstPortion {
-            if isAtFirstStory {
+            if currentStoryAnimationHandler.isAtFirstStory {
                 restartPortionAnimation()
             } else { // Not at the first story (that means the previous story must exist.)
                 setCurrentBarPortionAnimationStatus(to: .initial)

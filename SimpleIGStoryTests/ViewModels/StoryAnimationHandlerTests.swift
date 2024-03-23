@@ -73,7 +73,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
     func test_setPortionTransitionDirection_setsToForward_finishsCurrentBarPortionAnimation() {
         let stories = [makeStory(id: 0, portions: [makePortion(id: 0)])]
         let (sut, spy) = makeSUT(stories: stories)
-        spy.firstCurrentStoryId = 0
+        spy.isAtFirstStory = true
         
         XCTAssertEqual(sut.currentPortionAnimationStatus, .initial)
         
@@ -85,7 +85,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
     func test_setPortionTransitionDirection_setsToBackwardAtFirstStoryLastPortion_backToPreviousPortion() {
         let stories = [makeStory(id: 0, portions: [makePortion(id: 0), makePortion(id: 1)])]
         let (sut, spy) = makeSUT(stories: stories)
-        spy.firstCurrentStoryId = 0
+        spy.isAtFirstStory = true
         
         sut.finishPortionAnimation(for: 0)
         sut.performNextBarPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: {})
@@ -101,7 +101,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
     func test_setPortionTransitionDirection_setsToBackwardAtFirstStoryFirstPortion_restartCurrentPortion() {
         let stories = [makeStory(id: 0, portions: [makePortion(id: 0), makePortion(id: 1)])]
         let (sut, spy) = makeSUT(stories: stories)
-        spy.firstCurrentStoryId = 0
+        spy.isAtFirstStory = true
         
         sut.performPortionTransitionAnimation(by: .backwardValue)
         
@@ -120,7 +120,6 @@ final class StoryAnimationHandlerTests: XCTestCase {
             makeStory(id: 1, portions: [makePortion(id: 1)])
         ]
         let (sut, spy) = makeSUT(storyId: 1, stories: stories)
-        spy.firstCurrentStoryId = 0
         
         XCTAssertEqual(sut.currentPortionId, 1)
         XCTAssertEqual(spy.loggedStoryMoveDirections, [])
@@ -213,7 +212,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
     func test_pausePortionAnimation_pausesWhenAnimating() {
         let stories = [makeStory(id: 0, portions: [makePortion(id: 0)])]
         let (sut, spy) = makeSUT(stories: stories)
-        spy.firstCurrentStoryId = 0
+        spy.isAtFirstStory = true
         
         sut.startProgressBarAnimation()
         sut.pausePortionAnimation()
@@ -318,7 +317,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
             case previous, next
         }
         
-        var firstCurrentStoryId: Int? = nil
+        var isAtFirstStory = false
         var isAtLastStory = false
         var currentStoryId = 0
         var stories = [Story]()
