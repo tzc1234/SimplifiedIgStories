@@ -128,6 +128,22 @@ final class StoryPortionViewModelTests: XCTestCase {
         XCTAssertEqual(sut.noticeMsg, "Save failed.")
     }
     
+    func test_saveVideoMedia_savesVideoSuccessfully() async {
+        let fileManager = FileManagerSpy(getImageStub: { _ in self.anyUIImage() })
+        let mediaSaver = MediaSaverSpy()
+        let sut = makeSUT(
+            portion: makePortion(resourceURL: anyVideoURL(), type: .video),
+            fileManager: fileManager,
+            mediaSaver: mediaSaver,
+            performAfterOnePointFiveSecond: { _ in }
+        )
+        
+        await sut.saveMedia()
+        
+        XCTAssertEqual(mediaSaver.saveVideoCallCount, 1)
+        XCTAssertEqual(sut.noticeMsg, "Saved.")
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(portion: Portion, 
@@ -174,6 +190,8 @@ final class FileManagerSpy: FileManageable {
 
 final class MediaSaverSpy: MediaSaver {
     private(set) var saveImageDataCallCount = 0
+    private(set) var saveVideoCallCount = 0
+    
     private let saveImageDataStub: () async throws -> Void
     private let saveVideoStub: () async throws -> Void
     
@@ -189,6 +207,7 @@ final class MediaSaverSpy: MediaSaver {
     }
     
     func saveVideo(by url: URL) async throws {
+        saveVideoCallCount += 1
         try await saveVideoStub()
     }
 }
