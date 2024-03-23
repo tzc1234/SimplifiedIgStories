@@ -172,18 +172,6 @@ extension StoryPortionView {
 
 struct StoryPortionView_Previews: PreviewProvider {
     static var previews: some View {
-        let story = PreviewData.stories[0]
-        let portion = story.portions[0]
-        StoryPortionView(
-            storyPortionViewModel: StoryPortionViewModel(
-                story: story,
-                portion: portion,
-                fileManager: DummyFileManager(),
-                mediaSaver: DummyMediaSaver()
-            ),
-            animationHandler: .preview,
-            deletePortion: StoriesViewModel.preview.deletePortion,
-            onDisappear: { _ in }
-        )
+        StoryPortionView.preview
     }
 }

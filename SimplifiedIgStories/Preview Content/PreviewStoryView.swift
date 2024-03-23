@@ -11,20 +11,22 @@ import Combine
 extension StoryView {
     static let preview: StoryView = {
         let story = PreviewData.stories[0]
+        let portions = story.portions
         let storiesViewModel = StoriesViewModel.preview
         let animationHandler = StoryAnimationHandler.preview
-        let storyPortionViewModel = StoryPortionViewModel(
-            story: story,
-            portion: story.portions[0],
-            fileManager: DummyFileManager(),
-            mediaSaver: DummyMediaSaver()
-        )
         
         return StoryView(
             story: story,
             animationHandler: animationHandler,
             getStoryPortionView: { portion in
-                StoryPortionView(
+                let storyPortionViewModel = StoryPortionViewModel(
+                    story: story,
+                    portion: portion,
+                    fileManager: DummyFileManager(),
+                    mediaSaver: DummyMediaSaver()
+                )
+                
+                return StoryPortionView(
                     storyPortionViewModel: storyPortionViewModel,
                     animationHandler: animationHandler,
                     deletePortion: StoriesViewModel.preview.deletePortion, 
@@ -37,14 +39,20 @@ extension StoryView {
 }
 
 extension StoryAnimationHandler {
-    static let preview: StoryAnimationHandler = StoryAnimationHandler(
+    static let preview = StoryAnimationHandler(
         storyId: PreviewData.stories[0].id,
         currentStoryAnimationHandler: StoriesAnimationHandler.preview
     )
 }
 
 extension StoriesAnimationHandler {
-    static let preview: StoriesAnimationHandler = StoriesAnimationHandler(
-        storiesHolder: StoriesViewModel.preview
-    )
+    static let preview = StoriesAnimationHandler(storiesHolder: StoriesHolderStub(stories: PreviewData.stories))
+}
+
+final class StoriesHolderStub: ObservableObject, StoriesHolder {
+    let stories: [Story]
+    
+    init(stories: [Story]) {
+        self.stories = stories
+    }
 }
