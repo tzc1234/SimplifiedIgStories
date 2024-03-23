@@ -113,6 +113,21 @@ final class StoryPortionViewModelTests: XCTestCase {
         XCTAssertEqual(sut.noticeMsg, "Couldn't save. No add photo permission.")
     }
     
+    func test_saveVideoMedia_showsSavedFailedMessageOnOtherError() async {
+        let fileManager = FileManagerSpy(getImageStub: { _ in self.anyUIImage() })
+        let mediaSaver = MediaSaverSpy(saveVideoStub: { throw anyNSError() })
+        let sut = makeSUT(
+            portion: makePortion(resourceURL: anyVideoURL(), type: .video),
+            fileManager: fileManager,
+            mediaSaver: mediaSaver,
+            performAfterOnePointFiveSecond: { _ in }
+        )
+        
+        await sut.saveMedia()
+        
+        XCTAssertEqual(sut.noticeMsg, "Save failed.")
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(portion: Portion, 
