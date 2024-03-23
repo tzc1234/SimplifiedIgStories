@@ -41,9 +41,8 @@ final class StoryPortionViewModelTests: XCTestCase {
     func test_saveImageMedia_doesNotSaveImageWhenNoImageData() async {
         let fileManager = FileManagerSpy(getImageStub: { _ in nil })
         let mediaSaver = MediaSaverSpy()
-        let imageURL = anyImageURL()
         let sut = makeSUT(
-            portion: makePortion(resourceURL: imageURL, type: .image),
+            portion: makePortion(resourceURL: anyImageURL(), type: .image),
             fileManager: fileManager,
             mediaSaver: mediaSaver
         )
@@ -56,9 +55,8 @@ final class StoryPortionViewModelTests: XCTestCase {
     func test_saveImageMedia_showsNoPermissionMessageOnNoPermissionError() async {
         let fileManager = FileManagerSpy(getImageStub: { _ in self.anyUIImage() })
         let mediaSaver = MediaSaverSpy(saveImageDataStub: { throw MediaSaverError.noPermission })
-        let imageURL = anyImageURL()
         let sut = makeSUT(
-            portion: makePortion(resourceURL: imageURL, type: .image),
+            portion: makePortion(resourceURL: anyImageURL(), type: .image),
             fileManager: fileManager,
             mediaSaver: mediaSaver,
             performAfterOnePointFiveSecond: { _ in }
@@ -72,9 +70,8 @@ final class StoryPortionViewModelTests: XCTestCase {
     func test_saveImageMedia_showsSavedFailedMessageOnOtherError() async {
         let fileManager = FileManagerSpy(getImageStub: { _ in self.anyUIImage() })
         let mediaSaver = MediaSaverSpy(saveImageDataStub: { throw anyNSError() })
-        let imageURL = anyImageURL()
         let sut = makeSUT(
-            portion: makePortion(resourceURL: imageURL, type: .image),
+            portion: makePortion(resourceURL: anyImageURL(), type: .image),
             fileManager: fileManager,
             mediaSaver: mediaSaver,
             performAfterOnePointFiveSecond: { _ in }
@@ -88,9 +85,8 @@ final class StoryPortionViewModelTests: XCTestCase {
     func test_saveImageMedia_savesImageSuccessfully() async {
         let fileManager = FileManagerSpy(getImageStub: { _ in self.anyUIImage() })
         let mediaSaver = MediaSaverSpy()
-        let imageURL = anyImageURL()
         let sut = makeSUT(
-            portion: makePortion(resourceURL: imageURL, type: .image),
+            portion: makePortion(resourceURL: anyImageURL(), type: .image),
             fileManager: fileManager,
             mediaSaver: mediaSaver,
             performAfterOnePointFiveSecond: { _ in }
@@ -100,6 +96,21 @@ final class StoryPortionViewModelTests: XCTestCase {
         
         XCTAssertEqual(mediaSaver.saveImageDataCallCount, 1)
         XCTAssertEqual(sut.noticeMsg, "Saved.")
+    }
+    
+    func test_saveVideoMedia_showsNoPermissionMessageOnNoPermissionError() async {
+        let fileManager = FileManagerSpy(getImageStub: { _ in self.anyUIImage() })
+        let mediaSaver = MediaSaverSpy(saveVideoStub: { throw MediaSaverError.noPermission })
+        let sut = makeSUT(
+            portion: makePortion(resourceURL: anyVideoURL(), type: .video),
+            fileManager: fileManager,
+            mediaSaver: mediaSaver,
+            performAfterOnePointFiveSecond: { _ in }
+        )
+        
+        await sut.saveMedia()
+        
+        XCTAssertEqual(sut.noticeMsg, "Couldn't save. No add photo permission.")
     }
     
     // MARK: - Helpers
@@ -149,9 +160,12 @@ final class FileManagerSpy: FileManageable {
 final class MediaSaverSpy: MediaSaver {
     private(set) var saveImageDataCallCount = 0
     private let saveImageDataStub: () async throws -> Void
+    private let saveVideoStub: () async throws -> Void
     
-    init(saveImageDataStub: @escaping () async throws -> Void = {}) {
+    init(saveImageDataStub: @escaping () async throws -> Void = {}, 
+         saveVideoStub: @escaping () async throws -> Void = {}) {
         self.saveImageDataStub = saveImageDataStub
+        self.saveVideoStub = saveVideoStub
     }
     
     func saveImageData(_ data: Data) async throws {
@@ -160,6 +174,6 @@ final class MediaSaverSpy: MediaSaver {
     }
     
     func saveVideo(by url: URL) async throws {
-        
+        try await saveVideoStub()
     }
 }
