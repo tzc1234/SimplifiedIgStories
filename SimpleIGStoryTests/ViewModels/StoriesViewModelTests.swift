@@ -97,7 +97,7 @@ class StoriesViewModelTests: XCTestCase {
                          line: UInt = #line) async -> StoriesViewModel {
         let loader = StoriesLoaderStub(stories: stories)
         let fileManager = FileManagerStub(savedImageURL: imageURLStub)
-        let sut = StoriesViewModel(storiesLoader: loader, fileManager: fileManager, mediaSaver: DummyMediaSaver())
+        let sut = StoriesViewModel(storiesLoader: loader, fileManager: fileManager)
         await sut.fetchStories()
         trackForMemoryLeaks(loader, file: file, line: line)
         trackForMemoryLeaks(fileManager, file: file, line: line)
@@ -149,6 +149,7 @@ class StoriesViewModelTests: XCTestCase {
                 portions: [portion3.local]
             )
         ]
+        
         let model = [
             Story(
                 id: 0,
@@ -224,11 +225,6 @@ class StoriesViewModelTests: XCTestCase {
         }
         
         func delete(for url: URL) throws {}
-    }
-    
-    private class DummyMediaSaver: MediaSaver {
-        func saveImageData(_ data: Data) async throws {}
-        func saveVideo(by url: URL) async throws {}
     }
 }
 

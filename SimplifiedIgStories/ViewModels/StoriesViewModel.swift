@@ -12,12 +12,10 @@ final class StoriesViewModel: ObservableObject, StoriesHolder {
     
     private let storiesLoader: StoriesLoader
     private let fileManager: FileManageable
-    private let mediaSaver: MediaSaver
     
-    init(storiesLoader: StoriesLoader, fileManager: FileManageable, mediaSaver: MediaSaver) {
+    init(storiesLoader: StoriesLoader, fileManager: FileManageable) {
         self.storiesLoader = storiesLoader
         self.fileManager = fileManager
-        self.mediaSaver = mediaSaver
     }
 }
 

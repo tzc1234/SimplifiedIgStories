@@ -20,8 +20,7 @@ final class AppComponentsFactory {
     
     private(set) lazy var storiesViewModel = StoriesViewModel(
         storiesLoader: storiesLoader,
-        fileManager: fileManager,
-        mediaSaver: mediaSaver
+        fileManager: fileManager
     )
     
     private(set) lazy var storiesAnimationHandler = StoriesAnimationHandler(storiesHolder: storiesViewModel)

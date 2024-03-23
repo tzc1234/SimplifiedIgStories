@@ -11,8 +11,7 @@ extension StoriesViewModel {
     static var preview: StoriesViewModel {
         StoriesViewModel(
             storiesLoader: PreviewStoriesLoader(),
-            fileManager: DummyFileManager(),
-            mediaSaver: DummyMediaSaver()
+            fileManager: DummyFileManager()
         )
     }
 }
