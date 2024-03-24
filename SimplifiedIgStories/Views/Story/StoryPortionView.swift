@@ -18,7 +18,7 @@ struct StoryPortionView: View {
     let portionIndex: Int
     @ObservedObject var storyPortionViewModel: StoryPortionViewModel
     @ObservedObject var animationHandler: StoryAnimationHandler
-    let deletePortion: (Int, (Int) -> Void, () -> Void) -> Void
+    let deletePortion: (Int, () -> Void, () -> Void) -> Void
     let onDisappear: (Int) -> Void
     
     private var portion: Portion {
@@ -53,7 +53,7 @@ struct StoryPortionView: View {
                             if storyPortionViewModel.isCurrentUser {
                                 Button("Delete", role: .destructive) {
                                     storyPortionViewModel.deletePortionMedia()
-                                    deletePortion(portion.id, { portionIndex in
+                                    deletePortion(portion.id, {
                                         animationHandler.moveToCurrentPortion(for: portionIndex)
                                     }, {
                                         homeUIActionHandler.closeStoryContainer(storyId: storyPortionViewModel.storyId)

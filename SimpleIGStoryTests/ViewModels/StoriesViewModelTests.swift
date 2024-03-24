@@ -95,7 +95,7 @@ class StoriesViewModelTests: XCTestCase {
         let initialPortions = sut.allPortions
         
         let invalidPortionId = 99
-        sut.deletePortion(for: invalidPortionId, afterDeletion: { _ in }, noNextPortionAfterDeletion: {})
+        sut.deletePortion(for: invalidPortionId, afterDeletion: {}, noNextPortionAfterDeletion: {})
         
         XCTAssertEqual(sut.allPortions, initialPortions)
     }
@@ -106,7 +106,7 @@ class StoriesViewModelTests: XCTestCase {
         let initialPortions = sut.allPortions
         
         let validPortionId = 0
-        sut.deletePortion(for: validPortionId, afterDeletion: { _ in }, noNextPortionAfterDeletion: {})
+        sut.deletePortion(for: validPortionId, afterDeletion: {}, noNextPortionAfterDeletion: {})
         
         XCTAssertEqual(sut.allPortions, initialPortions)
     }
@@ -117,18 +117,18 @@ class StoriesViewModelTests: XCTestCase {
         var hasNextPortions = sut.stories[0].portions
         
         let willBeDeletedPortionId = 0
-        var loggedPortionIndices = [Int]()
+        var afterDeletionCallCount = 0
         var noNextPortionAfterDeletionCallCount = 0
         sut.deletePortion(
             for: willBeDeletedPortionId,
-            afterDeletion: { loggedPortionIndices.append($0) },
+            afterDeletion: { afterDeletionCallCount += 1 },
             noNextPortionAfterDeletion: { noNextPortionAfterDeletionCallCount += 1 }
         )
         
         hasNextPortions.removeFirst()
         let expectedPortionsAfterDeletion = hasNextPortions
         XCTAssertEqual(sut.stories[0].portions, expectedPortionsAfterDeletion)
-        XCTAssertEqual(loggedPortionIndices, [0])
+        XCTAssertEqual(afterDeletionCallCount, 1)
         XCTAssertEqual(noNextPortionAfterDeletionCallCount, 0)
     }
     
@@ -141,7 +141,7 @@ class StoriesViewModelTests: XCTestCase {
         var noNextPortionAfterDeletionCallCount = 0
         sut.deletePortion(
             for: willBeDeletedPortionId,
-            afterDeletion: { _ in afterDeletionCallCount += 1 },
+            afterDeletion: { afterDeletionCallCount += 1 },
             noNextPortionAfterDeletion: { noNextPortionAfterDeletionCallCount += 1 }
         )
         

@@ -82,16 +82,14 @@ extension StoriesViewModel {
         stories[yourStoryIdx].lastUpdate = .now
     }
     
-    func deletePortion(for portionId: Int,
-                       afterDeletion: (_ portionIndex: Int) -> Void,
-                       noNextPortionAfterDeletion: () -> Void) {
+    func deletePortion(for portionId: Int, afterDeletion: () -> Void, noNextPortionAfterDeletion: () -> Void) {
         guard let portionIndex = currentUserPortions.firstIndex(where: { $0.id == portionId }) else { return }
         
         let hasNextPortion = portionIndex+1 < currentUserPortions.count
         removePortionInStories(at: portionIndex)
         
         if hasNextPortion {
-            afterDeletion(portionIndex)
+            afterDeletion()
         } else {
             noNextPortionAfterDeletion()
         }
