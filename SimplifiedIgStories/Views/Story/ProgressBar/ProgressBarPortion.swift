@@ -38,7 +38,7 @@ struct ProgressBarPortion: View {
                         animationHandler.finishPortionAnimation(for: portionId)
                     }
                 }
-                .onChange(of: animationHandler.barPortionAnimationStatusDict[portionId]) { status in
+                .onChange(of: animationHandler.portionAnimationStatusDict[portionId]) { status in
                     switch status {
                     case .initial:
                         initializeAnimation()

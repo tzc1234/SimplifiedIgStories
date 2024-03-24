@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-enum BarPortionAnimationStatus: CaseIterable {
+enum PortionAnimationStatus: CaseIterable {
     case initial, start, restart, pause, resume, finish
 }
 
@@ -28,7 +28,7 @@ protocol CurrentStoryAnimationHandler {
 final class StoryAnimationHandler: ObservableObject {
     typealias PortionId = Int
     
-    @Published private(set) var barPortionAnimationStatusDict = [PortionId: BarPortionAnimationStatus]()
+    @Published private(set) var portionAnimationStatusDict = [PortionId: PortionAnimationStatus]()
     @Published private(set) var currentPortionId: PortionId = -1
     
     private var subscriptions = Set<AnyCancellable>()
@@ -58,8 +58,8 @@ extension StoryAnimationHandler {
         currentStoryAnimationHandler.currentStoryId
     }
     
-    var currentPortionAnimationStatus: BarPortionAnimationStatus? {
-        barPortionAnimationStatusDict[currentPortionId]
+    var currentPortionAnimationStatus: PortionAnimationStatus? {
+        portionAnimationStatusDict[currentPortionId]
     }
     
     private var isCurrentPortionAnimating: Bool {
@@ -94,8 +94,8 @@ extension StoryAnimationHandler {
         setCurrentBarPortionAnimationStatus(to: .initial)
     }
     
-    private func setCurrentBarPortionAnimationStatus(to status: BarPortionAnimationStatus) {
-        barPortionAnimationStatusDict[currentPortionId] = status
+    private func setCurrentBarPortionAnimationStatus(to status: PortionAnimationStatus) {
+        portionAnimationStatusDict[currentPortionId] = status
     }
     
     private func subscribePublishers() {
@@ -178,7 +178,7 @@ extension StoryAnimationHandler {
     }
     
     func finishPortionAnimation(for portionId: PortionId) {
-        barPortionAnimationStatusDict[portionId] = .finish
+        portionAnimationStatusDict[portionId] = .finish
     }
     
     func moveToCurrentPortion(for portionIndex: Int) {

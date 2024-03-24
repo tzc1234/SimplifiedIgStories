@@ -79,7 +79,7 @@ struct StoryPortionView: View {
         .onAppear {
             player = portion.videoURL.map(AVPlayer.init)
         }
-        .onChange(of: animationHandler.barPortionAnimationStatusDict[portion.id]) { status in
+        .onChange(of: animationHandler.portionAnimationStatusDict[portion.id]) { status in
             guard let player else { return }
             
             switch status {
