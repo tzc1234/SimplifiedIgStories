@@ -54,7 +54,7 @@ struct StoryPortionView: View {
                                 Button("Delete", role: .destructive) {
                                     storyPortionViewModel.deletePortionMedia()
                                     deletePortion(portion.id, {
-                                        animationHandler.moveToCurrentPortion(for: portionIndex)
+                                        animationHandler.moveCurrentPortion(at: portionIndex)
                                     }, {
                                         homeUIActionHandler.closeStoryContainer(storyId: storyPortionViewModel.storyId)
                                     })

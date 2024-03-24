@@ -269,7 +269,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
         XCTAssertEqual(sut.currentPortionIndex, 0)
         
         let invalidPortionIndex = 2
-        sut.moveToCurrentPortion(for: invalidPortionIndex)
+        sut.moveCurrentPortion(at: invalidPortionIndex)
         
         XCTAssertEqual(sut.currentPortionIndex, 0)
     }
@@ -282,7 +282,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
         XCTAssertEqual(sut.currentPortionAnimationStatus, .initial)
         
         let validPortionIndex = 1
-        sut.moveToCurrentPortion(for: validPortionIndex)
+        sut.moveCurrentPortion(at: validPortionIndex)
         
         XCTAssertEqual(sut.currentPortionIndex, 1)
         XCTAssertEqual(sut.currentPortionAnimationStatus, .start)
@@ -333,8 +333,8 @@ final class StoryAnimationHandlerTests: XCTestCase {
             isDraggingPublisher.eraseToAnyPublisher()
         }
         
-        func getPortions(by storyId: Int) -> [Portion] {
-            stories.first(where: { $0.id == storyId })?.portions ?? []
+        func getPortionCount(by storyId: Int) -> Int {
+            stories.first(where: { $0.id == storyId })?.portions.count ?? 0
         }
         
         func setIsDragging(_ isDragging: Bool) {

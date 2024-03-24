@@ -273,19 +273,19 @@ final class StoriesAnimationHandlerTests: XCTestCase {
         XCTAssertEqual(sut.currentStoryId, 2, "Ignores when no next story")
     }
     
-    func test_getPortions_deliversEmptyPortionsWithInvalidStoryId() {
+    func test_getPortionCount_deliversZeroWithInvalidStoryId() {
         let stories = [
             makeStory(id: 0, portions: [makePortion(id: 0)], isCurrentUser: true),
             makeStory(id: 1, portions: [makePortion(id: 1), makePortion(id: 2)])
         ]
         let sut = makeSUT(stories: stories)
         
-        let receivedPortions = sut.getPortions(by: 2)
+        let receivedPortionCount = sut.getPortionCount(by: 2)
         
-        XCTAssertTrue(receivedPortions.isEmpty)
+        XCTAssertEqual(receivedPortionCount, 0)
     }
     
-    func test_getPortions_deliversPortionsCorrectly() {
+    func test_getPortionCount_deliversPortionCountCorrectly() {
         let expectedPortions0 = [makePortion(id: 0)]
         let expectedPortions1 = [makePortion(id: 1), makePortion(id: 2)]
         let stories = [
@@ -294,13 +294,13 @@ final class StoriesAnimationHandlerTests: XCTestCase {
         ]
         let sut = makeSUT(stories: stories)
         
-        let receivedPortions0 = sut.getPortions(by: 0)
+        let receivedPortionCount0 = sut.getPortionCount(by: 0)
         
-        XCTAssertEqual(receivedPortions0, expectedPortions0)
+        XCTAssertEqual(receivedPortionCount0, expectedPortions0.count)
         
-        let receivedPortions1 = sut.getPortions(by: 1)
+        let receivedPortionCount1 = sut.getPortionCount(by: 1)
         
-        XCTAssertEqual(receivedPortions1, expectedPortions1)
+        XCTAssertEqual(receivedPortionCount1, expectedPortions1.count)
     }
     
     func test_subscribeObjectWillChange_triggersSelfObjectWillChangeWhenStoriesHolderObjectWillChangeGetTriggered() {

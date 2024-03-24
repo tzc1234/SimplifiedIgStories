@@ -19,7 +19,7 @@ protocol CurrentStoryAnimationHandler {
     var currentStoryId: Int { get }
     var isSameStoryAfterDragging: Bool { get }
     
-    func getPortions(by storyId: Int) -> [Portion]
+    func getPortionCount(by storyId: Int) -> Int
     func moveToPreviousStory()
     func moveToNextStory()
     func getIsDraggingPublisher() -> AnyPublisher<Bool, Never>
@@ -65,8 +65,8 @@ extension StoryAnimationHandler {
         currentStoryId == storyId
     }
     
-    private var portions: [Portion] {
-        currentStoryAnimationHandler.getPortions(by: storyId)
+    private var portionCount: Int {
+        currentStoryAnimationHandler.getPortionCount(by: storyId)
     }
     
     private var isAtFirstPortion: Bool {
@@ -74,13 +74,13 @@ extension StoryAnimationHandler {
     }
     
     private var isAtLastPortion: Bool {
-        currentPortionIndex == portions.count - 1
+        currentPortionIndex == portionCount - 1
     }
 }
 
 extension StoryAnimationHandler {
     private func initBarPortionAnimationStatus() {
-        guard !portions.isEmpty else { return }
+        guard portionCount > 0 else { return }
         
         setCurrentBarPortionAnimationStatus(to: .initial)
     }
@@ -170,8 +170,8 @@ extension StoryAnimationHandler {
         portionAnimationStatusDict[portionIndex] = .finish
     }
     
-    func moveToCurrentPortion(for portionIndex: Int) {
-        guard portionIndex < portions.count else { return }
+    func moveCurrentPortion(at portionIndex: Int) {
+        guard portionIndex < portionCount else { return }
         
         currentPortionIndex = portionIndex
         setCurrentBarPortionAnimationStatus(to: .start)
@@ -193,7 +193,7 @@ extension StoryAnimationHandler {
     
     private func moveToNextPortion() {
         let nextPortionIndex = currentPortionIndex+1
-        if nextPortionIndex < portions.count {
+        if nextPortionIndex < portionCount {
             currentPortionIndex = nextPortionIndex
             setCurrentBarPortionAnimationStatus(to: .start)
         }

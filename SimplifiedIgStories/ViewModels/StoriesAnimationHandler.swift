@@ -79,8 +79,8 @@ extension StoriesAnimationHandler {
         $isDragging.eraseToAnyPublisher()
     }
     
-    func getPortions(by storyId: Int) -> [Portion] {
-        stories.first(where: { $0.id == storyId })?.portions ?? []
+    func getPortionCount(by storyId: Int) -> Int {
+        stories.first(where: { $0.id == storyId })?.portions.count ?? 0
     }
     
     func saveStoryIdBeforeDragged() {
