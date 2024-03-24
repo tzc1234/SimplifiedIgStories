@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-enum PortionAnimationStatus: CaseIterable {
+enum PortionAnimationStatus {
     case initial, start, restart, pause, resume, finish
 }
 
@@ -26,10 +26,8 @@ protocol CurrentStoryAnimationHandler {
 }
 
 final class StoryAnimationHandler: ObservableObject {
-    typealias PortionId = Int
-    
-    @Published private(set) var portionAnimationStatusDict = [PortionId: PortionAnimationStatus]()
-    @Published private(set) var currentPortionId: PortionId = -1
+    @Published private(set) var portionAnimationStatusDict = [Int: PortionAnimationStatus]()
+    @Published private(set) var currentPortionIndex: Int = 0
     
     private var subscriptions = Set<AnyCancellable>()
     
@@ -39,17 +37,12 @@ final class StoryAnimationHandler: ObservableObject {
     init(storyId: Int, currentStoryAnimationHandler: CurrentStoryAnimationHandler) {
         self.storyId = storyId
         self.currentStoryAnimationHandler = currentStoryAnimationHandler
-        
-        if let firstPortionId = portions.first?.id {
-            self.currentPortionId = firstPortionId
-            self.initBarPortionAnimationStatus()
-        }
-        
+        self.initBarPortionAnimationStatus()
         self.subscribePublishers()
     }
     
     deinit{
-        print("\(String(describing: Self.self)): \(storyId) deinit.")
+        print("\(String(describing: Self.self)) storyId: \(storyId) deinit.")
     }
 }
 
@@ -59,7 +52,7 @@ extension StoryAnimationHandler {
     }
     
     var currentPortionAnimationStatus: PortionAnimationStatus? {
-        portionAnimationStatusDict[currentPortionId]
+        portionAnimationStatusDict[currentPortionIndex]
     }
     
     private var isCurrentPortionAnimating: Bool {
@@ -76,26 +69,24 @@ extension StoryAnimationHandler {
         currentStoryAnimationHandler.getPortions(by: storyId)
     }
     
-    private var currentPortionIndex: Int? {
-        portions.firstIndex(where: { $0.id == currentPortionId })
-    }
-    
     private var isAtFirstPortion: Bool {
-        currentPortionId == portions.first?.id
+        currentPortionIndex == 0
     }
     
     private var isAtLastPortion: Bool {
-        currentPortionId == portions.last?.id
+        currentPortionIndex == portions.count - 1
     }
 }
 
 extension StoryAnimationHandler {
     private func initBarPortionAnimationStatus() {
+        guard !portions.isEmpty else { return }
+        
         setCurrentBarPortionAnimationStatus(to: .initial)
     }
     
     private func setCurrentBarPortionAnimationStatus(to status: PortionAnimationStatus) {
-        portionAnimationStatusDict[currentPortionId] = status
+        portionAnimationStatusDict[currentPortionIndex] = status
     }
     
     private func subscribePublishers() {
@@ -145,11 +136,9 @@ extension StoryAnimationHandler {
     }
     
     private func moveToPreviewPortion() {
-        guard let currentPortionIndex else { return }
-        
         let previousPortionIndex = currentPortionIndex-1
         if previousPortionIndex >= 0 {
-            currentPortionId = portions[previousPortionIndex].id
+            currentPortionIndex = previousPortionIndex
             setCurrentBarPortionAnimationStatus(to: .start)
         }
     }
@@ -177,14 +166,14 @@ extension StoryAnimationHandler {
         setCurrentBarPortionAnimationStatus(to: .resume)
     }
     
-    func finishPortionAnimation(for portionId: PortionId) {
-        portionAnimationStatusDict[portionId] = .finish
+    func finishPortionAnimation(at portionIndex: Int) {
+        portionAnimationStatusDict[portionIndex] = .finish
     }
     
     func moveToCurrentPortion(for portionIndex: Int) {
         guard portionIndex < portions.count else { return }
         
-        currentPortionId = portions[portionIndex].id
+        currentPortionIndex = portionIndex
         setCurrentBarPortionAnimationStatus(to: .start)
     }
     
@@ -203,11 +192,9 @@ extension StoryAnimationHandler {
     }
     
     private func moveToNextPortion() {
-        guard let currentPortionIndex else { return }
-        
         let nextPortionIndex = currentPortionIndex+1
         if nextPortionIndex < portions.count {
-            currentPortionId = portions[nextPortionIndex].id
+            currentPortionIndex = nextPortionIndex
             setCurrentBarPortionAnimationStatus(to: .start)
         }
     }

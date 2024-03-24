@@ -14,7 +14,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
         let stories = [makeStory(portions: [makePortion(id: 0)])]
         let (sut, _) = makeSUT(stories: stories)
         
-        XCTAssertEqual(sut.currentPortionId, 0)
+        XCTAssertEqual(sut.currentPortionIndex, 0)
         XCTAssertEqual(sut.currentPortionAnimationStatus, .initial)
     }
     
@@ -36,10 +36,10 @@ final class StoryAnimationHandlerTests: XCTestCase {
         ]
         let (sut, _) = makeSUT(stories: stories)
         
-        sut.finishPortionAnimation(for: 0)
+        sut.finishPortionAnimation(at: 0)
         sut.performNextPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: {})
         
-        XCTAssertEqual(sut.currentPortionId, 1)
+        XCTAssertEqual(sut.currentPortionIndex, 1)
         XCTAssertEqual(sut.currentPortionAnimationStatus, .start)
     }
     
@@ -50,7 +50,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
         ]
         let (sut, spy) = makeSUT(stories: stories)
         
-        sut.finishPortionAnimation(for: 0)
+        sut.finishPortionAnimation(at: 0)
         sut.performNextPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: {})
         
         XCTAssertEqual(spy.loggedStoryMoveDirections, [.next])
@@ -61,7 +61,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
         let (sut, spy) = makeSUT(stories: stories)
         spy.isAtLastStory = true
         
-        sut.finishPortionAnimation(for: 0)
+        sut.finishPortionAnimation(at: 0)
         
         let exp = expectation(description: "Wait for whenNoNextStory block")
         sut.performNextPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: {
@@ -87,15 +87,16 @@ final class StoryAnimationHandlerTests: XCTestCase {
         let (sut, spy) = makeSUT(stories: stories)
         spy.isAtFirstStory = true
         
-        sut.finishPortionAnimation(for: 0)
+        sut.finishPortionAnimation(at: 0)
         sut.performNextPortionAnimationWhenCurrentPortionFinished(whenNoNextStory: {})
         
-        XCTAssertEqual(sut.currentPortionId, 1)
+        XCTAssertEqual(sut.currentPortionIndex, 1)
         
         sut.performPortionTransitionAnimation(by: .backwardValue)
         
-        XCTAssertEqual(sut.currentPortionId, 0)
+        XCTAssertEqual(sut.currentPortionIndex, 0)
         XCTAssertEqual(sut.currentPortionAnimationStatus, .start)
+        XCTAssertEqual(spy.loggedStoryMoveDirections, [])
     }
     
     func test_setPortionTransitionDirection_setsToBackwardAtFirstStoryFirstPortion_restartCurrentPortion() {
@@ -105,13 +106,14 @@ final class StoryAnimationHandlerTests: XCTestCase {
         
         sut.performPortionTransitionAnimation(by: .backwardValue)
         
-        XCTAssertEqual(sut.currentPortionId, 0)
+        XCTAssertEqual(sut.currentPortionIndex, 0)
         XCTAssertEqual(sut.currentPortionAnimationStatus, .start)
         
         sut.performPortionTransitionAnimation(by: .backwardValue)
         
-        XCTAssertEqual(sut.currentPortionId, 0)
+        XCTAssertEqual(sut.currentPortionIndex, 0)
         XCTAssertEqual(sut.currentPortionAnimationStatus, .restart)
+        XCTAssertEqual(spy.loggedStoryMoveDirections, [])
     }
     
     func test_setPortionTransitionDirection_setsToBackwardAtSecondStoryFirstPortion_backToPreviousStory() {
@@ -120,13 +122,14 @@ final class StoryAnimationHandlerTests: XCTestCase {
             makeStory(id: 1, portions: [makePortion(id: 1)])
         ]
         let (sut, spy) = makeSUT(storyId: 1, stories: stories)
+        spy.currentStoryId = 1
         
-        XCTAssertEqual(sut.currentPortionId, 1)
+        XCTAssertEqual(sut.currentPortionIndex, 0)
         XCTAssertEqual(spy.loggedStoryMoveDirections, [])
         
         sut.performPortionTransitionAnimation(by: .backwardValue)
         
-        XCTAssertEqual(sut.currentPortionId, 1)
+        XCTAssertEqual(sut.currentPortionIndex, 0)
         XCTAssertEqual(sut.currentPortionAnimationStatus, .initial)
         XCTAssertEqual(spy.loggedStoryMoveDirections, [.previous])
     }
@@ -263,25 +266,25 @@ final class StoryAnimationHandlerTests: XCTestCase {
         let stories = [makeStory(id: 0, portions: [makePortion(id: 0), makePortion(id: 1)])]
         let (sut, _) = makeSUT(stories: stories)
         
-        XCTAssertEqual(sut.currentPortionId, 0)
+        XCTAssertEqual(sut.currentPortionIndex, 0)
         
         let invalidPortionIndex = 2
         sut.moveToCurrentPortion(for: invalidPortionIndex)
         
-        XCTAssertEqual(sut.currentPortionId, 0)
+        XCTAssertEqual(sut.currentPortionIndex, 0)
     }
     
     func test_moveToCurrentPortion_movesToCorrectPortionWhenPortionIndexValid() {
         let stories = [makeStory(id: 0, portions: [makePortion(id: 0), makePortion(id: 1)])]
         let (sut, _) = makeSUT(stories: stories)
         
-        XCTAssertEqual(sut.currentPortionId, 0)
+        XCTAssertEqual(sut.currentPortionIndex, 0)
         XCTAssertEqual(sut.currentPortionAnimationStatus, .initial)
         
         let validPortionIndex = 1
         sut.moveToCurrentPortion(for: validPortionIndex)
         
-        XCTAssertEqual(sut.currentPortionId, 1)
+        XCTAssertEqual(sut.currentPortionIndex, 1)
         XCTAssertEqual(sut.currentPortionAnimationStatus, .start)
     }
     

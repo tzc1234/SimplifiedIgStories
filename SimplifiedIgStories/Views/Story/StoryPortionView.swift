@@ -15,6 +15,7 @@ struct StoryPortionView: View {
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     @State private var player: AVPlayer?
     
+    let portionIndex: Int
     @ObservedObject var storyPortionViewModel: StoryPortionViewModel
     @ObservedObject var animationHandler: StoryAnimationHandler
     let deletePortion: (Int, (Int) -> Void, () -> Void) -> Void
@@ -79,7 +80,7 @@ struct StoryPortionView: View {
         .onAppear {
             player = portion.videoURL.map(AVPlayer.init)
         }
-        .onChange(of: animationHandler.portionAnimationStatusDict[portion.id]) { status in
+        .onChange(of: animationHandler.portionAnimationStatusDict[portionIndex]) { status in
             guard let player else { return }
             
             switch status {

@@ -22,7 +22,7 @@ struct ProgressBarPortion: View {
         animationHandler.storyId
     }
     
-    let portionId: Int
+    let portionIndex: Int
     let duration: Double
     @ObservedObject var animationHandler: StoryAnimationHandler
     
@@ -35,10 +35,10 @@ struct ProgressBarPortion: View {
                 .id(traceableRectangleId)
                 .onChange(of: tracingEndX.currentEndX) { currentEndX in
                     if currentEndX >= geo.size.width { // Animation finished
-                        animationHandler.finishPortionAnimation(for: portionId)
+                        animationHandler.finishPortionAnimation(at: portionIndex)
                     }
                 }
-                .onChange(of: animationHandler.portionAnimationStatusDict[portionId]) { status in
+                .onChange(of: animationHandler.portionAnimationStatusDict[portionIndex]) { status in
                     switch status {
                     case .initial:
                         initializeAnimation()
@@ -60,12 +60,12 @@ struct ProgressBarPortion: View {
 
 extension ProgressBarPortion {
     private func initializeAnimation() {
-        print("storyId: \(storyId), portionId: \(portionId) initial.")
+        print("storyId: \(storyId), portionIndex: \(portionIndex) initial.")
         resetTraceableRectangle()
     }
     
     private func startAnimation(maxWidth: Double) {
-        print("storyId: \(storyId), portionId: \(portionId) start.")
+        print("storyId: \(storyId), portionIndex: \(portionIndex) start.")
         resetTraceableRectangle()
         withAnimation(.linear(duration: duration)) {
             endX = maxWidth
@@ -73,19 +73,19 @@ extension ProgressBarPortion {
     }
     
     private func pauseAnimation() {
-        print("storyId: \(storyId), portionId: \(portionId) pause.")
+        print("storyId: \(storyId), portionIndex: \(portionIndex) pause.")
         resetTraceableRectangle(toLength: tracingEndX.currentEndX)
     }
     
     private func resumeAnimation(maxWidth: Double) {
-        print("storyId: \(storyId), portionId: \(portionId) resume.")
+        print("storyId: \(storyId), portionIndex: \(portionIndex) resume.")
         withAnimation(.linear(duration: duration * (1-tracingEndX.currentEndX / maxWidth))) {
             endX = maxWidth
         }
     }
     
     private func finishAnimation() {
-        print("storyId: \(storyId), portionId: \(portionId) finish.")
+        print("storyId: \(storyId), portionIndex: \(portionIndex) finish.")
         resetTraceableRectangle(toLength: .screenWidth)
     }
     
@@ -97,9 +97,8 @@ extension ProgressBarPortion {
 
 struct ProgressBarPortion_Previews: PreviewProvider {
     static var previews: some View {
-        let story = PreviewData.stories[0]
         ProgressBarPortion(
-            portionId: story.portions[0].id,
+            portionIndex: 0,
             duration: .defaultStoryDuration,
             animationHandler: .preview
         )

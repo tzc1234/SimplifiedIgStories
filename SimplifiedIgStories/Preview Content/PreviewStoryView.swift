@@ -18,7 +18,7 @@ extension StoryView {
         return StoryView(
             story: story,
             animationHandler: animationHandler,
-            getStoryPortionView: { portion in
+            getStoryPortionView: { index, portion in
                 let storyPortionViewModel = StoryPortionViewModel(
                     story: story,
                     portion: portion,
@@ -27,6 +27,7 @@ extension StoryView {
                 )
                 
                 return StoryPortionView(
+                    portionIndex: 0,
                     storyPortionViewModel: storyPortionViewModel,
                     animationHandler: animationHandler,
                     deletePortion: StoriesViewModel.preview.deletePortion, 

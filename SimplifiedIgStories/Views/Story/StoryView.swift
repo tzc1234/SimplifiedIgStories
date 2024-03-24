@@ -12,7 +12,7 @@ struct StoryView: View {
     
     let story: Story
     @StateObject var animationHandler: StoryAnimationHandler
-    let getStoryPortionView: (Portion) -> StoryPortionView
+    let getStoryPortionView: (Int, Portion) -> StoryPortionView
     let onDisappear: (Int) -> Void
     
     var body: some View {
@@ -49,9 +49,9 @@ struct StoryView: View {
 extension StoryView {
     private var storyPortionViews: some View {
         ZStack {
-            ForEach(story.portions) { portion in
-                if portion.id == animationHandler.currentPortionId {
-                    getStoryPortionView(portion)
+            ForEach(Array(zip(story.portions.indices, story.portions)), id: \.1.id) { index, portion in
+                if index == animationHandler.currentPortionIndex {
+                    getStoryPortionView(index, portion)
                 }
             }
         }

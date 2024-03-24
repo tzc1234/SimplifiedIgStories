@@ -88,6 +88,6 @@ final class StoryPortionViewModel: ObservableObject {
     }
     
     deinit {
-        print("\(String(describing: Self.self)): \(portion.id) deinit.")
+        print("\(String(describing: Self.self)) portionId: \(portion.id) deinit.")
     }
 }

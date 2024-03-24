@@ -38,13 +38,14 @@ struct SimplifiedIgStoriesApp: App {
                             return StoryView(
                                 story: story,
                                 animationHandler: storyAnimationHandler, 
-                                getStoryPortionView: { portion in
+                                getStoryPortionView: { index, portion in
                                     let portionViewModel = getStoryPortionViewModel(
                                         for: story,
                                         portion: portion
                                     )
                                     
                                     return StoryPortionView(
+                                        portionIndex: index, 
                                         storyPortionViewModel: portionViewModel,
                                         animationHandler: storyAnimationHandler,
                                         deletePortion: storiesViewModel.deletePortion, 

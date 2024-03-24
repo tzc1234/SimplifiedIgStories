@@ -17,9 +17,9 @@ struct ProgressBar: View {
         HStack {
             Spacer(minLength: 2)
             
-            ForEach(story.portions) { portion in
+            ForEach(Array(zip(story.portions.indices, story.portions)), id: \.1.id) { index, portion in
                 ProgressBarPortion(
-                    portionId: portion.id,
+                    portionIndex: index,
                     duration: portion.duration,
                     animationHandler: animationHandler
                 )

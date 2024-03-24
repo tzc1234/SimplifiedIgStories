@@ -12,6 +12,7 @@ extension StoryPortionView {
         let story = PreviewData.stories[0]
         let portion = story.portions[0]
         return StoryPortionView(
+            portionIndex: 0, 
             storyPortionViewModel: StoryPortionViewModel(
                 story: story,
                 portion: portion,
