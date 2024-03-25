@@ -9,7 +9,10 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject private var handler = HomeUIActionHandler()
-    @StateObject var storiesViewModel: StoriesViewModel
+    
+    @ObservedObject var storiesViewModel: StoriesViewModel
+    let getStoryIconsView: () -> StoryIconsView
+    let getStoryContainer: () -> StoryContainer
     
     var body: some View {
         ZStack {
@@ -18,7 +21,7 @@ struct HomeView: View {
                 
                 NavigationView {
                     VStack {
-                        StoryIconsView(vm: storiesViewModel)
+                        getStoryIconsView()
                             .onPreferenceChange(IdFramePreferenceKey.self) { idFrameDict in
                                 handler.storyIconFrameDict = idFrameDict
                             }
@@ -34,12 +37,9 @@ struct HomeView: View {
         }
         .frame(width: .screenWidth)
         .environmentObject(handler)
-    }
-}
-
-struct HomeView_Previews: PreviewProvider {
-    static var previews: some View {
-        HomeView(storiesViewModel: .preview)
+        .task {
+            await storiesViewModel.fetchStories()
+        }
     }
 }
 
@@ -50,17 +50,23 @@ extension HomeView {
             if handler.showStoryCamView {
                 StoryCamView { image in
                     storiesViewModel.postStoryPortion(image: image)
-                    showHideStoryCamView()
+                    hideStoryCamView()
                 } postVideoAction: { url in
                     storiesViewModel.postStoryPortion(videoUrl: url)
-                    showHideStoryCamView()
+                    hideStoryCamView()
                 } tapCloseAction: {
-                    showHideStoryCamView()
+                    hideStoryCamView()
                 }
                 .frame(width: .screenWidth)
             }
         }
         .ignoresSafeArea()
+    }
+    
+    private func hideStoryCamView() {
+        withAnimation(.default) {
+            handler.showStoryCamView = false
+        }
     }
     
     private var storyContainer: some View {
@@ -69,7 +75,7 @@ extension HomeView {
                 let iconFrame = handler.currentIconFrame
                 let offsetX = -(geo.size.width / 2 - iconFrame.midX)
                 let offsetY = iconFrame.minY - geo.safeAreaInsets.top
-                StoryContainer(vm: storiesViewModel)
+                getStoryContainer()
                     .zIndex(1.0)
                     .frame(maxHeight: .infinity, alignment: .top)
                     .openAppImitationTransition(scale: iconFrame.height / .screenHeight, offsetX: offsetX, offsetY: offsetY)
@@ -78,11 +84,18 @@ extension HomeView {
     }
 }
 
-// MARK: helper functions
-extension HomeView {
-    private func showHideStoryCamView() {
-        withAnimation(.default) {
-            handler.showStoryCamView.toggle()
-        }
+struct HomeView_Previews: PreviewProvider {
+    static var previews: some View {
+        HomeView(
+            storiesViewModel: .preview,
+            getStoryIconsView: {
+                StoryIconsView(animationHandler: .preview)
+            },
+            getStoryContainer: {
+                StoryContainer(
+                    animationHandler: .preview,
+                    getStoryView: { _ in .preview }
+                )
+        })
     }
 }

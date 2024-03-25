@@ -174,7 +174,7 @@ extension StoryPreview {
             var successMessage: String?
             if let data = uiImage?.jpegData(compressionQuality: 1) {
                 do {
-                    try await LocalMediaSaver().saveImageData(data)
+                    try await LocalMediaSaver(store: PHPPhotoMediaStore()).saveImageData(data)
                     successMessage = "Saved."
                 } catch MediaSaverError.noPermission {
                     successMessage = "Couldn't save. No add photo permission."
@@ -183,7 +183,7 @@ extension StoryPreview {
                 }
             } else if let videoUrl = videoUrl {
                 do {
-                    try await LocalMediaSaver().saveVideo(by: videoUrl)
+                    try await LocalMediaSaver(store: PHPPhotoMediaStore()).saveVideo(by: videoUrl)
                     successMessage = "Saved."
                 } catch MediaSaverError.noPermission {
                     successMessage = "Couldn't save. No add photo permission."

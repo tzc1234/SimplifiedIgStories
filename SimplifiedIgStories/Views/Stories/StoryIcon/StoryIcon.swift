@@ -21,13 +21,13 @@ struct StoryIcon: View {
     let showPlusIcon: Bool
     let plusIconBgColor: Color
     let showStroke: Bool
-    let onTapAction: ((Int) -> Void)?
+    let onTapAction: ((Story) -> Void)?
     
     init(story: Story,
          showPlusIcon: Bool = false,
          plusIconBgColor: Color = .background,
          showStroke: Bool = true,
-         onTapAction: ((Int) -> Void)? = nil) {
+         onTapAction: ((Story) -> Void)? = nil) {
         self.story = story
         self.showPlusIcon = showPlusIcon
         self.plusIconBgColor = plusIconBgColor
@@ -59,7 +59,7 @@ struct StoryIcon: View {
             isOnTap.toggle()
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                onTapAction(story.id)
+                onTapAction(story)
             }
         }
     }

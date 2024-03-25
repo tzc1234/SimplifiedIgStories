@@ -9,7 +9,10 @@ import Foundation
 
 extension StoriesViewModel {
     static var preview: StoriesViewModel {
-        StoriesViewModel(fileManager: DummyFileManager(), storiesLoader: PreviewStoriesLoader())
+        StoriesViewModel(
+            storiesLoader: PreviewStoriesLoader(),
+            fileManager: DummyFileManager()
+        )
     }
 }
 

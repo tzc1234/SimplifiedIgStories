@@ -6,21 +6,16 @@
 //
 
 import AVKit
-import Combine
 
-final class StoriesViewModel: ObservableObject, ParentStoryViewModel {
+final class StoriesViewModel: ObservableObject, StoriesHolder {
     @Published private(set) var stories: [Story] = []
-    @Published private(set) var currentStoryId = -1
-    @Published var shouldCubicRotation = false
-    @Published var isDragging = false
-    private var storyIdBeforeDragged = 0
     
     private let storiesLoader: StoriesLoader
     private let fileManager: FileManageable
     
-    init(fileManager: FileManageable, storiesLoader: StoriesLoader) {
-        self.fileManager = fileManager
+    init(storiesLoader: StoriesLoader, fileManager: FileManageable) {
         self.storiesLoader = storiesLoader
+        self.fileManager = fileManager
     }
 }
 
@@ -37,44 +32,12 @@ extension StoriesViewModel {
         stories.flatMap(\.portions).map(\.id).max() ?? -1
     }
     
-    var currentStories: [Story] {
-        if currentStoryId == yourStoryId {
-            return stories.filter { $0.user.isCurrentUser }
-        } else {
-            return stories.filter { !$0.user.isCurrentUser }
-        }
-    }
-    
-    var isSameStoryAfterDragging: Bool {
-        currentStoryId == storyIdBeforeDragged
-    }
-    
-    var currentStoryIndex: Int? {
-        currentStories.firstIndex(where: { $0.id == currentStoryId })
-    }
-    
-    var firstCurrentStoryId: Int? {
-        currentStories.first?.id
-    }
-    
-    var lastCurrentStoryId: Int? {
-        currentStories.last?.id
-    }
-    
-    var isAtFirstStory: Bool {
-        currentStoryId == firstCurrentStoryId
-    }
-    
-    var isAtLastStory: Bool {
-        currentStoryId == lastCurrentStoryId
+    private var currentUserPortions: [Portion] {
+        stories.first(where: { $0.id == yourStoryId })?.portions ?? []
     }
 }
 
 extension StoriesViewModel {
-    func getIsDraggingPublisher() -> AnyPublisher<Bool, Never> {
-        $isDragging.eraseToAnyPublisher()
-    }
-    
     @MainActor
     func fetchStories() async {
         do {
@@ -86,43 +49,9 @@ extension StoriesViewModel {
             print("JSON data invalid.")
         }
     }
-    
-    func saveStoryIdBeforeDragged() {
-        storyIdBeforeDragged = currentStoryId
-    }
-    
-    func setCurrentStoryId(_ storyId: Int) {
-        guard stories.map(\.id).contains(storyId) else {
-            return
-        }
-        
-        currentStoryId = storyId
-    }
-    
-    func moveToPreviousStory() {
-        guard let currentStoryIndex else { return }
-        
-        let previousStoryIndex = currentStoryIndex-1
-        if previousStoryIndex >= 0 {
-            currentStoryId = currentStories[previousStoryIndex].id
-        }
-    }
-    
-    func moveToNextStory() {
-        guard let currentStoryIndex else { return }
-        
-        let nextStoryIndex = currentStoryIndex+1
-        if nextStoryIndex < currentStories.count {
-            currentStoryId = currentStories[nextStoryIndex].id
-        }
-    }
-    
-    func getStory(by storyId: Int) -> Story? {
-        stories.first(where: { $0.id == storyId })
-    }
 }
 
-// MARK: - Post StoryPortion
+// MARK: - Post/Delete Portion
 // *** In real environment, the photo or video should be uploaded to server side.
 // This is a demo app, however, stores them into temp directory.
 extension StoriesViewModel {
@@ -153,15 +82,27 @@ extension StoriesViewModel {
         stories[yourStoryIdx].lastUpdate = .now
     }
     
-    func deletePortion(byId portionId: Int) {
-        guard let yourStoryIdx,
-              let index = stories[yourStoryIdx].portions.firstIndex(where: { $0.id == portionId }) else {
-            return
-        }
+    func deletePortion(for portionId: Int, afterDeletion: () -> Void, noNextPortionAfterDeletion: () -> Void) {
+        guard let portionIndex = currentUserPortions.firstIndex(where: { $0.id == portionId }) else { return }
         
-        stories[yourStoryIdx].portions.remove(at: index)
+        let hasNextPortion = portionIndex+1 < currentUserPortions.count
+        removePortionInStories(at: portionIndex)
+        
+        if hasNextPortion {
+            afterDeletion()
+        } else {
+            noNextPortionAfterDeletion()
+        }
+    }
+    
+    private func removePortionInStories(at portionIndex: Int) {
+        guard let yourStoryIdx else { return }
+        
+        stories[yourStoryIdx].portions.remove(at: portionIndex)
     }
 }
+
+// MARK: - Local models conversion
 
 private extension [LocalStory] {
     func toStories() -> [Story] {

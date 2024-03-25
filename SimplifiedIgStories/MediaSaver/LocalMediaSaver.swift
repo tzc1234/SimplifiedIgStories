@@ -20,7 +20,7 @@ enum MediaSaverError: Error {
 final class LocalMediaSaver: MediaSaver {
     private let store: MediaStore
     
-    init(store: MediaStore = PHPPhotoMediaStore()) {
+    init(store: MediaStore) {
         self.store = store
     }
     

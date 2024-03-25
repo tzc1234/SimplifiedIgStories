@@ -13,9 +13,9 @@ struct StoryIconTitleView: View {
     let story: Story
     let showPlusIcon: Bool
     let showStroke: Bool
-    let onTapAction: ((_ storyId: Int) -> Void)?
+    let onTapAction: ((Story) -> Void)?
     
-    init(story: Story, showPlusIcon: Bool = false, showStroke: Bool = true, onTapAction: ((_ storyId: Int) -> Void)? = nil) {
+    init(story: Story, showPlusIcon: Bool = false, showStroke: Bool = true, onTapAction: ((Story) -> Void)? = nil) {
         self.story = story
         self.showPlusIcon = showPlusIcon
         self.showStroke = showStroke
