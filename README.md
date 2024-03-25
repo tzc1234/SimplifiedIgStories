@@ -13,13 +13,17 @@ A simple version of IG story, this demo app is my SwiftUI study record.
 5. Async/await
 
 ## Update History
-#### 18/03/2024
-1. Cover most of the code in StoriesViewModel by unite tests
-2. Inject storiesViewModel into HomeView
-3. Extract animation logic from StoryViewModel into StoryAnimationHandler
+#### 25/03/2024
+1. Extract animation logic from `StoriesViewModel` to `StoriesAnimationHandler`
+2. Remove unnecessary `StoryViewModel`
+3. Perform portion actions in a portion level `StoryPortionViewModel`
+4. Add unit tests for `StoryPortionViewModel`, `StoriesAnimationHandler` and `StoryAnimationHandler`
+5. Compose views and their collaborators in `SimplifiedIgStoriesApp`, aka composition root. Unlock the possibility to do dependency injection directly, without care of the view hierarchy.
 
-#### 12/03/2024
-1. WIP: gradually refactor this project
+#### 18/03/2024
+1. Cover most of the code in `StoriesViewModel` by unite tests
+2. Inject `StoriesViewModel` into `HomeView`
+3. Extract animation logic from `StoryViewModel` to `StoryAnimationHandler`
 
 #### 20/02/2024
 1. Add unit tests
@@ -32,7 +36,7 @@ A simple version of IG story, this demo app is my SwiftUI study record.
 1. Use my own AVFoundation manager class instead of SwiftyCam package.
 
 #### 27/04/2022:
-1. Add unit test for StoriesModelView.
+1. Add unit test for `StoriesModelView`.
 
 #### 20/03/2022:
 1. Merge combine branch to main.
