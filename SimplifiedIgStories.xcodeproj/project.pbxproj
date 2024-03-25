@@ -446,12 +446,12 @@
 			isa = PBXGroup;
 			children = (
 				BEBF32302B74D86600DCD624 /* Helpers */,
-				BE7BA4322BADE5900061595B /* ViewModels */,
-				BE59BF58288803950050EB21 /* StoryCamViewModel */,
 				BEEEBBF62B7540AC00EC85C7 /* DataServices */,
 				BE8B71A82B7651450055C354 /* MediaSaver */,
 				BE84F7942B7CE9A300FAD11B /* Camera */,
 				BEBE9C392BA059B500C9C093 /* FileManager */,
+				BE7BA4322BADE5900061595B /* ViewModels */,
+				BE59BF58288803950050EB21 /* StoryCamViewModel */,
 			);
 			path = SimpleIGStoryTests;
 			sourceTree = "<group>";
