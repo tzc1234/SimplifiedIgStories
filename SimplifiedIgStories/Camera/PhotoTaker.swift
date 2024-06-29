@@ -25,7 +25,7 @@ protocol PhotoTaker {
     func takePhoto(on flashMode: CameraFlashMode)
 }
 
-final class AVPhotoTaker: NSObject, PhotoTaker {
+final class AVPhotoTaker: NSObject {
     private let statusPublisher = PassthroughSubject<PhotoTakerStatus, Never>()
     private var output: AVCapturePhotoOutput? {
         session.outputs.first(where: { $0 is AVCapturePhotoOutput }) as? AVCapturePhotoOutput
@@ -41,17 +41,6 @@ final class AVPhotoTaker: NSObject, PhotoTaker {
          makeCapturePhotoOutput: @escaping () -> AVCapturePhotoOutput = AVCapturePhotoOutput.init) {
         self.device = device
         self.makeCapturePhotoOutput = makeCapturePhotoOutput
-    }
-    
-    func getStatusPublisher() -> AnyPublisher<PhotoTakerStatus, Never> {
-        statusPublisher.eraseToAnyPublisher()
-    }
-    
-    func takePhoto(on flashMode: CameraFlashMode) {
-        device.performOnSessionQueue { [weak self] in
-            self?.addPhotoOutputIfNeeded()
-            self?.capturePhoto(on: flashMode)
-        }
     }
     
     private func addPhotoOutputIfNeeded() {
@@ -84,6 +73,19 @@ final class AVPhotoTaker: NSObject, PhotoTaker {
         case .on: return .on
         case .off: return .off
         case .auto: return .auto
+        }
+    }
+}
+
+extension AVPhotoTaker: PhotoTaker {
+    func getStatusPublisher() -> AnyPublisher<PhotoTakerStatus, Never> {
+        statusPublisher.eraseToAnyPublisher()
+    }
+    
+    func takePhoto(on flashMode: CameraFlashMode) {
+        device.performOnSessionQueue { [weak self] in
+            self?.addPhotoOutputIfNeeded()
+            self?.capturePhoto(on: flashMode)
         }
     }
 }
