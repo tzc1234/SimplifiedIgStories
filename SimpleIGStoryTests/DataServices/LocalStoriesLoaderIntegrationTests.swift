@@ -10,7 +10,7 @@ import XCTest
 
 final class LocalStoriesLoaderIntegrationTests: XCTestCase {
     func test_load_deliversDataCorrectly() async throws {
-        let client = FileDataClient(url: validJsonURL(currentClass: Self.self))
+        let client = FileDataClient(url: validJSONURL(currentClass: Self.self))
         let sut = LocalStoriesLoader(client: client)
         
         let receivedStories = try await sut.load()

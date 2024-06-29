@@ -7,7 +7,7 @@
 
 import Foundation
 
-func validJsonURL(currentClass: AnyClass, file: StaticString = #filePath) -> URL {
+func validJSONURL(currentClass: AnyClass, file: StaticString = #filePath) -> URL {
     bundle(currentClass: currentClass).url(forResource: "valid.json", withExtension: nil)!
 }
 

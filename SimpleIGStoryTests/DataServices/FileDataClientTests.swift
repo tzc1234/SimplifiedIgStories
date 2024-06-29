@@ -22,7 +22,7 @@ final class FileDataClientTests: XCTestCase {
     }
     
     func test_fetch_deliversDataWhenValidFile() async throws {
-        let sut = FileDataClient(url: validJsonURL(currentClass: Self.self))
+        let sut = FileDataClient(url: validJSONURL(currentClass: Self.self))
         
         let receivedData = try await sut.fetch()
         

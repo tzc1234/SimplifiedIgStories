@@ -170,20 +170,6 @@ final class LocalStoriesLoaderTests: XCTestCase {
             )
         }
     }
-    
-    final private class DataClientStub: DataClient {
-        typealias Stub = Result<Data, Error>
-        
-        private var stubs = [Stub]()
-        
-        init(stubs: [Stub]) {
-            self.stubs = stubs
-        }
-        
-        func fetch() async throws -> Data {
-            return try stubs.removeLast().get()
-        }
-    }
 }
 
 extension [[String: Any]] {
