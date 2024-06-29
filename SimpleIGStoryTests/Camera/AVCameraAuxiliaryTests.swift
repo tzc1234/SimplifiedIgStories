@@ -85,10 +85,7 @@ final class AVCameraAuxiliaryTests: XCTestCase {
                          line: UInt = #line) -> (sut: AVCameraAuxiliary, captureDevice: CaptureDeviceSpy) {
         AVCaptureDevice.swizzled()
         let captureDevice = CaptureDeviceSpy(type: .video, lockForConfigurationError: lockForConfigurationError)
-        let camera = AuxiliarySupportedCameraSpy(
-            captureDevice: isCaptureDeviceExisted ? captureDevice : nil,
-            performOnSessionQueue: { $0() }
-        )
+        let camera = AuxiliarySupportedCameraStub(captureDevice: isCaptureDeviceExisted ? captureDevice : nil)
         let sut = AVCameraAuxiliary(camera: camera)
         addTeardownBlock { AVCaptureDevice.revertSwizzled() }
         trackForMemoryLeaks(camera, file: file, line: line)
@@ -96,13 +93,11 @@ final class AVCameraAuxiliaryTests: XCTestCase {
         return (sut, captureDevice)
     }
     
-    private final class AuxiliarySupportedCameraSpy: AuxiliarySupportedCamera {
+    private final class AuxiliarySupportedCameraStub: AuxiliarySupportedCamera {
         let captureDevice: AVCaptureDevice?
-        let performOnSessionQueue: (@escaping () -> Void) -> Void
         
-        init(captureDevice: AVCaptureDevice?, performOnSessionQueue: @escaping (@escaping () -> Void) -> Void) {
+        init(captureDevice: AVCaptureDevice?) {
             self.captureDevice = captureDevice
-            self.performOnSessionQueue = performOnSessionQueue
         }
     }
 }
