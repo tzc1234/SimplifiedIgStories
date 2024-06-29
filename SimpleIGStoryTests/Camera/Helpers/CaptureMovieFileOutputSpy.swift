@@ -28,7 +28,7 @@ final class CaptureMovieFileOutputSpy: AVCaptureMovieFileOutput {
     }
     
     private(set) var stopRecordingCallCount = 0
-    private(set) var loggedOutputSettings = [[String: Any]]()
+    private(set) var loggedOutputSettings = [JSON]()
     
     private var _isRecording = false
     override var isRecording: Bool {

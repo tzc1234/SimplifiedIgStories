@@ -36,6 +36,6 @@ final class FileDataClientTests: XCTestCase {
     }
     
     private func emptyFileURL() -> URL {
-        bundle(currentClass: Self.self).url(forResource: "empty.json", withExtension: nil)!
+        Bundle(for: Self.self).url(forResource: "empty.json", withExtension: nil)!
     }
 }
