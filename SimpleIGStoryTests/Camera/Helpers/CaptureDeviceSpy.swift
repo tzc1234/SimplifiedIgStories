@@ -23,7 +23,7 @@ final class CaptureDeviceSpy: AVCaptureDevice {
     private var canChangeSettings: Bool {
         loggedLockStatuses.last == .locked
     }
-    private var shouldLockForConfigurationThrowAnError: Bool
+    private var lockForConfigurationError: Error?
     private var loggedFocusModeSupported = [FocusMode]()
     private var loggedExposureModeSupported = [ExposureMode]()
     
@@ -33,14 +33,13 @@ final class CaptureDeviceSpy: AVCaptureDevice {
         self.mediaType = type
         self._position = position
         self.loggedLockStatuses = [LockStatus]()
-        self.shouldLockForConfigurationThrowAnError = false
         super.init(type: type)
     }
     
-    init(type: AVMediaType, shouldLockForConfigurationThrowAnError: Bool) {
+    init(type: AVMediaType, lockForConfigurationError: Error?) {
         self.mediaType = type
         self.loggedLockStatuses = [LockStatus]()
-        self.shouldLockForConfigurationThrowAnError = shouldLockForConfigurationThrowAnError
+        self.lockForConfigurationError = lockForConfigurationError
         super.init(type: type)
     }
     
@@ -119,8 +118,8 @@ final class CaptureDeviceSpy: AVCaptureDevice {
     override func lockForConfiguration() throws {
         try super.lockForConfiguration()
         
-        if shouldLockForConfigurationThrowAnError {
-            throw anyNSError()
+        if let error = lockForConfigurationError {
+            throw error
         }
         
         loggedLockStatuses.append(.locked)

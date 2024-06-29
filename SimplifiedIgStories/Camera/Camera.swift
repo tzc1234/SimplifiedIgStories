@@ -8,11 +8,6 @@
 import AVKit
 import Combine
 
-enum CameraPosition {
-    case back
-    case front
-}
-
 protocol Camera {
     var cameraPosition: CameraPosition { get }
     var videoPreviewLayer: CALayer { get }

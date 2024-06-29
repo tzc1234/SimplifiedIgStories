@@ -7,8 +7,6 @@
 
 import Foundation
 
-typealias JSON = [String: Any]
-
 func anyNSError() -> NSError {
     NSError(domain: "any", code: 0)
 }

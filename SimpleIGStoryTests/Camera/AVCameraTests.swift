@@ -17,42 +17,35 @@ final class AVCameraTests: XCTestCase {
         XCTAssertEqual(spy.loggedStatuses, [])
     }
     
-    func test_videoPreviewLayer_returnPreviewLayerProperly() {
+    func test_videoPreviewLayer_deliversPreviewLayerProperly() {
         let (sut, _) = makeSUT()
         
-        let previewLayer = sut.videoPreviewLayer
+        let previewLayer = sut.videoPreviewLayer as? AVCaptureVideoPreviewLayer
         
-        XCTAssertNotNil(previewLayer as? AVCaptureVideoPreviewLayer)
+        XCTAssertNotNil(previewLayer)
     }
     
     func test_startSession_ensuresInputsAreAddedToSessionProperlyWhenSessionIsNotRunning() {
         let exp = expectation(description: "Wait for session queue")
-        var loggedDeviceTypes = Set<AVMediaType?>()
+        let captureDevicesSpy = CaptureDevicesSpy()
         let (sut, session) = makeSUT(
             isSessionRunning: false,
-            captureDeviceInput: { device in
-                loggedDeviceTypes.insert(device.type)
-                return makeDummyCaptureInput()
-            },
-            afterPerformOnSessionQueue: {
-                exp.fulfill()
-            }
+            captureDevicesSpy: captureDevicesSpy,
+            afterPerformOnSessionQueue: { exp.fulfill() }
         )
         
         sut.startSession()
         wait(for: [exp], timeout: 1)
         
         XCTAssertEqual(session.loggedInputs.count, 2)
-        XCTAssertEqual(loggedDeviceTypes, [.video, .audio])
+        XCTAssertEqual(captureDevicesSpy.loggedDeviceTypes, [.video, .audio])
     }
     
     func test_startSession_doesNotAddInputsWhenSessionIsRunning() {
         let exp = expectation(description: "Wait for session queue")
         let (sut, session) = makeSUT(
             isSessionRunning: true,
-            afterPerformOnSessionQueue: {
-                exp.fulfill()
-            }
+            afterPerformOnSessionQueue: { exp.fulfill() }
         )
         
         sut.startSession()
@@ -61,34 +54,24 @@ final class AVCameraTests: XCTestCase {
         XCTAssertEqual(session.loggedInputs, [])
     }
     
-    func test_startSession_ensuresVideoDeviceSettingsWhenSessionIsNotRunning() {
+    func test_startSession_ensuresVideoDeviceSettingsCorrectWhenSessionIsNotRunning() {
         let exp = expectation(description: "Wait for session queue")
-        var loggedDevices = [AVCaptureDevice]()
+        let captureDevicesSpy = CaptureDevicesSpy()
         let (sut, _) = makeSUT(
             isSessionRunning: false,
-            captureDeviceInput: { device in
-                loggedDevices.append(device)
-                return makeDummyCaptureInput()
-            },
-            afterPerformOnSessionQueue: {
-                exp.fulfill()
-            }
+            captureDevicesSpy: captureDevicesSpy,
+            afterPerformOnSessionQueue: { exp.fulfill() }
         )
         
         sut.startSession()
         wait(for: [exp], timeout: 1)
         
-        assertVideoDeviceSettings(in: loggedDevices, withExpectedPosition: sut.cameraPosition)
+        assertVideoDeviceSettings(in: captureDevicesSpy.loggedDevices, withExpectedPosition: sut.cameraPosition)
     }
     
     func test_startSession_deliversSessionStartedStatusAfterStartSession() {
         let exp = expectation(description: "Wait for session queue")
-        let (sut, _) = makeSUT(
-            isSessionRunning: false,
-            afterPerformOnSessionQueue: {
-                exp.fulfill()
-            }
-        )
+        let (sut, _) = makeSUT(afterPerformOnSessionQueue: { exp.fulfill() })
         
         expect(sut, deliverStatuses: [.sessionStarted], when: {
             sut.startSession()
@@ -98,12 +81,7 @@ final class AVCameraTests: XCTestCase {
     
     func test_stopSession_deliversSessionStoppedStatusAfterStopSession() {
         let exp = expectation(description: "Wait for session queue")
-        let (sut, _) = makeSUT(
-            isSessionRunning: false,
-            afterPerformOnSessionQueue: {
-                exp.fulfill()
-            }
-        )
+        let (sut, _) = makeSUT(afterPerformOnSessionQueue: { exp.fulfill() })
         
         expect(sut, deliverStatuses: [.sessionStarted, .sessionStopped], when: {
             sut.startSession()
@@ -113,63 +91,42 @@ final class AVCameraTests: XCTestCase {
     }
     
     func test_switchCamera_switchesCameraPosition() {
-        let exp = expectation(description: "Wait for session queue")
+        let exp = expectation(description: "Wait for session queue twice")
         exp.expectedFulfillmentCount = 2
-        var loggedDevices = [AVCaptureDevice]()
-        let (sut, _) = makeSUT(
-            isSessionRunning: false,
-            captureDeviceInput: { device in
-                loggedDevices.append(device)
-                return makeDummyCaptureInput()
-            },
-            afterPerformOnSessionQueue: {
-                exp.fulfill()
-            }
-        )
+        let captureDevicesSpy = CaptureDevicesSpy()
+        let (sut, _) = makeSUT(captureDevicesSpy: captureDevicesSpy, afterPerformOnSessionQueue: { exp.fulfill() })
         let initialPosition = sut.cameraPosition
         
         sut.startSession()
         sut.switchCamera()
         wait(for: [exp], timeout: 1)
         
-        assertVideoDeviceSettings(in: loggedDevices, withExpectedPosition: initialPosition.toggle())
+        assertVideoDeviceSettings(in: captureDevicesSpy.loggedDevices, withExpectedPosition: initialPosition.toggle())
     }
     
     func test_switchCamera_reAddsInputsToSession() {
-        let exp = expectation(description: "Wait for session queue")
+        let exp = expectation(description: "Wait for session queue twice")
         exp.expectedFulfillmentCount = 2
-        var loggedDeviceTypes = Set<AVMediaType?>()
+        let captureDevicesSpy = CaptureDevicesSpy()
         let (sut, session) = makeSUT(
-            isSessionRunning: false,
-            captureDeviceInput: { device in
-                loggedDeviceTypes.insert(device.type)
-                return makeDummyCaptureInput()
-            },
-            afterPerformOnSessionQueue: {
-                exp.fulfill()
-            }
+            captureDevicesSpy: captureDevicesSpy,
+            afterPerformOnSessionQueue: { exp.fulfill() }
         )
         
         sut.startSession()
         session.resetLoggedInputs()
-        loggedDeviceTypes.removeAll()
-        
+        captureDevicesSpy.resetLoggings()
         sut.switchCamera()
         wait(for: [exp], timeout: 1)
         
         XCTAssertEqual(session.loggedInputs.count, 2)
         XCTAssertEqual(session.loggedConfigurationStatus, [.begin, .commit])
-        XCTAssertEqual(loggedDeviceTypes, [.video, .audio])
+        XCTAssertEqual(captureDevicesSpy.loggedDeviceTypes, [.video, .audio])
     }
     
     func test_switchCamera_deliversCameraSwitchedStatus() {
         let exp = expectation(description: "Wait for session queue")
-        let (sut, _) = makeSUT(
-            isSessionRunning: false,
-            afterPerformOnSessionQueue: {
-                exp.fulfill()
-            }
-        )
+        let (sut, _) = makeSUT(afterPerformOnSessionQueue: { exp.fulfill() })
         let initialPosition = sut.cameraPosition
         
         expect(sut, deliverStatuses: [.cameraSwitched(position: initialPosition.toggle())], when: {
@@ -180,26 +137,24 @@ final class AVCameraTests: XCTestCase {
     
     // MARK: - Helpers
     
-    typealias CameraStatusSpy = StatusSpy<CameraStatus>
+    private typealias CameraStatusSpy = StatusSpy<CameraStatus>
     
     private func makeSUT(isSessionRunning: Bool = false,
-                         captureDeviceInput: @escaping (AVCaptureDevice) throws -> AVCaptureInput
-                            = { _ in makeDummyCaptureInput() },
+                         captureDevicesSpy: CaptureDevicesSpy? = nil,
                          afterPerformOnSessionQueue: @escaping () -> Void = {})
     -> (sut: AVCamera, session: CaptureSessionSpy) {
         AVCaptureDevice.swizzled()
         let session = CaptureSessionSpy(isRunning: isSessionRunning, canAddOutput: false)
+        let captureDevicesSpy = captureDevicesSpy ?? CaptureDevicesSpy()
         let sut = AVCamera(
             session: session,
-            makeCaptureDeviceInput: captureDeviceInput,
+            makeCaptureDeviceInput: captureDevicesSpy.makeCaptureInput,
             performOnSessionQueue: { action in
                 action()
                 afterPerformOnSessionQueue()
             }
         )
-        addTeardownBlock {
-            AVCaptureDevice.revertSwizzled()
-        }
+        addTeardownBlock { AVCaptureDevice.revertSwizzled() }
         return (sut, session)
     }
     
@@ -226,11 +181,6 @@ final class AVCameraTests: XCTestCase {
     }
 }
 
-func makeDummyCaptureInput() -> AVCaptureInput {
-    let klass = AVCaptureInput.self as NSObject.Type
-    return klass.init() as! AVCaptureInput
-}
-
 extension AVCaptureDevice: MethodSwizzling {
     @objc convenience init(type: AVMediaType) {
         fatalError("should not come to here, swizzled by NSObject.init")
@@ -252,7 +202,7 @@ extension AVCaptureDevice: MethodSwizzling {
     
     static var instanceMethodPairs: [MethodPair] {
         [
-            .init(
+            MethodPair(
                 from: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.init(type:))),
                 to: (class: AVCaptureDevice.self, method: #selector(NSObject.init))
             )
@@ -261,11 +211,14 @@ extension AVCaptureDevice: MethodSwizzling {
     
     static var classMethodPairs: [MethodPair] {
         [
-            .init(
+            MethodPair(
                 from: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.default(_:for:position:))),
-                to: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.makeVideoDevice(deviceType:mediaType:position:)))
+                to: (
+                    class: AVCaptureDevice.self,
+                    method: #selector(AVCaptureDevice.makeVideoDevice(deviceType:mediaType:position:))
+                )
             ),
-            .init(
+            MethodPair(
                 from: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.default(for:))),
                 to: (class: AVCaptureDevice.self, method: #selector(AVCaptureDevice.makeAudioDevice))
             )

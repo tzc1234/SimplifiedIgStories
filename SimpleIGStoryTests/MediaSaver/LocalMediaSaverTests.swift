@@ -10,7 +10,7 @@ import XCTest
 
 final class LocalMediaSaverTests: XCTestCase {
     func test_saveImageData_deliversNoPermissionErrorOnStoreNoPermissionError() async {
-        let (sut, _) = makeSUT(stubs: [.failure(.noPermission)])
+        let (sut, _) = makeSUT(stub: .failure(.noPermission))
         
         await assertThrowsError(try await sut.saveImageData(anyImageData())) { error in
             XCTAssertEqual(error as? MediaSaverError, .noPermission)
@@ -18,7 +18,7 @@ final class LocalMediaSaverTests: XCTestCase {
     }
     
     func test_saveImageData_deliversFailedErrorWhenStoreFailedOnSave() async {
-        let (sut, _) = makeSUT(stubs: [.failure(.failed)])
+        let (sut, _) = makeSUT(stub: .failure(.failed))
         
         await assertThrowsError(try await sut.saveImageData(anyImageData())) { error in
             XCTAssertEqual(error as? MediaSaverError, .failed)
@@ -26,7 +26,7 @@ final class LocalMediaSaverTests: XCTestCase {
     }
     
     func test_saveImageData_saveSuccessfullyIntoStore() async throws {
-        let (sut, store) = makeSUT(stubs: [.success(())])
+        let (sut, store) = makeSUT(stub: .success(()))
         let imageData = UIImage.make(withColor: .red).pngData()!
         
         try await sut.saveImageData(imageData)
@@ -35,7 +35,7 @@ final class LocalMediaSaverTests: XCTestCase {
     }
     
     func test_saveVideo_deliversNoPermissionErrorOnStoreNoPermissionError() async {
-        let (sut, _) = makeSUT(stubs: [.failure(.noPermission)])
+        let (sut, _) = makeSUT(stub: .failure(.noPermission))
         
         await assertThrowsError(try await sut.saveVideo(by: anyVideoURL())) { error in
             XCTAssertEqual(error as? MediaSaverError, .noPermission)
@@ -43,7 +43,7 @@ final class LocalMediaSaverTests: XCTestCase {
     }
     
     func test_saveVideo_deliversFailedErrorWhenStoreFailedOnSave() async {
-        let (sut, _) = makeSUT(stubs: [.failure(.failed)])
+        let (sut, _) = makeSUT(stub: .failure(.failed))
         
         await assertThrowsError(try await sut.saveVideo(by: anyVideoURL())) { error in
             XCTAssertEqual(error as? MediaSaverError, .failed)
@@ -51,7 +51,7 @@ final class LocalMediaSaverTests: XCTestCase {
     }
     
     func test_saveVideo_saveSuccessfullyIntoStore() async throws {
-        let (sut, store) = makeSUT(stubs: [.success(())])
+        let (sut, store) = makeSUT(stub: .success(()))
         let videoURL = URL(string: "file://video.mp4")!
         
         try await sut.saveVideo(by: videoURL)
@@ -61,10 +61,10 @@ final class LocalMediaSaverTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func makeSUT(stubs: [MediaStoreSpy.Stub],
+    private func makeSUT(stub: MediaStoreSpy.Stub,
                          file: StaticString = #filePath,
                          line: UInt = #line) -> (sut: LocalMediaSaver, store: MediaStoreSpy) {
-        let store = MediaStoreSpy(stubs: stubs)
+        let store = MediaStoreSpy(stub: stub)
         let sut = LocalMediaSaver(store: store)
         trackForMemoryLeaks(store, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
@@ -81,20 +81,20 @@ final class LocalMediaSaverTests: XCTestCase {
         private(set) var savedImageData = [Data]()
         private(set) var savedVideoURLs = [URL]()
         
-        private var stubs: [Stub]
+        private var stub: Stub
         
-        init(stubs: [Stub]) {
-            self.stubs = stubs
+        init(stub: Stub) {
+            self.stub = stub
         }
 
         func saveImageData(_ data: Data) async throws {
             savedImageData.append(data)
-            try stubs.removeLast().get()
+            try stub.get()
         }
         
         func saveVideo(for url: URL) async throws {
             savedVideoURLs.append(url)
-            try stubs.removeLast().get()
+            try stub.get()
         }
     }
 }

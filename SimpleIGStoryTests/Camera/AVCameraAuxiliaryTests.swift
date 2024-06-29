@@ -18,7 +18,7 @@ final class AVCameraAuxiliaryTests: XCTestCase {
     }
     
     func test_focus_deliversCaptureDeviceNotFoundStatusWhenNoCaptureDeviceFound() {
-        let (sut, _) = makeSUT(isCaptureDeviceExisted: false)
+        let sut = makeSUT(captureDevice: nil)
         let statusSpy = CameraAuxiliaryStatusSpy(publisher: sut.getStatusPublisher())
         
         sut.focus(on: .zero)
@@ -48,8 +48,8 @@ final class AVCameraAuxiliaryTests: XCTestCase {
         XCTAssertEqual(device.loggedLockStatuses, [.locked, .unlocked])
     }
     
-    func test_focus_deliversChangeDeviceSettingsFailureStatusWhenErrorOccurred() {
-        let (sut, _) = makeSUT(shouldLockForConfigurationThrowAnError: true)
+    func test_focus_deliversChangeDeviceSettingsFailureStatusWhenLockForConfigurationErrorOccurred() {
+        let (sut, _) = makeSUT(lockForConfigurationError: anyNSError())
         let statusSpy = CameraAuxiliaryStatusSpy(publisher: sut.getStatusPublisher())
         
         sut.focus(on: .zero)
@@ -66,8 +66,8 @@ final class AVCameraAuxiliaryTests: XCTestCase {
         XCTAssertNotEqual(device.videoZoomFactor, initialZoomFactor)
     }
     
-    func test_zoom_deliversChangeDeviceSettingsFailureStatusWhenErrorOccurred() {
-        let (sut, _) = makeSUT(shouldLockForConfigurationThrowAnError: true)
+    func test_zoom_deliversChangeDeviceSettingsFailureStatusWhenLockForConfigurationErrorOccurred() {
+        let (sut, _) = makeSUT(lockForConfigurationError: anyNSError())
         let statusSpy = CameraAuxiliaryStatusSpy(publisher: sut.getStatusPublisher())
         
         sut.zoom(to: 999)
@@ -79,35 +79,32 @@ final class AVCameraAuxiliaryTests: XCTestCase {
     
     private typealias CameraAuxiliaryStatusSpy = StatusSpy<CameraAuxiliaryStatus>
     
-    private func makeSUT(isCaptureDeviceExisted: Bool = true,
-                         shouldLockForConfigurationThrowAnError: Bool = false,
+    private func makeSUT(lockForConfigurationError: Error? = nil,
                          file: StaticString = #filePath,
                          line: UInt = #line) -> (sut: AVCameraAuxiliary, captureDevice: CaptureDeviceSpy) {
         AVCaptureDevice.swizzled()
-        let captureDevice = CaptureDeviceSpy(
-            type: .video,
-            shouldLockForConfigurationThrowAnError: shouldLockForConfigurationThrowAnError
-        )
-        let camera = AuxiliarySupportedCameraSpy(
-            captureDevice: isCaptureDeviceExisted ? captureDevice : nil,
-            performOnSessionQueue: { $0() }
-        )
-        let sut = AVCameraAuxiliary(camera: camera)
-        addTeardownBlock {
-            AVCaptureDevice.revertSwizzled()
-        }
-        trackForMemoryLeaks(camera, file: file, line: line)
-        trackForMemoryLeaks(sut, file: file, line: line)
+        let captureDevice = CaptureDeviceSpy(type: .video, lockForConfigurationError: lockForConfigurationError)
+        let sut = makeSUT(captureDevice: captureDevice, file: file, line: line)
+        trackForMemoryLeaks(captureDevice, file: file, line: line)
+        addTeardownBlock { AVCaptureDevice.revertSwizzled() }
         return (sut, captureDevice)
     }
     
-    private final class AuxiliarySupportedCameraSpy: AuxiliarySupportedCamera {
+    private func makeSUT(captureDevice: CaptureDeviceSpy?,
+                         file: StaticString = #filePath,
+                         line: UInt = #line) -> AVCameraAuxiliary {
+        let camera = AuxiliarySupportedCameraStub(captureDevice: captureDevice)
+        let sut = AVCameraAuxiliary(camera: camera)
+        trackForMemoryLeaks(camera, file: file, line: line)
+        trackForMemoryLeaks(sut, file: file, line: line)
+        return sut
+    }
+    
+    private final class AuxiliarySupportedCameraStub: AuxiliarySupportedCamera {
         let captureDevice: AVCaptureDevice?
-        let performOnSessionQueue: (@escaping () -> Void) -> Void
         
-        init(captureDevice: AVCaptureDevice?, performOnSessionQueue: @escaping (@escaping () -> Void) -> Void) {
+        init(captureDevice: AVCaptureDevice?) {
             self.captureDevice = captureDevice
-            self.performOnSessionQueue = performOnSessionQueue
         }
     }
 }

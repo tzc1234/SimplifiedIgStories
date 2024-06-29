@@ -20,6 +20,8 @@ final class AVPhotoTakerTests: XCTestCase {
     func test_takePhoto_addsPhotoOutputToSessionIfNoPhotoOutputWhenSessionIsNotRunning() {
         let (sut, device) = makeSUT(isSessionRunning: false)
         
+        XCTAssertEqual(device.loggedPhotoOutputs.count, 0)
+        
         sut.takePhoto(on: .off)
         
         XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
@@ -37,17 +39,21 @@ final class AVPhotoTakerTests: XCTestCase {
         let (sut, device) = makeSUT()
         
         sut.takePhoto(on: .off)
+        
+        XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
+        
         sut.takePhoto(on: .off)
         
         XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
     }
     
     func test_takePhoto_doesNotAddPhotoOutputAgainWhenPhotoOutputIsAlreadyExisted() {
-        let (sut, device) = makeSUT(existingPhotoOutput: AVCapturePhotoOutput())
+        let existingPhotoOutput = AVCapturePhotoOutput()
+        let (sut, device) = makeSUT(existingPhotoOutput: existingPhotoOutput)
         
         sut.takePhoto(on: .off)
         
-        XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
+        XCTAssertEqual(device.loggedPhotoOutputs, [existingPhotoOutput])
     }
     
     func test_takePhoto_deliversAddPhotoOutputFailureStatusWhenCannotAddPhotoOutput() {
@@ -61,31 +67,32 @@ final class AVPhotoTakerTests: XCTestCase {
     }
     
     func test_takePhoto_triggersCapturePhotoSuccessfullyWhenSessionIsRunning() {
-        let flashMode: CameraFlashMode = .off
+        let flashModeOff: CameraFlashMode = .off
         let (sut, device) = makeSUT(isSessionRunning: true)
         
-        sut.takePhoto(on: flashMode)
+        sut.takePhoto(on: flashModeOff)
         
-        assertCapturePhotoParams(in: device.photoOutput, with: sut, andExpected: flashMode)
+        assertCapturePhotoOutput(device.photoOutput, with: sut, flashMode: flashModeOff)
     }
     
     func test_takePhoto_triggersCapturePhotoWithAutoFlashModeWhenSessionIsRunning() {
-        let autoFlashMode: CameraFlashMode = .auto
+        let flashModeAuto: CameraFlashMode = .auto
         let (sut, device) = makeSUT(isSessionRunning: true)
         
-        sut.takePhoto(on: autoFlashMode)
+        sut.takePhoto(on: flashModeAuto)
         
-        assertCapturePhotoParams(in: device.photoOutput, with: sut, andExpected: autoFlashMode)
+        assertCapturePhotoOutput(device.photoOutput, with: sut, flashMode: flashModeAuto)
     }
     
     func test_takePhoto_triggersCapturePhotoSuccessfullyWhenSessionIsRunningWithExistingPhotoOutput() {
-        let photoOutput = CapturePhotoOutputSpy()
-        let flashMode: CameraFlashMode = .on
-        let (sut, _) = makeSUT(isSessionRunning: true, existingPhotoOutput: photoOutput)
+        let existingPhotoOutput = CapturePhotoOutputSpy()
+        let flashModeOn: CameraFlashMode = .on
+        let (sut, device) = makeSUT(isSessionRunning: true, existingPhotoOutput: existingPhotoOutput)
         
-        sut.takePhoto(on: flashMode)
+        sut.takePhoto(on: flashModeOn)
         
-        assertCapturePhotoParams(in: photoOutput, with: sut, andExpected: flashMode)
+        assertCapturePhotoOutput(device.photoOutput, with: sut, flashMode: flashModeOn)
+        XCTAssertIdentical(device.photoOutput, existingPhotoOutput)
     }
     
     func test_takePhoto_doesNotTriggerCapturePhotoWhenSessionIsNotRunning() {
@@ -105,6 +112,7 @@ final class AVPhotoTakerTests: XCTestCase {
         XCTAssertTrue(device.loggedPhotoOutputs.isEmpty)
         XCTAssertNil(device.photoOutput)
         
+        // Perform logged actions
         loggedActions.forEach { $0() }
         
         XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
@@ -123,8 +131,9 @@ final class AVPhotoTakerTests: XCTestCase {
     func test_photoOutput_deliversImageConvertingFailureStatusWhenNoPhotoData() {
         let (sut, _) = makeSUT()
         let statusSpy = PhotoTakerStatusSpy(publisher: sut.getStatusPublisher())
+        let noPhotoData = Data?.none
         
-        sut.photoOutput(fileData: nil)
+        sut.photoOutput(for: noPhotoData)
         
         XCTAssertEqual(statusSpy.loggedStatuses, [.imageConvertingFailure])
     }
@@ -134,14 +143,9 @@ final class AVPhotoTakerTests: XCTestCase {
         let statusSpy = PhotoTakerStatusSpy(publisher: sut.getStatusPublisher())
         let fileData = UIImage.makeData(withColor: .red)
         
-        sut.photoOutput(fileData: fileData)
+        sut.photoOutput(for: fileData)
         
-        XCTAssertEqual(statusSpy.loggedStatuses.count, 1)
-        if case let .photoTaken(photo: receivedPhoto) = statusSpy.loggedStatuses.last {
-            XCTAssertFalse(receivedPhoto.pngData()!.isEmpty)
-        } else {
-            XCTFail("Should receive a photo")
-        }
+        XCTAssertNotNil(statusSpy.photoTakenData)
     }
     
     // MARK: - Helpers
@@ -162,17 +166,15 @@ final class AVPhotoTakerTests: XCTestCase {
             performOnSessionQueue: perform
         )
         let sut = AVPhotoTaker(device: device, makeCapturePhotoOutput: CapturePhotoOutputSpy.init)
-        addTeardownBlock {
-            CaptureSessionSpy.revertSwizzled()
-        }
+        addTeardownBlock { CaptureSessionSpy.revertSwizzled() }
         trackForMemoryLeaks(device, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
         return (sut, device)
     }
     
-    private func assertCapturePhotoParams(in output: CapturePhotoOutputSpy?,
+    private func assertCapturePhotoOutput(_ output: CapturePhotoOutputSpy?,
                                           with sut: AVPhotoTaker,
-                                          andExpected flashMode: CameraFlashMode,
+                                          flashMode: CameraFlashMode,
                                           file: StaticString = #filePath,
                                           line: UInt = #line) {
         XCTAssertEqual(output?.capturePhotoCallCount, 1, file: file, line: line)
@@ -182,6 +184,8 @@ final class AVPhotoTakerTests: XCTestCase {
     }
     
     private final class PhotoCaptureDeviceSpy: CaptureDevice {
+        let cameraPosition: CameraPosition = .back
+        
         let session: AVCaptureSession
         var loggedPhotoOutputs: [AVCapturePhotoOutput] {
             (session as! CaptureSessionSpy).loggedPhotoOutputs
@@ -189,8 +193,6 @@ final class AVPhotoTakerTests: XCTestCase {
         var photoOutput: CapturePhotoOutputSpy? {
             loggedPhotoOutputs.last as? CapturePhotoOutputSpy
         }
-        
-        private(set) var cameraPosition: CameraPosition = .back
         
         let performOnSessionQueue: (@escaping () -> Void) -> Void
         
@@ -208,7 +210,7 @@ final class AVPhotoTakerTests: XCTestCase {
 }
 
 private extension AVPhotoTaker {
-    func photoOutput(fileData: Data?) {
+    func photoOutput(for fileData: Data?) {
         let photo = makeCapturePhoto(fileData: fileData)
         photoOutput(AVCapturePhotoOutput(), didFinishProcessingPhoto: photo, error: nil)
     }
@@ -222,5 +224,15 @@ private extension AVPhotoTaker {
         let photo = klass.init() as! CapturePhotoStub
         photo.fileData = fileData
         return photo
+    }
+}
+
+private extension StatusSpy<PhotoTakerStatus> {
+    var photoTakenData: Data? {
+        if case let .photoTaken(photo: photo) = loggedStatuses.last {
+            return photo.pngData()
+        }
+        
+        return nil
     }
 }

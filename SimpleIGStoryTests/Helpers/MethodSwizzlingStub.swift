@@ -7,14 +7,14 @@
 
 import Foundation
 
-final class MethodSwizzlingStub {
-    struct MethodPair {
-        typealias Pair = (class: AnyClass, method: Selector)
-        
-        let from: Pair
-        let to: Pair
-    }
+struct MethodPair {
+    typealias Pair = (class: AnyClass, method: Selector)
     
+    let from: Pair
+    let to: Pair
+}
+
+final class MethodSwizzlingStub {
     private let instanceMethodPairs: [MethodPair]
     private let classMethodPairs: [MethodPair]
     
@@ -57,8 +57,6 @@ final class MethodSwizzlingStub {
 }
 
 protocol MethodSwizzling {
-    typealias MethodPair = MethodSwizzlingStub.MethodPair
-    
     static var instanceMethodPairs: [MethodPair] { get }
     static var classMethodPairs: [MethodPair] { get }
     static func swizzled()
