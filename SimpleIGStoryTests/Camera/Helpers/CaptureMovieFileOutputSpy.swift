@@ -28,7 +28,7 @@ final class CaptureMovieFileOutputSpy: AVCaptureMovieFileOutput {
     }
     
     private(set) var stopRecordingCallCount = 0
-    private(set) var loggedOutputSettings = [JSON]()
+    private(set) var loggedOutputSettings = [[String: Any]]()
     
     private var _isRecording = false
     override var isRecording: Bool {
@@ -54,7 +54,7 @@ final class CaptureMovieFileOutputSpy: AVCaptureMovieFileOutput {
         return loggedConnection
     }
     
-    override func setOutputSettings(_ outputSettings: [String : Any]?, for connection: AVCaptureConnection) {
+    override func setOutputSettings(_ outputSettings: [String: Any]?, for connection: AVCaptureConnection) {
         outputSettings.map { loggedOutputSettings.append($0) }
         super.setOutputSettings(outputSettings, for: connection)
     }
