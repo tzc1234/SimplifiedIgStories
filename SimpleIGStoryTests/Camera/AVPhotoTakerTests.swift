@@ -20,6 +20,8 @@ final class AVPhotoTakerTests: XCTestCase {
     func test_takePhoto_addsPhotoOutputToSessionIfNoPhotoOutputWhenSessionIsNotRunning() {
         let (sut, device) = makeSUT(isSessionRunning: false)
         
+        XCTAssertEqual(device.loggedPhotoOutputs.count, 0)
+        
         sut.takePhoto(on: .off)
         
         XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
@@ -43,11 +45,12 @@ final class AVPhotoTakerTests: XCTestCase {
     }
     
     func test_takePhoto_doesNotAddPhotoOutputAgainWhenPhotoOutputIsAlreadyExisted() {
-        let (sut, device) = makeSUT(existingPhotoOutput: AVCapturePhotoOutput())
+        let existingPhotoOutput = AVCapturePhotoOutput()
+        let (sut, device) = makeSUT(existingPhotoOutput: existingPhotoOutput)
         
         sut.takePhoto(on: .off)
         
-        XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
+        XCTAssertEqual(device.loggedPhotoOutputs, [existingPhotoOutput])
     }
     
     func test_takePhoto_deliversAddPhotoOutputFailureStatusWhenCannotAddPhotoOutput() {
@@ -66,7 +69,7 @@ final class AVPhotoTakerTests: XCTestCase {
         
         sut.takePhoto(on: flashMode)
         
-        assertCapturePhotoParams(in: device.photoOutput, with: sut, andExpected: flashMode)
+        assertCapturePhotoOutput(device.photoOutput, with: sut, flashMode: flashMode)
     }
     
     func test_takePhoto_triggersCapturePhotoWithAutoFlashModeWhenSessionIsRunning() {
@@ -75,7 +78,7 @@ final class AVPhotoTakerTests: XCTestCase {
         
         sut.takePhoto(on: autoFlashMode)
         
-        assertCapturePhotoParams(in: device.photoOutput, with: sut, andExpected: autoFlashMode)
+        assertCapturePhotoOutput(device.photoOutput, with: sut, flashMode: autoFlashMode)
     }
     
     func test_takePhoto_triggersCapturePhotoSuccessfullyWhenSessionIsRunningWithExistingPhotoOutput() {
@@ -85,7 +88,7 @@ final class AVPhotoTakerTests: XCTestCase {
         
         sut.takePhoto(on: flashMode)
         
-        assertCapturePhotoParams(in: photoOutput, with: sut, andExpected: flashMode)
+        assertCapturePhotoOutput(photoOutput, with: sut, flashMode: flashMode)
     }
     
     func test_takePhoto_doesNotTriggerCapturePhotoWhenSessionIsNotRunning() {
@@ -162,17 +165,15 @@ final class AVPhotoTakerTests: XCTestCase {
             performOnSessionQueue: perform
         )
         let sut = AVPhotoTaker(device: device, makeCapturePhotoOutput: CapturePhotoOutputSpy.init)
-        addTeardownBlock {
-            CaptureSessionSpy.revertSwizzled()
-        }
+        addTeardownBlock { CaptureSessionSpy.revertSwizzled() }
         trackForMemoryLeaks(device, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
         return (sut, device)
     }
     
-    private func assertCapturePhotoParams(in output: CapturePhotoOutputSpy?,
+    private func assertCapturePhotoOutput(_ output: CapturePhotoOutputSpy?,
                                           with sut: AVPhotoTaker,
-                                          andExpected flashMode: CameraFlashMode,
+                                          flashMode: CameraFlashMode,
                                           file: StaticString = #filePath,
                                           line: UInt = #line) {
         XCTAssertEqual(output?.capturePhotoCallCount, 1, file: file, line: line)
