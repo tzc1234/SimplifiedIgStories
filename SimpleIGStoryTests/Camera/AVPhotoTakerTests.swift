@@ -64,31 +64,31 @@ final class AVPhotoTakerTests: XCTestCase {
     }
     
     func test_takePhoto_triggersCapturePhotoSuccessfullyWhenSessionIsRunning() {
-        let flashMode: CameraFlashMode = .off
+        let flashModeOff: CameraFlashMode = .off
         let (sut, device) = makeSUT(isSessionRunning: true)
         
-        sut.takePhoto(on: flashMode)
+        sut.takePhoto(on: flashModeOff)
         
-        assertCapturePhotoOutput(device.photoOutput, with: sut, flashMode: flashMode)
+        assertCapturePhotoOutput(device.photoOutput, with: sut, flashMode: flashModeOff)
     }
     
     func test_takePhoto_triggersCapturePhotoWithAutoFlashModeWhenSessionIsRunning() {
-        let autoFlashMode: CameraFlashMode = .auto
+        let flashModeAuto: CameraFlashMode = .auto
         let (sut, device) = makeSUT(isSessionRunning: true)
         
-        sut.takePhoto(on: autoFlashMode)
+        sut.takePhoto(on: flashModeAuto)
         
-        assertCapturePhotoOutput(device.photoOutput, with: sut, flashMode: autoFlashMode)
+        assertCapturePhotoOutput(device.photoOutput, with: sut, flashMode: flashModeAuto)
     }
     
     func test_takePhoto_triggersCapturePhotoSuccessfullyWhenSessionIsRunningWithExistingPhotoOutput() {
         let photoOutput = CapturePhotoOutputSpy()
-        let flashMode: CameraFlashMode = .on
+        let flashModeOn: CameraFlashMode = .on
         let (sut, _) = makeSUT(isSessionRunning: true, existingPhotoOutput: photoOutput)
         
-        sut.takePhoto(on: flashMode)
+        sut.takePhoto(on: flashModeOn)
         
-        assertCapturePhotoOutput(photoOutput, with: sut, flashMode: flashMode)
+        assertCapturePhotoOutput(photoOutput, with: sut, flashMode: flashModeOn)
     }
     
     func test_takePhoto_doesNotTriggerCapturePhotoWhenSessionIsNotRunning() {
