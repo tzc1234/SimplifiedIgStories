@@ -39,6 +39,9 @@ final class AVPhotoTakerTests: XCTestCase {
         let (sut, device) = makeSUT()
         
         sut.takePhoto(on: .off)
+        
+        XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
+        
         sut.takePhoto(on: .off)
         
         XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
@@ -109,6 +112,7 @@ final class AVPhotoTakerTests: XCTestCase {
         XCTAssertTrue(device.loggedPhotoOutputs.isEmpty)
         XCTAssertNil(device.photoOutput)
         
+        // Perform logged actions
         loggedActions.forEach { $0() }
         
         XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
