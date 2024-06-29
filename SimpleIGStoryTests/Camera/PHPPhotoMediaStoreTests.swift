@@ -33,14 +33,14 @@ final class PHPPhotoMediaStoreTests: XCTestCase {
     // Cannot mock PHAssetChangeRequest, therefore cannot test the happy path of saveImageData and saveVideo.
     
     func test_saveImageData_deliversFailedErrorWhenPerformChangeFailed() async {
-        PHPhotoLibrary.swizzled()
+        PHPhotoLibrary.swizzledToPerformChangesFailure()
         let sut = PHPPhotoMediaStore()
         let imageData = UIImage.makeData(withColor: .red)
         
         await assertThrowsError(try await sut.saveImageData(imageData)) { error in
             XCTAssertEqual(error as? MediaStoreError, .failed)
         }
-        PHPhotoLibrary.revertSwizzled()
+        PHPhotoLibrary.revertSwizzledToPerformChangesFailure()
     }
     
     func test_saveVideo_deliversNoPermissionErrorIfUnauthorized() async {
@@ -54,18 +54,18 @@ final class PHPPhotoMediaStoreTests: XCTestCase {
     }
     
     func test_saveVideo_deliversFailedErrorWhenPerformChangeFailed() async {
-        PHPhotoLibrary.swizzled()
+        PHPhotoLibrary.swizzledToPerformChangesFailure()
         let sut = PHPPhotoMediaStore()
         
         await assertThrowsError(try await sut.saveVideo(for: anyVideoURL())) { error in
             XCTAssertEqual(error as? MediaStoreError, .failed)
         }
-        PHPhotoLibrary.revertSwizzled()
+        PHPhotoLibrary.revertSwizzledToPerformChangesFailure()
     }
 }
 
 extension PHPhotoLibrary {
-    @objc class func returnAuthorized(for accessLevel: PHAccessLevel) async -> PHAuthorizationStatus {
+    @objc class func _requestAuthorization(for accessLevel: PHAccessLevel) async -> PHAuthorizationStatus {
         accessLevel == .addOnly ? .authorized : .denied
     }
     
@@ -73,26 +73,26 @@ extension PHPhotoLibrary {
         throw anyNSError()
     }
     
-    static func swizzled() {
+    static func swizzledToPerformChangesFailure() {
         stub().swizzled()
     }
     
-    static func revertSwizzled() {
+    static func revertSwizzledToPerformChangesFailure() {
         stub().revertSwizzled()
     }
     
     private static func stub() -> MethodSwizzlingStub {
         MethodSwizzlingStub(
             instanceMethodPairs: [
-                .init(
+                MethodPair(
                     from: (PHPhotoLibrary.self, #selector(PHPhotoLibrary.performChanges(_:))),
                     to: (PHPhotoLibrary.self, #selector(PHPhotoLibrary._performChanges(_:)))
                 )
             ],
             classMethodPairs: [
-                .init(
+                MethodPair(
                     from: (PHPhotoLibrary.self, #selector(PHPhotoLibrary.requestAuthorization(for:))),
-                    to: (PHPhotoLibrary.self, #selector(PHPhotoLibrary.returnAuthorized(for:)))
+                    to: (PHPhotoLibrary.self, #selector(PHPhotoLibrary._requestAuthorization(for:)))
                 )
             ]
         )
@@ -116,7 +116,7 @@ extension PHPhotoLibrary {
         MethodSwizzlingStub(
             instanceMethodPairs: [],
             classMethodPairs: [
-                .init(
+                MethodPair(
                     from: (PHPhotoLibrary.self, #selector(PHPhotoLibrary.requestAuthorization(for:))),
                     to: (PHPhotoLibrary.self, #selector(PHPhotoLibrary.returnDeniedAuthorization(for:)))
                 )
