@@ -7,6 +7,8 @@
 
 import Foundation
 
+typealias JSON = [String: Any]
+
 func validJsonURL(currentClass: AnyClass) -> URL {
     Bundle(for: currentClass).url(forResource: "valid.json", withExtension: nil)!
 }
