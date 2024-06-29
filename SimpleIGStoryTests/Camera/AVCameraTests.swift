@@ -31,9 +31,7 @@ final class AVCameraTests: XCTestCase {
         let (sut, session) = makeSUT(
             isSessionRunning: false,
             captureDevicesSpy: captureDevicesSpy,
-            afterPerformOnSessionQueue: {
-                exp.fulfill()
-            }
+            afterPerformOnSessionQueue: { exp.fulfill() }
         )
         
         sut.startSession()
@@ -47,9 +45,7 @@ final class AVCameraTests: XCTestCase {
         let exp = expectation(description: "Wait for session queue")
         let (sut, session) = makeSUT(
             isSessionRunning: true,
-            afterPerformOnSessionQueue: {
-                exp.fulfill()
-            }
+            afterPerformOnSessionQueue: { exp.fulfill() }
         )
         
         sut.startSession()
@@ -58,15 +54,13 @@ final class AVCameraTests: XCTestCase {
         XCTAssertEqual(session.loggedInputs, [])
     }
     
-    func test_startSession_ensuresVideoDeviceSettingsWhenSessionIsNotRunning() {
+    func test_startSession_ensuresVideoDeviceSettingsCorrectWhenSessionIsNotRunning() {
         let exp = expectation(description: "Wait for session queue")
         let captureDevicesSpy = CaptureDevicesSpy()
         let (sut, _) = makeSUT(
             isSessionRunning: false,
             captureDevicesSpy: captureDevicesSpy,
-            afterPerformOnSessionQueue: {
-                exp.fulfill()
-            }
+            afterPerformOnSessionQueue: { exp.fulfill() }
         )
         
         sut.startSession()
@@ -77,12 +71,7 @@ final class AVCameraTests: XCTestCase {
     
     func test_startSession_deliversSessionStartedStatusAfterStartSession() {
         let exp = expectation(description: "Wait for session queue")
-        let (sut, _) = makeSUT(
-            isSessionRunning: false,
-            afterPerformOnSessionQueue: {
-                exp.fulfill()
-            }
-        )
+        let (sut, _) = makeSUT(afterPerformOnSessionQueue: { exp.fulfill() })
         
         expect(sut, deliverStatuses: [.sessionStarted], when: {
             sut.startSession()
@@ -92,12 +81,7 @@ final class AVCameraTests: XCTestCase {
     
     func test_stopSession_deliversSessionStoppedStatusAfterStopSession() {
         let exp = expectation(description: "Wait for session queue")
-        let (sut, _) = makeSUT(
-            isSessionRunning: false,
-            afterPerformOnSessionQueue: {
-                exp.fulfill()
-            }
-        )
+        let (sut, _) = makeSUT(afterPerformOnSessionQueue: { exp.fulfill() })
         
         expect(sut, deliverStatuses: [.sessionStarted, .sessionStopped], when: {
             sut.startSession()
@@ -107,16 +91,10 @@ final class AVCameraTests: XCTestCase {
     }
     
     func test_switchCamera_switchesCameraPosition() {
-        let exp = expectation(description: "Wait for session queue")
+        let exp = expectation(description: "Wait for session queue twice")
         exp.expectedFulfillmentCount = 2
         let captureDevicesSpy = CaptureDevicesSpy()
-        let (sut, _) = makeSUT(
-            isSessionRunning: false,
-            captureDevicesSpy: captureDevicesSpy,
-            afterPerformOnSessionQueue: {
-                exp.fulfill()
-            }
-        )
+        let (sut, _) = makeSUT(captureDevicesSpy: captureDevicesSpy, afterPerformOnSessionQueue: { exp.fulfill() })
         let initialPosition = sut.cameraPosition
         
         sut.startSession()
@@ -127,21 +105,17 @@ final class AVCameraTests: XCTestCase {
     }
     
     func test_switchCamera_reAddsInputsToSession() {
-        let exp = expectation(description: "Wait for session queue")
+        let exp = expectation(description: "Wait for session queue twice")
         exp.expectedFulfillmentCount = 2
         let captureDevicesSpy = CaptureDevicesSpy()
         let (sut, session) = makeSUT(
-            isSessionRunning: false,
             captureDevicesSpy: captureDevicesSpy,
-            afterPerformOnSessionQueue: {
-                exp.fulfill()
-            }
+            afterPerformOnSessionQueue: { exp.fulfill() }
         )
         
         sut.startSession()
         session.resetLoggedInputs()
         captureDevicesSpy.resetLoggings()
-        
         sut.switchCamera()
         wait(for: [exp], timeout: 1)
         
@@ -152,12 +126,7 @@ final class AVCameraTests: XCTestCase {
     
     func test_switchCamera_deliversCameraSwitchedStatus() {
         let exp = expectation(description: "Wait for session queue")
-        let (sut, _) = makeSUT(
-            isSessionRunning: false,
-            afterPerformOnSessionQueue: {
-                exp.fulfill()
-            }
-        )
+        let (sut, _) = makeSUT(afterPerformOnSessionQueue: { exp.fulfill() })
         let initialPosition = sut.cameraPosition
         
         expect(sut, deliverStatuses: [.cameraSwitched(position: initialPosition.toggle())], when: {
