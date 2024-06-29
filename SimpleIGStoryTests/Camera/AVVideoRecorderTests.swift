@@ -100,12 +100,12 @@ final class AVVideoRecorderTests: XCTestCase {
         
         sut.startRecording()
         
-        XCTAssertEqual(device.movieFileOutput?.stopRecordingCallCount, 0)
+        XCTAssertEqual(device.movieFileOutputStopRecordingCallCount, 0)
         XCTAssertEqual(statusSpy.loggedStatuses, [.recordingBegun])
         
         sut.stopRecording()
         
-        XCTAssertEqual(device.movieFileOutput?.stopRecordingCallCount, 1)
+        XCTAssertEqual(device.movieFileOutputStopRecordingCallCount, 1)
         XCTAssertEqual(statusSpy.loggedStatuses, [.recordingBegun, .recordingFinished])
     }
     
@@ -116,13 +116,14 @@ final class AVVideoRecorderTests: XCTestCase {
         sut.startRecording()
         sut.stopRecording()
         
-        XCTAssertEqual(device.movieFileOutput?.startRecordingCallCount, 0)
-        XCTAssertEqual(device.movieFileOutput?.stopRecordingCallCount, 0)
+        XCTAssertEqual(device.movieFileOutputStartRecordingCallCount, 0)
+        XCTAssertEqual(device.movieFileOutputStopRecordingCallCount, 0)
         
+        // Perform logged actions
         loggedActions.forEach { $0() }
         
-        XCTAssertEqual(device.movieFileOutput?.startRecordingCallCount, 1)
-        XCTAssertEqual(device.movieFileOutput?.stopRecordingCallCount, 1)
+        XCTAssertEqual(device.movieFileOutputStartRecordingCallCount, 1)
+        XCTAssertEqual(device.movieFileOutputStopRecordingCallCount, 1)
     }
     
     func test_backgroundRecordingID_invalidatesBackgroundRecordingIDAfterFileOutput() {
@@ -195,9 +196,7 @@ final class AVVideoRecorderTests: XCTestCase {
             beginBackgroundTask: beginBackgroundTask,
             endBackgroundTask: endBackgroundTask
         )
-        addTeardownBlock {
-            CaptureSessionSpy.revertSwizzled()
-        }
+        addTeardownBlock { CaptureSessionSpy.revertSwizzled() }
         trackForMemoryLeaks(device, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
         return (sut, device)
@@ -216,6 +215,12 @@ final class AVVideoRecorderTests: XCTestCase {
         }
         var movieFileOutput: CaptureMovieFileOutputSpy? {
             loggedMovieFileOutputs.last as? CaptureMovieFileOutputSpy
+        }
+        var movieFileOutputStartRecordingCallCount: Int {
+            movieFileOutput?.startRecordingCallCount ?? 0
+        }
+        var movieFileOutputStopRecordingCallCount: Int {
+            movieFileOutput?.stopRecordingCallCount ?? 0
         }
         
         let session: AVCaptureSession
