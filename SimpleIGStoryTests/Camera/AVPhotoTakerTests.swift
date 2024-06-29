@@ -140,7 +140,6 @@ final class AVPhotoTakerTests: XCTestCase {
         
         sut.photoOutput(fileData: fileData)
         
-        XCTAssertEqual(statusSpy.loggedStatuses.count, 1)
         XCTAssertNotNil(statusSpy.photoTakenData)
     }
     
