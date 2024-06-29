@@ -7,10 +7,14 @@
 
 import Foundation
 
-func validJSONURL(currentClass: AnyClass, file: StaticString = #filePath) -> URL {
-    bundle(currentClass: currentClass).url(forResource: "valid.json", withExtension: nil)!
+func validJsonURL(currentClass: AnyClass) -> URL {
+    Bundle(for: currentClass).url(forResource: "valid.json", withExtension: nil)!
 }
 
-func bundle(currentClass: AnyClass) -> Bundle {
-    Bundle(for: currentClass)
+func avatarURLFor(_ avatar: String) -> URL {
+    Bundle.main.url(forResource: avatar, withExtension: "jpg")!
+}
+
+func resourceURLFor(_ resource: String, type: String) -> URL {
+    Bundle.main.url(forResource: resource, withExtension: type == "video" ? "mp4" : "jpg")!
 }

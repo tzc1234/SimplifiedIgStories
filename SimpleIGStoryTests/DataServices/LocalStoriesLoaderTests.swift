@@ -103,7 +103,8 @@ final class LocalStoriesLoaderTests: XCTestCase {
             "lastUpdate": lastUpdate as Any?,
             "user": user.json,
             "portions": portions.map(\.json)
-        ].compactMapValues { $0 }
+        ]
+        .compactMapValues { $0 }
         
         let model = LocalStory(
             id: id,
@@ -134,7 +135,7 @@ final class LocalStoriesLoaderTests: XCTestCase {
             LocalUser(
                 id: id,
                 name: name,
-                avatarURL: Bundle.main.url(forResource: avatar, withExtension: "jpg"),
+                avatarURL: avatarURLFor(avatar),
                 isCurrentUser: isCurrentUser
             )
         }
@@ -152,13 +153,14 @@ final class LocalStoriesLoaderTests: XCTestCase {
                 "resource": resource,
                 "duration": duration as Any?,
                 "type": type
-            ].compactMapValues { $0 }
+            ]
+            .compactMapValues { $0 }
         }
         
         var model: LocalPortion {
             LocalPortion(
                 id: id,
-                resourceURL: Bundle.main.url(forResource: resource, withExtension: type == "video" ? "mp4" : "jpg"),
+                resourceURL: resourceURLFor(resource, type: type),
                 duration: duration ?? .defaultStoryDuration,
                 type: LocalResourceType(rawValue: type) ?? .image
             )

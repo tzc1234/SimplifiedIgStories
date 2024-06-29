@@ -10,7 +10,7 @@ import XCTest
 
 final class LocalStoriesLoaderIntegrationTests: XCTestCase {
     func test_load_deliversDataCorrectly() async throws {
-        let client = FileDataClient(url: validJSONURL(currentClass: Self.self))
+        let client = FileDataClient(url: validJsonURL(currentClass: Self.self))
         let sut = LocalStoriesLoader(client: client)
         
         let receivedStories = try await sut.load()
@@ -28,39 +28,39 @@ final class LocalStoriesLoaderIntegrationTests: XCTestCase {
         let user = LocalUser(
             id: 0,
             name: "sea1",
-            avatarURL: Bundle.main.url(forResource: "sea1", withExtension: "jpg")!,
+            avatarURL: avatarURLFor("sea1"),
             isCurrentUser: true
         )
-        return .init(id: 0, lastUpdate: nil, user: user, portions: [])
+        return LocalStory(id: 0, lastUpdate: nil, user: user, portions: [])
     }
     
     private func expectedStory1() -> LocalStory {
         let user = LocalUser(
             id: 1,
             name: "sea2",
-            avatarURL: Bundle.main.url(forResource: "sea2", withExtension: "jpg")!,
+            avatarURL: avatarURLFor("sea2"),
             isCurrentUser: false
         )
         let portions = [
             LocalPortion(
                 id: 0,
-                resourceURL: Bundle.main.url(forResource: "sea1", withExtension: "jpg")!,
+                resourceURL: resourceURLFor("sea1", type: "image"),
                 duration: .defaultStoryDuration,
                 type: .image
             ),
             LocalPortion(
                 id: 1,
-                resourceURL: Bundle.main.url(forResource: "seaVideo", withExtension: "mp4")!,
+                resourceURL: resourceURLFor("seaVideo", type: "video"),
                 duration: 999,
                 type: .video
             ),
             LocalPortion(
                 id: 2,
-                resourceURL: Bundle.main.url(forResource: "sea2", withExtension: "jpg")!,
+                resourceURL: resourceURLFor("sea2", type: "image"),
                 duration: 1,
                 type: .image
             ),
         ]
-        return .init(id: 1, lastUpdate: Date(timeIntervalSince1970: 1645401600), user: user, portions: portions)
+        return LocalStory(id: 1, lastUpdate: Date(timeIntervalSince1970: 1645401600), user: user, portions: portions)
     }
 }
