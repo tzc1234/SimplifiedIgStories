@@ -82,13 +82,14 @@ final class AVPhotoTakerTests: XCTestCase {
     }
     
     func test_takePhoto_triggersCapturePhotoSuccessfullyWhenSessionIsRunningWithExistingPhotoOutput() {
-        let photoOutput = CapturePhotoOutputSpy()
+        let existingPhotoOutput = CapturePhotoOutputSpy()
         let flashModeOn: CameraFlashMode = .on
-        let (sut, _) = makeSUT(isSessionRunning: true, existingPhotoOutput: photoOutput)
+        let (sut, device) = makeSUT(isSessionRunning: true, existingPhotoOutput: existingPhotoOutput)
         
         sut.takePhoto(on: flashModeOn)
         
-        assertCapturePhotoOutput(photoOutput, with: sut, flashMode: flashModeOn)
+        assertCapturePhotoOutput(device.photoOutput, with: sut, flashMode: flashModeOn)
+        XCTAssertIdentical(device.photoOutput, existingPhotoOutput)
     }
     
     func test_takePhoto_doesNotTriggerCapturePhotoWhenSessionIsNotRunning() {
