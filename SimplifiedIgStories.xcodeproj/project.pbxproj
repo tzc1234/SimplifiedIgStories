@@ -520,17 +520,9 @@
 		BE8B71A82B7651450055C354 /* MediaSaver */ = {
 			isa = PBXGroup;
 			children = (
-				BE8B71A92B7651610055C354 /* Helpers */,
 				BE8B71A62B764E410055C354 /* LocalMediaSaverTests.swift */,
 			);
 			path = MediaSaver;
-			sourceTree = "<group>";
-		};
-		BE8B71A92B7651610055C354 /* Helpers */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Helpers;
 			sourceTree = "<group>";
 		};
 		BE8B71B02B765EAE0055C354 /* MediaSaver */ = {
