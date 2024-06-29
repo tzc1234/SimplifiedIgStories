@@ -10,7 +10,7 @@ import XCTest
 
 final class LocalStoriesLoaderTests: XCTestCase {
     func test_load_deliversNotFoundErrorOnClientError() async {
-        let sut = makeSUT(stubs: [.failure(anyNSError())])
+        let sut = makeSUT(stub: .failure(anyNSError()))
         
         await assertThrowsError(_ = try await sut.load()) { error in
             XCTAssertEqual(error as? StoriesLoaderError, .notFound)
@@ -19,7 +19,7 @@ final class LocalStoriesLoaderTests: XCTestCase {
     
     func test_load_deliversInvalidDataErrorWhileReceivedInvalidData() async {
         let invalidData = Data("invalid".utf8)
-        let sut = makeSUT(stubs: [.success(invalidData)])
+        let sut = makeSUT(stub: .success(invalidData))
         
         await assertThrowsError(_ = try await sut.load()) { error in
             XCTAssertEqual(error as? StoriesLoaderError, .invalidData)
@@ -27,39 +27,39 @@ final class LocalStoriesLoaderTests: XCTestCase {
     }
     
     func test_load_deliversEmptyStoriesWhileReceivedEmptyJSON() async throws {
-        let sut = makeSUT(stubs: [.success(emptyStoriesJSONData())])
+        let sut = makeSUT(stub: .success(emptyStoriesJSONData()))
         
         let receivedStories = try await sut.load()
         
         XCTAssertEqual(receivedStories, [])
     }
     
-    func test_load_deliversStoriesWhileReceivedValidJSON() async throws {
+    func test_load_deliversStoriesWhileReceivedValidData() async throws {
         let stories = [
             makeStory(
                 id: 0,
                 lastUpdate: nil,
-                user: .init(id: 0, name: "user0", avatar: "sea1", isCurrentUser: true),
+                user: UserInput(id: 0, name: "user0", avatar: "sea1", isCurrentUser: true),
                 portions: []
             ),
             makeStory(
                 id: 1,
                 lastUpdate: 1645401600,
-                user: .init(id: 1, name: "user1", avatar: "sea2", isCurrentUser: false),
+                user: UserInput(id: 1, name: "user1", avatar: "sea2", isCurrentUser: false),
                 portions: [
-                    .init(
+                    PortionInput(
                         id: 0,
                         resource: "forest1",
                         duration: nil,
                         type: "image"
                     ),
-                    .init(
+                    PortionInput(
                         id: 1,
                         resource: "forestVideo",
                         duration: 999,
                         type: "video"
                     ),
-                    .init(
+                    PortionInput(
                         id: 2,
                         resource: "forest2",
                         duration: nil,
@@ -68,21 +68,21 @@ final class LocalStoriesLoaderTests: XCTestCase {
                 ]
             )
         ]
-        let data = stories.map(\.json).toData()
-        let sut = makeSUT(stubs: [.success(data)])
+        let validData = stories.map(\.json).toData()
+        let sut = makeSUT(stub: .success(validData))
         
         let receivedStories = try await sut.load()
         
-        let models = stories.map(\.model)
-        XCTAssertEqual(receivedStories, models)
+        let expectedStories = stories.map(\.model)
+        XCTAssertEqual(receivedStories, expectedStories)
     }
     
     // MAKE: - Helpers
     
-    private func makeSUT(stubs: [DataClientStub.Stub] = [],
+    private func makeSUT(stub: DataClientStub.Stub,
                          file: StaticString = #filePath,
                          line: UInt = #line) -> LocalStoriesLoader {
-        let client = DataClientStub(stubs: stubs)
+        let client = DataClientStub(stub: stub)
         let sut = LocalStoriesLoader(client: client)
         trackForMemoryLeaks(client, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
@@ -131,7 +131,7 @@ final class LocalStoriesLoaderTests: XCTestCase {
         }
         
         var model: LocalUser {
-            .init(
+            LocalUser(
                 id: id,
                 name: name,
                 avatarURL: Bundle.main.url(forResource: avatar, withExtension: "jpg"),
@@ -156,17 +156,17 @@ final class LocalStoriesLoaderTests: XCTestCase {
         }
         
         var model: LocalPortion {
-            .init(
+            LocalPortion(
                 id: id,
                 resourceURL: Bundle.main.url(forResource: resource, withExtension: type == "video" ? "mp4" : "jpg"),
                 duration: duration ?? .defaultStoryDuration,
-                type: .init(rawValue: type) ?? .image
+                type: LocalResourceType(rawValue: type) ?? .image
             )
         }
     }
 }
 
-extension [JSON] {
+private extension [JSON] {
     func toData() -> Data {
         try! JSONSerialization.data(withJSONObject: self)
     }

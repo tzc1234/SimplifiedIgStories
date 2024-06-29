@@ -11,13 +11,13 @@ import Foundation
 final class DataClientStub: DataClient {
     typealias Stub = Result<Data, Error>
     
-    private var stubs = [Stub]()
+    private var stub: Stub
     
-    init(stubs: [Stub]) {
-        self.stubs = stubs
+    init(stub: Stub) {
+        self.stub = stub
     }
     
     func fetch() async throws -> Data {
-        return try stubs.removeLast().get()
+        try stub.get()
     }
 }
