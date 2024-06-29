@@ -131,8 +131,9 @@ final class AVPhotoTakerTests: XCTestCase {
     func test_photoOutput_deliversImageConvertingFailureStatusWhenNoPhotoData() {
         let (sut, _) = makeSUT()
         let statusSpy = PhotoTakerStatusSpy(publisher: sut.getStatusPublisher())
+        let noPhotoData = Data?.none
         
-        sut.photoOutput(fileData: nil)
+        sut.photoOutput(for: noPhotoData)
         
         XCTAssertEqual(statusSpy.loggedStatuses, [.imageConvertingFailure])
     }
@@ -142,7 +143,7 @@ final class AVPhotoTakerTests: XCTestCase {
         let statusSpy = PhotoTakerStatusSpy(publisher: sut.getStatusPublisher())
         let fileData = UIImage.makeData(withColor: .red)
         
-        sut.photoOutput(fileData: fileData)
+        sut.photoOutput(for: fileData)
         
         XCTAssertNotNil(statusSpy.photoTakenData)
     }
@@ -209,7 +210,7 @@ final class AVPhotoTakerTests: XCTestCase {
 }
 
 private extension AVPhotoTaker {
-    func photoOutput(fileData: Data?) {
+    func photoOutput(for fileData: Data?) {
         let photo = makeCapturePhoto(fileData: fileData)
         photoOutput(AVCapturePhotoOutput(), didFinishProcessingPhoto: photo, error: nil)
     }
