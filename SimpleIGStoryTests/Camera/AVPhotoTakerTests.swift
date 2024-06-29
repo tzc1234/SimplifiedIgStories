@@ -184,6 +184,8 @@ final class AVPhotoTakerTests: XCTestCase {
     }
     
     private final class PhotoCaptureDeviceSpy: CaptureDevice {
+        let cameraPosition: CameraPosition = .back
+        
         let session: AVCaptureSession
         var loggedPhotoOutputs: [AVCapturePhotoOutput] {
             (session as! CaptureSessionSpy).loggedPhotoOutputs
@@ -191,8 +193,6 @@ final class AVPhotoTakerTests: XCTestCase {
         var photoOutput: CapturePhotoOutputSpy? {
             loggedPhotoOutputs.last as? CapturePhotoOutputSpy
         }
-        
-        private(set) var cameraPosition: CameraPosition = .back
         
         let performOnSessionQueue: (@escaping () -> Void) -> Void
         
