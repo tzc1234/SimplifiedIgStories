@@ -140,11 +140,7 @@ final class AVPhotoTakerTests: XCTestCase {
         sut.photoOutput(fileData: fileData)
         
         XCTAssertEqual(statusSpy.loggedStatuses.count, 1)
-        if case let .photoTaken(photo: receivedPhoto) = statusSpy.loggedStatuses.last {
-            XCTAssertFalse(receivedPhoto.pngData()!.isEmpty)
-        } else {
-            XCTFail("Should receive a photo")
-        }
+        XCTAssertNotNil(statusSpy.photoTakenData)
     }
     
     // MARK: - Helpers
@@ -223,5 +219,15 @@ private extension AVPhotoTaker {
         let photo = klass.init() as! CapturePhotoStub
         photo.fileData = fileData
         return photo
+    }
+}
+
+private extension StatusSpy<PhotoTakerStatus> {
+    var photoTakenData: Data? {
+        if case let .photoTaken(photo: photo) = loggedStatuses.last {
+            return photo.pngData()
+        }
+        
+        return nil
     }
 }
