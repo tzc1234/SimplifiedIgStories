@@ -21,10 +21,12 @@ final class AVPhotoTakerTests: XCTestCase {
         let (sut, device) = makeSUT(isSessionRunning: false)
         
         XCTAssertEqual(device.loggedPhotoOutputs.count, 0)
+        XCTAssertEqual(device.configurationStatus, [])
         
         sut.takePhoto(on: .off)
         
         XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
+        XCTAssertEqual(device.configurationStatus, [.begin, .commit])
     }
     
     func test_takePhoto_addsPhotoOutputToSessionIfNoPhotoOutputWhenSessionIsRunning() {
@@ -33,6 +35,7 @@ final class AVPhotoTakerTests: XCTestCase {
         sut.takePhoto(on: .off)
         
         XCTAssertEqual(device.loggedPhotoOutputs.count, 1)
+        XCTAssertEqual(device.configurationStatus, [.begin, .commit])
     }
     
     func test_takePhoto_doesNotAddPhotoOutputAgainWhenPhotoOutputIsAlreadyAdded() {
@@ -72,7 +75,7 @@ final class AVPhotoTakerTests: XCTestCase {
         
         sut.takePhoto(on: flashModeOff)
         
-        assertCapturePhotoOutput(device.photoOutput, with: sut, flashMode: flashModeOff)
+        assertCapturePhotoOutput(on: device, with: sut, flashMode: flashModeOff)
     }
     
     func test_takePhoto_triggersCapturePhotoWithAutoFlashModeWhenSessionIsRunning() {
@@ -81,7 +84,7 @@ final class AVPhotoTakerTests: XCTestCase {
         
         sut.takePhoto(on: flashModeAuto)
         
-        assertCapturePhotoOutput(device.photoOutput, with: sut, flashMode: flashModeAuto)
+        assertCapturePhotoOutput(on: device, with: sut, flashMode: flashModeAuto)
     }
     
     func test_takePhoto_triggersCapturePhotoSuccessfullyWhenSessionIsRunningWithExistingPhotoOutput() {
@@ -91,7 +94,7 @@ final class AVPhotoTakerTests: XCTestCase {
         
         sut.takePhoto(on: flashModeOn)
         
-        assertCapturePhotoOutput(device.photoOutput, with: sut, flashMode: flashModeOn)
+        assertCapturePhotoOutput(on: device, with: sut, flashMode: flashModeOn)
         XCTAssertIdentical(device.photoOutput, existingPhotoOutput)
     }
     
@@ -172,11 +175,12 @@ final class AVPhotoTakerTests: XCTestCase {
         return (sut, device)
     }
     
-    private func assertCapturePhotoOutput(_ output: CapturePhotoOutputSpy?,
+    private func assertCapturePhotoOutput(on device: PhotoCaptureDeviceSpy,
                                           with sut: AVPhotoTaker,
                                           flashMode: CameraFlashMode,
                                           file: StaticString = #filePath,
                                           line: UInt = #line) {
+        let output = device.photoOutput
         XCTAssertEqual(output?.capturePhotoCallCount, 1, file: file, line: line)
         XCTAssertIdentical(output?.loggedDelegates.last, sut, file: file, line: line)
         let setting = output?.loggedSettings.last
@@ -187,8 +191,12 @@ final class AVPhotoTakerTests: XCTestCase {
         let cameraPosition: CameraPosition = .back
         
         let session: AVCaptureSession
+        private var sessionSpy: CaptureSessionSpy { session as! CaptureSessionSpy }
+        var configurationStatus: [CaptureSessionSpy.ConfigurationStatus] {
+            sessionSpy.loggedConfigurationStatus
+        }
         var loggedPhotoOutputs: [AVCapturePhotoOutput] {
-            (session as! CaptureSessionSpy).loggedPhotoOutputs
+            sessionSpy.loggedPhotoOutputs
         }
         var photoOutput: CapturePhotoOutputSpy? {
             loggedPhotoOutputs.last as? CapturePhotoOutputSpy
