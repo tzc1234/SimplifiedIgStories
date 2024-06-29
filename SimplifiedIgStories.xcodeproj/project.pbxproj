@@ -41,6 +41,7 @@
 		BE6B73C727D794AD003D2B24 /* StoryPortionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6B73C627D794AD003D2B24 /* StoryPortionViewModel.swift */; };
 		BE6E4FF92C30011500AB23D0 /* DataClientStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6E4FF82C30011500AB23D0 /* DataClientStub.swift */; };
 		BE6E4FFB2C3035F300AB23D0 /* CameraPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6E4FFA2C3035F300AB23D0 /* CameraPosition.swift */; };
+		BE6E4FFD2C303BF800AB23D0 /* CaptureDevicesSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE6E4FFC2C303BF800AB23D0 /* CaptureDevicesSpy.swift */; };
 		BE7079492B86744A00365260 /* CaptureMovieFileOutputSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE7079482B86744A00365260 /* CaptureMovieFileOutputSpy.swift */; };
 		BE720F7C27BD111800E862A5 /* ProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE720F7B27BD111800E862A5 /* ProgressBar.swift */; };
 		BE72F94027DF6F9300AA98A5 /* StoryCamPermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE72F93F27DF6F9300AA98A5 /* StoryCamPermissionView.swift */; };
@@ -176,6 +177,7 @@
 		BE6B73C627D794AD003D2B24 /* StoryPortionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPortionViewModel.swift; sourceTree = "<group>"; };
 		BE6E4FF82C30011500AB23D0 /* DataClientStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataClientStub.swift; sourceTree = "<group>"; };
 		BE6E4FFA2C3035F300AB23D0 /* CameraPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPosition.swift; sourceTree = "<group>"; };
+		BE6E4FFC2C303BF800AB23D0 /* CaptureDevicesSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureDevicesSpy.swift; sourceTree = "<group>"; };
 		BE7079482B86744A00365260 /* CaptureMovieFileOutputSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureMovieFileOutputSpy.swift; sourceTree = "<group>"; };
 		BE720F7B27BD111800E862A5 /* ProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBar.swift; sourceTree = "<group>"; };
 		BE72F93F27DF6F9300AA98A5 /* StoryCamPermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCamPermissionView.swift; sourceTree = "<group>"; };
@@ -397,6 +399,7 @@
 				BE83D1242B84E3E6004A1FB4 /* CameraPosition+TestHelpers.swift */,
 				BE7079482B86744A00365260 /* CaptureMovieFileOutputSpy.swift */,
 				BE8305072B87790E002A72C4 /* CaptureDeviceSpy.swift */,
+				BE6E4FFC2C303BF800AB23D0 /* CaptureDevicesSpy.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -952,6 +955,7 @@
 				BEBF32322B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift in Sources */,
 				BE83D1272B850BB5004A1FB4 /* AVVideoRecorderTests.swift in Sources */,
 				BE6E4FF92C30011500AB23D0 /* DataClientStub.swift in Sources */,
+				BE6E4FFD2C303BF800AB23D0 /* CaptureDevicesSpy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
