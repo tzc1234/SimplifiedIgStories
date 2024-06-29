@@ -90,15 +90,15 @@ final class LocalStoriesLoaderTests: XCTestCase {
     }
     
     private func emptyStoriesJSONData() -> Data {
-        let json: [[String: Any]] = []
+        let json: [JSON] = []
         return json.toData()
     }
     
     private func makeStory(id: Int,
                            lastUpdate: TimeInterval?,
                            user: UserInput,
-                           portions: [PortionInput]) -> (json: [String: Any], model: LocalStory) {
-        let json: [String: Any] = [
+                           portions: [PortionInput]) -> (json: JSON, model: LocalStory) {
+        let json: JSON = [
             "id": id,
             "lastUpdate": lastUpdate as Any?,
             "user": user.json,
@@ -121,7 +121,7 @@ final class LocalStoriesLoaderTests: XCTestCase {
         let avatar: String
         let isCurrentUser: Bool
         
-        var json: [String: Any] {
+        var json: JSON {
             [
                 "id": id,
                 "name": name,
@@ -146,7 +146,7 @@ final class LocalStoriesLoaderTests: XCTestCase {
         let duration: Double?
         let type: String
         
-        var json: [String: Any] {
+        var json: JSON {
             [
                 "id": id,
                 "resource": resource,
@@ -166,7 +166,7 @@ final class LocalStoriesLoaderTests: XCTestCase {
     }
 }
 
-extension [[String: Any]] {
+extension [JSON] {
     func toData() -> Data {
         try! JSONSerialization.data(withJSONObject: self)
     }
