@@ -8,12 +8,6 @@
 import AVKit
 import Combine
 
-enum CameraFlashMode {
-    case on
-    case off
-    case auto
-}
-
 enum PhotoTakerStatus: Equatable {
     case addPhotoOutputFailure
     case photoTaken(photo: UIImage)
@@ -44,9 +38,7 @@ final class AVPhotoTaker: NSObject {
     }
     
     private func addPhotoOutputIfNeeded() {
-        guard output == nil else {
-            return
-        }
+        guard output == nil else { return }
         
         session.beginConfiguration()
         
