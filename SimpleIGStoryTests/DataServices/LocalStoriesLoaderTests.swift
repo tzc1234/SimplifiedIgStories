@@ -12,10 +12,7 @@ final class LocalStoriesLoaderTests: XCTestCase {
     func test_load_deliversNotFoundErrorOnClientError() async {
         let sut = makeSUT(stubs: [.failure(anyNSError())])
         
-        do {
-            _ = try await sut.load()
-            XCTFail("Should be an error")
-        } catch {
+        await assertThrowsError(_ = try await sut.load()) { error in
             XCTAssertEqual(error as? StoriesLoaderError, .notFound)
         }
     }
@@ -24,16 +21,13 @@ final class LocalStoriesLoaderTests: XCTestCase {
         let invalidData = Data("invalid".utf8)
         let sut = makeSUT(stubs: [.success(invalidData)])
         
-        do {
-            _ = try await sut.load()
-            XCTFail("Should be an error")
-        } catch {
+        await assertThrowsError(_ = try await sut.load()) { error in
             XCTAssertEqual(error as? StoriesLoaderError, .invalidData)
         }
     }
     
     func test_load_deliversEmptyStoriesWhileReceivedEmptyJSON() async throws {
-        let sut = makeSUT(stubs: [.success(emptyStoriesData())])
+        let sut = makeSUT(stubs: [.success(emptyStoriesJSONData())])
         
         let receivedStories = try await sut.load()
         
@@ -95,7 +89,7 @@ final class LocalStoriesLoaderTests: XCTestCase {
         return sut
     }
     
-    private func emptyStoriesData() -> Data {
+    private func emptyStoriesJSONData() -> Data {
         let json: [[String: Any]] = []
         return json.toData()
     }
