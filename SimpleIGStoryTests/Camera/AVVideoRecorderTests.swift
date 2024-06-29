@@ -77,12 +77,8 @@ final class AVVideoRecorderTests: XCTestCase {
         
         sut.startRecording()
         
-        let movieFileOutput = try XCTUnwrap(device.movieFileOutput)
-        XCTAssertEqual(movieFileOutput.loggedOutputSettings.count, 1)
-        XCTAssertEqual(
-            movieFileOutput.loggedOutputSettings.last as? [String: AVVideoCodecType],
-            [AVVideoCodecKey: .hevc]
-        )
+        let outputSettings = try XCTUnwrap(device.movieFileOutput?.loggedOutputSettings as? [[String: AVVideoCodecType]])
+        XCTAssertEqual(outputSettings, [[AVVideoCodecKey: .hevc]])
     }
     
     func test_startRecording_startsWhenItIsNotRecording() {
