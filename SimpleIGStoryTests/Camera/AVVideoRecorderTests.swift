@@ -23,6 +23,7 @@ final class AVVideoRecorderTests: XCTestCase {
         sut.startRecording()
         
         assertMovieFileOutput(on: device)
+        XCTAssertEqual(device.configurationStatus, [.begin, .commit])
     }
     
     func test_startRecording_addsMovieFileOutputIfNoMovieFileOutputWhenSessionIsRunning() {
@@ -31,6 +32,7 @@ final class AVVideoRecorderTests: XCTestCase {
         sut.startRecording()
         
         assertMovieFileOutput(on: device)
+        XCTAssertEqual(device.configurationStatus, [.begin, .commit])
     }
     
     func test_startRecording_doesNotAddMovieFileOutputAgainIfItIsAlreadyAdded() {
@@ -40,6 +42,7 @@ final class AVVideoRecorderTests: XCTestCase {
         sut.startRecording()
         
         assertMovieFileOutput(on: device)
+        XCTAssertEqual(device.configurationStatus, [.begin, .commit])
     }
     
     func test_startRecording_doesNotStartRecordingWhenItIsAlreadyRecording() {
@@ -210,8 +213,12 @@ final class AVVideoRecorderTests: XCTestCase {
     }
     
     private final class VideoRecordDeviceSpy: CaptureDevice {
+        private var sessionSpy: CaptureSessionSpy { session as! CaptureSessionSpy }
         var loggedMovieFileOutputs: [AVCaptureMovieFileOutput] {
-            (session as! CaptureSessionSpy).loggedMovieFileOutputs
+            sessionSpy.loggedMovieFileOutputs
+        }
+        var configurationStatus: [CaptureSessionSpy.ConfigurationStatus] {
+            sessionSpy.loggedConfigurationStatus
         }
         var movieFileOutput: CaptureMovieFileOutputSpy? {
             loggedMovieFileOutputs.last as? CaptureMovieFileOutputSpy
