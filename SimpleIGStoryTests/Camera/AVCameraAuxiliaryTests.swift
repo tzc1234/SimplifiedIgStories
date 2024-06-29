@@ -18,7 +18,7 @@ final class AVCameraAuxiliaryTests: XCTestCase {
     }
     
     func test_focus_deliversCaptureDeviceNotFoundStatusWhenNoCaptureDeviceFound() {
-        let (sut, _) = makeSUT(isCaptureDeviceExisted: false)
+        let sut = makeSUT(captureDevice: nil)
         let statusSpy = CameraAuxiliaryStatusSpy(publisher: sut.getStatusPublisher())
         
         sut.focus(on: .zero)
@@ -79,18 +79,25 @@ final class AVCameraAuxiliaryTests: XCTestCase {
     
     private typealias CameraAuxiliaryStatusSpy = StatusSpy<CameraAuxiliaryStatus>
     
-    private func makeSUT(isCaptureDeviceExisted: Bool = true,
-                         lockForConfigurationError: Error? = nil,
+    private func makeSUT(lockForConfigurationError: Error? = nil,
                          file: StaticString = #filePath,
                          line: UInt = #line) -> (sut: AVCameraAuxiliary, captureDevice: CaptureDeviceSpy) {
         AVCaptureDevice.swizzled()
         let captureDevice = CaptureDeviceSpy(type: .video, lockForConfigurationError: lockForConfigurationError)
-        let camera = AuxiliarySupportedCameraStub(captureDevice: isCaptureDeviceExisted ? captureDevice : nil)
-        let sut = AVCameraAuxiliary(camera: camera)
+        let sut = makeSUT(captureDevice: captureDevice, file: file, line: line)
+        trackForMemoryLeaks(captureDevice, file: file, line: line)
         addTeardownBlock { AVCaptureDevice.revertSwizzled() }
+        return (sut, captureDevice)
+    }
+    
+    private func makeSUT(captureDevice: CaptureDeviceSpy?,
+                         file: StaticString = #filePath,
+                         line: UInt = #line) -> AVCameraAuxiliary {
+        let camera = AuxiliarySupportedCameraStub(captureDevice: captureDevice)
+        let sut = AVCameraAuxiliary(camera: camera)
         trackForMemoryLeaks(camera, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
-        return (sut, captureDevice)
+        return sut
     }
     
     private final class AuxiliarySupportedCameraStub: AuxiliarySupportedCamera {
