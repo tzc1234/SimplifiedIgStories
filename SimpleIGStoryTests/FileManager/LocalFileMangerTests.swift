@@ -52,9 +52,9 @@ final class LocalFileMangerTests: XCTestCase {
     
     func test_saveImage_deliversJpegConversionFailedErrorOnConversionError() {
         let sut = makeSUT()
-        let image = UIImage()
+        let emptyImage = UIImage()
         
-        XCTAssertThrowsError(try sut.saveImage(image, fileName: imageFileName())) { error in
+        XCTAssertThrowsError(try sut.saveImage(emptyImage, fileName: imageFileName())) { error in
             XCTAssertEqual(error as? FileManageableError, .jpegConversionFailed)
         }
     }
@@ -99,12 +99,12 @@ final class LocalFileMangerTests: XCTestCase {
         }
     }
     
-    func test_deleteImage_deliversDeleteFailedErrorOnDeletionError() {
+    func test_deleteImage_deliversDeleteFailedErrorOnDeletionError() throws {
         FileManager.swizzled()
         let sut = makeSUT()
         let image = UIImage.make(withColor: .red)
         
-        _ = try! sut.saveImage(image, fileName: imageFileName())
+        _ = try sut.saveImage(image, fileName: imageFileName())
         
         XCTAssertThrowsError(try sut.delete(for: imageFileURL())) { error in
             XCTAssertEqual(error as? FileManageableError, .deleteFailed)
@@ -160,7 +160,7 @@ extension FileManager: MethodSwizzling {
     
     static var instanceMethodPairs: [MethodPair] {
         [
-            .init(
+            MethodPair(
                 from: (class: FileManager.self, method: #selector(FileManager.removeItem(at:))),
                 to: (class: FileManager.self, method: #selector(FileManager.alwaysFailRemoveItem(at:)))
             )
