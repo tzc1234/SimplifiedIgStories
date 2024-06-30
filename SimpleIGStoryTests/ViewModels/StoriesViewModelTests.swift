@@ -40,6 +40,16 @@ class StoriesViewModelTests: XCTestCase {
         
         XCTAssertEqual(sut.allPortions, initialPortions)
     }
+    
+    func test_postStoryImagePortion_ignoresWhenNoCurrentUserStory() async throws {
+        let noCurrentUserStories = storiesForTest().local.filter({ !$0.user.isCurrentUser })
+        let sut = await makeSUT(stories: noCurrentUserStories)
+        let initialPortions = sut.allPortions
+        
+        sut.postStoryPortion(image: anyImage())
+        
+        XCTAssertEqual(sut.allPortions, initialPortions)
+    }
 
     func test_postStoryImagePortion_appendsImagePortionAtCurrentUserStory() async throws {
         let stories = storiesForTest().local
