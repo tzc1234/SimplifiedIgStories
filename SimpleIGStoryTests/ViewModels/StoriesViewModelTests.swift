@@ -34,21 +34,19 @@ class StoriesViewModelTests: XCTestCase {
     func test_postStoryImagePortion_ignoresWhenOnFileMangerError() async throws {
         let stories = storiesForTest().local
         let sut = await makeSUT(stories: stories, imageURLStub: { throw anyNSError() })
-        let anyImage = UIImage.make(withColor: .red)
         let initialPortions = sut.allPortions
         
-        sut.postStoryPortion(image: anyImage)
+        sut.postStoryPortion(image: anyImage())
         
         XCTAssertEqual(sut.allPortions, initialPortions)
     }
 
     func test_postStoryImagePortion_appendsImagePortionAtCurrentUserStory() async throws {
-        let stories = storiesForTest()
+        let stories = storiesForTest().local
         let appendedImageURL = URL(string: "file://appended-image.jpg")!
-        let sut = await makeSUT(stories: stories.local, imageURLStub: { appendedImageURL })
-        let anyImage = UIImage.make(withColor: .red)
+        let sut = await makeSUT(stories: stories, imageURLStub: { appendedImageURL })
         
-        sut.postStoryPortion(image: anyImage)
+        sut.postStoryPortion(image: anyImage())
         
         let expectedPortion = Portion(
             id: lastPortionId()+1,
@@ -56,19 +54,18 @@ class StoriesViewModelTests: XCTestCase {
             resourceURL: appendedImageURL,
             type: .image
         )
-        let currentUserStory = try XCTUnwrap(sut.stories.first(where: { $0.id == currentUserStoryId() }))
-        let appendedPortion = try XCTUnwrap(currentUserStory.portions.last)
+        let appendedPortion = try XCTUnwrap(sut.lastCurrentUserPortion)
         XCTAssertEqual(appendedPortion, expectedPortion)
     }
     
     func test_postStoryVideoPortion_ignoresWhenNoCurrentUserStory() async {
         let noCurrentUserStories = storiesForTest().local.filter({ !$0.user.isCurrentUser })
         let sut = await makeSUT(stories: noCurrentUserStories)
-        let video = videoForTest()
+        let videoURL = videoForTest().url
         
-        sut.postStoryPortion(videoUrl: video.url)
+        sut.postStoryPortion(videoUrl: videoURL)
         
-        XCTAssertTrue(sut.allPortions.filter({ $0.videoURL == video.url }).isEmpty)
+        XCTAssertNil(sut.allPortions.first(where: { $0.videoURL == videoURL }))
     }
     
     func test_postStoryVideoPortion_appendsVideoPortionAtCurrentUserStory() async throws {
@@ -84,8 +81,7 @@ class StoriesViewModelTests: XCTestCase {
             resourceURL: video.url,
             type: .video
         )
-        let currentUserStory = try XCTUnwrap(sut.stories.first(where: { $0.id == currentUserStoryId() }))
-        let appendedPortion = try XCTUnwrap(currentUserStory.portions.last)
+        let appendedPortion = try XCTUnwrap(sut.lastCurrentUserPortion)
         XCTAssertEqual(appendedPortion, expectedPortion)
     }
     
@@ -95,7 +91,7 @@ class StoriesViewModelTests: XCTestCase {
         let initialPortions = sut.allPortions
         
         let invalidPortionId = 99
-        sut.deletePortion(for: invalidPortionId, afterDeletion: {}, noNextPortionAfterDeletion: {})
+        sut.deletePortion(for: invalidPortionId)
         
         XCTAssertEqual(sut.allPortions, initialPortions)
     }
@@ -106,41 +102,39 @@ class StoriesViewModelTests: XCTestCase {
         let initialPortions = sut.allPortions
         
         let validPortionId = 0
-        sut.deletePortion(for: validPortionId, afterDeletion: {}, noNextPortionAfterDeletion: {})
+        sut.deletePortion(for: validPortionId)
         
         XCTAssertEqual(sut.allPortions, initialPortions)
     }
     
-    func test_deletePortion_triggersAfterDeletionAfterPortionRemovedWhenNextPortionIsExisted() async {
+    func test_deletePortion_triggersAfterDeletionClosureAfterPortionRemovedWhenNextPortionIsExisted() async {
         let stories = [hasNextPortionStory(isCurrentUser: true)]
         let sut = await makeSUT(stories: stories)
-        var hasNextPortions = sut.stories[0].portions
+        let toBeDeletedPortionId = 0
+        let expectedPortionsAfterDeletion = sut.stories[0].portions.filter { $0.id != toBeDeletedPortionId }
         
-        let willBeDeletedPortionId = 0
         var afterDeletionCallCount = 0
         var noNextPortionAfterDeletionCallCount = 0
         sut.deletePortion(
-            for: willBeDeletedPortionId,
+            for: toBeDeletedPortionId,
             afterDeletion: { afterDeletionCallCount += 1 },
             noNextPortionAfterDeletion: { noNextPortionAfterDeletionCallCount += 1 }
         )
         
-        hasNextPortions.removeFirst()
-        let expectedPortionsAfterDeletion = hasNextPortions
         XCTAssertEqual(sut.stories[0].portions, expectedPortionsAfterDeletion)
         XCTAssertEqual(afterDeletionCallCount, 1)
         XCTAssertEqual(noNextPortionAfterDeletionCallCount, 0)
     }
     
-    func test_deletePortion_triggersNoNextPortionAfterDeletionWhenNoNextPortionIsExisted() async {
+    func test_deletePortion_triggersNoNextPortionClosureAfterDeletionWhenNoNextPortionIsExisted() async {
         let stories = [noNextPortionStory(isCurrentUser: true)]
         let sut = await makeSUT(stories: stories)
         
-        let willBeDeletedPortionId = 0
+        let toBeDeletedPortionId = 0
         var afterDeletionCallCount = 0
         var noNextPortionAfterDeletionCallCount = 0
         sut.deletePortion(
-            for: willBeDeletedPortionId,
+            for: toBeDeletedPortionId,
             afterDeletion: { afterDeletionCallCount += 1 },
             noNextPortionAfterDeletion: { noNextPortionAfterDeletionCallCount += 1 }
         )
@@ -166,18 +160,18 @@ class StoriesViewModelTests: XCTestCase {
         return sut
     }
     
+    private func anyImage() -> UIImage {
+        UIImage.make(withColor: .gray)
+    }
+    
     private func videoForTest() -> (url: URL, duration: Double) {
         let videoURL = Bundle.main.url(forResource: "seaVideo", withExtension: "mp4")!
         let duration = CMTimeGetSeconds(AVAsset(url: videoURL).duration)
         return (videoURL, duration)
     }
     
-    private func currentUserStoryId() -> Int {
-        storiesForTest().model.first(where: { $0.user.isCurrentUser })!.id
-    }
-    
     private func lastPortionId() -> Int {
-        storiesForTest().model.flatMap(\.portions).max(by: { $1.id > $0.id})!.id
+        storiesForTest().model.flatMap(\.portions).max(by: { $1.id > $0.id })!.id
     }
     
     private func noNextPortionStory(isCurrentUser: Bool) -> LocalStory {
@@ -247,7 +241,15 @@ private extension StoriesViewModel {
         stories.filter { $0.user.isCurrentUser }
     }
     
+    var lastCurrentUserPortion: Portion? {
+        storiesForCurrentUser.first?.portions.last
+    }
+    
     var allPortions: [Portion] {
         stories.flatMap(\.portions)
+    }
+    
+    func deletePortion(for portionId: Int) {
+        deletePortion(for: portionId, afterDeletion: {}, noNextPortionAfterDeletion: {})
     }
 }
