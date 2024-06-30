@@ -121,6 +121,7 @@
 		BEC053842C309B0A00752932 /* CameraFlashMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC053832C309B0A00752932 /* CameraFlashMode.swift */; };
 		BEC3B4C427DE585F00B44BDF /* StoryCamViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */; };
 		BED0F60D27BBF64B00D93F15 /* StoryIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */; };
+		BED74E1B2C318D8700A34B27 /* FileManagerStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED74E1A2C318D8700A34B27 /* FileManagerStub.swift */; };
 		BEEEBBEB2B75287100EC85C7 /* FileDataClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEEBBEA2B75287100EC85C7 /* FileDataClientTests.swift */; };
 		BEEEBBED2B752E4200EC85C7 /* empty.json in Resources */ = {isa = PBXBuildFile; fileRef = BEEEBBEC2B752E4200EC85C7 /* empty.json */; };
 		BEEEBBEF2B7531FE00EC85C7 /* valid.json in Resources */ = {isa = PBXBuildFile; fileRef = BEEEBBEE2B7531FE00EC85C7 /* valid.json */; };
@@ -258,6 +259,7 @@
 		BEC053832C309B0A00752932 /* CameraFlashMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraFlashMode.swift; sourceTree = "<group>"; };
 		BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCamViewModel.swift; sourceTree = "<group>"; };
 		BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIconsView.swift; sourceTree = "<group>"; };
+		BED74E1A2C318D8700A34B27 /* FileManagerStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManagerStub.swift; sourceTree = "<group>"; };
 		BEEEBBEA2B75287100EC85C7 /* FileDataClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDataClientTests.swift; sourceTree = "<group>"; };
 		BEEEBBEC2B752E4200EC85C7 /* empty.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = empty.json; sourceTree = "<group>"; };
 		BEEEBBEE2B7531FE00EC85C7 /* valid.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = valid.json; sourceTree = "<group>"; };
@@ -493,6 +495,7 @@
 			isa = PBXGroup;
 			children = (
 				BE7BA4362BADE7700061595B /* ViewModelTestHelpers.swift */,
+				BED74E1A2C318D8700A34B27 /* FileManagerStub.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -939,6 +942,7 @@
 				BE8305082B87790E002A72C4 /* CaptureDeviceSpy.swift in Sources */,
 				BE7BA4372BADE7700061595B /* ViewModelTestHelpers.swift in Sources */,
 				BEA3ABC02BAF3AD800B60C1E /* StoryPortionViewModelTests.swift in Sources */,
+				BED74E1B2C318D8700A34B27 /* FileManagerStub.swift in Sources */,
 				BE3C5B072B88E99B00687337 /* PHPPhotoMediaStoreTests.swift in Sources */,
 				BE83D11D2B84D54C004A1FB4 /* MethodSwizzlingStub.swift in Sources */,
 				BEEEBBF12B75345400EC85C7 /* XCTestCase+AssertThrows.swift in Sources */,

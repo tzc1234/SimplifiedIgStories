@@ -153,7 +153,7 @@ class StoriesViewModelTests: XCTestCase {
     // MARK: - Helpers
     
     private func makeSUT(stories: [LocalStory] = [],
-                         imageURLStub: @escaping () throws -> URL = {URL(string: "file://any-image.jpg")! },
+                         imageURLStub: @escaping () throws -> URL = { URL(string: "file://any-image.jpg")! },
                          file: StaticString = #filePath,
                          line: UInt = #line) async -> StoriesViewModel {
         let loader = StoriesLoaderStub(stories: stories)
@@ -252,27 +252,9 @@ class StoriesViewModelTests: XCTestCase {
             stories
         }
     }
-    
-    private class FileManagerStub: FileManageable {
-        private let savedImageURL: () throws -> URL
-        
-        init(savedImageURL: @escaping () throws -> URL) {
-            self.savedImageURL = savedImageURL
-        }
-        
-        func saveImage(_ image: UIImage, fileName: String) throws -> URL {
-            try savedImageURL()
-        }
-        
-        func getImage(for url: URL) -> UIImage? {
-            nil
-        }
-        
-        func delete(for url: URL) throws {}
-    }
 }
 
-extension StoriesViewModel {
+private extension StoriesViewModel {
     var storiesForCurrentUser: [Story] {
         stories.filter { $0.user.isCurrentUser }
     }
