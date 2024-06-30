@@ -123,6 +123,20 @@ final class LocalFileMangerTests: XCTestCase {
         XCTAssertNil(receivedImage)
     }
     
+    func test_deleteImageTwice_ensuresNoSideEffectsAfterImageDeletion() throws {
+        let sut = makeSUT()
+        let image = UIImage.make(withColor: .red)
+        
+        let receivedURL = try sut.saveImage(image, fileName: imageFileName())
+        try sut.delete(for: receivedURL)
+        
+        let firstReceivedImage = sut.getImage(for: receivedURL)
+        let lastReceivedImage = sut.getImage(for: receivedURL)
+        
+        XCTAssertNil(firstReceivedImage)
+        XCTAssertNil(lastReceivedImage)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #filePath,
