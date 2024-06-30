@@ -352,23 +352,6 @@ final class StoryAnimationHandlerTests: XCTestCase {
             loggedStoryMoveDirections.append(.next)
         }
     }
-    
-    private class DummyFileManager: FileManageable {
-        func saveImage(_ image: UIImage, fileName: String) throws -> URL {
-            URL(string: "file://any-image.jpg")!
-        }
-        
-        func getImage(for url: URL) -> UIImage? {
-            nil
-        }
-        
-        func delete(for url: URL) throws {}
-    }
-
-    private class DummyMediaSaver: MediaSaver {
-        func saveImageData(_ data: Data) async throws {}
-        func saveVideo(by url: URL) async throws {}
-    }
 }
 
 private extension StoryAnimationHandler {
