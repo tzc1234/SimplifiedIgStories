@@ -71,11 +71,11 @@ class StoriesViewModelTests: XCTestCase {
     func test_postStoryVideoPortion_ignoresWhenNoCurrentUserStory() async {
         let noCurrentUserStories = storiesForTest().local.filter({ !$0.user.isCurrentUser })
         let sut = await makeSUT(stories: noCurrentUserStories)
-        let videoURL = videoForTest().url
+        let initialPortions = sut.allPortions
         
-        sut.postStoryPortion(videoUrl: videoURL)
+        sut.postStoryPortion(videoUrl: videoForTest().url)
         
-        XCTAssertNil(sut.allPortions.first(where: { $0.videoURL == videoURL }))
+        XCTAssertEqual(sut.allPortions, initialPortions)
     }
     
     func test_postStoryVideoPortion_appendsVideoPortionAtCurrentUserStory() async throws {
