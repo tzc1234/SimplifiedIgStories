@@ -118,9 +118,7 @@ final class CaptureDeviceSpy: AVCaptureDevice {
     override func lockForConfiguration() throws {
         try super.lockForConfiguration()
         
-        if let error = lockForConfigurationError {
-            throw error
-        }
+        try lockForConfigurationError.map { throw $0 }
         
         loggedLockStatuses.append(.locked)
     }
