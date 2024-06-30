@@ -122,6 +122,7 @@
 		BEC3B4C427DE585F00B44BDF /* StoryCamViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */; };
 		BED0F60D27BBF64B00D93F15 /* StoryIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */; };
 		BED74E1B2C318D8700A34B27 /* FileManagerStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED74E1A2C318D8700A34B27 /* FileManagerStub.swift */; };
+		BED74E1D2C318E0200A34B27 /* StoriesLoaderStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED74E1C2C318E0200A34B27 /* StoriesLoaderStub.swift */; };
 		BEEEBBEB2B75287100EC85C7 /* FileDataClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEEBBEA2B75287100EC85C7 /* FileDataClientTests.swift */; };
 		BEEEBBED2B752E4200EC85C7 /* empty.json in Resources */ = {isa = PBXBuildFile; fileRef = BEEEBBEC2B752E4200EC85C7 /* empty.json */; };
 		BEEEBBEF2B7531FE00EC85C7 /* valid.json in Resources */ = {isa = PBXBuildFile; fileRef = BEEEBBEE2B7531FE00EC85C7 /* valid.json */; };
@@ -260,6 +261,7 @@
 		BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCamViewModel.swift; sourceTree = "<group>"; };
 		BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIconsView.swift; sourceTree = "<group>"; };
 		BED74E1A2C318D8700A34B27 /* FileManagerStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManagerStub.swift; sourceTree = "<group>"; };
+		BED74E1C2C318E0200A34B27 /* StoriesLoaderStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesLoaderStub.swift; sourceTree = "<group>"; };
 		BEEEBBEA2B75287100EC85C7 /* FileDataClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDataClientTests.swift; sourceTree = "<group>"; };
 		BEEEBBEC2B752E4200EC85C7 /* empty.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = empty.json; sourceTree = "<group>"; };
 		BEEEBBEE2B7531FE00EC85C7 /* valid.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = valid.json; sourceTree = "<group>"; };
@@ -496,6 +498,7 @@
 			children = (
 				BE7BA4362BADE7700061595B /* ViewModelTestHelpers.swift */,
 				BED74E1A2C318D8700A34B27 /* FileManagerStub.swift */,
+				BED74E1C2C318E0200A34B27 /* StoriesLoaderStub.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -929,6 +932,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BED74E1D2C318E0200A34B27 /* StoriesLoaderStub.swift in Sources */,
 				BE38F7B02B83672400F42C71 /* StatusSpy.swift in Sources */,
 				BEBE9C382BA059AF00C9C093 /* LocalFileMangerTests.swift in Sources */,
 				BEEEBBEB2B75287100EC85C7 /* FileDataClientTests.swift in Sources */,

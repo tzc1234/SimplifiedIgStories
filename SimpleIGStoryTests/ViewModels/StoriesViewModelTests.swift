@@ -240,18 +240,6 @@ class StoriesViewModelTests: XCTestCase {
         let user = User(id: id, name: name, avatarURL: avatarURL, isCurrentUser: isCurrentUser)
         return (local, user)
     }
-    
-    private class StoriesLoaderStub: StoriesLoader {
-        private let stories: [LocalStory]
-        
-        init(stories: [LocalStory]) {
-            self.stories = stories
-        }
-        
-        func load() async throws -> [LocalStory] {
-            stories
-        }
-    }
 }
 
 private extension StoriesViewModel {
