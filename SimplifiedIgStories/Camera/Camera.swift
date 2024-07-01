@@ -8,6 +8,12 @@
 import AVKit
 import Combine
 
+enum CameraStatus: Equatable {
+    case sessionStarted
+    case sessionStopped
+    case cameraSwitched(position: CameraPosition)
+}
+
 protocol Camera {
     var cameraPosition: CameraPosition { get }
     var videoPreviewLayer: CALayer { get }
