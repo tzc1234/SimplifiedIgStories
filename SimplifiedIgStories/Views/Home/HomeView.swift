@@ -13,11 +13,12 @@ struct HomeView: View {
     @ObservedObject var storiesViewModel: StoriesViewModel
     let getStoryIconsView: () -> StoryIconsView
     let getStoryContainer: () -> StoryContainer
+    let getStoryCameraView: () -> StoryCameraView
     
     var body: some View {
         ZStack {
             HStack(spacing: 0.0) {
-                storyCamView
+                storyCameraView
                 
                 NavigationView {
                     VStack {
@@ -40,24 +41,31 @@ struct HomeView: View {
         .task {
             await storiesViewModel.fetchStories()
         }
+        .onAppear {
+            handler.postImageAction = { image in
+                storiesViewModel.postStoryPortion(image: image)
+                hideStoryCamView()
+            }
+            
+            handler.postVideoAction = { url in
+                storiesViewModel.postStoryPortion(videoUrl: url)
+                hideStoryCamView()
+            }
+            
+            handler.tapStoryCameraCloseAction = {
+                hideStoryCamView()
+            }
+        }
     }
 }
 
 // MARK: components
 extension HomeView {
-    private var storyCamView: some View {
+    private var storyCameraView: some View {
         ZStack {
             if handler.showStoryCamView {
-                StoryCameraView { image in
-                    storiesViewModel.postStoryPortion(image: image)
-                    hideStoryCamView()
-                } postVideoAction: { url in
-                    storiesViewModel.postStoryPortion(videoUrl: url)
-                    hideStoryCamView()
-                } tapCloseAction: {
-                    hideStoryCamView()
-                }
-                .frame(width: .screenWidth)
+                getStoryCameraView()
+                    .frame(width: .screenWidth)
             }
         }
         .ignoresSafeArea()
@@ -96,6 +104,10 @@ struct HomeView_Previews: PreviewProvider {
                     animationHandler: .preview,
                     getStoryView: { _ in .preview }
                 )
-        })
+            }, 
+            getStoryCameraView: {
+                StoryCameraView(vm: StoryCameraViewModel(camera: DefaultCamera.dummy))
+            }
+        )
     }
 }

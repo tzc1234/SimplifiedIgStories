@@ -17,6 +17,10 @@ final class HomeUIActionHandler: ObservableObject {
     var storyIconFrameDict: [StoryId: IconFrame] = [:]
     @Published private(set) var currentIconFrame: IconFrame = .zero
     
+    var postImageAction: ((UIImage) -> Void)?
+    var postVideoAction: ((URL) -> Void)?
+    var tapStoryCameraCloseAction: (() -> Void)?
+    
     func showStoryContainer(storyId: Int?) {
         updateCurrentIconFrame(storyId: storyId)
         withAnimation(.easeInOut(duration: 0.3)) {

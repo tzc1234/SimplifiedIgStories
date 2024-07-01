@@ -24,4 +24,15 @@ final class AppComponentsFactory {
     )
     
     private(set) lazy var storiesAnimationHandler = StoriesAnimationHandler(storiesHolder: storiesViewModel)
+    
+    private let cameraCore = AVCameraCore()
+    private lazy var photoTaker = AVPhotoTaker(device: cameraCore)
+    private lazy var videoRecorder = AVVideoRecorder(device: cameraCore)
+    private lazy var cameraAuxiliary = AVCameraAuxiliary(camera: cameraCore)
+    private(set) lazy var camera = DefaultCamera(
+        cameraCore: cameraCore,
+        photoTaker: photoTaker,
+        videoRecorder: videoRecorder,
+        cameraAuxiliary: cameraAuxiliary
+    )
 }

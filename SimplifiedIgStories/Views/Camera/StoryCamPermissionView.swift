@@ -83,36 +83,7 @@ struct StoryCamPermissionView: View {
 }
 
 struct PermissionView_Previews: PreviewProvider {
-    class DummyPhotoTaker: PhotoTaker {
-        func getStatusPublisher() -> AnyPublisher<PhotoTakerStatus, Never> {
-            Empty<PhotoTakerStatus, Never>().eraseToAnyPublisher()
-        }
-        
-        func takePhoto(on mode: CameraFlashMode) {}
-    }
-    
-    class DummyVideoRecorder: VideoRecorder {
-        func getStatusPublisher() -> AnyPublisher<VideoRecorderStatus, Never> {
-            Empty<VideoRecorderStatus, Never>().eraseToAnyPublisher()
-        }
-        
-        func startRecording() {}
-        func stopRecording() {}
-    }
-    
-    class DummyCameraAuxiliary: CameraAuxiliary {
-        func focus(on point: CGPoint) {}
-        func zoom(to factor: CGFloat) {}
-    }
-    
-    static let camera = DefaultCamera(
-        cameraCore: AVCameraCore(),
-        photoTaker: DummyPhotoTaker(),
-        videoRecorder: DummyVideoRecorder(),
-        cameraAuxiliary: DummyCameraAuxiliary()
-    )
-    
     static var previews: some View {
-        StoryCamPermissionView(storyCamViewModel: StoryCameraViewModel(camera: camera))
+        StoryCamPermissionView(storyCamViewModel: StoryCameraViewModel(camera: DefaultCamera.dummy))
     }
 }

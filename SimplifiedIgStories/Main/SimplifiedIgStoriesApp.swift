@@ -60,6 +60,9 @@ struct SimplifiedIgStoriesApp: App {
                             )
                         }
                     )
+                }, 
+                getStoryCameraView: {
+                    StoryCameraView(vm: StoryCameraViewModel(camera: factory.camera))
                 }
             )
         }

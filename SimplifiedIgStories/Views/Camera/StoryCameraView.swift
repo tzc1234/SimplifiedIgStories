@@ -8,34 +8,8 @@
 import SwiftUI
 
 struct StoryCameraView: View {
-    @StateObject private var vm: StoryCameraViewModel
-    
-    let postImageAction: ((UIImage) -> Void)
-    let postVideoAction: ((URL) -> Void)
-    let tapCloseAction: (() -> Void)
-    
-    init(postImageAction: @escaping (UIImage) -> Void,
-         postVideoAction: @escaping (URL) -> Void,
-         tapCloseAction: @escaping () -> Void) {
-        let camera = AVCameraCore()
-        let photoTaker = AVPhotoTaker(device: camera)
-        let videoRecorder = AVVideoRecorder(device: camera)
-        let cameraAuxiliary = AVCameraAuxiliary(camera: camera)
-        
-        let fullFunctionsCamera = DefaultCamera(
-            cameraCore: camera,
-            photoTaker: photoTaker,
-            videoRecorder: videoRecorder,
-            cameraAuxiliary: cameraAuxiliary
-        )
-        
-        let vm = StoryCameraViewModel(camera: fullFunctionsCamera)
-        self._vm = StateObject(wrappedValue: vm)
-        
-        self.postImageAction = postImageAction
-        self.postVideoAction = postVideoAction
-        self.tapCloseAction = tapCloseAction
-    }
+    @EnvironmentObject private var actionHandler: HomeUIActionHandler
+    @ObservedObject var vm: StoryCameraViewModel
     
     var body: some View {
         ZStack {
@@ -77,13 +51,13 @@ struct StoryCameraView: View {
                 StoryPreview(uiImage: uiImage) {
                     vm.showPhotoPreview = false
                 } postBtnAction: {
-                    postImageAction(uiImage)
+                    actionHandler.postImageAction?(uiImage)
                 }
             } else if vm.showVideoPreview, let url = vm.lastVideoUrl {
                 StoryPreview(videoUrl: url) {
                     vm.showVideoPreview = false
                 } postBtnAction: {
-                    postVideoAction(url)
+                    actionHandler.postVideoAction?(url)
                 }
             }
         }
@@ -104,7 +78,7 @@ struct StoryCameraView: View {
 
 struct StoryCamView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryCameraView(postImageAction: {_ in }, postVideoAction: {_ in }, tapCloseAction: {})
+        StoryCameraView(vm: StoryCameraViewModel(camera: DefaultCamera.dummy))
     }
 }
 
@@ -112,7 +86,7 @@ struct StoryCamView_Previews: PreviewProvider {
 extension StoryCameraView {
     private var closeButton: some View {
         Button{
-            tapCloseAction()
+            actionHandler.tapStoryCameraCloseAction?()
         } label: {
             ZStack {
                 Color.clear.frame(width: 45, height: 45)
