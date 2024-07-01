@@ -22,7 +22,7 @@ struct StoryCamView: View {
         let videoRecorder = AVVideoRecorder(device: camera)
         let cameraAuxiliary = AVCameraAuxiliary(camera: camera)
         
-        let fullFunctionsCamera = FullFunctionsCamera(
+        let fullFunctionsCamera = DefaultCamera(
             cameraCore: camera,
             photoTaker: photoTaker,
             videoRecorder: videoRecorder,

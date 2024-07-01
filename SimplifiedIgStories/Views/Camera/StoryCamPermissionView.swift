@@ -105,7 +105,7 @@ struct PermissionView_Previews: PreviewProvider {
         func zoom(to factor: CGFloat) {}
     }
     
-    static let camera = FullFunctionsCamera(
+    static let camera = DefaultCamera(
         cameraCore: AVCameraCore(),
         photoTaker: DummyPhotoTaker(),
         videoRecorder: DummyVideoRecorder(),

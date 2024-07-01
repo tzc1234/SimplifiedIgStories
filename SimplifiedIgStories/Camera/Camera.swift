@@ -30,17 +30,14 @@ protocol Camera {
     func startSession()
     func stopSession()
     func switchCamera()
-    
     func takePhoto(on flashMode: CameraFlashMode)
-    
     func startRecording()
     func stopRecording()
-    
     func focus(on point: CGPoint)
     func zoom(to factor: CGFloat)
 }
 
-final class FullFunctionsCamera: Camera {
+final class DefaultCamera: Camera {
     private let statusPublisher = PassthroughSubject<CameraStatus, Never>()
     private var subscriptions = Set<AnyCancellable>()
     
@@ -49,7 +46,10 @@ final class FullFunctionsCamera: Camera {
     private let videoRecorder: VideoRecorder
     private let cameraAuxiliary: CameraAuxiliary
     
-    init(cameraCore: CameraCore, photoTaker: PhotoTaker, videoRecorder: VideoRecorder, cameraAuxiliary: CameraAuxiliary) {
+    init(cameraCore: CameraCore, 
+         photoTaker: PhotoTaker,
+         videoRecorder: VideoRecorder,
+         cameraAuxiliary: CameraAuxiliary) {
         self.cameraCore = cameraCore
         self.photoTaker = photoTaker
         self.videoRecorder = videoRecorder
@@ -65,7 +65,7 @@ final class FullFunctionsCamera: Camera {
     }
 }
 
-extension FullFunctionsCamera {
+extension DefaultCamera {
     var cameraPosition: CameraPosition {
         cameraCore.cameraPosition
     }
@@ -105,7 +105,7 @@ extension FullFunctionsCamera {
     }
 }
 
-extension FullFunctionsCamera {
+extension DefaultCamera {
     func takePhoto(on flashMode: CameraFlashMode) {
         photoTaker.takePhoto(on: flashMode)
     }
@@ -129,7 +129,7 @@ extension FullFunctionsCamera {
     }
 }
 
-extension FullFunctionsCamera {
+extension DefaultCamera {
     func startRecording() {
         videoRecorder.startRecording()
     }
@@ -161,7 +161,7 @@ extension FullFunctionsCamera {
     }
 }
 
-extension FullFunctionsCamera {
+extension DefaultCamera {
     func focus(on point: CGPoint) {
         cameraAuxiliary.focus(on: point)
     }
