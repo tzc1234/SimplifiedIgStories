@@ -165,49 +165,49 @@ final class StoryPortionViewModelTests: XCTestCase {
     private func anyUIImage() -> UIImage {
         UIImage.make(withColor: .red)
     }
-}
+    
+    private final class FileManagerSpy: FileManageable {
+        private(set) var loggedURLsForDeletion = [URL]()
+        private let getImageStub: (URL) -> UIImage?
+        
+        init(getImageStub: @escaping (URL) -> UIImage? = { _ in nil }) {
+            self.getImageStub = getImageStub
+        }
+        
+        func saveImage(_ image: UIImage, fileName: String) throws -> URL {
+            anyImageURL()
+        }
+        
+        func getImage(for url: URL) -> UIImage? {
+            getImageStub(url)
+        }
+        
+        func delete(for url: URL) throws {
+            loggedURLsForDeletion.append(url)
+        }
+    }
 
-final class FileManagerSpy: FileManageable {
-    private(set) var loggedURLsForDeletion = [URL]()
-    private let getImageStub: (URL) -> UIImage?
-    
-    init(getImageStub: @escaping (URL) -> UIImage? = { _ in nil }) {
-        self.getImageStub = getImageStub
-    }
-    
-    func saveImage(_ image: UIImage, fileName: String) throws -> URL {
-        anyImageURL()
-    }
-    
-    func getImage(for url: URL) -> UIImage? {
-        getImageStub(url)
-    }
-    
-    func delete(for url: URL) throws {
-        loggedURLsForDeletion.append(url)
-    }
-}
-
-final class MediaSaverSpy: MediaSaver {
-    private(set) var saveImageDataCallCount = 0
-    private(set) var saveVideoCallCount = 0
-    
-    private let saveImageDataStub: () async throws -> Void
-    private let saveVideoStub: () async throws -> Void
-    
-    init(saveImageDataStub: @escaping () async throws -> Void = {}, 
-         saveVideoStub: @escaping () async throws -> Void = {}) {
-        self.saveImageDataStub = saveImageDataStub
-        self.saveVideoStub = saveVideoStub
-    }
-    
-    func saveImageData(_ data: Data) async throws {
-        saveImageDataCallCount += 1
-        try await saveImageDataStub()
-    }
-    
-    func saveVideo(by url: URL) async throws {
-        saveVideoCallCount += 1
-        try await saveVideoStub()
+    private final class MediaSaverSpy: MediaSaver {
+        private(set) var saveImageDataCallCount = 0
+        private(set) var saveVideoCallCount = 0
+        
+        private let saveImageDataStub: () async throws -> Void
+        private let saveVideoStub: () async throws -> Void
+        
+        init(saveImageDataStub: @escaping () async throws -> Void = {},
+             saveVideoStub: @escaping () async throws -> Void = {}) {
+            self.saveImageDataStub = saveImageDataStub
+            self.saveVideoStub = saveVideoStub
+        }
+        
+        func saveImageData(_ data: Data) async throws {
+            saveImageDataCallCount += 1
+            try await saveImageDataStub()
+        }
+        
+        func saveVideo(by url: URL) async throws {
+            saveVideoCallCount += 1
+            try await saveVideoStub()
+        }
     }
 }
