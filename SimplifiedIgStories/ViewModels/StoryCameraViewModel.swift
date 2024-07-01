@@ -46,7 +46,7 @@ import Combine
             }
         }
     }
-    private(set) var lastVideoUrl: URL?
+    private(set) var lastVideoURL: URL?
     @Published var showVideoPreview = false {
         didSet {
             if showVideoPreview {
@@ -164,7 +164,7 @@ extension StoryCameraViewModel {
                 case .videoProcessFailure:
                     break
                 case .processedVideo(let videoURL):
-                    lastVideoUrl = videoURL
+                    lastVideoURL = videoURL
                     showVideoPreview = true
                 case .addMovieFileOutputFailure:
                     break

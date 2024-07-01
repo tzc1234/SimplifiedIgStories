@@ -53,7 +53,7 @@ struct StoryCameraView: View {
                 } postBtnAction: {
                     actionHandler.postImageAction?(uiImage)
                 }
-            } else if viewModel.showVideoPreview, let url = viewModel.lastVideoUrl {
+            } else if viewModel.showVideoPreview, let url = viewModel.lastVideoURL {
                 StoryPreview(videoUrl: url) {
                     viewModel.showVideoPreview = false
                 } postBtnAction: {

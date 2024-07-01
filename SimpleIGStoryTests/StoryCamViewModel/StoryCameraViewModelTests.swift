@@ -186,7 +186,7 @@ class StoryCameraViewModelTests: XCTestCase {
         let (sut, _) = makeSUT()
         
         XCTAssertEqual(sut.videoRecordingStatus, .none, "videoRecordingStatus")
-        XCTAssertNil(sut.lastVideoUrl, "lastVideoUrl")
+        XCTAssertNil(sut.lastVideoURL, "lastVideoURL")
         XCTAssertFalse(sut.showVideoPreview, "showVideoPreview")
     }
     
@@ -217,7 +217,7 @@ class StoryCameraViewModelTests: XCTestCase {
         wait(for: [startVideoRecordingStatusExpectation], timeout: 0.1)
         
         XCTAssertEqual(sut.videoRecordingStatus, .start, "videoRecordingStatus")
-        XCTAssertNil(sut.lastVideoUrl, "lastVideoUrl")
+        XCTAssertNil(sut.lastVideoURL, "lastVideoURL")
         XCTAssertFalse(sut.showVideoPreview, "showVideoPreview")
         
         sut.videoRecordingStatus = .stop
@@ -225,7 +225,7 @@ class StoryCameraViewModelTests: XCTestCase {
         wait(for: [stopVideoRecordingStatusExpectation], timeout: 0.1)
         
         XCTAssertEqual(sut.videoRecordingStatus, .stop, "videoRecordingStatus")
-        XCTAssertNil(sut.lastVideoUrl, "lastVideoUrl")
+        XCTAssertNil(sut.lastVideoURL, "lastVideoURL")
         XCTAssertFalse(sut.showVideoPreview, "showVideoPreview")
         
         videoRecorder.finishVideoProcessing()
@@ -233,9 +233,9 @@ class StoryCameraViewModelTests: XCTestCase {
         wait(for: [noneVideoRecordingStatusExpectation], timeout: 0.1)
         
         XCTAssertEqual(sut.videoRecordingStatus, .none, "videoRecordingStatus")
-        XCTAssertNotNil(sut.lastVideoUrl, "lastVideoUrl")
+        XCTAssertNotNil(sut.lastVideoURL, "lastVideoURL")
         XCTAssertTrue(sut.showVideoPreview, "showVideoPreview")
-        XCTAssertEqual(sut.lastVideoUrl, videoRecorder.lastVideoUrl, "vm.lastVideoUrl == camera.lastVideoUrl")
+        XCTAssertEqual(sut.lastVideoURL, videoRecorder.lastVideoUrl, "vm.lastVideoURL == camera.lastVideoURL")
         
         XCTAssertEqual(videoRecorder.startVideoRecordingCallCount, 1, "startVideoRecordingCallCount")
         XCTAssertEqual(videoRecorder.stopVideoRecordingCallCount, 1, "stopVideoRecordingCallCount")
