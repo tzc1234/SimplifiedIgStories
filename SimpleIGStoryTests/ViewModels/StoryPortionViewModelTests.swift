@@ -53,7 +53,7 @@ final class StoryPortionViewModelTests: XCTestCase {
     }
     
     func test_saveImageMedia_showsNoPermissionMessageOnNoPermissionError() async {
-        let fileManager = FileManagerSpy(getImageStub: { _ in self.anyUIImage() })
+        let fileManager = FileManagerSpy(getImageStub: { _ in anyUIImage() })
         let mediaSaver = MediaSaverSpy(saveImageDataStub: { throw MediaSaverError.noPermission })
         let sut = makeSUT(
             portion: makePortion(resourceURL: anyImageURL(), type: .image),
@@ -68,7 +68,7 @@ final class StoryPortionViewModelTests: XCTestCase {
     }
     
     func test_saveImageMedia_showsSavedFailedMessageOnOtherError() async {
-        let fileManager = FileManagerSpy(getImageStub: { _ in self.anyUIImage() })
+        let fileManager = FileManagerSpy(getImageStub: { _ in anyUIImage() })
         let mediaSaver = MediaSaverSpy(saveImageDataStub: { throw anyNSError() })
         let sut = makeSUT(
             portion: makePortion(resourceURL: anyImageURL(), type: .image),
@@ -83,7 +83,7 @@ final class StoryPortionViewModelTests: XCTestCase {
     }
     
     func test_saveImageMedia_savesImageSuccessfully() async {
-        let fileManager = FileManagerSpy(getImageStub: { _ in self.anyUIImage() })
+        let fileManager = FileManagerSpy(getImageStub: { _ in anyUIImage() })
         let mediaSaver = MediaSaverSpy()
         let sut = makeSUT(
             portion: makePortion(resourceURL: anyImageURL(), type: .image),
@@ -99,7 +99,7 @@ final class StoryPortionViewModelTests: XCTestCase {
     }
     
     func test_saveVideoMedia_showsNoPermissionMessageOnNoPermissionError() async {
-        let fileManager = FileManagerSpy(getImageStub: { _ in self.anyUIImage() })
+        let fileManager = FileManagerSpy(getImageStub: { _ in anyUIImage() })
         let mediaSaver = MediaSaverSpy(saveVideoStub: { throw MediaSaverError.noPermission })
         let sut = makeSUT(
             portion: makePortion(resourceURL: anyVideoURL(), type: .video),
@@ -114,7 +114,7 @@ final class StoryPortionViewModelTests: XCTestCase {
     }
     
     func test_saveVideoMedia_showsSavedFailedMessageOnOtherError() async {
-        let fileManager = FileManagerSpy(getImageStub: { _ in self.anyUIImage() })
+        let fileManager = FileManagerSpy(getImageStub: { _ in anyUIImage() })
         let mediaSaver = MediaSaverSpy(saveVideoStub: { throw anyNSError() })
         let sut = makeSUT(
             portion: makePortion(resourceURL: anyVideoURL(), type: .video),
@@ -129,7 +129,7 @@ final class StoryPortionViewModelTests: XCTestCase {
     }
     
     func test_saveVideoMedia_savesVideoSuccessfully() async {
-        let fileManager = FileManagerSpy(getImageStub: { _ in self.anyUIImage() })
+        let fileManager = FileManagerSpy(getImageStub: { _ in anyUIImage() })
         let mediaSaver = MediaSaverSpy()
         let sut = makeSUT(
             portion: makePortion(resourceURL: anyVideoURL(), type: .video),
@@ -160,10 +160,6 @@ final class StoryPortionViewModelTests: XCTestCase {
             performAfterOnePointFiveSecond: performAfterOnePointFiveSecond
         )
         return sut
-    }
-    
-    private func anyUIImage() -> UIImage {
-        UIImage.make(withColor: .red)
     }
     
     private final class FileManagerSpy: FileManageable {

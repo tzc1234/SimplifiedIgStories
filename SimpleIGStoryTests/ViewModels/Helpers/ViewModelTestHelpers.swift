@@ -5,7 +5,7 @@
 //  Created by Tsz-Lung on 22/03/2024.
 //
 
-import Foundation
+import UIKit
 @testable import Simple_IG_Story
 
 func makePortion(id: Int = 0, resourceURL: URL? = nil, type: ResourceType = .image) -> Portion {
@@ -24,4 +24,8 @@ func makeStory(id: Int = 0, portions: [Portion] = [], isCurrentUser: Bool = fals
         ),
         portions: portions
     )
+}
+
+func anyUIImage() -> UIImage {
+    UIImage.make(withColor: .gray)
 }

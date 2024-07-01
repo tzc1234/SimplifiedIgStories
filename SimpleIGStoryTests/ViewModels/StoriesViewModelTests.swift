@@ -36,7 +36,7 @@ class StoriesViewModelTests: XCTestCase {
         let sut = await makeSUT(stories: stories, imageURLStub: { throw anyNSError() })
         let initialPortions = sut.allPortions
         
-        sut.postStoryPortion(image: anyImage())
+        sut.postStoryPortion(image: anyUIImage())
         
         XCTAssertEqual(sut.allPortions, initialPortions)
     }
@@ -46,7 +46,7 @@ class StoriesViewModelTests: XCTestCase {
         let sut = await makeSUT(stories: noCurrentUserStories)
         let initialPortions = sut.allPortions
         
-        sut.postStoryPortion(image: anyImage())
+        sut.postStoryPortion(image: anyUIImage())
         
         XCTAssertEqual(sut.allPortions, initialPortions)
     }
@@ -56,7 +56,7 @@ class StoriesViewModelTests: XCTestCase {
         let appendedImageURL = URL(string: "file://appended-image.jpg")!
         let sut = await makeSUT(stories: stories, imageURLStub: { appendedImageURL })
         
-        sut.postStoryPortion(image: anyImage())
+        sut.postStoryPortion(image: anyUIImage())
         
         let expectedPortion = Portion(
             id: lastPortionId()+1,
@@ -168,10 +168,6 @@ class StoriesViewModelTests: XCTestCase {
         trackForMemoryLeaks(fileManager, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
         return sut
-    }
-    
-    private func anyImage() -> UIImage {
-        UIImage.make(withColor: .gray)
     }
     
     private func videoForTest() -> (url: URL, duration: Double) {
