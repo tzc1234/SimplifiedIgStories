@@ -62,7 +62,7 @@ struct SimplifiedIgStoriesApp: App {
                     )
                 }, 
                 getStoryCameraView: {
-                    StoryCameraView(vm: StoryCameraViewModel(camera: factory.camera))
+                    StoryCameraView(viewModel: StoryCameraViewModel(camera: factory.camera))
                 }
             )
         }

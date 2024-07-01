@@ -106,7 +106,7 @@ struct HomeView_Previews: PreviewProvider {
                 )
             }, 
             getStoryCameraView: {
-                StoryCameraView(vm: StoryCameraViewModel(camera: DefaultCamera.dummy))
+                StoryCameraView(viewModel: StoryCameraViewModel(camera: DefaultCamera.dummy))
             }
         )
     }

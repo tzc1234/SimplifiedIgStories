@@ -9,11 +9,7 @@ import SwiftUI
 import Combine
 
 struct StoryCamPermissionView: View {
-    @ObservedObject private var vm: StoryCameraViewModel
-    
-    init(storyCamViewModel: StoryCameraViewModel) {
-        self.vm = storyCamViewModel
-    }
+    @ObservedObject var viewModel: StoryCameraViewModel
     
     var body: some View {
         VStack(alignment: .center, spacing: 4.0) {
@@ -39,20 +35,20 @@ struct StoryCamPermissionView: View {
                 Button {
                     gotoSettings()
                 } label: {
-                    Text(vm.isCamPermGranted ? "✓ Camera access enabled" : "Enable Camera Access")
+                    Text(viewModel.isCamPermGranted ? "✓ Camera access enabled" : "Enable Camera Access")
                         .font(.headline)
                         .fontWeight(.semibold)
                 }
-                .disabled(vm.isCamPermGranted)
+                .disabled(viewModel.isCamPermGranted)
                 
                 Button {
                     gotoSettings()
                 } label: {
-                    Text(vm.isMicrophonePermGranted ? "✓ Microphone access enabled" : "Enable Microphone Access")
+                    Text(viewModel.isMicrophonePermGranted ? "✓ Microphone access enabled" : "Enable Microphone Access")
                         .font(.headline)
                         .fontWeight(.semibold)
                 }
-                .disabled(vm.isMicrophonePermGranted)
+                .disabled(viewModel.isMicrophonePermGranted)
             }
 
             Group {
@@ -84,6 +80,6 @@ struct StoryCamPermissionView: View {
 
 struct PermissionView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryCamPermissionView(storyCamViewModel: StoryCameraViewModel(camera: DefaultCamera.dummy))
+        StoryCamPermissionView(viewModel: StoryCameraViewModel(camera: DefaultCamera.dummy))
     }
 }

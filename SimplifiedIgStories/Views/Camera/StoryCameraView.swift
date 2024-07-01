@@ -9,14 +9,14 @@ import SwiftUI
 
 struct StoryCameraView: View {
     @EnvironmentObject private var actionHandler: HomeUIActionHandler
-    @ObservedObject var vm: StoryCameraViewModel
+    @ObservedObject var viewModel: StoryCameraViewModel
     
     var body: some View {
         ZStack {
-            if vm.arePermissionsGranted {
-                AVCaptureVideoPreviewRepresentable(storyCamViewModel: vm)
+            if viewModel.arePermissionsGranted {
+                AVCaptureVideoPreviewRepresentable(storyCamViewModel: viewModel)
             } else {
-                StoryCamPermissionView(storyCamViewModel: vm)
+                StoryCamPermissionView(viewModel: viewModel)
             }
             
             VStack(alignment: .leading, spacing: 0) {
@@ -47,15 +47,15 @@ struct StoryCameraView: View {
             }
             .padding(.vertical, 20)
             
-            if vm.showPhotoPreview, let uiImage = vm.lastTakenImage {
+            if viewModel.showPhotoPreview, let uiImage = viewModel.lastTakenImage {
                 StoryPreview(uiImage: uiImage) {
-                    vm.showPhotoPreview = false
+                    viewModel.showPhotoPreview = false
                 } postBtnAction: {
                     actionHandler.postImageAction?(uiImage)
                 }
-            } else if vm.showVideoPreview, let url = vm.lastVideoUrl {
+            } else if viewModel.showVideoPreview, let url = viewModel.lastVideoUrl {
                 StoryPreview(videoUrl: url) {
-                    vm.showVideoPreview = false
+                    viewModel.showVideoPreview = false
                 } postBtnAction: {
                     actionHandler.postVideoAction?(url)
                 }
@@ -63,11 +63,11 @@ struct StoryCameraView: View {
         }
         .statusBar(hidden: true)
         .onAppear {
-            vm.checkPermissions()
+            viewModel.checkPermissions()
         }
-        .onChange(of: vm.arePermissionsGranted) { isGranted in
+        .onChange(of: viewModel.arePermissionsGranted) { isGranted in
             if isGranted {
-                vm.startSession()
+                viewModel.startSession()
             }
         }
         .onDisappear {
@@ -78,7 +78,7 @@ struct StoryCameraView: View {
 
 struct StoryCamView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryCameraView(vm: StoryCameraViewModel(camera: DefaultCamera.dummy))
+        StoryCameraView(viewModel: StoryCameraViewModel(camera: DefaultCamera.dummy))
     }
 }
 
@@ -98,11 +98,11 @@ extension StoryCameraView {
             }
             .contentShape(Rectangle())
         }
-        .opacity(vm.videoRecordingStatus == .start ? 0 : 1)
+        .opacity(viewModel.videoRecordingStatus == .start ? 0 : 1)
     }
     
     @ViewBuilder private var flashButton: some View {
-        if vm.arePermissionsGranted {
+        if viewModel.arePermissionsGranted {
             Button {
                 toggleFlashMode()
             } label: {
@@ -115,30 +115,30 @@ extension StoryCameraView {
                         .frame(width: 30, height: 30)
                 }
             }
-            .opacity(vm.videoRecordingStatus == .start ? 0 : 1)
+            .opacity(viewModel.videoRecordingStatus == .start ? 0 : 1)
         }
     }
     
     @ViewBuilder private var videoRecordButton: some View {
-        if vm.arePermissionsGranted {
+        if viewModel.arePermissionsGranted {
             VideoRecordButton() {
-                vm.shouldPhotoTake = true
+                viewModel.shouldPhotoTake = true
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    vm.shouldPhotoTake = false
+                    viewModel.shouldPhotoTake = false
                 }
             } longPressingAction: { isPressing in
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    vm.videoRecordingStatus = isPressing ? .start : .stop
+                    viewModel.videoRecordingStatus = isPressing ? .start : .stop
                 }
             }
-            .allowsHitTesting(vm.enableVideoRecordBtn)
+            .allowsHitTesting(viewModel.enableVideoRecordBtn)
         }
     }
     
     @ViewBuilder private var changeCameraButton: some View {
-        if vm.arePermissionsGranted {
+        if viewModel.arePermissionsGranted {
             Button {
-                vm.switchCamera()
+                viewModel.switchCamera()
             } label: {
                 Image(systemName: "arrow.triangle.2.circlepath")
                     .resizable()
@@ -146,7 +146,7 @@ extension StoryCameraView {
                     .foregroundColor(.white)
                     .frame(width: 40, height: 40)
             }
-            .opacity(vm.videoRecordingStatus == .start ? 0 : 1)
+            .opacity(viewModel.videoRecordingStatus == .start ? 0 : 1)
         }
     }
 }
@@ -154,7 +154,7 @@ extension StoryCameraView {
 // MARK: computed variables
 extension StoryCameraView {
     private var flashModeImageName: String {
-        switch vm.flashMode {
+        switch viewModel.flashMode {
         case .auto: return "bolt.badge.a.fill"
         case .on:   return "bolt.fill"
         case .off:  return "bolt.slash.fill"
@@ -165,10 +165,10 @@ extension StoryCameraView {
 // MARK: private functions
 extension StoryCameraView {
     private func toggleFlashMode() {
-        switch vm.flashMode {
-        case .auto: vm.flashMode = .off
-        case .on:   vm.flashMode = .auto
-        case .off:  vm.flashMode = .on
+        switch viewModel.flashMode {
+        case .auto: viewModel.flashMode = .off
+        case .on:   viewModel.flashMode = .auto
+        case .off:  viewModel.flashMode = .on
         }
     }
 }
