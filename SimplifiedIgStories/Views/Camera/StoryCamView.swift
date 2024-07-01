@@ -17,13 +17,13 @@ struct StoryCamView: View {
     init(postImageAction: @escaping (UIImage) -> Void,
          postVideoAction: @escaping (URL) -> Void,
          tapCloseAction: @escaping () -> Void) {
-        let camera = AVCamera()
+        let camera = AVCameraCore()
         let photoTaker = AVPhotoTaker(device: camera)
         let videoRecorder = AVVideoRecorder(device: camera)
         let cameraAuxiliary = AVCameraAuxiliary(camera: camera)
         
-        let fullFunctionsCamera = DefaultFullFunctionsCamera(
-            camera: camera,
+        let fullFunctionsCamera = FullFunctionsCamera(
+            cameraCore: camera,
             photoTaker: photoTaker,
             videoRecorder: videoRecorder,
             cameraAuxiliary: cameraAuxiliary

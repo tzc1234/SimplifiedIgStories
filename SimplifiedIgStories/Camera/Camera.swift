@@ -2,16 +2,24 @@
 //  Camera.swift
 //  SimplifiedIgStories
 //
-//  Created by Tsz-Lung on 19/06/2022.
+//  Created by Tsz-Lung on 01/07/2024.
 //
 
 import AVKit
 import Combine
 
-enum CameraStatus: Equatable {
+enum CameraStatus {
     case sessionStarted
     case sessionStopped
-    case cameraSwitched(position: CameraPosition)
+    case cameraSwitched
+    case addPhotoOutputFailure
+    case photoTaken(photo: UIImage)
+    case imageConvertingFailure
+    case recordingBegun
+    case recordingFinished
+    case videoProcessFailure
+    case processedVideo(videoURL: URL)
+    case addMovieFileOutputFailure
 }
 
 protocol Camera {
@@ -22,208 +30,143 @@ protocol Camera {
     func startSession()
     func stopSession()
     func switchCamera()
+    
+    func takePhoto(on flashMode: CameraFlashMode)
+    
+    func startRecording()
+    func stopRecording()
+    
+    func focus(on point: CGPoint)
+    func zoom(to factor: CGFloat)
 }
 
-protocol CaptureDevice {
-    var cameraPosition: CameraPosition { get }
-    var session: AVCaptureSession { get }
-    var performOnSessionQueue: (@escaping () -> Void) -> Void { get }
-}
-
-final class AVCamera: NSObject, Camera, CaptureDevice, AuxiliarySupportedCamera {
+final class FullFunctionsCamera: Camera {
     private let statusPublisher = PassthroughSubject<CameraStatus, Never>()
     private var subscriptions = Set<AnyCancellable>()
     
-    private(set) var cameraPosition: CameraPosition = .back
+    private let cameraCore: CameraCore
+    private let photoTaker: PhotoTaker
+    private let videoRecorder: VideoRecorder
+    private let cameraAuxiliary: CameraAuxiliary
     
-    private(set) lazy var videoPreviewLayer: CALayer = {
-        let layer = AVCaptureVideoPreviewLayer(session: session)
-        layer.videoGravity = .resizeAspectFill
-        return layer
-    }()
-    
-    private(set) var captureDevice: AVCaptureDevice?
-    
-    let session: AVCaptureSession
-    private let makeCaptureDeviceInput: (AVCaptureDevice) throws -> AVCaptureInput
-    let performOnSessionQueue: (@escaping () -> Void) -> Void
-    
-    init(session: AVCaptureSession = AVCaptureSession(),
-         makeCaptureDeviceInput: @escaping (AVCaptureDevice) throws -> AVCaptureInput =
-            AVCaptureDeviceInput.init(device:),
-         performOnSessionQueue: @escaping (@escaping () -> Void) -> Void = { action in
-            DispatchQueue(label: "AVCamSessionQueue").async { action() }
-         }
-    ) {
-        self.session = session
-        self.performOnSessionQueue = performOnSessionQueue
-        self.makeCaptureDeviceInput = makeCaptureDeviceInput
-    }
-}
-
-extension AVCamera {
-    func performOnSessionQueue(action: @escaping () -> Void) {
-        performOnSessionQueue(action)
+    init(cameraCore: CameraCore, photoTaker: PhotoTaker, videoRecorder: VideoRecorder, cameraAuxiliary: CameraAuxiliary) {
+        self.cameraCore = cameraCore
+        self.photoTaker = photoTaker
+        self.videoRecorder = videoRecorder
+        self.cameraAuxiliary = cameraAuxiliary
+        
+        self.subscribeCameraPublisher()
+        self.subscribePhotoTakerPublisher()
+        self.subscribeVideoRecorderPublisher()
     }
     
     func getStatusPublisher() -> AnyPublisher<CameraStatus, Never> {
         statusPublisher.eraseToAnyPublisher()
     }
+}
+
+extension FullFunctionsCamera {
+    var cameraPosition: CameraPosition {
+        cameraCore.cameraPosition
+    }
+    
+    var videoPreviewLayer: CALayer {
+        cameraCore.videoPreviewLayer
+    }
     
     func startSession() {
-        performOnSessionQueue { [weak self] in
-            guard let self, !session.isRunning else { return }
-            
-            setupSessionIfNeeded()
-            session.startRunning()
-        }
-    }
-    
-    private func setupSessionIfNeeded() {
-        if captureDevice == nil {
-            session.sessionPreset = .high
-            
-            do {
-                try addInputs()
-            } catch {
-                let errMsg = (error as? CameraSetupError)?.errMsg ?? error.localizedDescription
-                print(errMsg)
-            }
-            
-            subscribeCaptureSessionNotifications()
-        }
-    }
-    
-    private func addInputs() throws {
-        try addVideoInput()
-        try addAudioInput()
-    }
-    
-    func switchCamera() {
-        performOnSessionQueue { [weak self] in
-            guard let self else { return }
-            
-            switchCameraPosition()
-            reAddInputs()
-            
-            statusPublisher.send(.cameraSwitched(position: cameraPosition))
-        }
-    }
-    
-    private func switchCameraPosition() {
-        cameraPosition = cameraPosition == .back ? .front : .back
-    }
-    
-    private func reAddInputs() {
-        removeAllCaptureInputs()
-        configureSession { manager in
-            try manager.addInputs()
-        }
-    }
-    
-    private func removeAllCaptureInputs() {
-        for input in session.inputs {
-            session.removeInput(input)
-        }
-    }
-    
-    private func configureSession(action: (AVCamera) throws -> Void) {
-        session.beginConfiguration()
-        
-        do {
-            try action(self)
-        } catch {
-            let errMsg = (error as? CameraSetupError)?.errMsg ?? error.localizedDescription
-            print(errMsg)
-        }
-        
-        session.commitConfiguration()
+        cameraCore.startSession()
     }
     
     func stopSession() {
-        session.stopRunning()
+        cameraCore.stopSession()
+    }
+    
+    func switchCamera() {
+        cameraCore.switchCamera()
+    }
+    
+    private func subscribeCameraPublisher() {
+        cameraCore
+            .getStatusPublisher()
+            .sink { [weak self] camStatus in
+                guard let self else { return }
+                
+                switch camStatus {
+                case .sessionStarted:
+                    statusPublisher.send(.sessionStarted)
+                case .sessionStopped:
+                    statusPublisher.send(.sessionStopped)
+                case .cameraSwitched:
+                    statusPublisher.send(.cameraSwitched)
+                }
+            }
+            .store(in: &subscriptions)
     }
 }
 
-extension AVCamera {
-    private func addVideoInput() throws {
-        let position = convertToCaptureDevicePosition(from: cameraPosition)
-        guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position) else {
-            throw CameraSetupError.defaultVideoDeviceUnavailable
-        }
-        
-        try setupFocusAndExposure(for: device)
-        captureDevice = device
-
-        do {
-            let input = try makeCaptureDeviceInput(device)
-            guard session.canAddInput(input) else {
-                throw CameraSetupError.addVideoDeviceInputFailure
-            }
-            
-            session.addInput(input)
-        } catch CameraSetupError.addVideoDeviceInputFailure {
-            throw CameraSetupError.addVideoDeviceInputFailure
-        } catch {
-            throw CameraSetupError.createVideoDeviceInputFailure(err: error)
-        }
+extension FullFunctionsCamera {
+    func takePhoto(on flashMode: CameraFlashMode) {
+        photoTaker.takePhoto(on: flashMode)
     }
     
-    private func convertToCaptureDevicePosition(from position: CameraPosition) -> AVCaptureDevice.Position {
-        switch position {
-        case .back: return .back
-        case .front: return .front
-        }
-    }
-    
-    private func setupFocusAndExposure(for device: AVCaptureDevice) throws {
-        try device.lockForConfiguration()
-        
-        if device.isFocusModeSupported(.continuousAutoFocus) {
-            device.focusMode = .continuousAutoFocus
-        }
-        
-        if device.isExposureModeSupported(.continuousAutoExposure) {
-            device.exposureMode = .continuousAutoExposure
-        }
-        
-        device.unlockForConfiguration()
-    }
-    
-    private func addAudioInput() throws {
-        guard let device = AVCaptureDevice.default(for: .audio) else {
-            throw CameraSetupError.defaultAudioDeviceUnavailable
-        }
-        
-        do {
-            let input = try makeCaptureDeviceInput(device)
-            guard session.canAddInput(input) else {
-                throw CameraSetupError.addAudioDeviceInputFailure
-            }
-            
-            session.addInput(input)
-        } catch CameraSetupError.addAudioDeviceInputFailure {
-            throw CameraSetupError.addAudioDeviceInputFailure
-        } catch {
-            throw CameraSetupError.createAudioDeviceInputFailure(err: error)
-        }
-    }
-    
-    private func subscribeCaptureSessionNotifications() {
-        NotificationCenter
-            .default
-            .publisher(for: .AVCaptureSessionDidStartRunning, object: nil)
-            .sink { [weak statusPublisher] _ in
-                statusPublisher?.send(.sessionStarted)
+    private func subscribePhotoTakerPublisher() {
+        photoTaker
+            .getStatusPublisher()
+            .sink { [weak self] status in
+                guard let self else { return }
+                
+                switch status {
+                case .addPhotoOutputFailure:
+                    statusPublisher.send(.addPhotoOutputFailure)
+                case .photoTaken(let photo):
+                    statusPublisher.send(.photoTaken(photo: photo))
+                case .imageConvertingFailure:
+                    statusPublisher.send(.imageConvertingFailure)
+                }
             }
             .store(in: &subscriptions)
+    }
+}
 
-        NotificationCenter
-            .default
-            .publisher(for: .AVCaptureSessionDidStopRunning, object: nil)
-            .sink { [weak statusPublisher] _ in
-                statusPublisher?.send(.sessionStopped)
+extension FullFunctionsCamera {
+    func startRecording() {
+        videoRecorder.startRecording()
+    }
+    
+    func stopRecording() {
+        videoRecorder.stopRecording()
+    }
+    
+    private func subscribeVideoRecorderPublisher() {
+        videoRecorder
+            .getStatusPublisher()
+            .sink { [weak self] status in
+                guard let self else { return }
+                
+                switch status {
+                case .recordingBegun:
+                    statusPublisher.send(.recordingBegun)
+                case .recordingFinished:
+                    statusPublisher.send(.recordingFinished)
+                case .videoProcessFailure:
+                    statusPublisher.send(.videoProcessFailure)
+                case .processedVideo(let videoURL):
+                    statusPublisher.send(.processedVideo(videoURL: videoURL))
+                case .addMovieFileOutputFailure:
+                    statusPublisher.send(.addMovieFileOutputFailure)
+                }
             }
             .store(in: &subscriptions)
+    }
+}
+
+extension FullFunctionsCamera {
+    func focus(on point: CGPoint) {
+        cameraAuxiliary.focus(on: point)
+    }
+    
+    func zoom(to factor: CGFloat) {
+        cameraAuxiliary.zoom(to: factor)
     }
 }

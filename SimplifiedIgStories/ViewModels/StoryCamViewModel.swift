@@ -5,7 +5,6 @@
 //  Created by Tsz-Lung on 13/03/2022.
 //
 
-import AVFoundation
 import AVKit
 import Combine
 
@@ -75,11 +74,11 @@ import Combine
         }
     }
     
-    private let camera: FullFunctionsCamera
+    private let camera: Camera
     private let cameraAuthorizationTracker: DeviceAuthorizationTracker
     private let microphoneAuthorizationTracker: DeviceAuthorizationTracker
 
-    init(camera: FullFunctionsCamera,
+    init(camera: Camera,
          cameraAuthorizationTracker: DeviceAuthorizationTracker = AVCaptureDeviceAuthorizationTracker(mediaType: .video),
          microphoneAuthorizationTracker: DeviceAuthorizationTracker = AVCaptureDeviceAuthorizationTracker(mediaType: .audio)) {
         self.camera = camera

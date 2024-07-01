@@ -10,8 +10,8 @@ import Combine
 import UIKit
 @testable import Simple_IG_Story
 
-final class CameraSpy: Camera {
-    private let camStatusPublisher = PassthroughSubject<CameraStatus, Never>()
+final class CameraSpy: CameraCore {
+    private let camStatusPublisher = PassthroughSubject<CameraCoreStatus, Never>()
     
     var cameraPosition: CameraPosition = .back
     
@@ -27,7 +27,7 @@ final class CameraSpy: Camera {
 
 // MARK: internal functions
 extension CameraSpy {
-    func getStatusPublisher() -> AnyPublisher<CameraStatus, Never> {
+    func getStatusPublisher() -> AnyPublisher<CameraCoreStatus, Never> {
         camStatusPublisher.eraseToAnyPublisher()
     }
     
