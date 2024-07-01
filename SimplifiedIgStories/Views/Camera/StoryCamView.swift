@@ -21,12 +21,15 @@ struct StoryCamView: View {
         let photoTaker = AVPhotoTaker(device: camera)
         let videoRecorder = AVVideoRecorder(device: camera)
         let cameraAuxiliary = AVCameraAuxiliary(camera: camera)
-        let vm = StoryCamViewModel(
+        
+        let fullFunctionsCamera = DefaultFullFunctionsCamera(
             camera: camera,
             photoTaker: photoTaker,
             videoRecorder: videoRecorder,
             cameraAuxiliary: cameraAuxiliary
         )
+        
+        let vm = StoryCamViewModel(camera: fullFunctionsCamera)
         self._vm = StateObject(wrappedValue: vm)
         
         self.postImageAction = postImageAction

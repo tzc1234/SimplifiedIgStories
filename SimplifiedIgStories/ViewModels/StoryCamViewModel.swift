@@ -17,7 +17,7 @@ import Combine
     @Published var shouldPhotoTake = false {
         willSet {
             if newValue {
-                photoTaker.takePhoto(on: flashMode)
+                camera.takePhoto(on: flashMode)
             }
         }
     }
@@ -41,9 +41,9 @@ import Combine
             case .none:
                 break
             case .start:
-                videoRecorder.startRecording()
+                camera.startRecording()
             case .stop:
-                videoRecorder.stopRecording()
+                camera.stopRecording()
             }
         }
     }
@@ -65,33 +65,24 @@ import Combine
     
     var videoPreviewTapPoint: CGPoint = .zero {
         didSet {
-            cameraAuxiliary.focus(on: videoPreviewTapPoint)
+            camera.focus(on: videoPreviewTapPoint)
         }
     }
     
     var videoPreviewPinchFactor: CGFloat = .zero {
         didSet {
-            cameraAuxiliary.zoom(to: videoPreviewPinchFactor)
+            camera.zoom(to: videoPreviewPinchFactor)
         }
     }
     
-    private let camera: Camera
-    private let photoTaker: PhotoTaker
-    private let videoRecorder: VideoRecorder
-    private let cameraAuxiliary: CameraAuxiliary
+    private let camera: FullFunctionsCamera
     private let cameraAuthorizationTracker: DeviceAuthorizationTracker
     private let microphoneAuthorizationTracker: DeviceAuthorizationTracker
 
-    init(camera: Camera,
-         photoTaker: PhotoTaker,
-         videoRecorder: VideoRecorder,
-         cameraAuxiliary: CameraAuxiliary,
+    init(camera: FullFunctionsCamera,
          cameraAuthorizationTracker: DeviceAuthorizationTracker = AVCaptureDeviceAuthorizationTracker(mediaType: .video),
          microphoneAuthorizationTracker: DeviceAuthorizationTracker = AVCaptureDeviceAuthorizationTracker(mediaType: .audio)) {
         self.camera = camera
-        self.photoTaker = photoTaker
-        self.videoRecorder = videoRecorder
-        self.cameraAuxiliary = cameraAuxiliary
         self.cameraAuthorizationTracker = cameraAuthorizationTracker
         self.microphoneAuthorizationTracker = microphoneAuthorizationTracker
         self.subscribeCamMangerPublishers()
@@ -157,15 +148,6 @@ extension StoryCamViewModel {
                     self?.enableVideoRecordBtn = false
                 case .cameraSwitched:
                     break
-                }
-            }
-            .store(in: &subscriptions)
-        
-        photoTaker
-            .getStatusPublisher()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] status in
-                switch status {
                 case .addPhotoOutputFailure:
                     break
                 case .photoTaken(let photo):
@@ -173,15 +155,6 @@ extension StoryCamViewModel {
                     self?.showPhotoPreview = true
                 case .imageConvertingFailure:
                     break
-                }
-            }
-            .store(in: &subscriptions)
-        
-        videoRecorder
-            .getStatusPublisher()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] status in
-                switch status {
                 case .recordingBegun:
                     print("Did Begin Recording Video")
                 case .recordingFinished:

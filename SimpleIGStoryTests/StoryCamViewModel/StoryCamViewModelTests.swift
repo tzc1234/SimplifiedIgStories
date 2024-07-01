@@ -300,10 +300,12 @@ class StoryCamViewModelTests: XCTestCase {
     -> (sut: StoryCamViewModel, camera: CameraSpy) {
         let camera = CameraSpy()
         let sut = StoryCamViewModel(
-            camera: camera,
-            photoTaker: photoTaker,
-            videoRecorder: videoRecorder,
-            cameraAuxiliary: cameraAuxiliary,
+            camera: DefaultFullFunctionsCamera(
+                camera: camera,
+                photoTaker: photoTaker,
+                videoRecorder: videoRecorder, 
+                cameraAuxiliary: cameraAuxiliary
+            ),
             cameraAuthorizationTracker: cameraAuthorizationTracker,
             microphoneAuthorizationTracker: microphoneAuthorizationTracker
         )
