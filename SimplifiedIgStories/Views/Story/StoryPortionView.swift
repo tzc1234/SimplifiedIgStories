@@ -27,7 +27,7 @@ struct StoryPortionView: View {
     
     private var animationShouldPausePublisher: AnyPublisher<Bool, Never> {
         storyPortionViewModel.$showConfirmationDialog
-            .combineLatest(storyPortionViewModel.$noticeMsg)
+            .combineLatest(storyPortionViewModel.$noticeMessage)
             .map { $0 || !$1.isEmpty }
             .dropFirst()
             .removeDuplicates()
@@ -165,9 +165,9 @@ extension StoryPortionView {
     }
     
     private var noticeLabel: some View {
-        NoticeLabel(message: storyPortionViewModel.noticeMsg)
-            .opacity(storyPortionViewModel.noticeMsg.isEmpty ? 0 : 1)
-            .animation(.easeIn, value: storyPortionViewModel.noticeMsg)
+        NoticeLabel(message: storyPortionViewModel.noticeMessage)
+            .opacity(storyPortionViewModel.noticeMessage.isEmpty ? 0 : 1)
+            .animation(.easeIn, value: storyPortionViewModel.noticeMessage)
     }
 }
 

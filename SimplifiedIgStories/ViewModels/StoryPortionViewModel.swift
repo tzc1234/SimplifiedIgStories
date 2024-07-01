@@ -10,7 +10,7 @@ import Foundation
 final class StoryPortionViewModel: ObservableObject {
     @Published var showConfirmationDialog = false
     @Published private(set) var isLoading = false
-    @Published private(set) var noticeMsg = ""
+    @Published private(set) var noticeMessage = ""
     
     let storyId: Int
     let isCurrentUser: Bool
@@ -72,9 +72,9 @@ final class StoryPortionViewModel: ObservableObject {
     
     private func showNotice(message: String) {
         performAfterPointOneSecond { [weak self] in
-            self?.noticeMsg = message
+            self?.noticeMessage = message
             self?.performAfterOnePointFiveSecond { [weak self] in
-                self?.noticeMsg = ""
+                self?.noticeMessage = ""
             }
         }
     }

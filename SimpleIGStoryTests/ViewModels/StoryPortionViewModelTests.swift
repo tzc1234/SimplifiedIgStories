@@ -59,27 +59,27 @@ final class StoryPortionViewModelTests: XCTestCase {
             portion: makePortion(resourceURL: anyImageURL(), type: .image),
             fileManager: fileManager,
             mediaSaver: mediaSaver,
-            performAfterOnePointFiveSecond: { _ in }
+            skipPerformNoticeMessageReset: true
         )
         
         await sut.saveMedia()
         
-        XCTAssertEqual(sut.noticeMsg, "Couldn't save. No add photo permission.")
+        XCTAssertEqual(sut.noticeMessage, "Couldn't save. No add photo permission.")
     }
     
-    func test_saveImageMedia_showsSavedFailedMessageOnOtherError() async {
+    func test_saveImageMedia_showsSavedFailedMessageOnAnyError() async {
         let fileManager = FileManagerSpy(getImageStub: { _ in anyUIImage() })
         let mediaSaver = MediaSaverSpy(saveImageDataStub: { throw anyNSError() })
         let sut = makeSUT(
             portion: makePortion(resourceURL: anyImageURL(), type: .image),
             fileManager: fileManager,
             mediaSaver: mediaSaver,
-            performAfterOnePointFiveSecond: { _ in }
+            skipPerformNoticeMessageReset: true
         )
         
         await sut.saveMedia()
         
-        XCTAssertEqual(sut.noticeMsg, "Save failed.")
+        XCTAssertEqual(sut.noticeMessage, "Save failed.")
     }
     
     func test_saveImageMedia_savesImageSuccessfully() async {
@@ -89,13 +89,13 @@ final class StoryPortionViewModelTests: XCTestCase {
             portion: makePortion(resourceURL: anyImageURL(), type: .image),
             fileManager: fileManager,
             mediaSaver: mediaSaver,
-            performAfterOnePointFiveSecond: { _ in }
+            skipPerformNoticeMessageReset: true
         )
         
         await sut.saveMedia()
         
         XCTAssertEqual(mediaSaver.saveImageDataCallCount, 1)
-        XCTAssertEqual(sut.noticeMsg, "Saved.")
+        XCTAssertEqual(sut.noticeMessage, "Saved.")
     }
     
     func test_saveVideoMedia_showsNoPermissionMessageOnNoPermissionError() async {
@@ -105,27 +105,27 @@ final class StoryPortionViewModelTests: XCTestCase {
             portion: makePortion(resourceURL: anyVideoURL(), type: .video),
             fileManager: fileManager,
             mediaSaver: mediaSaver,
-            performAfterOnePointFiveSecond: { _ in }
+            skipPerformNoticeMessageReset: true
         )
         
         await sut.saveMedia()
         
-        XCTAssertEqual(sut.noticeMsg, "Couldn't save. No add photo permission.")
+        XCTAssertEqual(sut.noticeMessage, "Couldn't save. No add photo permission.")
     }
     
-    func test_saveVideoMedia_showsSavedFailedMessageOnOtherError() async {
+    func test_saveVideoMedia_showsSavedFailedMessageOnAnyError() async {
         let fileManager = FileManagerSpy(getImageStub: { _ in anyUIImage() })
         let mediaSaver = MediaSaverSpy(saveVideoStub: { throw anyNSError() })
         let sut = makeSUT(
             portion: makePortion(resourceURL: anyVideoURL(), type: .video),
             fileManager: fileManager,
             mediaSaver: mediaSaver,
-            performAfterOnePointFiveSecond: { _ in }
+            skipPerformNoticeMessageReset: true
         )
         
         await sut.saveMedia()
         
-        XCTAssertEqual(sut.noticeMsg, "Save failed.")
+        XCTAssertEqual(sut.noticeMessage, "Save failed.")
     }
     
     func test_saveVideoMedia_savesVideoSuccessfully() async {
@@ -135,13 +135,13 @@ final class StoryPortionViewModelTests: XCTestCase {
             portion: makePortion(resourceURL: anyVideoURL(), type: .video),
             fileManager: fileManager,
             mediaSaver: mediaSaver,
-            performAfterOnePointFiveSecond: { _ in }
+            skipPerformNoticeMessageReset: true
         )
         
         await sut.saveMedia()
         
         XCTAssertEqual(mediaSaver.saveVideoCallCount, 1)
-        XCTAssertEqual(sut.noticeMsg, "Saved.")
+        XCTAssertEqual(sut.noticeMessage, "Saved.")
     }
     
     // MARK: - Helpers
@@ -149,15 +149,14 @@ final class StoryPortionViewModelTests: XCTestCase {
     private func makeSUT(portion: Portion, 
                          fileManager: FileManageable = FileManagerSpy(getImageStub: { _ in nil }),
                          mediaSaver: MediaSaver = MediaSaverSpy(),
-                         performAfterOnePointFiveSecond: @escaping (@escaping () -> Void) -> Void = { $0() }
-    ) -> StoryPortionViewModel {
+                         skipPerformNoticeMessageReset: Bool = false) -> StoryPortionViewModel {
         let sut = StoryPortionViewModel(
             story: makeStory(),
             portion: portion,
             fileManager: fileManager,
             mediaSaver: mediaSaver,
             performAfterPointOneSecond: { $0() },
-            performAfterOnePointFiveSecond: performAfterOnePointFiveSecond
+            performAfterOnePointFiveSecond: skipPerformNoticeMessageReset ? { _ in } : { $0() }
         )
         return sut
     }
