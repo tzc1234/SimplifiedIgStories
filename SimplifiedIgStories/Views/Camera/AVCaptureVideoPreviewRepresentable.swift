@@ -9,9 +9,9 @@ import SwiftUI
 import UIKit
 
 struct AVCaptureVideoPreviewRepresentable: UIViewRepresentable {
-    @ObservedObject private(set) var vm: StoryCamViewModel
+    @ObservedObject private(set) var vm: StoryCameraViewModel
     
-    init(storyCamViewModel: StoryCamViewModel) {
+    init(storyCamViewModel: StoryCameraViewModel) {
         vm = storyCamViewModel
     }
     

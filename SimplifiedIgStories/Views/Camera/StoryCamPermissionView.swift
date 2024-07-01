@@ -9,9 +9,9 @@ import SwiftUI
 import Combine
 
 struct StoryCamPermissionView: View {
-    @ObservedObject private var vm: StoryCamViewModel
+    @ObservedObject private var vm: StoryCameraViewModel
     
-    init(storyCamViewModel: StoryCamViewModel) {
+    init(storyCamViewModel: StoryCameraViewModel) {
         self.vm = storyCamViewModel
     }
     
@@ -113,6 +113,6 @@ struct PermissionView_Previews: PreviewProvider {
     )
     
     static var previews: some View {
-        StoryCamPermissionView(storyCamViewModel: StoryCamViewModel(camera: camera))
+        StoryCamPermissionView(storyCamViewModel: StoryCameraViewModel(camera: camera))
     }
 }

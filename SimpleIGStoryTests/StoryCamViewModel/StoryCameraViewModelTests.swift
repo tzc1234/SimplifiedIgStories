@@ -1,5 +1,5 @@
 //
-//  StoryCamViewModelTests.swift
+//  StoryCameraViewModelTests.swift
 //  SimpleIGStoryTests
 //
 //  Created by Tsz-Lung on 16/07/2022.
@@ -9,7 +9,7 @@ import XCTest
 import Combine
 @testable import Simple_IG_Story
 
-class StoryCamViewModelTests: XCTestCase {
+class StoryCameraViewModelTests: XCTestCase {
     var subscriptions: Set<AnyCancellable>!
     
     override func setUp() {
@@ -297,9 +297,9 @@ class StoryCamViewModelTests: XCTestCase {
                          cameraAuxiliary: CameraAuxiliarySpy = CameraAuxiliarySpy(),
                          cameraAuthorizationTracker: DeviceAuthorizationTracker = DeviceAuthorizationTrackerStub(),
                          microphoneAuthorizationTracker: DeviceAuthorizationTracker = DeviceAuthorizationTrackerStub())
-    -> (sut: StoryCamViewModel, camera: CameraSpy) {
+    -> (sut: StoryCameraViewModel, camera: CameraSpy) {
         let camera = CameraSpy()
-        let sut = StoryCamViewModel(
+        let sut = StoryCameraViewModel(
             camera: DefaultCamera(
                 cameraCore: camera,
                 photoTaker: photoTaker,

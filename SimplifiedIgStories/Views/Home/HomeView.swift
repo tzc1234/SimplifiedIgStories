@@ -48,7 +48,7 @@ extension HomeView {
     private var storyCamView: some View {
         ZStack {
             if handler.showStoryCamView {
-                StoryCamView { image in
+                StoryCameraView { image in
                     storiesViewModel.postStoryPortion(image: image)
                     hideStoryCamView()
                 } postVideoAction: { url in

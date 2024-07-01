@@ -1,5 +1,5 @@
 //
-//  StoryCamViewModel.swift
+//  StoryCameraViewModel.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 13/03/2022.
@@ -8,7 +8,7 @@
 import AVKit
 import Combine
 
-@MainActor final class StoryCamViewModel: ObservableObject {
+@MainActor final class StoryCameraViewModel: ObservableObject {
     @Published var flashMode: CameraFlashMode = .off
     
     @Published private(set) var enableVideoRecordBtn = false
@@ -89,7 +89,7 @@ import Combine
 }
 
 // MARK: computed variables
-extension StoryCamViewModel {
+extension StoryCameraViewModel {
     var arePermissionsGranted: Bool {
         isCamPermGranted && isMicrophonePermGranted
     }
@@ -100,7 +100,7 @@ extension StoryCamViewModel {
 }
 
 // MARK: internal functions
-extension StoryCamViewModel {
+extension StoryCameraViewModel {
     func checkPermissions() {
         cameraAuthorizationTracker.startTracking()
         microphoneAuthorizationTracker.startTracking()
@@ -116,7 +116,7 @@ extension StoryCamViewModel {
 }
 
 // MARK: private functions
-extension StoryCamViewModel {
+extension StoryCameraViewModel {
     private func subscribeCamMangerPublishers() {
         cameraAuthorizationTracker
             .getPublisher()

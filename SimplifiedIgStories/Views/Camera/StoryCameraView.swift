@@ -1,5 +1,5 @@
 //
-//  StoryCamView.swift
+//  StoryCameraView.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 2/3/2022.
@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct StoryCamView: View {
-    @StateObject private var vm: StoryCamViewModel
+struct StoryCameraView: View {
+    @StateObject private var vm: StoryCameraViewModel
     
     let postImageAction: ((UIImage) -> Void)
     let postVideoAction: ((URL) -> Void)
@@ -29,7 +29,7 @@ struct StoryCamView: View {
             cameraAuxiliary: cameraAuxiliary
         )
         
-        let vm = StoryCamViewModel(camera: fullFunctionsCamera)
+        let vm = StoryCameraViewModel(camera: fullFunctionsCamera)
         self._vm = StateObject(wrappedValue: vm)
         
         self.postImageAction = postImageAction
@@ -104,12 +104,12 @@ struct StoryCamView: View {
 
 struct StoryCamView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryCamView(postImageAction: {_ in }, postVideoAction: {_ in }, tapCloseAction: {})
+        StoryCameraView(postImageAction: {_ in }, postVideoAction: {_ in }, tapCloseAction: {})
     }
 }
 
 // MARK: components
-extension StoryCamView {
+extension StoryCameraView {
     private var closeButton: some View {
         Button{
             tapCloseAction()
@@ -178,7 +178,7 @@ extension StoryCamView {
 }
 
 // MARK: computed variables
-extension StoryCamView {
+extension StoryCameraView {
     private var flashModeImageName: String {
         switch vm.flashMode {
         case .auto: return "bolt.badge.a.fill"
@@ -189,7 +189,7 @@ extension StoryCamView {
 }
 
 // MARK: private functions
-extension StoryCamView {
+extension StoryCameraView {
     private func toggleFlashMode() {
         switch vm.flashMode {
         case .auto: vm.flashMode = .off
