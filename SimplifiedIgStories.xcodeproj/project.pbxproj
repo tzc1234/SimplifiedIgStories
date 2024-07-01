@@ -30,7 +30,6 @@
 		BE42A33A2B7B9A80004BC257 /* CameraAuxiliary.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE42A3392B7B9A80004BC257 /* CameraAuxiliary.swift */; };
 		BE463A2D285F05AE00599929 /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE463A2C285F05AE00599929 /* Camera.swift */; };
 		BE482F042886C0C30094E54C /* CameraSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5F521B2882F74C001CB2B1 /* CameraSpy.swift */; };
-		BE50144A288DC7410043DF62 /* StoryViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE501449288DC7410043DF62 /* StoryViewModelTests.swift */; };
 		BE5CDC2D27DF4AAA00352A60 /* NoticeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5CDC2C27DF4AAA00352A60 /* NoticeLabel.swift */; };
 		BE5F4FA82BA49BD700138F87 /* DummyFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5F4FA72BA49BD700138F87 /* DummyFileManager.swift */; };
 		BE5F4FAA2BA49DBA00138F87 /* PreviewStoriesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5F4FA92BA49DBA00138F87 /* PreviewStoriesViewModel.swift */; };
@@ -121,6 +120,10 @@
 		BEC053842C309B0A00752932 /* CameraFlashMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC053832C309B0A00752932 /* CameraFlashMode.swift */; };
 		BEC3B4C427DE585F00B44BDF /* StoryCamViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */; };
 		BED0F60D27BBF64B00D93F15 /* StoryIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */; };
+		BED74E1B2C318D8700A34B27 /* FileManagerStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED74E1A2C318D8700A34B27 /* FileManagerStub.swift */; };
+		BED74E1D2C318E0200A34B27 /* StoriesLoaderStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED74E1C2C318E0200A34B27 /* StoriesLoaderStub.swift */; };
+		BED74E1F2C31A18100A34B27 /* DummyFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED74E1E2C31A18100A34B27 /* DummyFileManager.swift */; };
+		BED74E212C31A1B700A34B27 /* DummyMediaSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED74E202C31A1B700A34B27 /* DummyMediaSaver.swift */; };
 		BEEEBBEB2B75287100EC85C7 /* FileDataClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEEBBEA2B75287100EC85C7 /* FileDataClientTests.swift */; };
 		BEEEBBED2B752E4200EC85C7 /* empty.json in Resources */ = {isa = PBXBuildFile; fileRef = BEEEBBEC2B752E4200EC85C7 /* empty.json */; };
 		BEEEBBEF2B7531FE00EC85C7 /* valid.json in Resources */ = {isa = PBXBuildFile; fileRef = BEEEBBEE2B7531FE00EC85C7 /* valid.json */; };
@@ -165,7 +168,6 @@
 		BE42A3372B7B8053004BC257 /* VideoRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRecorder.swift; sourceTree = "<group>"; };
 		BE42A3392B7B9A80004BC257 /* CameraAuxiliary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraAuxiliary.swift; sourceTree = "<group>"; };
 		BE463A2C285F05AE00599929 /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
-		BE501449288DC7410043DF62 /* StoryViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryViewModelTests.swift; sourceTree = "<group>"; };
 		BE5CDC2C27DF4AAA00352A60 /* NoticeLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoticeLabel.swift; sourceTree = "<group>"; };
 		BE5F4FA72BA49BD700138F87 /* DummyFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DummyFileManager.swift; sourceTree = "<group>"; };
 		BE5F4FA92BA49DBA00138F87 /* PreviewStoriesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewStoriesViewModel.swift; sourceTree = "<group>"; };
@@ -258,6 +260,10 @@
 		BEC053832C309B0A00752932 /* CameraFlashMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraFlashMode.swift; sourceTree = "<group>"; };
 		BEC3B4C327DE585F00B44BDF /* StoryCamViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCamViewModel.swift; sourceTree = "<group>"; };
 		BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIconsView.swift; sourceTree = "<group>"; };
+		BED74E1A2C318D8700A34B27 /* FileManagerStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManagerStub.swift; sourceTree = "<group>"; };
+		BED74E1C2C318E0200A34B27 /* StoriesLoaderStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesLoaderStub.swift; sourceTree = "<group>"; };
+		BED74E1E2C31A18100A34B27 /* DummyFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DummyFileManager.swift; sourceTree = "<group>"; };
+		BED74E202C31A1B700A34B27 /* DummyMediaSaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DummyMediaSaver.swift; sourceTree = "<group>"; };
 		BEEEBBEA2B75287100EC85C7 /* FileDataClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDataClientTests.swift; sourceTree = "<group>"; };
 		BEEEBBEC2B752E4200EC85C7 /* empty.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = empty.json; sourceTree = "<group>"; };
 		BEEEBBEE2B7531FE00EC85C7 /* valid.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = valid.json; sourceTree = "<group>"; };
@@ -481,7 +487,6 @@
 			children = (
 				BE7BA4352BADE7520061595B /* Helpers */,
 				BE69F50C281974E5001BA4EC /* StoriesViewModelTests.swift */,
-				BE501449288DC7410043DF62 /* StoryViewModelTests.swift */,
 				BEA6D0282BA9EED800BEDA4A /* StoryAnimationHandlerTests.swift */,
 				BE7BA4332BADE5C60061595B /* StoriesAnimationHandlerTests.swift */,
 				BEA3ABBF2BAF3AD700B60C1E /* StoryPortionViewModelTests.swift */,
@@ -493,6 +498,10 @@
 			isa = PBXGroup;
 			children = (
 				BE7BA4362BADE7700061595B /* ViewModelTestHelpers.swift */,
+				BED74E1A2C318D8700A34B27 /* FileManagerStub.swift */,
+				BED74E1C2C318E0200A34B27 /* StoriesLoaderStub.swift */,
+				BED74E1E2C31A18100A34B27 /* DummyFileManager.swift */,
+				BED74E202C31A1B700A34B27 /* DummyMediaSaver.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -926,10 +935,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BED74E1D2C318E0200A34B27 /* StoriesLoaderStub.swift in Sources */,
 				BE38F7B02B83672400F42C71 /* StatusSpy.swift in Sources */,
+				BED74E212C31A1B700A34B27 /* DummyMediaSaver.swift in Sources */,
 				BEBE9C382BA059AF00C9C093 /* LocalFileMangerTests.swift in Sources */,
 				BEEEBBEB2B75287100EC85C7 /* FileDataClientTests.swift in Sources */,
-				BE50144A288DC7410043DF62 /* StoryViewModelTests.swift in Sources */,
 				BE7079492B86744A00365260 /* CaptureMovieFileOutputSpy.swift in Sources */,
 				BE482F042886C0C30094E54C /* CameraSpy.swift in Sources */,
 				BE8B71AB2B76516D0055C354 /* UIImage+Helpers.swift in Sources */,
@@ -939,12 +949,14 @@
 				BE8305082B87790E002A72C4 /* CaptureDeviceSpy.swift in Sources */,
 				BE7BA4372BADE7700061595B /* ViewModelTestHelpers.swift in Sources */,
 				BEA3ABC02BAF3AD800B60C1E /* StoryPortionViewModelTests.swift in Sources */,
+				BED74E1B2C318D8700A34B27 /* FileManagerStub.swift in Sources */,
 				BE3C5B072B88E99B00687337 /* PHPPhotoMediaStoreTests.swift in Sources */,
 				BE83D11D2B84D54C004A1FB4 /* MethodSwizzlingStub.swift in Sources */,
 				BEEEBBF12B75345400EC85C7 /* XCTestCase+AssertThrows.swift in Sources */,
 				BE38F7B22B837CC400F42C71 /* CaptureSessionSpy.swift in Sources */,
 				BE84F7962B7CE9C500FAD11B /* AVCameraTests.swift in Sources */,
 				BE8B71A72B764E410055C354 /* LocalMediaSaverTests.swift in Sources */,
+				BED74E1F2C31A18100A34B27 /* DummyFileManager.swift in Sources */,
 				BE7BA4342BADE5C60061595B /* StoriesAnimationHandlerTests.swift in Sources */,
 				BE5F521E28832923001CB2B1 /* StoryCamViewModelTests.swift in Sources */,
 				BEEEBBFB2B7545B400EC85C7 /* DataServiceTestHelpers.swift in Sources */,

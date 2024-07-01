@@ -63,7 +63,9 @@ extension StoriesViewModel {
 
         var portions = stories[yourStoryIdx].portions
         // Just append a new Portion instance to current user's potion array.
-        portions.append(Portion(id: lastPortionId+1, duration: .defaultStoryDuration, resourceURL: imageURL, type: .image))
+        portions.append(
+            Portion(id: lastPortionId+1, duration: .defaultStoryDuration, resourceURL: imageURL, type: .image)
+        )
         stories[yourStoryIdx].portions = portions
         stories[yourStoryIdx].lastUpdate = .now
     }
