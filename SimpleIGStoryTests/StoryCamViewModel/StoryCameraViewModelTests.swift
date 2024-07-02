@@ -28,8 +28,8 @@
 //    func test_checkPermissions_permissionsAreNotGranted_beforeFunctionCalled() {
 //        let (sut, _) = makeSUT()
 //        
-//        XCTAssertFalse(sut.isCamPermGranted, "camera permission")
-//        XCTAssertFalse(sut.isMicrophonePermGranted, "microphone permission")
+//        XCTAssertFalse(sut.isCameraPermissionGranted, "camera permission")
+//        XCTAssertFalse(sut.isMicrophonePermissionGranted, "microphone permission")
 //        XCTAssertFalse(sut.arePermissionsGranted, "both permissions")
 //    }
 //    

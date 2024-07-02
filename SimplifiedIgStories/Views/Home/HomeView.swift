@@ -63,7 +63,7 @@ struct HomeView: View {
 extension HomeView {
     private var storyCameraView: some View {
         ZStack {
-            if handler.showStoryCamView {
+            if handler.showStoryCameraView {
                 getStoryCameraView()
                     .frame(width: .screenWidth)
             }
@@ -73,7 +73,7 @@ extension HomeView {
     
     private func hideStoryCamView() {
         withAnimation(.default) {
-            handler.showStoryCamView = false
+            handler.showStoryCameraView = false
         }
     }
     

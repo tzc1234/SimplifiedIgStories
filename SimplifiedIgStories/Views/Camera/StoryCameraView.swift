@@ -47,18 +47,18 @@ struct StoryCameraView: View {
             }
             .padding(.vertical, 20)
             
-            if viewModel.showPhotoPreview, let uiImage = viewModel.lastTakenImage {
-                StoryPreview(uiImage: uiImage) {
+            if viewModel.showPhotoPreview, let image = viewModel.lastTakenImage {
+                StoryPreview(uiImage: image, backBtnAction: {
                     viewModel.showPhotoPreview = false
-                } postBtnAction: {
-                    actionHandler.postImageAction?(uiImage)
-                }
+                }, postBtnAction: {
+                    actionHandler.postImageAction?(image)
+                })
             } else if viewModel.showVideoPreview, let url = viewModel.lastVideoURL {
-                StoryPreview(videoUrl: url) {
+                StoryPreview(videoUrl: url, backBtnAction: {
                     viewModel.showVideoPreview = false
-                } postBtnAction: {
+                }, postBtnAction: {
                     actionHandler.postVideoAction?(url)
-                }
+                })
             }
         }
         .statusBar(hidden: true)

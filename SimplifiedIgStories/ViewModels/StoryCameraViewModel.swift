@@ -17,8 +17,8 @@ import Combine
     private(set) var lastTakenImage: UIImage?
     private(set) var lastVideoURL: URL?
     
-    @Published private(set) var isCamPermGranted = false
-    @Published private(set) var isMicrophonePermGranted = false
+    @Published private(set) var isCameraPermissionGranted = false
+    @Published private(set) var isMicrophonePermissionGranted = false
     
     @Published var showPhotoPreview = false {
         didSet {
@@ -54,7 +54,7 @@ import Combine
 
 extension StoryCameraViewModel {
     var arePermissionsGranted: Bool {
-        isCamPermGranted && isMicrophonePermGranted
+        isCameraPermissionGranted && isMicrophonePermissionGranted
     }
     
     var videoPreviewLayer: CALayer {
@@ -95,7 +95,7 @@ extension StoryCameraViewModel {
             .getPublisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isGranted in
-                self?.isCamPermGranted = isGranted
+                self?.isCameraPermissionGranted = isGranted
             }
             .store(in: &subscriptions)
         
@@ -103,7 +103,7 @@ extension StoryCameraViewModel {
             .getPublisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isGranted in
-                self?.isMicrophonePermGranted = isGranted
+                self?.isMicrophonePermissionGranted = isGranted
             }
             .store(in: &subscriptions)
         

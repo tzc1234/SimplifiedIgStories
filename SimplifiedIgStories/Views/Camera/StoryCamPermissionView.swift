@@ -35,20 +35,20 @@ struct StoryCamPermissionView: View {
                 Button {
                     gotoSettings()
                 } label: {
-                    Text(viewModel.isCamPermGranted ? "✓ Camera access enabled" : "Enable Camera Access")
+                    Text(viewModel.isCameraPermissionGranted ? "✓ Camera access enabled" : "Enable Camera Access")
                         .font(.headline)
                         .fontWeight(.semibold)
                 }
-                .disabled(viewModel.isCamPermGranted)
+                .disabled(viewModel.isCameraPermissionGranted)
                 
                 Button {
                     gotoSettings()
                 } label: {
-                    Text(viewModel.isMicrophonePermGranted ? "✓ Microphone access enabled" : "Enable Microphone Access")
+                    Text(viewModel.isMicrophonePermissionGranted ? "✓ Microphone access enabled" : "Enable Microphone Access")
                         .font(.headline)
                         .fontWeight(.semibold)
                 }
-                .disabled(viewModel.isMicrophonePermGranted)
+                .disabled(viewModel.isMicrophonePermissionGranted)
             }
 
             Group {
