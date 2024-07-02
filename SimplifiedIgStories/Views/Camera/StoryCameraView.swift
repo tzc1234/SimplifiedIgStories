@@ -98,7 +98,7 @@ extension StoryCameraView {
             }
             .contentShape(Rectangle())
         }
-        .opacity(viewModel.videoRecordingStatus == .start ? 0 : 1)
+        .opacity(viewModel.isVideoRecording == true ? 0 : 1)
     }
     
     @ViewBuilder private var flashButton: some View {
@@ -115,20 +115,17 @@ extension StoryCameraView {
                         .frame(width: 30, height: 30)
                 }
             }
-            .opacity(viewModel.videoRecordingStatus == .start ? 0 : 1)
+            .opacity(viewModel.isVideoRecording == true ? 0 : 1)
         }
     }
     
     @ViewBuilder private var videoRecordButton: some View {
         if viewModel.arePermissionsGranted {
             VideoRecordButton() {
-                viewModel.shouldPhotoTake = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    viewModel.shouldPhotoTake = false
-                }
+                viewModel.takePhoto()
             } longPressingAction: { isPressing in
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    viewModel.videoRecordingStatus = isPressing ? .start : .stop
+                    viewModel.isVideoRecording = isPressing ? true : false
                 }
             }
             .allowsHitTesting(viewModel.enableVideoRecordBtn)
@@ -146,7 +143,7 @@ extension StoryCameraView {
                     .foregroundColor(.white)
                     .frame(width: 40, height: 40)
             }
-            .opacity(viewModel.videoRecordingStatus == .start ? 0 : 1)
+            .opacity(viewModel.isVideoRecording == true ? 0 : 1)
         }
     }
 }

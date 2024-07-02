@@ -9,68 +9,32 @@ import AVKit
 import Combine
 
 @MainActor final class StoryCameraViewModel: ObservableObject {
-    @Published var flashMode: CameraFlashMode = .off
+    private var subscriptions = Set<AnyCancellable>()
     
+    @Published var flashMode = CameraFlashMode.off
     @Published private(set) var enableVideoRecordBtn = false
     
-    @Published var shouldPhotoTake = false {
-        willSet {
-            if newValue {
-                camera.takePhoto(on: flashMode)
-            }
-        }
-    }
     private(set) var lastTakenImage: UIImage?
-    @Published var showPhotoPreview = false {
-        didSet {
-            if showPhotoPreview {
-                camera.stopSession()
-            } else {
-                camera.startSession()
-            }
-        }
-    }
-    
-    enum VideoRecordingStatus {
-        case none, start, stop
-    }
-    @Published var videoRecordingStatus: VideoRecordingStatus = .none {
-        willSet {
-            switch newValue {
-            case .none:
-                break
-            case .start:
-                camera.startRecording()
-            case .stop:
-                camera.stopRecording()
-            }
-        }
-    }
     private(set) var lastVideoURL: URL?
-    @Published var showVideoPreview = false {
-        didSet {
-            if showVideoPreview {
-                camera.stopSession()
-            } else {
-                camera.startSession()
-            }
-        }
-    }
     
     @Published private(set) var isCamPermGranted = false
     @Published private(set) var isMicrophonePermGranted = false
     
-    private var subscriptions = Set<AnyCancellable>()
-    
-    var videoPreviewTapPoint: CGPoint = .zero {
+    @Published var showPhotoPreview = false {
         didSet {
-            camera.focus(on: videoPreviewTapPoint)
+            showPhotoPreview ? camera.stopSession() : camera.startSession()
         }
     }
     
-    var videoPreviewPinchFactor: CGFloat = .zero {
+    @Published var showVideoPreview = false {
         didSet {
-            camera.zoom(to: videoPreviewPinchFactor)
+            showVideoPreview ? camera.stopSession() : camera.startSession()
+        }
+    }
+    
+    @Published var isVideoRecording: Bool? {
+        willSet {
+            newValue.map { $0 ? camera.startRecording() : camera.stopRecording() }
         }
     }
     
@@ -88,7 +52,6 @@ import Combine
     }
 }
 
-// MARK: computed variables
 extension StoryCameraViewModel {
     var arePermissionsGranted: Bool {
         isCamPermGranted && isMicrophonePermGranted
@@ -99,7 +62,6 @@ extension StoryCameraViewModel {
     }
 }
 
-// MARK: internal functions
 extension StoryCameraViewModel {
     func checkPermissions() {
         cameraAuthorizationTracker.startTracking()
@@ -113,9 +75,20 @@ extension StoryCameraViewModel {
     func switchCamera() {
         camera.switchCamera()
     }
+    
+    func takePhoto() {
+        camera.takePhoto(on: flashMode)
+    }
+    
+    func focus(on point: CGPoint) {
+        camera.focus(on: point)
+    }
+    
+    func zoom(to factor: CGFloat) {
+        camera.zoom(to: factor)
+    }
 }
 
-// MARK: private functions
 extension StoryCameraViewModel {
     private func subscribeCamMangerPublishers() {
         cameraAuthorizationTracker
@@ -160,7 +133,7 @@ extension StoryCameraViewModel {
                     print("Did Begin Recording Video")
                 case .recordingFinished:
                     print("Did finish Recording Video")
-                    videoRecordingStatus = .none
+                    isVideoRecording = nil
                 case .videoProcessFailure:
                     break
                 case .processedVideo(let videoURL):
