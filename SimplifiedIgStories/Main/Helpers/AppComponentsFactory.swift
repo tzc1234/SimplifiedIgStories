@@ -35,4 +35,7 @@ final class AppComponentsFactory {
         videoRecorder: videoRecorder,
         cameraAuxiliary: cameraAuxiliary
     )
+    
+    let cameraAuthorizationTracker = AVCaptureDeviceAuthorizationTracker(mediaType: .video)
+    let microphoneAuthorizationTracker = AVCaptureDeviceAuthorizationTracker(mediaType: .audio)
 }

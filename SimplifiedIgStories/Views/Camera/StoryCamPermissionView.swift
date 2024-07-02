@@ -80,6 +80,10 @@ struct StoryCamPermissionView: View {
 
 struct PermissionView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryCamPermissionView(viewModel: StoryCameraViewModel(camera: DefaultCamera.dummy))
+        StoryCamPermissionView(viewModel: StoryCameraViewModel(
+            camera: DefaultCamera.dummy,
+            cameraAuthorizationTracker: AVCaptureDeviceAuthorizationTracker(mediaType: .video),
+            microphoneAuthorizationTracker: AVCaptureDeviceAuthorizationTracker(mediaType: .audio)
+        ))
     }
 }

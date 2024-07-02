@@ -43,8 +43,8 @@ import Combine
     private let microphoneAuthorizationTracker: DeviceAuthorizationTracker
 
     init(camera: Camera,
-         cameraAuthorizationTracker: DeviceAuthorizationTracker = AVCaptureDeviceAuthorizationTracker(mediaType: .video),
-         microphoneAuthorizationTracker: DeviceAuthorizationTracker = AVCaptureDeviceAuthorizationTracker(mediaType: .audio)) {
+         cameraAuthorizationTracker: DeviceAuthorizationTracker,
+         microphoneAuthorizationTracker: DeviceAuthorizationTracker) {
         self.camera = camera
         self.cameraAuthorizationTracker = cameraAuthorizationTracker
         self.microphoneAuthorizationTracker = microphoneAuthorizationTracker

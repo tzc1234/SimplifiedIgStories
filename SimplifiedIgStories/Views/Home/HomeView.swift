@@ -106,7 +106,11 @@ struct HomeView_Previews: PreviewProvider {
                 )
             }, 
             getStoryCameraView: {
-                StoryCameraView(viewModel: StoryCameraViewModel(camera: DefaultCamera.dummy))
+                StoryCameraView(viewModel: StoryCameraViewModel(
+                    camera: DefaultCamera.dummy,
+                    cameraAuthorizationTracker: AVCaptureDeviceAuthorizationTracker(mediaType: .video),
+                    microphoneAuthorizationTracker: AVCaptureDeviceAuthorizationTracker(mediaType: .audio)
+                ))
             }
         )
     }
