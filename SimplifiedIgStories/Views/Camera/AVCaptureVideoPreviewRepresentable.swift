@@ -9,9 +9,9 @@ import SwiftUI
 import UIKit
 
 struct AVCaptureVideoPreviewRepresentable: UIViewRepresentable {
-    @ObservedObject private(set) var vm: StoryCamViewModel
+    @ObservedObject private(set) var vm: StoryCameraViewModel
     
-    init(storyCamViewModel: StoryCamViewModel) {
+    init(storyCamViewModel: StoryCameraViewModel) {
         vm = storyCamViewModel
     }
     
@@ -51,12 +51,12 @@ struct AVCaptureVideoPreviewRepresentable: UIViewRepresentable {
         
         @MainActor @objc func tap(gesture: UITapGestureRecognizer) {
             let point = gesture.location(in: gesture.view)
-            parent.vm.videoPreviewTapPoint = point
+            parent.vm.focus(on: point)
             showFocusIndicator(at: point, in: gesture.view)
         }
         
         @MainActor @objc func pinch(gesture: UIPinchGestureRecognizer) {
-            parent.vm.videoPreviewPinchFactor = atan2(gesture.velocity, 20.0)
+            parent.vm.zoom(to: atan2(gesture.velocity, 20.0))
         }
         
         private func showFocusIndicator(at point: CGPoint, in view: UIView?) {

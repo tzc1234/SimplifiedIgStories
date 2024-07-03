@@ -9,11 +9,7 @@ import SwiftUI
 import Combine
 
 struct StoryCamPermissionView: View {
-    @ObservedObject private var vm: StoryCamViewModel
-    
-    init(storyCamViewModel: StoryCamViewModel) {
-        self.vm = storyCamViewModel
-    }
+    @ObservedObject var viewModel: StoryCameraViewModel
     
     var body: some View {
         VStack(alignment: .center, spacing: 4.0) {
@@ -39,20 +35,20 @@ struct StoryCamPermissionView: View {
                 Button {
                     gotoSettings()
                 } label: {
-                    Text(vm.isCamPermGranted ? "✓ Camera access enabled" : "Enable Camera Access")
+                    Text(viewModel.isCameraPermissionGranted ? "✓ Camera access enabled" : "Enable Camera Access")
                         .font(.headline)
                         .fontWeight(.semibold)
                 }
-                .disabled(vm.isCamPermGranted)
+                .disabled(viewModel.isCameraPermissionGranted)
                 
                 Button {
                     gotoSettings()
                 } label: {
-                    Text(vm.isMicrophonePermGranted ? "✓ Microphone access enabled" : "Enable Microphone Access")
+                    Text(viewModel.isMicrophonePermissionGranted ? "✓ Microphone access enabled" : "Enable Microphone Access")
                         .font(.headline)
                         .fontWeight(.semibold)
                 }
-                .disabled(vm.isMicrophonePermGranted)
+                .disabled(viewModel.isMicrophonePermissionGranted)
             }
 
             Group {
@@ -83,36 +79,11 @@ struct StoryCamPermissionView: View {
 }
 
 struct PermissionView_Previews: PreviewProvider {
-    class DummyPhotoTaker: PhotoTaker {
-        func getStatusPublisher() -> AnyPublisher<PhotoTakerStatus, Never> {
-            Empty<PhotoTakerStatus, Never>().eraseToAnyPublisher()
-        }
-        
-        func takePhoto(on mode: CameraFlashMode) {}
-    }
-    
-    class DummyVideoRecorder: VideoRecorder {
-        func getStatusPublisher() -> AnyPublisher<VideoRecorderStatus, Never> {
-            Empty<VideoRecorderStatus, Never>().eraseToAnyPublisher()
-        }
-        
-        func startRecording() {}
-        func stopRecording() {}
-    }
-    
-    class DummyCameraAuxiliary: CameraAuxiliary {
-        func focus(on point: CGPoint) {}
-        func zoom(to factor: CGFloat) {}
-    }
-    
     static var previews: some View {
-        StoryCamPermissionView(
-            storyCamViewModel: StoryCamViewModel(
-                camera: AVCamera(),
-                photoTaker: DummyPhotoTaker(),
-                videoRecorder: DummyVideoRecorder(), 
-                cameraAuxiliary: DummyCameraAuxiliary()
-            )
-        )
+        StoryCamPermissionView(viewModel: StoryCameraViewModel(
+            camera: DefaultCamera.dummy,
+            cameraAuthorizationTracker: AVCaptureDeviceAuthorizationTracker(mediaType: .video),
+            microphoneAuthorizationTracker: AVCaptureDeviceAuthorizationTracker(mediaType: .audio)
+        ))
     }
 }

@@ -1,5 +1,5 @@
 //
-//  AVCameraTests.swift
+//  AVCameraCoreTests.swift
 //  SimpleIGStoryTests
 //
 //  Created by Tsz-Lung on 14/02/2024.
@@ -9,7 +9,7 @@ import XCTest
 import AVFoundation
 @testable import Simple_IG_Story
 
-final class AVCameraTests: XCTestCase {
+final class AVCameraCoreTests: XCTestCase {
     func test_init_doesNotDeliverAnyStatusUponInit() {
         let (sut, _) = makeSUT()
         let spy = CameraStatusSpy(publisher: sut.getStatusPublisher())
@@ -137,16 +137,16 @@ final class AVCameraTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private typealias CameraStatusSpy = StatusSpy<CameraStatus>
+    private typealias CameraStatusSpy = StatusSpy<CameraCoreStatus>
     
     private func makeSUT(isSessionRunning: Bool = false,
                          captureDevicesSpy: CaptureDevicesSpy? = nil,
                          afterPerformOnSessionQueue: @escaping () -> Void = {})
-    -> (sut: AVCamera, session: CaptureSessionSpy) {
+    -> (sut: AVCameraCore, session: CaptureSessionSpy) {
         AVCaptureDevice.swizzled()
         let session = CaptureSessionSpy(isRunning: isSessionRunning, canAddOutput: false)
         let captureDevicesSpy = captureDevicesSpy ?? CaptureDevicesSpy()
-        let sut = AVCamera(
+        let sut = AVCameraCore(
             session: session,
             makeCaptureDeviceInput: captureDevicesSpy.makeCaptureInput,
             performOnSessionQueue: { action in
@@ -168,8 +168,8 @@ final class AVCameraTests: XCTestCase {
         XCTAssertEqual(videoDevice?.position, position.toCaptureDevicePosition(), file: file, line: line)
     }
     
-    private func expect(_ sut: AVCamera,
-                        deliverStatuses expectedStatuses: [CameraStatus],
+    private func expect(_ sut: AVCameraCore,
+                        deliverStatuses expectedStatuses: [CameraCoreStatus],
                         when action: () -> Void,
                         file: StaticString = #filePath,
                         line: UInt = #line) {

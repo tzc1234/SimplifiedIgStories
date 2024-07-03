@@ -1,5 +1,5 @@
 //
-//  StoryCamView.swift
+//  StoryCameraView.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 2/3/2022.
@@ -7,39 +7,16 @@
 
 import SwiftUI
 
-struct StoryCamView: View {
-    @StateObject private var vm: StoryCamViewModel
-    
-    let postImageAction: ((UIImage) -> Void)
-    let postVideoAction: ((URL) -> Void)
-    let tapCloseAction: (() -> Void)
-    
-    init(postImageAction: @escaping (UIImage) -> Void,
-         postVideoAction: @escaping (URL) -> Void,
-         tapCloseAction: @escaping () -> Void) {
-        let camera = AVCamera()
-        let photoTaker = AVPhotoTaker(device: camera)
-        let videoRecorder = AVVideoRecorder(device: camera)
-        let cameraAuxiliary = AVCameraAuxiliary(camera: camera)
-        let vm = StoryCamViewModel(
-            camera: camera,
-            photoTaker: photoTaker,
-            videoRecorder: videoRecorder,
-            cameraAuxiliary: cameraAuxiliary
-        )
-        self._vm = StateObject(wrappedValue: vm)
-        
-        self.postImageAction = postImageAction
-        self.postVideoAction = postVideoAction
-        self.tapCloseAction = tapCloseAction
-    }
+struct StoryCameraView: View {
+    @EnvironmentObject private var actionHandler: HomeUIActionHandler
+    @ObservedObject var viewModel: StoryCameraViewModel
     
     var body: some View {
         ZStack {
-            if vm.arePermissionsGranted {
-                AVCaptureVideoPreviewRepresentable(storyCamViewModel: vm)
+            if viewModel.arePermissionsGranted {
+                AVCaptureVideoPreviewRepresentable(storyCamViewModel: viewModel)
             } else {
-                StoryCamPermissionView(storyCamViewModel: vm)
+                StoryCamPermissionView(viewModel: viewModel)
             }
             
             VStack(alignment: .leading, spacing: 0) {
@@ -70,27 +47,27 @@ struct StoryCamView: View {
             }
             .padding(.vertical, 20)
             
-            if vm.showPhotoPreview, let uiImage = vm.lastTakenImage {
-                StoryPreview(uiImage: uiImage) {
-                    vm.showPhotoPreview = false
-                } postBtnAction: {
-                    postImageAction(uiImage)
-                }
-            } else if vm.showVideoPreview, let url = vm.lastVideoUrl {
-                StoryPreview(videoUrl: url) {
-                    vm.showVideoPreview = false
-                } postBtnAction: {
-                    postVideoAction(url)
-                }
+            if viewModel.showPhotoPreview, let image = viewModel.lastTakenImage {
+                StoryPreview(uiImage: image, backBtnAction: {
+                    viewModel.showPhotoPreview = false
+                }, postBtnAction: {
+                    actionHandler.postImageAction?(image)
+                })
+            } else if viewModel.showVideoPreview, let url = viewModel.lastVideoURL {
+                StoryPreview(videoUrl: url, backBtnAction: {
+                    viewModel.showVideoPreview = false
+                }, postBtnAction: {
+                    actionHandler.postVideoAction?(url)
+                })
             }
         }
         .statusBar(hidden: true)
         .onAppear {
-            vm.checkPermissions()
+            viewModel.checkPermissions()
         }
-        .onChange(of: vm.arePermissionsGranted) { isGranted in
+        .onChange(of: viewModel.arePermissionsGranted) { isGranted in
             if isGranted {
-                vm.startSession()
+                viewModel.startSession()
             }
         }
         .onDisappear {
@@ -101,15 +78,19 @@ struct StoryCamView: View {
 
 struct StoryCamView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryCamView(postImageAction: {_ in }, postVideoAction: {_ in }, tapCloseAction: {})
+        StoryCameraView(viewModel: StoryCameraViewModel(
+            camera: DefaultCamera.dummy,
+            cameraAuthorizationTracker: AVCaptureDeviceAuthorizationTracker(mediaType: .video),
+            microphoneAuthorizationTracker: AVCaptureDeviceAuthorizationTracker(mediaType: .audio)
+        ))
     }
 }
 
 // MARK: components
-extension StoryCamView {
+extension StoryCameraView {
     private var closeButton: some View {
         Button{
-            tapCloseAction()
+            actionHandler.closeStoryCameraView()
         } label: {
             ZStack {
                 Color.clear.frame(width: 45, height: 45)
@@ -121,11 +102,11 @@ extension StoryCamView {
             }
             .contentShape(Rectangle())
         }
-        .opacity(vm.videoRecordingStatus == .start ? 0 : 1)
+        .opacity(viewModel.isVideoRecording == true ? 0 : 1)
     }
     
     @ViewBuilder private var flashButton: some View {
-        if vm.arePermissionsGranted {
+        if viewModel.arePermissionsGranted {
             Button {
                 toggleFlashMode()
             } label: {
@@ -138,30 +119,27 @@ extension StoryCamView {
                         .frame(width: 30, height: 30)
                 }
             }
-            .opacity(vm.videoRecordingStatus == .start ? 0 : 1)
+            .opacity(viewModel.isVideoRecording == true ? 0 : 1)
         }
     }
     
     @ViewBuilder private var videoRecordButton: some View {
-        if vm.arePermissionsGranted {
+        if viewModel.arePermissionsGranted {
             VideoRecordButton() {
-                vm.shouldPhotoTake = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    vm.shouldPhotoTake = false
-                }
+                viewModel.takePhoto()
             } longPressingAction: { isPressing in
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    vm.videoRecordingStatus = isPressing ? .start : .stop
+                    viewModel.isVideoRecording = isPressing ? true : false
                 }
             }
-            .allowsHitTesting(vm.enableVideoRecordBtn)
+            .allowsHitTesting(viewModel.enableVideoRecordButton)
         }
     }
     
     @ViewBuilder private var changeCameraButton: some View {
-        if vm.arePermissionsGranted {
+        if viewModel.arePermissionsGranted {
             Button {
-                vm.switchCamera()
+                viewModel.switchCamera()
             } label: {
                 Image(systemName: "arrow.triangle.2.circlepath")
                     .resizable()
@@ -169,15 +147,15 @@ extension StoryCamView {
                     .foregroundColor(.white)
                     .frame(width: 40, height: 40)
             }
-            .opacity(vm.videoRecordingStatus == .start ? 0 : 1)
+            .opacity(viewModel.isVideoRecording == true ? 0 : 1)
         }
     }
 }
 
 // MARK: computed variables
-extension StoryCamView {
+extension StoryCameraView {
     private var flashModeImageName: String {
-        switch vm.flashMode {
+        switch viewModel.flashMode {
         case .auto: return "bolt.badge.a.fill"
         case .on:   return "bolt.fill"
         case .off:  return "bolt.slash.fill"
@@ -186,12 +164,12 @@ extension StoryCamView {
 }
 
 // MARK: private functions
-extension StoryCamView {
+extension StoryCameraView {
     private func toggleFlashMode() {
-        switch vm.flashMode {
-        case .auto: vm.flashMode = .off
-        case .on:   vm.flashMode = .auto
-        case .off:  vm.flashMode = .on
+        switch viewModel.flashMode {
+        case .auto: viewModel.flashMode = .off
+        case .on:   viewModel.flashMode = .auto
+        case .off:  viewModel.flashMode = .on
         }
     }
 }

@@ -60,6 +60,13 @@ struct SimplifiedIgStoriesApp: App {
                             )
                         }
                     )
+                }, 
+                getStoryCameraView: {
+                    StoryCameraView(viewModel: StoryCameraViewModel(
+                        camera: factory.camera,
+                        cameraAuthorizationTracker: factory.cameraAuthorizationTracker,
+                        microphoneAuthorizationTracker: factory.microphoneAuthorizationTracker
+                    ))
                 }
             )
         }

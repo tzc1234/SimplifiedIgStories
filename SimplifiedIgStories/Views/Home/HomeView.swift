@@ -13,11 +13,12 @@ struct HomeView: View {
     @ObservedObject var storiesViewModel: StoriesViewModel
     let getStoryIconsView: () -> StoryIconsView
     let getStoryContainer: () -> StoryContainer
+    let getStoryCameraView: () -> StoryCameraView
     
     var body: some View {
         ZStack {
             HStack(spacing: 0.0) {
-                storyCamView
+                storyCameraView
                 
                 NavigationView {
                     VStack {
@@ -40,38 +41,35 @@ struct HomeView: View {
         .task {
             await storiesViewModel.fetchStories()
         }
+        .onAppear {
+            handler.postImageAction = { image in
+                storiesViewModel.postStoryPortion(image: image)
+                handler.closeStoryCameraView()
+            }
+            
+            handler.postVideoAction = { url in
+                storiesViewModel.postStoryPortion(videoUrl: url)
+                handler.closeStoryCameraView()
+            }
+        }
     }
 }
 
 // MARK: components
 extension HomeView {
-    private var storyCamView: some View {
+    private var storyCameraView: some View {
         ZStack {
-            if handler.showStoryCamView {
-                StoryCamView { image in
-                    storiesViewModel.postStoryPortion(image: image)
-                    hideStoryCamView()
-                } postVideoAction: { url in
-                    storiesViewModel.postStoryPortion(videoUrl: url)
-                    hideStoryCamView()
-                } tapCloseAction: {
-                    hideStoryCamView()
-                }
-                .frame(width: .screenWidth)
+            if handler.isStoryCameraViewShown {
+                getStoryCameraView()
+                    .frame(width: .screenWidth)
             }
         }
         .ignoresSafeArea()
     }
     
-    private func hideStoryCamView() {
-        withAnimation(.default) {
-            handler.showStoryCamView = false
-        }
-    }
-    
     private var storyContainer: some View {
         GeometryReader { geo in
-            if handler.showContainer {
+            if handler.isContainerShown {
                 let iconFrame = handler.currentIconFrame
                 let offsetX = -(geo.size.width / 2 - iconFrame.midX)
                 let offsetY = iconFrame.minY - geo.safeAreaInsets.top
@@ -96,6 +94,14 @@ struct HomeView_Previews: PreviewProvider {
                     animationHandler: .preview,
                     getStoryView: { _ in .preview }
                 )
-        })
+            }, 
+            getStoryCameraView: {
+                StoryCameraView(viewModel: StoryCameraViewModel(
+                    camera: DefaultCamera.dummy,
+                    cameraAuthorizationTracker: AVCaptureDeviceAuthorizationTracker(mediaType: .video),
+                    microphoneAuthorizationTracker: AVCaptureDeviceAuthorizationTracker(mediaType: .audio)
+                ))
+            }
+        )
     }
 }
