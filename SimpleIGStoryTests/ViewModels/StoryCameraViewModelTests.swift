@@ -265,9 +265,9 @@ final class StoryCameraViewModelTests: XCTestCase {
         XCTAssertNil(sut.media)
         XCTAssertFalse(sut.showPreview)
         
-        camera.publish(status: .processedMedia(.image(expectedImage)))
+        camera.publish(status: .processedMedia(.photo(expectedImage)))
         
-        if case let .image(image) = sut.media {
+        if case let .photo(image) = sut.media {
             XCTAssertEqual(image, expectedImage)
             XCTAssertTrue(sut.showPreview)
         } else {

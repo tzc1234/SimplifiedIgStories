@@ -91,7 +91,7 @@ extension DefaultCamera {
                 case .addPhotoOutputFailure:
                     break
                 case let .photoTaken(photo):
-                    statusPublisher.send(.processedMedia(.image(photo)))
+                    statusPublisher.send(.processedMedia(.photo(photo)))
                 case .imageConvertingFailure:
                     break
                 }
