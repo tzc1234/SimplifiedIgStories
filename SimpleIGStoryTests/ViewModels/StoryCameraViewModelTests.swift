@@ -284,6 +284,17 @@ final class StoryCameraViewModelTests: XCTestCase {
         XCTAssertFalse(sut.enableVideoRecordButton)
     }
     
+    @MainActor
+    func test_lastTakenImage_deliversImageReceivedFromCameraPhotoTakenStatus() {
+        let camera = CameraSpy()
+        let sut = makeSUT(camera: camera)
+        let expectedImage = UIImage.make(withColor: .gray)
+        
+        camera.publish(status: .photoTaken(photo: expectedImage))
+        
+        XCTAssertEqual(sut.lastTakenImage, expectedImage)
+    }
+    
     // MARK: - Helpers
     
     @MainActor
