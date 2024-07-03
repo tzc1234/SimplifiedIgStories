@@ -30,14 +30,34 @@ final class StoryCameraViewModelTests: XCTestCase {
         XCTAssertTrue(sut.isCameraPermissionGranted)
     }
     
+    @MainActor
+    func test_isMicrophonePermissionGranted_deliversNotGrantedWhenReceivedNotGrantedFromAuthorizationTracker() {
+        let microphoneAuthorizationTracker = AuthorizationTrackerSpy()
+        let sut = makeSUT(microphoneAuthorizationTracker: microphoneAuthorizationTracker)
+        
+        microphoneAuthorizationTracker.publish(isPermissionGranted: false)
+        
+        XCTAssertFalse(sut.isMicrophonePermissionGranted)
+    }
+    
+    @MainActor
+    func test_isMicrophonePermissionGranted_deliversGrantedWhenReceivedGrantedFromAuthorizationTracker() {
+        let microphoneAuthorizationTracker = AuthorizationTrackerSpy()
+        let sut = makeSUT(microphoneAuthorizationTracker: microphoneAuthorizationTracker)
+        
+        microphoneAuthorizationTracker.publish(isPermissionGranted: true)
+        
+        XCTAssertTrue(sut.isMicrophonePermissionGranted)
+    }
+    
     // MARK: - Helpers
     
     @MainActor
     private func makeSUT(cameraAuthorizationTracker: AuthorizationTrackerSpy = AuthorizationTrackerSpy(),
+                         microphoneAuthorizationTracker : AuthorizationTrackerSpy = AuthorizationTrackerSpy(),
                          file: StaticString = #filePath,
                          line: UInt = #line) -> StoryCameraViewModel {
         let camera = CameraSpy()
-        let microphoneAuthorizationTracker = AuthorizationTrackerSpy()
         let sut = StoryCameraViewModel(
             camera: camera,
             cameraAuthorizationTracker: cameraAuthorizationTracker,
