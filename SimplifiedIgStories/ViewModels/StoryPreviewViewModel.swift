@@ -39,7 +39,6 @@ final class StoryPreviewViewModel: ObservableObject {
     @MainActor
     func saveToAlbum(videoURL: URL) async {
         isLoading = true
-        message = ""
         
         do {
             try await mediaSaver.saveVideo(by: videoURL)

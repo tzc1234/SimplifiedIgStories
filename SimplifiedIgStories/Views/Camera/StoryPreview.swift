@@ -60,7 +60,7 @@ struct StoryPreview: View {
 extension StoryPreview {
     @ViewBuilder 
     private var photoView: some View {
-        if case let .image(image) = media {
+        if case let .photo(image) = media {
             Image(uiImage: image)
                 .resizable()
                 .scaledToFill()
@@ -104,7 +104,7 @@ extension StoryPreview {
         Button {
             Task { @MainActor in
                 switch media {
-                case let .image(image):
+                case let .photo(image):
                     await viewModel.saveToAlbum(image: image)
                 case let .video(url):
                     await viewModel.saveToAlbum(videoURL: url)
@@ -159,7 +159,7 @@ struct StoryPreview_Previews: PreviewProvider {
     static var previews: some View {
         StoryPreview(
             viewModel: StoryPreviewViewModel(mediaSaver: DummyMediaSaver()),
-            media: .image(UIImage()),
+            media: .photo(UIImage()),
             backBtnAction: {},
             postBtnAction: {}
         )

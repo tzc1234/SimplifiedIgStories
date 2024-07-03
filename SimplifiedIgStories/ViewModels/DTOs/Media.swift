@@ -8,6 +8,6 @@
 import UIKit
 
 enum Media {
-    case image(UIImage)
+    case photo(UIImage)
     case video(URL)
 }

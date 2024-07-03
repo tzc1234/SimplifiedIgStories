@@ -132,7 +132,19 @@ final class StoryCameraViewModelTests: XCTestCase {
     }
     
     @MainActor
-    func test_showPreview_stopsSessionOnCameraWhenShowPreview() {
+    func test_stopSession_stopsSessionOnCamera() {
+        let camera = CameraSpy()
+        let sut = makeSUT(camera: camera)
+        
+        XCTAssertEqual(camera.stopSessionCallCount, 0)
+        
+        sut.stopSession()
+        
+        XCTAssertEqual(camera.stopSessionCallCount, 1)
+    }
+    
+    @MainActor
+    func test_showPreview_stopsSessionOnCameraWhenShowingPreview() {
         let camera = CameraSpy()
         let sut = makeSUT(camera: camera)
         
@@ -144,7 +156,7 @@ final class StoryCameraViewModelTests: XCTestCase {
     }
     
     @MainActor
-    func test_showPreview_startsSessionOnCameraWhenNotShowPreview() {
+    func test_showPreview_startsSessionOnCameraWhenNotShowingPreview() {
         let camera = CameraSpy()
         let sut = makeSUT(camera: camera)
         
@@ -153,6 +165,21 @@ final class StoryCameraViewModelTests: XCTestCase {
         sut.showPreview = false
         
         XCTAssertEqual(camera.startSessionCallCount, 1)
+    }
+    
+    @MainActor
+    func test_showPreview_resetsMediaWhenNotShowingPreview() {
+        let camera = CameraSpy()
+        let sut = makeSUT(camera: camera)
+        let anyImage = UIImage.make(withColor: .gray)
+        
+        camera.publish(status: .processedMedia(.photo(anyImage)))
+        
+        XCTAssertNotNil(sut.media)
+        
+        sut.showPreview = false
+        
+        XCTAssertNil(sut.media)
     }
     
     @MainActor
@@ -265,9 +292,9 @@ final class StoryCameraViewModelTests: XCTestCase {
         XCTAssertNil(sut.media)
         XCTAssertFalse(sut.showPreview)
         
-        camera.publish(status: .processedMedia(.image(expectedImage)))
+        camera.publish(status: .processedMedia(.photo(expectedImage)))
         
-        if case let .image(image) = sut.media {
+        if case let .photo(image) = sut.media {
             XCTAssertEqual(image, expectedImage)
             XCTAssertTrue(sut.showPreview)
         } else {

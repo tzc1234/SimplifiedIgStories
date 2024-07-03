@@ -44,7 +44,7 @@ struct HomeView: View {
         .onAppear {
             handler.postMedia = { media in
                 switch media {
-                case let .image(image):
+                case let .photo(image):
                     storiesViewModel.postStoryPortion(image: image)
                 case let .video(url):
                     storiesViewModel.postStoryPortion(videoUrl: url)

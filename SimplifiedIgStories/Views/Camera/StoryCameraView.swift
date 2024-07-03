@@ -94,6 +94,7 @@ extension StoryCameraView {
     private var closeButton: some View {
         Button{
             actionHandler.closeStoryCameraView()
+            viewModel.stopSession()
         } label: {
             ZStack {
                 Color.clear.frame(width: 45, height: 45)

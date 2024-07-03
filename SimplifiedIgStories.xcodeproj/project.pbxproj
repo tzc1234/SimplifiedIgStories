@@ -381,7 +381,7 @@
 			path = Home;
 			sourceTree = "<group>";
 		};
-		BE0EA3002C357DA2006381A6 /*  Interfaces */ = {
+		BE0EA3002C357DA2006381A6 /* Collaborators */ = {
 			isa = PBXGroup;
 			children = (
 				BE0EA3032C357EE0006381A6 /* StoriesLoader.swift */,
@@ -389,7 +389,7 @@
 				BE0EA3072C357F6D006381A6 /* MediaSaver.swift */,
 				BE7BA1182C32BB0B005DB88C /* Camera.swift */,
 			);
-			path = " Interfaces";
+			path = Collaborators;
 			sourceTree = "<group>";
 		};
 		BE0EA3092C357FF8006381A6 /* DTOs */ = {
@@ -612,7 +612,7 @@
 			isa = PBXGroup;
 			children = (
 				BE0EA3092C357FF8006381A6 /* DTOs */,
-				BE0EA3002C357DA2006381A6 /*  Interfaces */,
+				BE0EA3002C357DA2006381A6 /* Collaborators */,
 				BE8F580927D668E900F9DB92 /* StoriesViewModel.swift */,
 				BE6B73C627D794AD003D2B24 /* StoryPortionViewModel.swift */,
 				BEC3B4C327DE585F00B44BDF /* StoryCameraViewModel.swift */,
