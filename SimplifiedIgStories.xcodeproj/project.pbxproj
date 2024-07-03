@@ -20,6 +20,7 @@
 		BE0EA3042C357EE0006381A6 /* StoriesLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA3032C357EE0006381A6 /* StoriesLoader.swift */; };
 		BE0EA3062C357F1F006381A6 /* FileManageable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA3052C357F1F006381A6 /* FileManageable.swift */; };
 		BE0EA3082C357F6D006381A6 /* MediaSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA3072C357F6D006381A6 /* MediaSaver.swift */; };
+		BE0EA30B2C358C88006381A6 /* StoryPreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA30A2C358C88006381A6 /* StoryPreviewViewModel.swift */; };
 		BE287A2A2B7A47FB00119674 /* CameraAuthorizationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE287A292B7A47FB00119674 /* CameraAuthorizationHandler.swift */; };
 		BE2C557227BFFE9D0087EE7F /* StoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557127BFFE9D0087EE7F /* StoryView.swift */; };
 		BE2C557427C0197B0087EE7F /* DetectableTapGesturePositionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */; };
@@ -166,6 +167,7 @@
 		BE0EA3032C357EE0006381A6 /* StoriesLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesLoader.swift; sourceTree = "<group>"; };
 		BE0EA3052C357F1F006381A6 /* FileManageable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManageable.swift; sourceTree = "<group>"; };
 		BE0EA3072C357F6D006381A6 /* MediaSaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSaver.swift; sourceTree = "<group>"; };
+		BE0EA30A2C358C88006381A6 /* StoryPreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPreviewViewModel.swift; sourceTree = "<group>"; };
 		BE287A292B7A47FB00119674 /* CameraAuthorizationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraAuthorizationHandler.swift; sourceTree = "<group>"; };
 		BE2C557127BFFE9D0087EE7F /* StoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryView.swift; sourceTree = "<group>"; };
 		BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetectableTapGesturePositionView.swift; sourceTree = "<group>"; };
@@ -613,6 +615,7 @@
 				BEC3B4C327DE585F00B44BDF /* StoryCameraViewModel.swift */,
 				BE36D6EB2BAB4A54009240EE /* StoriesAnimationHandler.swift */,
 				BEFE6A962BA36B7100FC307F /* StoryAnimationHandler.swift */,
+				BE0EA30A2C358C88006381A6 /* StoryPreviewViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -896,6 +899,7 @@
 				BE8AEF9027DB9D5800D7EAA1 /* VerticalLabelStyle.swift in Sources */,
 				BE90CE0427D00A0E001EA0CA /* StoryCameraView.swift in Sources */,
 				BE090B6727B9568700B6F906 /* StoryIcon.swift in Sources */,
+				BE0EA30B2C358C88006381A6 /* StoryPreviewViewModel.swift in Sources */,
 				BE72F94027DF6F9300AA98A5 /* StoryCameraPermissionView.swift in Sources */,
 				BE0EA3042C357EE0006381A6 /* StoriesLoader.swift in Sources */,
 				BE7BA1192C32BB0B005DB88C /* Camera.swift in Sources */,

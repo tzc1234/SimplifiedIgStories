@@ -48,13 +48,13 @@ struct StoryCameraView: View {
             .padding(.vertical, 20)
             
             if viewModel.showPhotoPreview, let image = viewModel.lastTakenImage {
-                StoryPreview(uiImage: image, backBtnAction: {
+                StoryPreview(image: image, backBtnAction: {
                     viewModel.showPhotoPreview = false
                 }, postBtnAction: {
                     actionHandler.postImageAction?(image)
                 })
             } else if viewModel.showVideoPreview, let url = viewModel.lastVideoURL {
-                StoryPreview(videoUrl: url, backBtnAction: {
+                StoryPreview(videoURL: url, backBtnAction: {
                     viewModel.showVideoPreview = false
                 }, postBtnAction: {
                     actionHandler.postVideoAction?(url)
