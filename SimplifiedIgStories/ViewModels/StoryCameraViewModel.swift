@@ -41,13 +41,17 @@ import Combine
     private let camera: Camera
     private let cameraAuthorizationTracker: DeviceAuthorizationTracker
     private let microphoneAuthorizationTracker: DeviceAuthorizationTracker
+    private let scheduler: any Scheduler
 
     init(camera: Camera,
          cameraAuthorizationTracker: DeviceAuthorizationTracker,
-         microphoneAuthorizationTracker: DeviceAuthorizationTracker) {
+         microphoneAuthorizationTracker: DeviceAuthorizationTracker,
+         scheduler: any Scheduler = DispatchQueue.main) {
         self.camera = camera
         self.cameraAuthorizationTracker = cameraAuthorizationTracker
         self.microphoneAuthorizationTracker = microphoneAuthorizationTracker
+        self.scheduler = scheduler
+        
         self.subscribeCamMangerPublishers()
     }
 }
@@ -93,7 +97,7 @@ extension StoryCameraViewModel {
     private func subscribeCamMangerPublishers() {
         cameraAuthorizationTracker
             .getPublisher()
-            .receive(on: DispatchQueue.main)
+            .receive(onSome: scheduler)
             .sink { [weak self] isGranted in
                 self?.isCameraPermissionGranted = isGranted
             }
@@ -101,7 +105,7 @@ extension StoryCameraViewModel {
         
         microphoneAuthorizationTracker
             .getPublisher()
-            .receive(on: DispatchQueue.main)
+            .receive(onSome: scheduler)
             .sink { [weak self] isGranted in
                 self?.isMicrophonePermissionGranted = isGranted
             }
@@ -109,7 +113,7 @@ extension StoryCameraViewModel {
         
         camera
             .getStatusPublisher()
-            .receive(on: DispatchQueue.main)
+            .receive(onSome: scheduler)
             .sink { [weak self] camStatus in
                 guard let self else { return }
                 
@@ -144,5 +148,11 @@ extension StoryCameraViewModel {
                 }
             }
             .store(in: &subscriptions)
+    }
+}
+
+extension Publisher {
+    func receive(onSome scheduler: some Scheduler) -> AnyPublisher<Output, Failure> {
+        receive(on: scheduler).eraseToAnyPublisher()
     }
 }
