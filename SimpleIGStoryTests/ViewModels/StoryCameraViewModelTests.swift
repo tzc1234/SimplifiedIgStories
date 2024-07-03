@@ -264,6 +264,26 @@ final class StoryCameraViewModelTests: XCTestCase {
         XCTAssertEqual(camera.loggedZoomFactors, [zoomFactor])
     }
     
+    @MainActor
+    func test_enableVideoRecordButton_enablesVideoRecordBtnOnCameraSessionStartedStatus() {
+        let camera = CameraSpy()
+        let sut = makeSUT(camera: camera)
+        
+        camera.publish(status: .sessionStarted)
+        
+        XCTAssertTrue(sut.enableVideoRecordButton)
+    }
+    
+    @MainActor
+    func test_enableVideoRecordButton_disablesVideoRecordBtnOnCameraSessionStoppedStatus() {
+        let camera = CameraSpy()
+        let sut = makeSUT(camera: camera)
+        
+        camera.publish(status: .sessionStopped)
+        
+        XCTAssertFalse(sut.enableVideoRecordButton)
+    }
+    
     // MARK: - Helpers
     
     @MainActor
@@ -286,7 +306,7 @@ final class StoryCameraViewModelTests: XCTestCase {
     }
     
     private class CameraSpy: Camera {
-        var cameraPosition = CameraPosition.back
+        private let statusPublisher = PassthroughSubject<CameraStatus, Never>()
         private(set) var startSessionCallCount = 0
         private(set) var stopSessionCallCount = 0
         private(set) var startRecordingCallCount = 0
@@ -295,6 +315,8 @@ final class StoryCameraViewModelTests: XCTestCase {
         private(set) var loggedFlashModes = [CameraFlashMode]()
         private(set) var loggedFocusPoints = [CGPoint]()
         private(set) var loggedZoomFactors = [CGFloat]()
+        
+        let cameraPosition = CameraPosition.back
         
         private let videoPreviewLayerStub: CALayer
         
@@ -306,8 +328,12 @@ final class StoryCameraViewModelTests: XCTestCase {
             videoPreviewLayerStub
         }
         
+        func publish(status: CameraStatus) {
+            statusPublisher.send(status)
+        }
+        
         func getStatusPublisher() -> AnyPublisher<CameraStatus, Never> {
-            Empty().eraseToAnyPublisher()
+            statusPublisher.eraseToAnyPublisher()
         }
         
         func startSession() {

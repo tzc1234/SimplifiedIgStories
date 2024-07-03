@@ -72,7 +72,7 @@
 //    func test_setupAndStartSession_enableVideoRecordBtnShouldBeFalse_beforeFunctionCalled() {
 //        let (sut, camera) = makeSUT()
 //        
-//        XCTAssertFalse(sut.enableVideoRecordBtn, "enableVideoRecordBtn")
+//        XCTAssertFalse(sut.enableVideoRecordButton, "enableVideoRecordBtn")
 //        XCTAssertEqual(camera.startSessionCallCount, 0, "setupAndStartSessionCallCount")
 //    }
 //    

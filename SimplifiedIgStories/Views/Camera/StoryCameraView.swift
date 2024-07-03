@@ -132,7 +132,7 @@ extension StoryCameraView {
                     viewModel.isVideoRecording = isPressing ? true : false
                 }
             }
-            .allowsHitTesting(viewModel.enableVideoRecordBtn)
+            .allowsHitTesting(viewModel.enableVideoRecordButton)
         }
     }
     

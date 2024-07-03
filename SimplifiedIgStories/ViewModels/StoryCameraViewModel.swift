@@ -12,7 +12,7 @@ import Combine
     private var subscriptions = Set<AnyCancellable>()
     
     @Published var flashMode = CameraFlashMode.off
-    @Published private(set) var enableVideoRecordBtn = false
+    @Published private(set) var enableVideoRecordButton = false
     
     private(set) var lastTakenImage: UIImage?
     private(set) var lastVideoURL: URL?
@@ -120,10 +120,10 @@ extension StoryCameraViewModel {
                 switch camStatus {
                 case .sessionStarted:
                     print("Camera session did start running")
-                    enableVideoRecordBtn = true
+                    enableVideoRecordButton = true
                 case .sessionStopped:
                     print("Camera session did stop running")
-                    enableVideoRecordBtn = false
+                    enableVideoRecordButton = false
                 case .cameraSwitched:
                     break
                 case .addPhotoOutputFailure:
