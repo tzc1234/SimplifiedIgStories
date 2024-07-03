@@ -16,7 +16,7 @@ struct StoryCameraView: View {
             if viewModel.arePermissionsGranted {
                 AVCaptureVideoPreviewRepresentable(storyCamViewModel: viewModel)
             } else {
-                StoryCamPermissionView(viewModel: viewModel)
+                StoryCameraPermissionView(viewModel: viewModel)
             }
             
             VStack(alignment: .leading, spacing: 0) {
