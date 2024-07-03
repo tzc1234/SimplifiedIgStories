@@ -285,23 +285,6 @@ final class StoryCameraViewModelTests: XCTestCase {
         return sut
     }
     
-    private class AuthorizationTrackerSpy: DeviceAuthorizationTracker {
-        private let authorizationPublisher = PassthroughSubject<Bool, Never>()
-        private(set) var startTrackingCallCount = 0
-        
-        func getPublisher() -> AnyPublisher<Bool, Never> {
-            authorizationPublisher.eraseToAnyPublisher()
-        }
-        
-        func startTracking() {
-            startTrackingCallCount += 1
-        }
-        
-        func publish(permissionGranted: Bool) {
-            authorizationPublisher.send(permissionGranted)
-        }
-    }
-    
     private class CameraSpy: Camera {
         var cameraPosition = CameraPosition.back
         private(set) var startSessionCallCount = 0
