@@ -203,6 +203,18 @@ final class StoryCameraViewModelTests: XCTestCase {
         XCTAssertEqual(camera.startRecordingCallCount, 1)
     }
     
+    @MainActor
+    func test_switchCamera_switchesCameraOnCamera() {
+        let camera = CameraSpy()
+        let sut = makeSUT(camera: camera)
+        
+        XCTAssertEqual(camera.switchCameraCallCount, 0)
+        
+        sut.switchCamera()
+        
+        XCTAssertEqual(camera.switchCameraCallCount, 1)
+    }
+    
     // MARK: - Helpers
     
     @MainActor
@@ -247,6 +259,7 @@ final class StoryCameraViewModelTests: XCTestCase {
         private(set) var stopSessionCallCount = 0
         private(set) var startRecordingCallCount = 0
         private(set) var stopRecordingCallCount = 0
+        private(set) var switchCameraCallCount = 0
         
         private let videoPreviewLayerStub: CALayer
         
@@ -271,7 +284,7 @@ final class StoryCameraViewModelTests: XCTestCase {
         }
         
         func switchCamera() {
-            
+            switchCameraCallCount += 1
         }
         
         func takePhoto(on flashMode: CameraFlashMode) {
