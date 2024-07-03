@@ -108,14 +108,25 @@ final class StoryCameraViewModelTests: XCTestCase {
         XCTAssertEqual(microphoneAuthorizationTracker.startTrackingCallCount, 1)
     }
     
+    @MainActor
+    func test_videoPreviewLayer_deliversVideoPreviewLayerFromCamera() {
+        let expectedVideoPreviewLayer = CALayer()
+        let camera = CameraSpy(videoPreviewLayerStub: expectedVideoPreviewLayer)
+        let sut = makeSUT(camera: camera)
+        
+        let receivedPreviewLayer = sut.videoPreviewLayer
+        
+        XCTAssertIdentical(receivedPreviewLayer, expectedVideoPreviewLayer)
+    }
+    
     // MARK: - Helpers
     
     @MainActor
-    private func makeSUT(cameraAuthorizationTracker: AuthorizationTrackerSpy = AuthorizationTrackerSpy(),
+    private func makeSUT(camera: CameraSpy = CameraSpy(),
+                         cameraAuthorizationTracker: AuthorizationTrackerSpy = AuthorizationTrackerSpy(),
                          microphoneAuthorizationTracker : AuthorizationTrackerSpy = AuthorizationTrackerSpy(),
                          file: StaticString = #filePath,
                          line: UInt = #line) -> StoryCameraViewModel {
-        let camera = CameraSpy()
         let sut = StoryCameraViewModel(
             camera: camera,
             cameraAuthorizationTracker: cameraAuthorizationTracker,
@@ -148,9 +159,14 @@ final class StoryCameraViewModelTests: XCTestCase {
     
     private class CameraSpy: Camera {
         var cameraPosition = CameraPosition.back
+        private let videoPreviewLayerStub: CALayer
+        
+        init(videoPreviewLayerStub: CALayer = CALayer()) {
+            self.videoPreviewLayerStub = videoPreviewLayerStub
+        }
         
         var videoPreviewLayer: CALayer {
-            CALayer()
+            videoPreviewLayerStub
         }
         
         func getStatusPublisher() -> AnyPublisher<CameraStatus, Never> {
