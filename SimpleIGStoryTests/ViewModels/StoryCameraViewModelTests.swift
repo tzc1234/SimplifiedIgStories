@@ -90,6 +90,24 @@ final class StoryCameraViewModelTests: XCTestCase {
         XCTAssertTrue(sut.arePermissionsGranted)
     }
     
+    @MainActor
+    func test_checkPermissions_startsTrackingOnAuthorizationTrackers() {
+        let cameraAuthorizationTracker = AuthorizationTrackerSpy()
+        let microphoneAuthorizationTracker = AuthorizationTrackerSpy()
+        let sut = makeSUT(
+            cameraAuthorizationTracker: cameraAuthorizationTracker,
+            microphoneAuthorizationTracker: microphoneAuthorizationTracker
+        )
+        
+        XCTAssertEqual(cameraAuthorizationTracker.startTrackingCallCount, 0)
+        XCTAssertEqual(microphoneAuthorizationTracker.startTrackingCallCount, 0)
+        
+        sut.checkPermissions()
+        
+        XCTAssertEqual(cameraAuthorizationTracker.startTrackingCallCount, 1)
+        XCTAssertEqual(microphoneAuthorizationTracker.startTrackingCallCount, 1)
+    }
+    
     // MARK: - Helpers
     
     @MainActor
@@ -113,13 +131,14 @@ final class StoryCameraViewModelTests: XCTestCase {
     
     private class AuthorizationTrackerSpy: DeviceAuthorizationTracker {
         private let authorizationPublisher = PassthroughSubject<Bool, Never>()
+        private(set) var startTrackingCallCount = 0
         
         func getPublisher() -> AnyPublisher<Bool, Never> {
             authorizationPublisher.eraseToAnyPublisher()
         }
         
         func startTracking() {
-            
+            startTrackingCallCount += 1
         }
         
         func publish(permissionGranted: Bool) {
