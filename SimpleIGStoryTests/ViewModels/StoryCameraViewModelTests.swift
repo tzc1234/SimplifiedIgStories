@@ -215,6 +215,29 @@ final class StoryCameraViewModelTests: XCTestCase {
         XCTAssertEqual(camera.switchCameraCallCount, 1)
     }
     
+    @MainActor
+    func test_takePhoto_takesPhotoOnCameraWithFlashMode() {
+        let camera = CameraSpy()
+        let sut = makeSUT(camera: camera)
+        
+        XCTAssertEqual(camera.loggedFlashModes, [])
+        
+        sut.flashMode = .auto
+        sut.takePhoto()
+        
+        XCTAssertEqual(camera.loggedFlashModes, [.auto])
+        
+        sut.flashMode = .on
+        sut.takePhoto()
+        
+        XCTAssertEqual(camera.loggedFlashModes, [.auto, .on])
+        
+        sut.flashMode = .off
+        sut.takePhoto()
+        
+        XCTAssertEqual(camera.loggedFlashModes, [.auto, .on, .off])
+    }
+    
     // MARK: - Helpers
     
     @MainActor
@@ -260,6 +283,7 @@ final class StoryCameraViewModelTests: XCTestCase {
         private(set) var startRecordingCallCount = 0
         private(set) var stopRecordingCallCount = 0
         private(set) var switchCameraCallCount = 0
+        private(set) var loggedFlashModes = [CameraFlashMode]()
         
         private let videoPreviewLayerStub: CALayer
         
@@ -288,7 +312,7 @@ final class StoryCameraViewModelTests: XCTestCase {
         }
         
         func takePhoto(on flashMode: CameraFlashMode) {
-            
+            loggedFlashModes.append(flashMode)
         }
         
         func startRecording() {
