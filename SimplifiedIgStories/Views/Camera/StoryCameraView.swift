@@ -63,7 +63,7 @@ struct StoryCameraView: View {
         }
         .onChange(of: viewModel.arePermissionsGranted) { isGranted in
             if isGranted {
-                viewModel.startSession()
+                viewModel.startCameraSession()
             }
         }
         .onDisappear {
@@ -94,7 +94,7 @@ extension StoryCameraView {
     private var closeButton: some View {
         Button{
             actionHandler.closeStoryCameraView()
-            viewModel.stopSession()
+            viewModel.stopCameraSession()
         } label: {
             ZStack {
                 Color.clear.frame(width: 45, height: 45)

@@ -69,11 +69,11 @@ extension StoryCameraViewModel {
         microphoneAuthorizationTracker.startTracking()
     }
     
-    func startSession() {
+    func startCameraSession() {
         camera.startSession()
     }
     
-    func stopSession() {
+    func stopCameraSession() {
         camera.stopSession()
     }
     
