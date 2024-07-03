@@ -238,6 +238,19 @@ final class StoryCameraViewModelTests: XCTestCase {
         XCTAssertEqual(camera.loggedFlashModes, [.auto, .on, .off])
     }
     
+    @MainActor
+    func test_focus_setFocusOnCamera() {
+        let camera = CameraSpy()
+        let sut = makeSUT(camera: camera)
+        let focusPoint = CGPoint(x: 999, y: 999)
+        
+        XCTAssertEqual(camera.loggedFocusPoints, [])
+        
+        sut.focus(on: focusPoint)
+        
+        XCTAssertEqual(camera.loggedFocusPoints, [focusPoint])
+    }
+    
     // MARK: - Helpers
     
     @MainActor
@@ -284,6 +297,7 @@ final class StoryCameraViewModelTests: XCTestCase {
         private(set) var stopRecordingCallCount = 0
         private(set) var switchCameraCallCount = 0
         private(set) var loggedFlashModes = [CameraFlashMode]()
+        private(set) var loggedFocusPoints = [CGPoint]()
         
         private let videoPreviewLayerStub: CALayer
         
@@ -324,7 +338,7 @@ final class StoryCameraViewModelTests: XCTestCase {
         }
         
         func focus(on point: CGPoint) {
-            
+            loggedFocusPoints.append(point)
         }
         
         func zoom(to factor: CGFloat) {
