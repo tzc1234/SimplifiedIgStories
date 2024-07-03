@@ -124,27 +124,17 @@ extension StoryCameraViewModel {
                 case .sessionStopped:
                     print("Camera session did stop running")
                     enableVideoRecordButton = false
-                case .cameraSwitched:
-                    break
-                case .addPhotoOutputFailure:
-                    break
                 case .photoTaken(let photo):
                     lastTakenImage = photo
                     showPhotoPreview = true
-                case .imageConvertingFailure:
-                    break
                 case .recordingBegun:
                     print("Did Begin Recording Video")
                 case .recordingFinished:
                     print("Did finish Recording Video")
                     isVideoRecording = nil
-                case .videoProcessFailure:
-                    break
                 case .processedVideo(let videoURL):
                     lastVideoURL = videoURL
                     showVideoPreview = true
-                case .addMovieFileOutputFailure:
-                    break
                 }
             }
             .store(in: &subscriptions)

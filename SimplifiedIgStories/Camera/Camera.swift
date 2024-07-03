@@ -11,15 +11,10 @@ import Combine
 enum CameraStatus {
     case sessionStarted
     case sessionStopped
-    case cameraSwitched
-    case addPhotoOutputFailure
     case photoTaken(photo: UIImage)
-    case imageConvertingFailure
     case recordingBegun
     case recordingFinished
-    case videoProcessFailure
     case processedVideo(videoURL: URL)
-    case addMovieFileOutputFailure
 }
 
 protocol Camera {
@@ -98,7 +93,7 @@ extension DefaultCamera {
                 case .sessionStopped:
                     statusPublisher.send(.sessionStopped)
                 case .cameraSwitched:
-                    statusPublisher.send(.cameraSwitched)
+                    break
                 }
             }
             .store(in: &subscriptions)
@@ -118,11 +113,11 @@ extension DefaultCamera {
                 
                 switch status {
                 case .addPhotoOutputFailure:
-                    statusPublisher.send(.addPhotoOutputFailure)
+                    break
                 case .photoTaken(let photo):
                     statusPublisher.send(.photoTaken(photo: photo))
                 case .imageConvertingFailure:
-                    statusPublisher.send(.imageConvertingFailure)
+                    break
                 }
             }
             .store(in: &subscriptions)
@@ -150,11 +145,11 @@ extension DefaultCamera {
                 case .recordingFinished:
                     statusPublisher.send(.recordingFinished)
                 case .videoProcessFailure:
-                    statusPublisher.send(.videoProcessFailure)
+                    break
                 case .processedVideo(let videoURL):
                     statusPublisher.send(.processedVideo(videoURL: videoURL))
                 case .addMovieFileOutputFailure:
-                    statusPublisher.send(.addMovieFileOutputFailure)
+                    break
                 }
             }
             .store(in: &subscriptions)
