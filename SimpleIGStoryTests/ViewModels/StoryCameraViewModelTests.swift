@@ -132,49 +132,25 @@ final class StoryCameraViewModelTests: XCTestCase {
     }
     
     @MainActor
-    func test_showPhotoPreview_stopsSessionOnCameraWhenShowPhotoPreview() {
+    func test_showPreview_stopsSessionOnCameraWhenShowPreview() {
         let camera = CameraSpy()
         let sut = makeSUT(camera: camera)
         
         XCTAssertEqual(camera.stopSessionCallCount, 0)
         
-        sut.showPhotoPreview = true
+        sut.showPreview = true
         
         XCTAssertEqual(camera.stopSessionCallCount, 1)
     }
     
     @MainActor
-    func test_showPhotoPreview_startsSessionOnCameraWhenNotShowPhotoPreview() {
+    func test_showPreview_startsSessionOnCameraWhenNotShowPreview() {
         let camera = CameraSpy()
         let sut = makeSUT(camera: camera)
         
         XCTAssertEqual(camera.startSessionCallCount, 0)
         
-        sut.showPhotoPreview = false
-        
-        XCTAssertEqual(camera.startSessionCallCount, 1)
-    }
-    
-    @MainActor
-    func test_showVideoPreview_stopsSessionOnCameraWhenShowVideoPreview() {
-        let camera = CameraSpy()
-        let sut = makeSUT(camera: camera)
-        
-        XCTAssertEqual(camera.stopSessionCallCount, 0)
-        
-        sut.showVideoPreview = true
-        
-        XCTAssertEqual(camera.stopSessionCallCount, 1)
-    }
-    
-    @MainActor
-    func test_showVideoPreview_startsSessionOnCameraWhenNotShowVideoPreview() {
-        let camera = CameraSpy()
-        let sut = makeSUT(camera: camera)
-        
-        XCTAssertEqual(camera.startSessionCallCount, 0)
-        
-        sut.showVideoPreview = false
+        sut.showPreview = false
         
         XCTAssertEqual(camera.startSessionCallCount, 1)
     }
@@ -281,16 +257,22 @@ final class StoryCameraViewModelTests: XCTestCase {
     }
     
     @MainActor
-    func test_lastTakenImage_deliversImageReceivedFromCameraPhotoTakenStatus() {
+    func test_media_deliversImageReceivedFromCameraPhotoTakenStatus() {
         let camera = CameraSpy()
         let sut = makeSUT(camera: camera)
         let expectedImage = UIImage.make(withColor: .gray)
         
-        XCTAssertNil(sut.lastTakenImage)
+        XCTAssertNil(sut.media)
+        XCTAssertFalse(sut.showPreview)
         
-        camera.publish(status: .photoTaken(photo: expectedImage))
+        camera.publish(status: .processedMedia(.image(expectedImage)))
         
-        XCTAssertEqual(sut.lastTakenImage, expectedImage)
+        if case let .image(image) = sut.media {
+            XCTAssertEqual(image, expectedImage)
+            XCTAssertTrue(sut.showPreview)
+        } else {
+            XCTFail("Image should not be nil")
+        }
     }
     
     @MainActor
@@ -313,13 +295,17 @@ final class StoryCameraViewModelTests: XCTestCase {
         let sut = makeSUT(camera: camera)
         let expectedVideoURL = anyVideoURL()
         
-        XCTAssertNil(sut.lastVideoURL)
-        XCTAssertFalse(sut.showVideoPreview)
+        XCTAssertNil(sut.media)
+        XCTAssertFalse(sut.showPreview)
         
-        camera.publish(status: .processedVideo(videoURL: expectedVideoURL))
+        camera.publish(status: .processedMedia(.video(expectedVideoURL)))
         
-        XCTAssertEqual(sut.lastVideoURL, expectedVideoURL)
-        XCTAssertTrue(sut.showVideoPreview)
+        if case let .video(url) = sut.media {
+            XCTAssertEqual(url, expectedVideoURL)
+            XCTAssertTrue(sut.showPreview)
+        } else {
+            XCTFail("VideoURL should not be nil")
+        }
     }
     
     // MARK: - Helpers

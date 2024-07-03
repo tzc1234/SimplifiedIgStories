@@ -1,14 +1,13 @@
 //
-//  StoryCamPermissionView.swift
+//  StoryCameraPermissionView.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 14/03/2022.
 //
 
 import SwiftUI
-import Combine
 
-struct StoryCamPermissionView: View {
+struct StoryCameraPermissionView: View {
     @ObservedObject var viewModel: StoryCameraViewModel
     
     var body: some View {
@@ -80,7 +79,7 @@ struct StoryCamPermissionView: View {
 
 struct PermissionView_Previews: PreviewProvider {
     static var previews: some View {
-        StoryCamPermissionView(viewModel: StoryCameraViewModel(
+        StoryCameraPermissionView(viewModel: StoryCameraViewModel(
             camera: DefaultCamera.dummy,
             cameraAuthorizationTracker: AVCaptureDeviceAuthorizationTracker(mediaType: .video),
             microphoneAuthorizationTracker: AVCaptureDeviceAuthorizationTracker(mediaType: .audio)

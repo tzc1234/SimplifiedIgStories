@@ -38,4 +38,6 @@ final class AppComponentsFactory {
     
     let cameraAuthorizationTracker = AVCaptureDeviceAuthorizationTracker(mediaType: .video)
     let microphoneAuthorizationTracker = AVCaptureDeviceAuthorizationTracker(mediaType: .audio)
+    
+    private(set) lazy var storyPreviewViewModel = StoryPreviewViewModel(mediaSaver: mediaSaver)
 }

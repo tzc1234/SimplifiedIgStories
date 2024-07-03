@@ -66,7 +66,14 @@ struct SimplifiedIgStoriesApp: App {
                         camera: factory.camera,
                         cameraAuthorizationTracker: factory.cameraAuthorizationTracker,
                         microphoneAuthorizationTracker: factory.microphoneAuthorizationTracker
-                    ))
+                    ), getStoryPreview: { media, backBtnAction, postBtnAction in
+                        StoryPreview(
+                            viewModel: factory.storyPreviewViewModel,
+                            media: media,
+                            backBtnAction: backBtnAction,
+                            postBtnAction: postBtnAction
+                        )
+                    })
                 }
             )
         }

@@ -9,14 +9,16 @@ import SwiftUI
 
 struct StoryCameraView: View {
     @EnvironmentObject private var actionHandler: HomeUIActionHandler
+    
     @ObservedObject var viewModel: StoryCameraViewModel
+    let getStoryPreview: (Media, _ backBtnAction: @escaping (() -> Void), _ postBtnAction: @escaping (() -> Void)) -> StoryPreview
     
     var body: some View {
         ZStack {
             if viewModel.arePermissionsGranted {
                 AVCaptureVideoPreviewRepresentable(storyCamViewModel: viewModel)
             } else {
-                StoryCamPermissionView(viewModel: viewModel)
+                StoryCameraPermissionView(viewModel: viewModel)
             }
             
             VStack(alignment: .leading, spacing: 0) {
@@ -47,17 +49,11 @@ struct StoryCameraView: View {
             }
             .padding(.vertical, 20)
             
-            if viewModel.showPhotoPreview, let image = viewModel.lastTakenImage {
-                StoryPreview(uiImage: image, backBtnAction: {
-                    viewModel.showPhotoPreview = false
-                }, postBtnAction: {
-                    actionHandler.postImageAction?(image)
-                })
-            } else if viewModel.showVideoPreview, let url = viewModel.lastVideoURL {
-                StoryPreview(videoUrl: url, backBtnAction: {
-                    viewModel.showVideoPreview = false
-                }, postBtnAction: {
-                    actionHandler.postVideoAction?(url)
+            if viewModel.showPreview, let media = viewModel.media {
+                getStoryPreview(media, {
+                    viewModel.showPreview = false
+                }, {
+                    actionHandler.postMedia?(media)
                 })
             }
         }
@@ -82,7 +78,14 @@ struct StoryCamView_Previews: PreviewProvider {
             camera: DefaultCamera.dummy,
             cameraAuthorizationTracker: AVCaptureDeviceAuthorizationTracker(mediaType: .video),
             microphoneAuthorizationTracker: AVCaptureDeviceAuthorizationTracker(mediaType: .audio)
-        ))
+        ), getStoryPreview: { media, backBtnAction, postBtnAction in
+            StoryPreview(
+                viewModel: StoryPreviewViewModel(mediaSaver: DummyMediaSaver()),
+                media: media,
+                backBtnAction: backBtnAction,
+                postBtnAction: postBtnAction
+            )
+        })
     }
 }
 

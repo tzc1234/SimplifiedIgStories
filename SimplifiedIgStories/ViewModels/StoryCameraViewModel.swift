@@ -14,21 +14,14 @@ import Combine
     @Published var flashMode = CameraFlashMode.off
     @Published private(set) var enableVideoRecordButton = false
     
-    private(set) var lastTakenImage: UIImage?
-    private(set) var lastVideoURL: URL?
+    private(set) var media: Media?
     
     @Published private(set) var isCameraPermissionGranted = false
     @Published private(set) var isMicrophonePermissionGranted = false
     
-    @Published var showPhotoPreview = false {
+    @Published var showPreview = false {
         didSet {
-            showPhotoPreview ? camera.stopSession() : camera.startSession()
-        }
-    }
-    
-    @Published var showVideoPreview = false {
-        didSet {
-            showVideoPreview ? camera.stopSession() : camera.startSession()
+            showPreview ? camera.stopSession() : camera.startSession()
         }
     }
     
@@ -124,17 +117,14 @@ extension StoryCameraViewModel {
                 case .sessionStopped:
                     print("Camera session did stop running")
                     enableVideoRecordButton = false
-                case .photoTaken(let photo):
-                    lastTakenImage = photo
-                    showPhotoPreview = true
                 case .recordingBegun:
                     print("Did Begin Recording Video")
                 case .recordingFinished:
                     print("Did finish Recording Video")
                     isVideoRecording = nil
-                case .processedVideo(let videoURL):
-                    lastVideoURL = videoURL
-                    showVideoPreview = true
+                case let .processedMedia(media):
+                    self.media = media
+                    showPreview = true
                 }
             }
             .store(in: &subscriptions)

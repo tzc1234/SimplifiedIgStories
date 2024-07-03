@@ -14,10 +14,10 @@ struct VideoRecordButton: View {
     @State private var fill = 0.0
     @State private var animatableCircleId = 0
     
-    @State var tapAction: (() -> Void)
-    @State var longPressingAction: ((_ isPressing: Bool) -> Void)
+    @State var tapAction: () -> Void
+    @State var longPressingAction: (_ isPressing: Bool) -> Void
     
-    let buttonSize = 80.0
+    private let buttonSize = 80.0
     
     var body: some View {
         ZStack {
