@@ -11,17 +11,21 @@ import Combine
 @MainActor final class StoryCameraViewModel: ObservableObject {
     private var subscriptions = Set<AnyCancellable>()
     
+    @Published private(set) var isCameraPermissionGranted = false
+    @Published private(set) var isMicrophonePermissionGranted = false
+    
     @Published var flashMode = CameraFlashMode.off
     @Published private(set) var enableVideoRecordButton = false
     
     private(set) var media: Media?
-    
-    @Published private(set) var isCameraPermissionGranted = false
-    @Published private(set) var isMicrophonePermissionGranted = false
-    
     @Published var showPreview = false {
         didSet {
-            showPreview ? camera.stopSession() : camera.startSession()
+            if showPreview {
+                camera.stopSession()
+            } else {
+                media = nil
+                camera.startSession()
+            }
         }
     }
     
