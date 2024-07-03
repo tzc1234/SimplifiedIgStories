@@ -30,6 +30,10 @@ This is an important move, it does enable the possibility to inject their collab
 5. Async/await
 
 ## Update History
+#### 03/07/2024
+1. Refactor `StoryCameraViewModel`
+2. Update unit tests for `StoryCameraViewModel`
+
 #### 25/03/2024
 1. Extract animation logic from `StoriesViewModel` to `StoriesAnimationHandler`
 2. Remove unnecessary `StoryViewModel`

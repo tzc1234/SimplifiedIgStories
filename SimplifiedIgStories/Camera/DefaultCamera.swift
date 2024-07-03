@@ -1,41 +1,12 @@
 //
-//  Camera.swift
+//  DefaultCamera.swift
 //  SimplifiedIgStories
 //
-//  Created by Tsz-Lung on 01/07/2024.
+//  Created by Tsz-Lung on 03/07/2024.
 //
 
 import AVKit
 import Combine
-
-enum CameraStatus {
-    case sessionStarted
-    case sessionStopped
-    case cameraSwitched
-    case addPhotoOutputFailure
-    case photoTaken(photo: UIImage)
-    case imageConvertingFailure
-    case recordingBegun
-    case recordingFinished
-    case videoProcessFailure
-    case processedVideo(videoURL: URL)
-    case addMovieFileOutputFailure
-}
-
-protocol Camera {
-    var cameraPosition: CameraPosition { get }
-    var videoPreviewLayer: CALayer { get }
-    
-    func getStatusPublisher() -> AnyPublisher<CameraStatus, Never>
-    func startSession()
-    func stopSession()
-    func switchCamera()
-    func takePhoto(on flashMode: CameraFlashMode)
-    func startRecording()
-    func stopRecording()
-    func focus(on point: CGPoint)
-    func zoom(to factor: CGFloat)
-}
 
 final class DefaultCamera: Camera {
     private let statusPublisher = PassthroughSubject<CameraStatus, Never>()
@@ -46,7 +17,7 @@ final class DefaultCamera: Camera {
     private let videoRecorder: VideoRecorder
     private let cameraAuxiliary: CameraAuxiliary
     
-    init(cameraCore: CameraCore, 
+    init(cameraCore: CameraCore,
          photoTaker: PhotoTaker,
          videoRecorder: VideoRecorder,
          cameraAuxiliary: CameraAuxiliary) {
@@ -98,7 +69,7 @@ extension DefaultCamera {
                 case .sessionStopped:
                     statusPublisher.send(.sessionStopped)
                 case .cameraSwitched:
-                    statusPublisher.send(.cameraSwitched)
+                    break
                 }
             }
             .store(in: &subscriptions)
@@ -118,11 +89,11 @@ extension DefaultCamera {
                 
                 switch status {
                 case .addPhotoOutputFailure:
-                    statusPublisher.send(.addPhotoOutputFailure)
+                    break
                 case .photoTaken(let photo):
                     statusPublisher.send(.photoTaken(photo: photo))
                 case .imageConvertingFailure:
-                    statusPublisher.send(.imageConvertingFailure)
+                    break
                 }
             }
             .store(in: &subscriptions)
@@ -150,11 +121,11 @@ extension DefaultCamera {
                 case .recordingFinished:
                     statusPublisher.send(.recordingFinished)
                 case .videoProcessFailure:
-                    statusPublisher.send(.videoProcessFailure)
+                    break
                 case .processedVideo(let videoURL):
                     statusPublisher.send(.processedVideo(videoURL: videoURL))
                 case .addMovieFileOutputFailure:
-                    statusPublisher.send(.addMovieFileOutputFailure)
+                    break
                 }
             }
             .store(in: &subscriptions)
