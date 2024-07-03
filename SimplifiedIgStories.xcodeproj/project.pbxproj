@@ -15,6 +15,7 @@
 		BE0EA2F92C354C2A006381A6 /* StoryCameraViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2F82C354C2A006381A6 /* StoryCameraViewModelTests.swift */; };
 		BE0EA2FB2C35578F006381A6 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2FA2C35578F006381A6 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift */; };
 		BE0EA2FD2C3561EC006381A6 /* AuthorizationTrackerSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2FC2C3561EC006381A6 /* AuthorizationTrackerSpy.swift */; };
+		BE0EA2FF2C356C8A006381A6 /* CameraSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2FE2C356C8A006381A6 /* CameraSpy.swift */; };
 		BE287A2A2B7A47FB00119674 /* CameraAuthorizationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE287A292B7A47FB00119674 /* CameraAuthorizationHandler.swift */; };
 		BE2C557227BFFE9D0087EE7F /* StoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557127BFFE9D0087EE7F /* StoryView.swift */; };
 		BE2C557427C0197B0087EE7F /* DetectableTapGesturePositionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */; };
@@ -156,6 +157,7 @@
 		BE0EA2F82C354C2A006381A6 /* StoryCameraViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCameraViewModelTests.swift; sourceTree = "<group>"; };
 		BE0EA2FA2C35578F006381A6 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DispatchQueue+ImmediateDispatchOnMainQueue.swift"; sourceTree = "<group>"; };
 		BE0EA2FC2C3561EC006381A6 /* AuthorizationTrackerSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationTrackerSpy.swift; sourceTree = "<group>"; };
+		BE0EA2FE2C356C8A006381A6 /* CameraSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSpy.swift; sourceTree = "<group>"; };
 		BE287A292B7A47FB00119674 /* CameraAuthorizationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraAuthorizationHandler.swift; sourceTree = "<group>"; };
 		BE2C557127BFFE9D0087EE7F /* StoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryView.swift; sourceTree = "<group>"; };
 		BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetectableTapGesturePositionView.swift; sourceTree = "<group>"; };
@@ -492,6 +494,7 @@
 				BED74E202C31A1B700A34B27 /* DummyMediaSaver.swift */,
 				BE0EA2FA2C35578F006381A6 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift */,
 				BE0EA2FC2C3561EC006381A6 /* AuthorizationTrackerSpy.swift */,
+				BE0EA2FE2C356C8A006381A6 /* CameraSpy.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -956,6 +959,7 @@
 				BE83D1232B84D8F5004A1FB4 /* CapturePhotoOutputSpy.swift in Sources */,
 				BE69F50D281974E5001BA4EC /* StoriesViewModelTests.swift in Sources */,
 				BE38F7AD2B83649300F42C71 /* AVPhotoTakerTests.swift in Sources */,
+				BE0EA2FF2C356C8A006381A6 /* CameraSpy.swift in Sources */,
 				BE8305062B875BF2002A72C4 /* AVCameraAuxiliaryTests.swift in Sources */,
 				BEBF322F2B74D5DD00DCD624 /* LocalStoriesLoaderTests.swift in Sources */,
 				BEEEBBF82B75418800EC85C7 /* LocalStoriesLoaderIntegrationTests.swift in Sources */,
