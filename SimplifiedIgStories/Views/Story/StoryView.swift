@@ -65,7 +65,7 @@ extension StoryView {
                 homeUIActionHandler.closeStoryContainer(storyId: story.id)
                 DispatchQueue.main.asyncAfter(
                     deadline: .now() + 0.3,
-                    execute: homeUIActionHandler.toggleStoryCamView
+                    execute: homeUIActionHandler.showStoryCameraView
                 )
             }
         }

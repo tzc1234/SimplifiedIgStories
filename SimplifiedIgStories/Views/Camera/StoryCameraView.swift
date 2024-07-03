@@ -90,7 +90,7 @@ struct StoryCamView_Previews: PreviewProvider {
 extension StoryCameraView {
     private var closeButton: some View {
         Button{
-            actionHandler.tapStoryCameraCloseAction?()
+            actionHandler.closeStoryCameraView()
         } label: {
             ZStack {
                 Color.clear.frame(width: 45, height: 45)

@@ -37,7 +37,7 @@ struct StoryIconsView: View {
             animationHandler.setCurrentStoryId(story.id)
             homeUIActionHandler.showStoryContainer(storyId: story.id)
         } else if story.user.isCurrentUser {
-            homeUIActionHandler.toggleStoryCamView()
+            homeUIActionHandler.showStoryCameraView()
         }
     }
 }

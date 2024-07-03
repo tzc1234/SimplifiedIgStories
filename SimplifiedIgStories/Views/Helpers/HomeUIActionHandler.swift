@@ -11,20 +11,19 @@ final class HomeUIActionHandler: ObservableObject {
     typealias StoryID = Int
     typealias IconFrame = CGRect
     
-    @Published private(set) var showContainer = false
-    @Published var showStoryCameraView = false
+    @Published private(set) var isContainerShown = false
+    @Published private(set) var isStoryCameraViewShown = false
     
     var storyIconFrameDict: [StoryID: IconFrame] = [:]
     @Published private(set) var currentIconFrame: IconFrame = .zero
     
     var postImageAction: ((UIImage) -> Void)?
     var postVideoAction: ((URL) -> Void)?
-    var tapStoryCameraCloseAction: (() -> Void)?
     
     func showStoryContainer(storyId: Int?) {
         updateCurrentIconFrame(storyId: storyId)
         withAnimation(.easeInOut(duration: 0.3)) {
-            showContainer = true
+            isContainerShown = true
         }
     }
 
@@ -33,13 +32,19 @@ final class HomeUIActionHandler: ObservableObject {
         // Don't use .spring(). If you switch the StoryContainer fast from one, close then open another,
         // there will be a weird behaviour. The StoryView cannot be updated completely and broken.
         withAnimation(.easeInOut(duration: 0.3)) {
-            showContainer = false
+            isContainerShown = false
         }
     }
     
-    func toggleStoryCamView() {
+    func showStoryCameraView() {
         withAnimation(.default) {
-            showStoryCameraView.toggle()
+            isStoryCameraViewShown = true
+        }
+    }
+    
+    func closeStoryCameraView() {
+        withAnimation(.default) {
+            isStoryCameraViewShown = false
         }
     }
     

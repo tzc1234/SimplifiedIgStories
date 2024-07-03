@@ -44,16 +44,12 @@ struct HomeView: View {
         .onAppear {
             handler.postImageAction = { image in
                 storiesViewModel.postStoryPortion(image: image)
-                hideStoryCamView()
+                handler.closeStoryCameraView()
             }
             
             handler.postVideoAction = { url in
                 storiesViewModel.postStoryPortion(videoUrl: url)
-                hideStoryCamView()
-            }
-            
-            handler.tapStoryCameraCloseAction = {
-                hideStoryCamView()
+                handler.closeStoryCameraView()
             }
         }
     }
@@ -63,7 +59,7 @@ struct HomeView: View {
 extension HomeView {
     private var storyCameraView: some View {
         ZStack {
-            if handler.showStoryCameraView {
+            if handler.isStoryCameraViewShown {
                 getStoryCameraView()
                     .frame(width: .screenWidth)
             }
@@ -71,15 +67,9 @@ extension HomeView {
         .ignoresSafeArea()
     }
     
-    private func hideStoryCamView() {
-        withAnimation(.default) {
-            handler.showStoryCameraView = false
-        }
-    }
-    
     private var storyContainer: some View {
         GeometryReader { geo in
-            if handler.showContainer {
+            if handler.isContainerShown {
                 let iconFrame = handler.currentIconFrame
                 let offsetX = -(geo.size.width / 2 - iconFrame.midX)
                 let offsetY = iconFrame.minY - geo.safeAreaInsets.top
