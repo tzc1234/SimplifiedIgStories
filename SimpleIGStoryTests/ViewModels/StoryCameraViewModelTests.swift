@@ -265,19 +265,15 @@ final class StoryCameraViewModelTests: XCTestCase {
     }
     
     @MainActor
-    func test_enableVideoRecordButton_enablesVideoRecordBtnOnCameraSessionStartedStatus() {
+    func test_enableVideoRecordButton_configuresVideoRecordBtnOnCameraSessionStatus() {
         let camera = CameraSpy()
         let sut = makeSUT(camera: camera)
+        
+        XCTAssertFalse(sut.enableVideoRecordButton)
         
         camera.publish(status: .sessionStarted)
         
         XCTAssertTrue(sut.enableVideoRecordButton)
-    }
-    
-    @MainActor
-    func test_enableVideoRecordButton_disablesVideoRecordBtnOnCameraSessionStoppedStatus() {
-        let camera = CameraSpy()
-        let sut = makeSUT(camera: camera)
         
         camera.publish(status: .sessionStopped)
         
@@ -290,9 +286,25 @@ final class StoryCameraViewModelTests: XCTestCase {
         let sut = makeSUT(camera: camera)
         let expectedImage = UIImage.make(withColor: .gray)
         
+        XCTAssertNil(sut.lastTakenImage)
+        
         camera.publish(status: .photoTaken(photo: expectedImage))
         
         XCTAssertEqual(sut.lastTakenImage, expectedImage)
+    }
+    
+    @MainActor
+    func test_isVideoRecording_resetsIsVideoRecordingOnCameraRecordingFinishedStatus() {
+        let camera = CameraSpy()
+        let sut = makeSUT(camera: camera)
+        
+        sut.isVideoRecording = true
+        
+        XCTAssertNotNil(sut.isVideoRecording)
+        
+        camera.publish(status: .recordingFinished)
+        
+        XCTAssertNil(sut.isVideoRecording)
     }
     
     // MARK: - Helpers
