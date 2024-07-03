@@ -155,6 +155,30 @@ final class StoryCameraViewModelTests: XCTestCase {
         XCTAssertEqual(camera.startSessionCallCount, 1)
     }
     
+    @MainActor
+    func test_showVideoPreview_stopsSessionOnCameraWhenShowVideoPreview() {
+        let camera = CameraSpy()
+        let sut = makeSUT(camera: camera)
+        
+        XCTAssertEqual(camera.stopSessionCallCount, 0)
+        
+        sut.showVideoPreview = true
+        
+        XCTAssertEqual(camera.stopSessionCallCount, 1)
+    }
+    
+    @MainActor
+    func test_showVideoPreview_startsSessionOnCameraWhenNotShowVideoPreview() {
+        let camera = CameraSpy()
+        let sut = makeSUT(camera: camera)
+        
+        XCTAssertEqual(camera.startSessionCallCount, 0)
+        
+        sut.showVideoPreview = false
+        
+        XCTAssertEqual(camera.startSessionCallCount, 1)
+    }
+    
     // MARK: - Helpers
     
     @MainActor
