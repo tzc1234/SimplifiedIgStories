@@ -8,6 +8,11 @@
 import SwiftUI
 import AVKit
 
+enum PreviewMedia {
+    case image(UIImage)
+    case video(URL)
+}
+
 struct StoryPreview: View {
     @ObservedObject var viewModel: StoryPreviewViewModel = .init(mediaSaver: LocalMediaSaver(store: PHPPhotoMediaStore()))
     
@@ -15,32 +20,9 @@ struct StoryPreview: View {
     @State private var showAlert = false
     @State private var player: AVPlayer?
     
-    let image: UIImage?
-    let videoURL: URL?
+    let media: PreviewMedia
     let backBtnAction: (() -> Void)
     let postBtnAction: (() -> Void)
-    
-    init(image: UIImage,
-         backBtnAction: @escaping (() -> Void),
-         postBtnAction: @escaping (() -> Void)) {
-        self.init(image: image, videoURL: nil, backBtnAction: backBtnAction, postBtnAction: postBtnAction)
-    }
-    
-    init(videoURL: URL,
-         backBtnAction: @escaping (() -> Void),
-         postBtnAction: @escaping (() -> Void)) {
-        self.init(image: nil, videoURL: videoURL, backBtnAction: backBtnAction, postBtnAction: postBtnAction)
-    }
-    
-    private init(image: UIImage?,
-                 videoURL: URL?,
-                 backBtnAction: @escaping (() -> Void),
-                 postBtnAction: @escaping (() -> Void)) {
-        self.image = image
-        self.videoURL = videoURL
-        self.backBtnAction = backBtnAction
-        self.postBtnAction = postBtnAction
-    }
     
     var body: some View {
         ZStack {
@@ -73,8 +55,8 @@ struct StoryPreview: View {
             noticeLabel
         }
         .onAppear {
-            if let videoURL {
-                player = AVPlayer(url: videoURL)
+            if case let .video(url) = media {
+                player = AVPlayer(url: url)
             }
         }
     }
@@ -83,7 +65,7 @@ struct StoryPreview: View {
 extension StoryPreview {
     @ViewBuilder 
     private var photoView: some View {
-        if let image {
+        if case let .image(image) = media {
             Image(uiImage: image)
                 .resizable()
                 .scaledToFill()
@@ -125,13 +107,14 @@ extension StoryPreview {
     
     private var saveBtn: some View {
         Button {
-            if let image {
+            switch media {
+            case let .image(image):
                 Task { @MainActor in
                     await viewModel.saveToAlbum(image: image)
                 }
-            } else if let videoURL {
+            case let .video(url):
                 Task { @MainActor in
-                    await viewModel.saveToAlbum(videoURL: videoURL)
+                    await viewModel.saveToAlbum(videoURL: url)
                 }
             }
             
@@ -181,6 +164,6 @@ extension StoryPreview {
 
 struct StoryPreview_Previews: PreviewProvider {
     static var previews: some View {
-        StoryPreview(image: UIImage(), backBtnAction: {}, postBtnAction: {})
+        StoryPreview(media: .image(UIImage()), backBtnAction: {}, postBtnAction: {})
     }
 }

@@ -100,7 +100,9 @@ struct HomeView_Previews: PreviewProvider {
                     camera: DefaultCamera.dummy,
                     cameraAuthorizationTracker: AVCaptureDeviceAuthorizationTracker(mediaType: .video),
                     microphoneAuthorizationTracker: AVCaptureDeviceAuthorizationTracker(mediaType: .audio)
-                ))
+                ), getStoryPreview: { media, backBtnAction, postBtnAction in
+                    StoryPreview(media: media, backBtnAction: backBtnAction, postBtnAction: postBtnAction)
+                })
             }
         )
     }

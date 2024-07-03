@@ -9,7 +9,9 @@ import SwiftUI
 
 struct StoryCameraView: View {
     @EnvironmentObject private var actionHandler: HomeUIActionHandler
+    
     @ObservedObject var viewModel: StoryCameraViewModel
+    let getStoryPreview: (PreviewMedia, _ backBtnAction: @escaping (() -> Void), _ postBtnAction: @escaping (() -> Void)) -> StoryPreview
     
     var body: some View {
         ZStack {
@@ -48,15 +50,15 @@ struct StoryCameraView: View {
             .padding(.vertical, 20)
             
             if viewModel.showPhotoPreview, let image = viewModel.lastTakenImage {
-                StoryPreview(image: image, backBtnAction: {
+                getStoryPreview(.image(image), {
                     viewModel.showPhotoPreview = false
-                }, postBtnAction: {
+                }, {
                     actionHandler.postImageAction?(image)
                 })
             } else if viewModel.showVideoPreview, let url = viewModel.lastVideoURL {
-                StoryPreview(videoURL: url, backBtnAction: {
+                getStoryPreview(.video(url), {
                     viewModel.showVideoPreview = false
-                }, postBtnAction: {
+                }, {
                     actionHandler.postVideoAction?(url)
                 })
             }
@@ -82,7 +84,9 @@ struct StoryCamView_Previews: PreviewProvider {
             camera: DefaultCamera.dummy,
             cameraAuthorizationTracker: AVCaptureDeviceAuthorizationTracker(mediaType: .video),
             microphoneAuthorizationTracker: AVCaptureDeviceAuthorizationTracker(mediaType: .audio)
-        ))
+        ), getStoryPreview: { media, backBtnAction, postBtnAction in
+            StoryPreview(media: media, backBtnAction: backBtnAction, postBtnAction: postBtnAction)
+        })
     }
 }
 
