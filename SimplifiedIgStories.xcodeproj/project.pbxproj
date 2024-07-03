@@ -334,11 +334,10 @@
 				BE9336C827D24468009E5370 /* FileManager */,
 				BE8F580827D668C700F9DB92 /* ViewModels */,
 				BE090B6527B9566D00B6F906 /* Views */,
-				BEA1D95C27C3DA3000D0A67A /* Models */,
 				BEA1D95627C3C71B00D0A67A /* Extensions */,
 				BEA1D95927C3D9EB00D0A67A /* Resources */,
-				BE090B5B27B9562D00B6F906 /* Assets.xcassets */,
 				BE090B5D27B9562D00B6F906 /* Preview Content */,
+				BE090B5B27B9562D00B6F906 /* Assets.xcassets */,
 			);
 			path = SimplifiedIgStories;
 			sourceTree = "<group>";
@@ -387,6 +386,16 @@
 				BE7BA1182C32BB0B005DB88C /* Camera.swift */,
 			);
 			path = " Interfaces";
+			sourceTree = "<group>";
+		};
+		BE0EA3092C357FF8006381A6 /* DTOs */ = {
+			isa = PBXGroup;
+			children = (
+				BEA1D95D27C3DA7100D0A67A /* User.swift */,
+				BE8D954427C44CA200D9D6DB /* Story.swift */,
+				BE8F580227D641AE00F9DB92 /* Portion.swift */,
+			);
+			path = DTOs;
 			sourceTree = "<group>";
 		};
 		BE2D7790285F761F00DBD924 /* Camera */ = {
@@ -597,6 +606,7 @@
 		BE8F580827D668C700F9DB92 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				BE0EA3092C357FF8006381A6 /* DTOs */,
 				BE0EA3002C357DA2006381A6 /*  Interfaces */,
 				BE8F580927D668E900F9DB92 /* StoriesViewModel.swift */,
 				BE6B73C627D794AD003D2B24 /* StoryPortionViewModel.swift */,
@@ -671,16 +681,6 @@
 				BE8F580027D63EF300F9DB92 /* forestVideo.mp4 */,
 			);
 			path = Resources;
-			sourceTree = "<group>";
-		};
-		BEA1D95C27C3DA3000D0A67A /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				BEA1D95D27C3DA7100D0A67A /* User.swift */,
-				BE8D954427C44CA200D9D6DB /* Story.swift */,
-				BE8F580227D641AE00F9DB92 /* Portion.swift */,
-			);
-			path = Models;
 			sourceTree = "<group>";
 		};
 		BEA7D9FD27C6DFE500DA81E6 /* Shapes */ = {
