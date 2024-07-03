@@ -251,6 +251,19 @@ final class StoryCameraViewModelTests: XCTestCase {
         XCTAssertEqual(camera.loggedFocusPoints, [focusPoint])
     }
     
+    @MainActor
+    func test_zoom_zoomsOnCamera() {
+        let camera = CameraSpy()
+        let sut = makeSUT(camera: camera)
+        let zoomFactor = CGFloat(999)
+        
+        XCTAssertEqual(camera.loggedZoomFactors, [])
+        
+        sut.zoom(to: zoomFactor)
+        
+        XCTAssertEqual(camera.loggedZoomFactors, [zoomFactor])
+    }
+    
     // MARK: - Helpers
     
     @MainActor
@@ -298,6 +311,7 @@ final class StoryCameraViewModelTests: XCTestCase {
         private(set) var switchCameraCallCount = 0
         private(set) var loggedFlashModes = [CameraFlashMode]()
         private(set) var loggedFocusPoints = [CGPoint]()
+        private(set) var loggedZoomFactors = [CGFloat]()
         
         private let videoPreviewLayerStub: CALayer
         
@@ -342,7 +356,7 @@ final class StoryCameraViewModelTests: XCTestCase {
         }
         
         func zoom(to factor: CGFloat) {
-            
+            loggedZoomFactors.append(factor)
         }
     }
 }
