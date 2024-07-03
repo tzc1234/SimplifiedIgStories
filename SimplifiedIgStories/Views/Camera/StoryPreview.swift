@@ -14,7 +14,7 @@ enum PreviewMedia {
 }
 
 struct StoryPreview: View {
-    @ObservedObject var viewModel: StoryPreviewViewModel = .init(mediaSaver: LocalMediaSaver(store: PHPPhotoMediaStore()))
+    @ObservedObject var viewModel: StoryPreviewViewModel
     
     @State private var showNoticeLabel = false
     @State private var showAlert = false
@@ -164,6 +164,11 @@ extension StoryPreview {
 
 struct StoryPreview_Previews: PreviewProvider {
     static var previews: some View {
-        StoryPreview(media: .image(UIImage()), backBtnAction: {}, postBtnAction: {})
+        StoryPreview(
+            viewModel: StoryPreviewViewModel(mediaSaver: DummyMediaSaver()),
+            media: .image(UIImage()),
+            backBtnAction: {},
+            postBtnAction: {}
+        )
     }
 }

@@ -85,7 +85,12 @@ struct StoryCamView_Previews: PreviewProvider {
             cameraAuthorizationTracker: AVCaptureDeviceAuthorizationTracker(mediaType: .video),
             microphoneAuthorizationTracker: AVCaptureDeviceAuthorizationTracker(mediaType: .audio)
         ), getStoryPreview: { media, backBtnAction, postBtnAction in
-            StoryPreview(media: media, backBtnAction: backBtnAction, postBtnAction: postBtnAction)
+            StoryPreview(
+                viewModel: StoryPreviewViewModel(mediaSaver: DummyMediaSaver()),
+                media: media,
+                backBtnAction: backBtnAction,
+                postBtnAction: postBtnAction
+            )
         })
     }
 }
