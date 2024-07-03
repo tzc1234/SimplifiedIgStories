@@ -73,6 +73,10 @@ extension StoryCameraViewModel {
         camera.startSession()
     }
     
+    func stopSession() {
+        camera.stopSession()
+    }
+    
     func switchCamera() {
         camera.switchCamera()
     }

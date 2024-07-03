@@ -132,6 +132,18 @@ final class StoryCameraViewModelTests: XCTestCase {
     }
     
     @MainActor
+    func test_stopSession_stopsSessionOnCamera() {
+        let camera = CameraSpy()
+        let sut = makeSUT(camera: camera)
+        
+        XCTAssertEqual(camera.stopSessionCallCount, 0)
+        
+        sut.stopSession()
+        
+        XCTAssertEqual(camera.stopSessionCallCount, 1)
+    }
+    
+    @MainActor
     func test_showPreview_stopsSessionOnCameraWhenShowingPreview() {
         let camera = CameraSpy()
         let sut = makeSUT(camera: camera)
