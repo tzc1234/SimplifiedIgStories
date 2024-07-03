@@ -179,6 +179,30 @@ final class StoryCameraViewModelTests: XCTestCase {
         XCTAssertEqual(camera.startSessionCallCount, 1)
     }
     
+    @MainActor
+    func test_isVideoRecording_stopsRecordingOnCameraWhenVideoRecording() {
+        let camera = CameraSpy()
+        let sut = makeSUT(camera: camera)
+        
+        XCTAssertEqual(camera.stopRecordingCallCount, 0)
+        
+        sut.isVideoRecording = false
+        
+        XCTAssertEqual(camera.stopRecordingCallCount, 1)
+    }
+    
+    @MainActor
+    func test_isVideoRecording_startsRecordingOnCameraWhenVideoRecording() {
+        let camera = CameraSpy()
+        let sut = makeSUT(camera: camera)
+        
+        XCTAssertEqual(camera.startRecordingCallCount, 0)
+        
+        sut.isVideoRecording = true
+        
+        XCTAssertEqual(camera.startRecordingCallCount, 1)
+    }
+    
     // MARK: - Helpers
     
     @MainActor
@@ -221,6 +245,8 @@ final class StoryCameraViewModelTests: XCTestCase {
         var cameraPosition = CameraPosition.back
         private(set) var startSessionCallCount = 0
         private(set) var stopSessionCallCount = 0
+        private(set) var startRecordingCallCount = 0
+        private(set) var stopRecordingCallCount = 0
         
         private let videoPreviewLayerStub: CALayer
         
@@ -253,11 +279,11 @@ final class StoryCameraViewModelTests: XCTestCase {
         }
         
         func startRecording() {
-            
+            startRecordingCallCount += 1
         }
         
         func stopRecording() {
-            
+            stopRecordingCallCount += 1
         }
         
         func focus(on point: CGPoint) {
