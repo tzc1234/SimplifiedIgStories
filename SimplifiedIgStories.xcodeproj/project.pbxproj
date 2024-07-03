@@ -16,6 +16,7 @@
 		BE0EA2FB2C35578F006381A6 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2FA2C35578F006381A6 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift */; };
 		BE0EA2FD2C3561EC006381A6 /* AuthorizationTrackerSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2FC2C3561EC006381A6 /* AuthorizationTrackerSpy.swift */; };
 		BE0EA2FF2C356C8A006381A6 /* CameraSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2FE2C356C8A006381A6 /* CameraSpy.swift */; };
+		BE0EA3022C357DBD006381A6 /* DefaultCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA3012C357DBD006381A6 /* DefaultCamera.swift */; };
 		BE287A2A2B7A47FB00119674 /* CameraAuthorizationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE287A292B7A47FB00119674 /* CameraAuthorizationHandler.swift */; };
 		BE2C557227BFFE9D0087EE7F /* StoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557127BFFE9D0087EE7F /* StoryView.swift */; };
 		BE2C557427C0197B0087EE7F /* DetectableTapGesturePositionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */; };
@@ -158,6 +159,7 @@
 		BE0EA2FA2C35578F006381A6 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DispatchQueue+ImmediateDispatchOnMainQueue.swift"; sourceTree = "<group>"; };
 		BE0EA2FC2C3561EC006381A6 /* AuthorizationTrackerSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationTrackerSpy.swift; sourceTree = "<group>"; };
 		BE0EA2FE2C356C8A006381A6 /* CameraSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSpy.swift; sourceTree = "<group>"; };
+		BE0EA3012C357DBD006381A6 /* DefaultCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultCamera.swift; sourceTree = "<group>"; };
 		BE287A292B7A47FB00119674 /* CameraAuthorizationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraAuthorizationHandler.swift; sourceTree = "<group>"; };
 		BE2C557127BFFE9D0087EE7F /* StoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryView.swift; sourceTree = "<group>"; };
 		BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetectableTapGesturePositionView.swift; sourceTree = "<group>"; };
@@ -370,6 +372,14 @@
 			path = Home;
 			sourceTree = "<group>";
 		};
+		BE0EA3002C357DA2006381A6 /*  Interfaces */ = {
+			isa = PBXGroup;
+			children = (
+				BE7BA1182C32BB0B005DB88C /* Camera.swift */,
+			);
+			path = " Interfaces";
+			sourceTree = "<group>";
+		};
 		BE2D7790285F761F00DBD924 /* Camera */ = {
 			isa = PBXGroup;
 			children = (
@@ -381,7 +391,7 @@
 				BE35051A2B7ABB4800348B4B /* PhotoTaker.swift */,
 				BE42A3372B7B8053004BC257 /* VideoRecorder.swift */,
 				BE42A3392B7B9A80004BC257 /* CameraAuxiliary.swift */,
-				BE7BA1182C32BB0B005DB88C /* Camera.swift */,
+				BE0EA3012C357DBD006381A6 /* DefaultCamera.swift */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -578,6 +588,7 @@
 		BE8F580827D668C700F9DB92 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				BE0EA3002C357DA2006381A6 /*  Interfaces */,
 				BE8F580927D668E900F9DB92 /* StoriesViewModel.swift */,
 				BE6B73C627D794AD003D2B24 /* StoryPortionViewModel.swift */,
 				BEC3B4C327DE585F00B44BDF /* StoryCameraViewModel.swift */,
@@ -859,6 +870,7 @@
 				BEA3ABC22BAF557500B60C1E /* PreviewStoryPortionView.swift in Sources */,
 				BEBF323C2B75133700DCD624 /* LocalStoriesLoader.swift in Sources */,
 				BE5F4FAA2BA49DBA00138F87 /* PreviewStoriesViewModel.swift in Sources */,
+				BE0EA3022C357DBD006381A6 /* DefaultCamera.swift in Sources */,
 				BEA7D9FF27C6DFFC00DA81E6 /* TraceableArc.swift in Sources */,
 				BE5CDC2D27DF4AAA00352A60 /* NoticeLabel.swift in Sources */,
 				BE93B8C127C8D96900B97C40 /* TraceableRectangle.swift in Sources */,
