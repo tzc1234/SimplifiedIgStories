@@ -307,6 +307,21 @@ final class StoryCameraViewModelTests: XCTestCase {
         XCTAssertNil(sut.isVideoRecording)
     }
     
+    @MainActor
+    func test_lastVideoURL_deliversVideoURLReceivedFromCameraProcessedVideoStatus() {
+        let camera = CameraSpy()
+        let sut = makeSUT(camera: camera)
+        let expectedVideoURL = anyVideoURL()
+        
+        XCTAssertNil(sut.lastVideoURL)
+        XCTAssertFalse(sut.showVideoPreview)
+        
+        camera.publish(status: .processedVideo(videoURL: expectedVideoURL))
+        
+        XCTAssertEqual(sut.lastVideoURL, expectedVideoURL)
+        XCTAssertTrue(sut.showVideoPreview)
+    }
+    
     // MARK: - Helpers
     
     @MainActor
