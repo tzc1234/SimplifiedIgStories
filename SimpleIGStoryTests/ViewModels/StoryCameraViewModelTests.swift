@@ -131,6 +131,30 @@ final class StoryCameraViewModelTests: XCTestCase {
         XCTAssertEqual(camera.startSessionCallCount, 1)
     }
     
+    @MainActor
+    func test_showPhotoPreview_stopsSessionOnCameraWhenShowPhotoPreview() {
+        let camera = CameraSpy()
+        let sut = makeSUT(camera: camera)
+        
+        XCTAssertEqual(camera.stopSessionCallCount, 0)
+        
+        sut.showPhotoPreview = true
+        
+        XCTAssertEqual(camera.stopSessionCallCount, 1)
+    }
+    
+    @MainActor
+    func test_showPhotoPreview_startsSessionOnCameraWhenNotShowPhotoPreview() {
+        let camera = CameraSpy()
+        let sut = makeSUT(camera: camera)
+        
+        XCTAssertEqual(camera.startSessionCallCount, 0)
+        
+        sut.showPhotoPreview = false
+        
+        XCTAssertEqual(camera.startSessionCallCount, 1)
+    }
+    
     // MARK: - Helpers
     
     @MainActor
@@ -172,6 +196,7 @@ final class StoryCameraViewModelTests: XCTestCase {
     private class CameraSpy: Camera {
         var cameraPosition = CameraPosition.back
         private(set) var startSessionCallCount = 0
+        private(set) var stopSessionCallCount = 0
         
         private let videoPreviewLayerStub: CALayer
         
@@ -192,7 +217,7 @@ final class StoryCameraViewModelTests: XCTestCase {
         }
         
         func stopSession() {
-            
+            stopSessionCallCount += 1
         }
         
         func switchCamera() {
