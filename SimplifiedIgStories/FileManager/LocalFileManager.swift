@@ -7,19 +7,6 @@
 
 import UIKit
 
-protocol FileManageable {
-    func saveImage(_ image: UIImage, fileName: String) throws -> URL
-    func getImage(for url: URL) -> UIImage?
-    func delete(for url: URL) throws
-}
-
-enum FileManageableError: Error {
-    case saveFailed
-    case jpegConversionFailed
-    case fileForDeletionNotFound
-    case deleteFailed
-}
-
 final class LocalFileManager: FileManageable {
     private let directory: URL
     private let fileExtension: String

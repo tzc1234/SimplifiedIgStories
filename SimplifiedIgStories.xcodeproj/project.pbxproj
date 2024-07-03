@@ -18,6 +18,7 @@
 		BE0EA2FF2C356C8A006381A6 /* CameraSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2FE2C356C8A006381A6 /* CameraSpy.swift */; };
 		BE0EA3022C357DBD006381A6 /* DefaultCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA3012C357DBD006381A6 /* DefaultCamera.swift */; };
 		BE0EA3042C357EE0006381A6 /* StoriesLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA3032C357EE0006381A6 /* StoriesLoader.swift */; };
+		BE0EA3062C357F1F006381A6 /* FileManageable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA3052C357F1F006381A6 /* FileManageable.swift */; };
 		BE287A2A2B7A47FB00119674 /* CameraAuthorizationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE287A292B7A47FB00119674 /* CameraAuthorizationHandler.swift */; };
 		BE2C557227BFFE9D0087EE7F /* StoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557127BFFE9D0087EE7F /* StoryView.swift */; };
 		BE2C557427C0197B0087EE7F /* DetectableTapGesturePositionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */; };
@@ -162,6 +163,7 @@
 		BE0EA2FE2C356C8A006381A6 /* CameraSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSpy.swift; sourceTree = "<group>"; };
 		BE0EA3012C357DBD006381A6 /* DefaultCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultCamera.swift; sourceTree = "<group>"; };
 		BE0EA3032C357EE0006381A6 /* StoriesLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesLoader.swift; sourceTree = "<group>"; };
+		BE0EA3052C357F1F006381A6 /* FileManageable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManageable.swift; sourceTree = "<group>"; };
 		BE287A292B7A47FB00119674 /* CameraAuthorizationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraAuthorizationHandler.swift; sourceTree = "<group>"; };
 		BE2C557127BFFE9D0087EE7F /* StoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryView.swift; sourceTree = "<group>"; };
 		BE2C557327C0197B0087EE7F /* DetectableTapGesturePositionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetectableTapGesturePositionView.swift; sourceTree = "<group>"; };
@@ -378,6 +380,7 @@
 			isa = PBXGroup;
 			children = (
 				BE0EA3032C357EE0006381A6 /* StoriesLoader.swift */,
+				BE0EA3052C357F1F006381A6 /* FileManageable.swift */,
 				BE7BA1182C32BB0B005DB88C /* Camera.swift */,
 			);
 			path = " Interfaces";
@@ -871,6 +874,7 @@
 			files = (
 				BE36D6EA2BAB3785009240EE /* AppComponentsFactory.swift in Sources */,
 				BEA3ABC22BAF557500B60C1E /* PreviewStoryPortionView.swift in Sources */,
+				BE0EA3062C357F1F006381A6 /* FileManageable.swift in Sources */,
 				BEBF323C2B75133700DCD624 /* LocalStoriesLoader.swift in Sources */,
 				BE5F4FAA2BA49DBA00138F87 /* PreviewStoriesViewModel.swift in Sources */,
 				BE0EA3022C357DBD006381A6 /* DefaultCamera.swift in Sources */,
