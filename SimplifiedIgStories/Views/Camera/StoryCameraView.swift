@@ -11,7 +11,7 @@ struct StoryCameraView: View {
     @EnvironmentObject private var actionHandler: HomeUIActionHandler
     
     @ObservedObject var viewModel: StoryCameraViewModel
-    let getStoryPreview: (PreviewMedia, _ backBtnAction: @escaping (() -> Void), _ postBtnAction: @escaping (() -> Void)) -> StoryPreview
+    let getStoryPreview: (Media, _ backBtnAction: @escaping (() -> Void), _ postBtnAction: @escaping (() -> Void)) -> StoryPreview
     
     var body: some View {
         ZStack {
@@ -49,17 +49,11 @@ struct StoryCameraView: View {
             }
             .padding(.vertical, 20)
             
-            if viewModel.showPhotoPreview, let image = viewModel.lastTakenImage {
-                getStoryPreview(.image(image), {
-                    viewModel.showPhotoPreview = false
+            if viewModel.showPreview, let media = viewModel.media {
+                getStoryPreview(media, {
+                    viewModel.showPreview = false
                 }, {
-                    actionHandler.postImageAction?(image)
-                })
-            } else if viewModel.showVideoPreview, let url = viewModel.lastVideoURL {
-                getStoryPreview(.video(url), {
-                    viewModel.showVideoPreview = false
-                }, {
-                    actionHandler.postVideoAction?(url)
+                    actionHandler.postMedia?(media)
                 })
             }
         }

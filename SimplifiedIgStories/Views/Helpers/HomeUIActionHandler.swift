@@ -17,8 +17,7 @@ final class HomeUIActionHandler: ObservableObject {
     var storyIconFrameDict: [StoryID: IconFrame] = [:]
     @Published private(set) var currentIconFrame: IconFrame = .zero
     
-    var postImageAction: ((UIImage) -> Void)?
-    var postVideoAction: ((URL) -> Void)?
+    var postMedia: ((Media) -> Void)?
     
     func showStoryContainer(storyId: Int?) {
         updateCurrentIconFrame(storyId: storyId)

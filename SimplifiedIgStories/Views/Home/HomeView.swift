@@ -42,13 +42,14 @@ struct HomeView: View {
             await storiesViewModel.fetchStories()
         }
         .onAppear {
-            handler.postImageAction = { image in
-                storiesViewModel.postStoryPortion(image: image)
-                handler.closeStoryCameraView()
-            }
-            
-            handler.postVideoAction = { url in
-                storiesViewModel.postStoryPortion(videoUrl: url)
+            handler.postMedia = { media in
+                switch media {
+                case let .image(image):
+                    storiesViewModel.postStoryPortion(image: image)
+                case let .video(url):
+                    storiesViewModel.postStoryPortion(videoUrl: url)
+                }
+                
                 handler.closeStoryCameraView()
             }
         }

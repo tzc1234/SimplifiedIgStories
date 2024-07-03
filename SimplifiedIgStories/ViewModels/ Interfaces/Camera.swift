@@ -11,10 +11,9 @@ import Combine
 enum CameraStatus {
     case sessionStarted
     case sessionStopped
-    case photoTaken(photo: UIImage)
     case recordingBegun
     case recordingFinished
-    case processedVideo(videoURL: URL)
+    case processedMedia(Media)
 }
 
 protocol Camera {

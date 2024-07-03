@@ -90,8 +90,8 @@ extension DefaultCamera {
                 switch status {
                 case .addPhotoOutputFailure:
                     break
-                case .photoTaken(let photo):
-                    statusPublisher.send(.photoTaken(photo: photo))
+                case let .photoTaken(photo):
+                    statusPublisher.send(.processedMedia(.image(photo)))
                 case .imageConvertingFailure:
                     break
                 }
@@ -122,8 +122,8 @@ extension DefaultCamera {
                     statusPublisher.send(.recordingFinished)
                 case .videoProcessFailure:
                     break
-                case .processedVideo(let videoURL):
-                    statusPublisher.send(.processedVideo(videoURL: videoURL))
+                case let .processedVideo(videoURL):
+                    statusPublisher.send(.processedMedia(.video(videoURL)))
                 case .addMovieFileOutputFailure:
                     break
                 }

@@ -8,11 +8,6 @@
 import SwiftUI
 import AVKit
 
-enum PreviewMedia {
-    case image(UIImage)
-    case video(URL)
-}
-
 struct StoryPreview: View {
     @ObservedObject var viewModel: StoryPreviewViewModel
     
@@ -20,9 +15,9 @@ struct StoryPreview: View {
     @State private var showAlert = false
     @State private var player: AVPlayer?
     
-    let media: PreviewMedia
-    let backBtnAction: (() -> Void)
-    let postBtnAction: (() -> Void)
+    let media: Media
+    let backBtnAction: () -> Void
+    let postBtnAction: () -> Void
     
     var body: some View {
         ZStack {
@@ -107,18 +102,16 @@ extension StoryPreview {
     
     private var saveBtn: some View {
         Button {
-            switch media {
-            case let .image(image):
-                Task { @MainActor in
+            Task { @MainActor in
+                switch media {
+                case let .image(image):
                     await viewModel.saveToAlbum(image: image)
-                }
-            case let .video(url):
-                Task { @MainActor in
+                case let .video(url):
                     await viewModel.saveToAlbum(videoURL: url)
                 }
+                
+                showNotice()
             }
-            
-            showNotice()
         } label: {
             Image(systemName: "arrow.down.to.line")
                 .resizable()
