@@ -9,9 +9,6 @@ import AVKit
 import Combine
 
 final class DefaultCamera: Camera {
-    private let statusPublisher = PassthroughSubject<CameraStatus, Never>()
-    private var subscriptions = Set<AnyCancellable>()
-    
     private let cameraCore: CameraCore
     private let photoTaker: PhotoTaker
     private let videoRecorder: VideoRecorder
@@ -25,14 +22,12 @@ final class DefaultCamera: Camera {
         self.photoTaker = photoTaker
         self.videoRecorder = videoRecorder
         self.cameraAuxiliary = cameraAuxiliary
-        
-        self.subscribeCameraPublisher()
-        self.subscribePhotoTakerPublisher()
-        self.subscribeVideoRecorderPublisher()
     }
     
     func getStatusPublisher() -> AnyPublisher<CameraStatus, Never> {
-        statusPublisher.eraseToAnyPublisher()
+        cameraCorePublisher
+            .merge(with: photoTakerPublisher, videoRecorderPublisher)
+            .eraseToAnyPublisher()
     }
 }
 
@@ -43,6 +38,22 @@ extension DefaultCamera {
     
     var videoPreviewLayer: CALayer {
         cameraCore.videoPreviewLayer
+    }
+    
+    private var cameraCorePublisher: AnyPublisher<CameraStatus, Never> {
+        cameraCore
+            .getStatusPublisher()
+            .compactMap { status -> CameraStatus? in
+                switch status {
+                case .sessionStarted:
+                    return .sessionStarted
+                case .sessionStopped:
+                    return .sessionStopped
+                case .cameraSwitched:
+                    return nil
+                }
+            }
+            .eraseToAnyPublisher()
     }
     
     func startSession() {
@@ -56,79 +67,57 @@ extension DefaultCamera {
     func switchCamera() {
         cameraCore.switchCamera()
     }
-    
-    private func subscribeCameraPublisher() {
-        cameraCore
-            .getStatusPublisher()
-            .sink { [weak self] camStatus in
-                guard let self else { return }
-                
-                switch camStatus {
-                case .sessionStarted:
-                    statusPublisher.send(.sessionStarted)
-                case .sessionStopped:
-                    statusPublisher.send(.sessionStopped)
-                case .cameraSwitched:
-                    break
-                }
-            }
-            .store(in: &subscriptions)
-    }
 }
 
 extension DefaultCamera {
+    private var photoTakerPublisher: AnyPublisher<CameraStatus, Never> {
+        photoTaker
+            .getStatusPublisher()
+            .compactMap { status -> CameraStatus? in
+                switch status {
+                case .addPhotoOutputFailure:
+                    return nil
+                case let .photoTaken(photo):
+                    return .processedMedia(.photo(photo))
+                case .imageConvertingFailure:
+                    return nil
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+    
     func takePhoto(on flashMode: CameraFlashMode) {
         photoTaker.takePhoto(on: flashMode)
     }
-    
-    private func subscribePhotoTakerPublisher() {
-        photoTaker
-            .getStatusPublisher()
-            .sink { [weak self] status in
-                guard let self else { return }
-                
-                switch status {
-                case .addPhotoOutputFailure:
-                    break
-                case let .photoTaken(photo):
-                    statusPublisher.send(.processedMedia(.photo(photo)))
-                case .imageConvertingFailure:
-                    break
-                }
-            }
-            .store(in: &subscriptions)
-    }
 }
 
 extension DefaultCamera {
+    private var videoRecorderPublisher: AnyPublisher<CameraStatus, Never> {
+        videoRecorder
+            .getStatusPublisher()
+            .compactMap { status -> CameraStatus? in
+                switch status {
+                case .recordingBegun:
+                    return .recordingBegun
+                case .recordingFinished:
+                    return .recordingFinished
+                case .videoProcessFailure:
+                    return nil
+                case let .processedVideo(videoURL):
+                    return .processedMedia(.video(videoURL))
+                case .addMovieFileOutputFailure:
+                    return nil
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+    
     func startRecording() {
         videoRecorder.startRecording()
     }
     
     func stopRecording() {
         videoRecorder.stopRecording()
-    }
-    
-    private func subscribeVideoRecorderPublisher() {
-        videoRecorder
-            .getStatusPublisher()
-            .sink { [weak self] status in
-                guard let self else { return }
-                
-                switch status {
-                case .recordingBegun:
-                    statusPublisher.send(.recordingBegun)
-                case .recordingFinished:
-                    statusPublisher.send(.recordingFinished)
-                case .videoProcessFailure:
-                    break
-                case let .processedVideo(videoURL):
-                    statusPublisher.send(.processedMedia(.video(videoURL)))
-                case .addMovieFileOutputFailure:
-                    break
-                }
-            }
-            .store(in: &subscriptions)
     }
 }
 
