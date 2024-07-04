@@ -346,8 +346,7 @@ final class StoryCameraViewModelTests: XCTestCase {
         let sut = StoryCameraViewModel(
             camera: camera,
             cameraAuthorizationTracker: cameraAuthorizationTracker,
-            microphoneAuthorizationTracker: microphoneAuthorizationTracker,
-            scheduler: DispatchQueue.immediateWhenOnMainQueueScheduler
+            microphoneAuthorizationTracker: microphoneAuthorizationTracker
         )
         trackForMemoryLeaks(camera, file: file, line: line)
         trackForMemoryLeaks(cameraAuthorizationTracker, file: file, line: line)
