@@ -20,9 +20,8 @@ final class StoryPreviewViewModelTests: XCTestCase {
     @MainActor
     func test_saveToAlbumImage_deliversNoPermissionMessageOnNoPermissionError() async {
         let (sut, mediaSaver) = makeSUT(saveImageDataStub: { throw MediaSaverError.noPermission })
-        let anyImage = UIImage.make(withColor: .gray)
         
-        await sut.saveToAlbum(image: anyImage)
+        await sut.saveToAlbum(image: anyUIImage())
         
         XCTAssertEqual(mediaSaver.saveImageDataCallCount, 1)
         XCTAssertEqual(sut.message, "Couldn't save. No add photo permission.")
@@ -31,9 +30,8 @@ final class StoryPreviewViewModelTests: XCTestCase {
     @MainActor
     func test_saveToAlbumImage_deliversSaveFailedMessageOnAnyErrors() async {
         let (sut, mediaSaver) = makeSUT(saveImageDataStub: { throw anyNSError() })
-        let anyImage = UIImage.make(withColor: .gray)
         
-        await sut.saveToAlbum(image: anyImage)
+        await sut.saveToAlbum(image: anyUIImage())
         
         XCTAssertEqual(mediaSaver.saveImageDataCallCount, 1)
         XCTAssertEqual(sut.message, "Save failed.")
@@ -42,11 +40,40 @@ final class StoryPreviewViewModelTests: XCTestCase {
     @MainActor
     func test_saveToAlbumImage_deliversSavedMessageOnSaveSuccessfully() async {
         let (sut, mediaSaver) = makeSUT()
-        let anyImage = UIImage.make(withColor: .gray)
         
-        await sut.saveToAlbum(image: anyImage)
+        await sut.saveToAlbum(image: anyUIImage())
         
         XCTAssertEqual(mediaSaver.saveImageDataCallCount, 1)
+        XCTAssertEqual(sut.message, "Saved.")
+    }
+    
+    @MainActor
+    func test_saveToAlbumVideoURL_deliversNoPermissionMessageOnNoPermissionError() async {
+        let (sut, mediaSaver) = makeSUT(saveVideoStub: { throw MediaSaverError.noPermission })
+        
+        await sut.saveToAlbum(videoURL: anyVideoURL())
+        
+        XCTAssertEqual(mediaSaver.saveVideoCallCount, 1)
+        XCTAssertEqual(sut.message, "Couldn't save. No add photo permission.")
+    }
+    
+    @MainActor
+    func test_saveToAlbumVideoURL_deliversNoPermissionMessageOnAnyError() async {
+        let (sut, mediaSaver) = makeSUT(saveVideoStub: { throw anyNSError() })
+        
+        await sut.saveToAlbum(videoURL: anyVideoURL())
+        
+        XCTAssertEqual(mediaSaver.saveVideoCallCount, 1)
+        XCTAssertEqual(sut.message, "Save failed.")
+    }
+    
+    @MainActor
+    func test_saveToAlbumVideoURL_deliversSavedMessageOnSaveSuccessfully() async {
+        let (sut, mediaSaver) = makeSUT()
+        
+        await sut.saveToAlbum(videoURL: anyVideoURL())
+        
+        XCTAssertEqual(mediaSaver.saveVideoCallCount, 1)
         XCTAssertEqual(sut.message, "Saved.")
     }
     
