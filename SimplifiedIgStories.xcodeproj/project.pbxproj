@@ -12,8 +12,8 @@
 		BE090B5F27B9562D00B6F906 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE090B5E27B9562D00B6F906 /* Preview Assets.xcassets */; };
 		BE090B6727B9568700B6F906 /* StoryIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE090B6627B9568700B6F906 /* StoryIcon.swift */; };
 		BE09DD59288C758000F4278C /* HomeUIActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE09DD58288C758000F4278C /* HomeUIActionHandler.swift */; };
+		BE0BD7392C3685CE00B35B19 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2FA2C35578F006381A6 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift */; };
 		BE0EA2F92C354C2A006381A6 /* StoryCameraViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2F82C354C2A006381A6 /* StoryCameraViewModelTests.swift */; };
-		BE0EA2FB2C35578F006381A6 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2FA2C35578F006381A6 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift */; };
 		BE0EA2FD2C3561EC006381A6 /* AuthorizationTrackerSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2FC2C3561EC006381A6 /* AuthorizationTrackerSpy.swift */; };
 		BE0EA2FF2C356C8A006381A6 /* CameraSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2FE2C356C8A006381A6 /* CameraSpy.swift */; };
 		BE0EA3022C357DBD006381A6 /* DefaultCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA3012C357DBD006381A6 /* DefaultCamera.swift */; };
@@ -525,7 +525,6 @@
 				BED74E1C2C318E0200A34B27 /* StoriesLoaderStub.swift */,
 				BED74E1E2C31A18100A34B27 /* DummyFileManager.swift */,
 				BED74E202C31A1B700A34B27 /* DummyMediaSaver.swift */,
-				BE0EA2FA2C35578F006381A6 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift */,
 				BE0EA2FC2C3561EC006381A6 /* AuthorizationTrackerSpy.swift */,
 				BE0EA2FE2C356C8A006381A6 /* CameraSpy.swift */,
 			);
@@ -674,6 +673,7 @@
 				BE925CF327D8B06D005D8107 /* AVPlayer+Additions.swift */,
 				BE9EF6C627E36F7D00942976 /* CGFloat+Additions.swift */,
 				BEAFE90D2817F81C004C4D43 /* Double+Additions.swift */,
+				BE0EA2FA2C35578F006381A6 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -886,6 +886,7 @@
 				BE0EA3062C357F1F006381A6 /* FileManageable.swift in Sources */,
 				BEBF323C2B75133700DCD624 /* LocalStoriesLoader.swift in Sources */,
 				BE5F4FAA2BA49DBA00138F87 /* PreviewStoriesViewModel.swift in Sources */,
+				BE0BD7392C3685CE00B35B19 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift in Sources */,
 				BE0EA3022C357DBD006381A6 /* DefaultCamera.swift in Sources */,
 				BEA7D9FF27C6DFFC00DA81E6 /* TraceableArc.swift in Sources */,
 				BE5CDC2D27DF4AAA00352A60 /* NoticeLabel.swift in Sources */,
@@ -982,7 +983,6 @@
 				BEEEBBF12B75345400EC85C7 /* XCTestCase+AssertThrows.swift in Sources */,
 				BE38F7B22B837CC400F42C71 /* CaptureSessionSpy.swift in Sources */,
 				BE84F7962B7CE9C500FAD11B /* AVCameraCoreTests.swift in Sources */,
-				BE0EA2FB2C35578F006381A6 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift in Sources */,
 				BE8B71A72B764E410055C354 /* LocalMediaSaverTests.swift in Sources */,
 				BED74E1F2C31A18100A34B27 /* DummyFileManager.swift in Sources */,
 				BE7BA4342BADE5C60061595B /* StoriesAnimationHandlerTests.swift in Sources */,

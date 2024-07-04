@@ -120,25 +120,25 @@ final class StoryCameraViewModelTests: XCTestCase {
     }
     
     @MainActor
-    func test_startSession_startsSessionOnCamera() {
+    func test_startCameraSession_startsSessionOnCamera() {
         let camera = CameraSpy()
         let sut = makeSUT(camera: camera)
         
         XCTAssertEqual(camera.startSessionCallCount, 0)
         
-        sut.startSession()
+        sut.startCameraSession()
         
         XCTAssertEqual(camera.startSessionCallCount, 1)
     }
     
     @MainActor
-    func test_stopSession_stopsSessionOnCamera() {
+    func test_stopCameraSession_stopsSessionOnCamera() {
         let camera = CameraSpy()
         let sut = makeSUT(camera: camera)
         
         XCTAssertEqual(camera.stopSessionCallCount, 0)
         
-        sut.stopSession()
+        sut.stopCameraSession()
         
         XCTAssertEqual(camera.stopSessionCallCount, 1)
     }
@@ -346,8 +346,7 @@ final class StoryCameraViewModelTests: XCTestCase {
         let sut = StoryCameraViewModel(
             camera: camera,
             cameraAuthorizationTracker: cameraAuthorizationTracker,
-            microphoneAuthorizationTracker: microphoneAuthorizationTracker,
-            scheduler: DispatchQueue.immediateWhenOnMainQueueScheduler
+            microphoneAuthorizationTracker: microphoneAuthorizationTracker
         )
         trackForMemoryLeaks(camera, file: file, line: line)
         trackForMemoryLeaks(cameraAuthorizationTracker, file: file, line: line)
