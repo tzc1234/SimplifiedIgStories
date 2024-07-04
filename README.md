@@ -1,6 +1,5 @@
 # Simple IG Story
 A simple version of IG story, this demo app is my SwiftUI study record.
-**WIP: Refactoring this 2 years ago app.**
 
 ## Screenshots
 <img src="https://github.com/tzc1234/SimplifiedIgStories/blob/main/Screenshots/preview.gif" alt="preview" width="256" height="455"/> <img src="https://github.com/tzc1234/SimplifiedIgStories/blob/main/Screenshots/preview2.jpg" alt="preview2" width="256" height="455"/> <img src="https://github.com/tzc1234/SimplifiedIgStories/blob/main/Screenshots/preview3.jpg" alt="preview3" width="256" height="455"/>
@@ -30,6 +29,10 @@ This is an important move, it does enable the possibility to inject their collab
 5. Async/await
 
 ## Update History
+#### 04/07/2024
+1. Add `StoryPreviewViewModel`
+2. Add unit tests for `StoryPreviewViewModel`
+
 #### 03/07/2024
 1. Refactor `StoryCameraViewModel`
 2. Update unit tests for `StoryCameraViewModel`
