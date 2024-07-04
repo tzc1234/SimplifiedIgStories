@@ -10,17 +10,53 @@ import XCTest
 
 final class StoryPreviewViewModelTests: XCTestCase {
     func test_init_doesNotNotifyMediaSaver() {
-        let (_, mediaSaver) = makeSUT()
+        let (sut, mediaSaver) = makeSUT()
         
+        XCTAssertEqual(sut.message, "")
         XCTAssertEqual(mediaSaver.saveImageDataCallCount, 0)
         XCTAssertEqual(mediaSaver.saveVideoCallCount, 0)
     }
     
-    // MARK: Helpers
+    @MainActor
+    func test_saveToAlbumImage_deliversNoPermissionMessageOnNoPermissionError() async {
+        let (sut, mediaSaver) = makeSUT(saveImageDataStub: { throw MediaSaverError.noPermission })
+        let anyImage = UIImage.make(withColor: .gray)
+        
+        await sut.saveToAlbum(image: anyImage)
+        
+        XCTAssertEqual(mediaSaver.saveImageDataCallCount, 1)
+        XCTAssertEqual(sut.message, "Couldn't save. No add photo permission.")
+    }
     
-    private func makeSUT(file: StaticString = #filePath,
+    @MainActor
+    func test_saveToAlbumImage_deliversSaveFailedMessageOnAnyErrors() async {
+        let (sut, mediaSaver) = makeSUT(saveImageDataStub: { throw anyNSError() })
+        let anyImage = UIImage.make(withColor: .gray)
+        
+        await sut.saveToAlbum(image: anyImage)
+        
+        XCTAssertEqual(mediaSaver.saveImageDataCallCount, 1)
+        XCTAssertEqual(sut.message, "Save failed.")
+    }
+    
+    @MainActor
+    func test_saveToAlbumImage_deliversSavedMessageOnSaveSuccessfully() async {
+        let (sut, mediaSaver) = makeSUT()
+        let anyImage = UIImage.make(withColor: .gray)
+        
+        await sut.saveToAlbum(image: anyImage)
+        
+        XCTAssertEqual(mediaSaver.saveImageDataCallCount, 1)
+        XCTAssertEqual(sut.message, "Saved.")
+    }
+    
+    // MARK: - Helpers
+    
+    private func makeSUT(saveImageDataStub: @escaping () async throws -> Void = {},
+                         saveVideoStub: @escaping () async throws -> Void = {},
+                         file: StaticString = #filePath,
                          line: UInt = #line) -> (sut: StoryPreviewViewModel, mediaSaver: MediaSaverSpy) {
-        let mediaSaver = MediaSaverSpy()
+        let mediaSaver = MediaSaverSpy(saveImageDataStub: saveImageDataStub, saveVideoStub: saveVideoStub)
         let sut = StoryPreviewViewModel(mediaSaver: mediaSaver)
         trackForMemoryLeaks(mediaSaver, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
