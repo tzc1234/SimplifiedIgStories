@@ -59,7 +59,11 @@ struct StoryCameraView: View {
         }
         .statusBar(hidden: true)
         .onAppear {
-            viewModel.checkPermissions()
+            if viewModel.arePermissionsGranted {
+                viewModel.startCameraSession()
+            } else {
+                viewModel.checkPermissions()
+            }
         }
         .onChange(of: viewModel.arePermissionsGranted) { isGranted in
             if isGranted {
@@ -67,7 +71,7 @@ struct StoryCameraView: View {
             }
         }
         .onDisappear {
-            print("StoryCamView disappear")
+            print("StoryCameraView disappear")
         }
     }
 }
