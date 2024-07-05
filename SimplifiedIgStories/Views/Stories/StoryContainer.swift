@@ -14,7 +14,7 @@ struct StoryContainer: View {
     
     @ObservedObject var animationHandler: StoriesAnimationHandler
     
-    let getStoryView: (Story) -> StoryView
+    let getStoryView: (StoryDTO) -> StoryView
     
     var body: some View {
         GeometryReader { geo in

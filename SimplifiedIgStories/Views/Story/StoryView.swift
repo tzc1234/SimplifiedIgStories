@@ -10,9 +10,9 @@ import SwiftUI
 struct StoryView: View {
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     
-    let story: Story
+    let story: StoryDTO
     @StateObject var animationHandler: StoryAnimationHandler
-    let getStoryPortionView: (Int, Portion) -> StoryPortionView
+    let getStoryPortionView: (Int, PortionDTO) -> StoryPortionView
     let onDisappear: (Int) -> Void
     
     var body: some View {
@@ -59,7 +59,7 @@ extension StoryView {
     }
     
     private var avatarIcon: some View {
-        var onTapAction: ((Story) -> Void)?
+        var onTapAction: ((StoryDTO) -> Void)?
         if story.user.isCurrentUser {
             onTapAction = { _ in
                 homeUIActionHandler.closeStoryContainer(storyId: story.id)

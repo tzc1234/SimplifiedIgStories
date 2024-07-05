@@ -21,7 +21,7 @@ struct StoryPortionView: View {
     let deletePortion: (Int, () -> Void, () -> Void) -> Void
     let onDisappear: (Int) -> Void
     
-    private var portion: Portion {
+    private var portion: PortionDTO {
         storyPortionViewModel.portion
     }
     

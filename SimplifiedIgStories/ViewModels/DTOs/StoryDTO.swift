@@ -1,5 +1,5 @@
 //
-//  Story.swift
+//  StoryDTO.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 21/2/2022.
@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct Story: Identifiable, Equatable {
+struct StoryDTO: Identifiable, Equatable {
     let id: Int
     var lastUpdate: Date?
-    let user: User
-    var portions: [Portion]
+    let user: UserDTO
+    var portions: [PortionDTO]
     
     var hasPortion: Bool {
         portions.count > 0

@@ -1,5 +1,5 @@
 //
-//  LocalStoriesLoaderTests.swift
+//  DefaultStoriesLoaderTests.swift
 //  SimpleIGStoryTests
 //
 //  Created by Tsz-Lung on 08/02/2024.
@@ -8,7 +8,7 @@
 import XCTest
 @testable import Simple_IG_Story
 
-final class LocalStoriesLoaderTests: XCTestCase {
+final class DefaultStoriesLoaderTests: XCTestCase {
     func test_load_deliversNotFoundErrorOnClientError() async {
         let sut = makeSUT(stub: .failure(anyNSError()))
         
@@ -81,9 +81,9 @@ final class LocalStoriesLoaderTests: XCTestCase {
     
     private func makeSUT(stub: DataClientStub.Stub,
                          file: StaticString = #filePath,
-                         line: UInt = #line) -> LocalStoriesLoader {
+                         line: UInt = #line) -> DefaultStoriesLoader {
         let client = DataClientStub(stub: stub)
-        let sut = LocalStoriesLoader(client: client)
+        let sut = DefaultStoriesLoader(client: client)
         trackForMemoryLeaks(client, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
         return sut
@@ -97,7 +97,7 @@ final class LocalStoriesLoaderTests: XCTestCase {
     private func makeStory(id: Int,
                            lastUpdate: TimeInterval?,
                            user: UserInput,
-                           portions: [PortionInput]) -> (json: JSON, model: LocalStory) {
+                           portions: [PortionInput]) -> (json: JSON, model: Story) {
         let json: JSON = [
             "id": id,
             "lastUpdate": lastUpdate as Any?,
@@ -106,7 +106,7 @@ final class LocalStoriesLoaderTests: XCTestCase {
         ]
         .compactMapValues { $0 }
         
-        let model = LocalStory(
+        let model = Story(
             id: id,
             lastUpdate: lastUpdate.map(Date.init(timeIntervalSince1970:)),
             user: user.model,
@@ -131,8 +131,8 @@ final class LocalStoriesLoaderTests: XCTestCase {
             ]
         }
         
-        var model: LocalUser {
-            LocalUser(
+        var model: User {
+            User(
                 id: id,
                 name: name,
                 avatarURL: avatarURLFor(avatar),
@@ -157,12 +157,12 @@ final class LocalStoriesLoaderTests: XCTestCase {
             .compactMapValues { $0 }
         }
         
-        var model: LocalPortion {
-            LocalPortion(
+        var model: Portion {
+            Portion(
                 id: id,
                 resourceURL: resourceURLFor(resource, type: type),
                 duration: duration ?? .defaultStoryDuration,
-                type: LocalResourceType(rawValue: type) ?? .image
+                type: ResourceType(rawValue: type) ?? .image
             )
         }
     }

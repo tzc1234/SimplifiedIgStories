@@ -10,7 +10,7 @@ import SwiftUI
 struct ProgressBar: View {
     @EnvironmentObject private var homeUIActionHandler: HomeUIActionHandler
     
-    let story: Story
+    let story: StoryDTO
     @ObservedObject var animationHandler: StoryAnimationHandler
     
     var body: some View {

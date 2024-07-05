@@ -1,5 +1,5 @@
 //
-//  LocalStoriesMapper.swift
+//  StoriesMapper.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 08/02/2024.
@@ -7,30 +7,30 @@
 
 import Foundation
 
-enum LocalStoriesMapper {
+enum StoriesMapper {
     private struct DecodableStory: Decodable {
         let id: Int
         let lastUpdate: TimeInterval?
-        let user: User
-        let portions: [Portion]
+        let user: DecodableUser
+        let portions: [DecodablePortion]
         
-        var local: LocalStory {
-            .init(
+        var model: Story {
+            Story(
                 id: id,
                 lastUpdate: lastUpdate.map(Date.init(timeIntervalSince1970:)),
-                user: user.local,
-                portions: portions.map(\.local)
+                user: user.model,
+                portions: portions.map(\.model)
             )
         }
         
-        struct User: Decodable {
+        struct DecodableUser: Decodable {
             let id: Int
             let name: String
             let avatar: String
             let isCurrentUser: Bool
             
-            var local: LocalUser {
-                .init(
+            var model: User {
+                User(
                     id: id,
                     name: name,
                     avatarURL: Bundle.main.url(forResource: avatar, withExtension: "jpg"),
@@ -39,14 +39,14 @@ enum LocalStoriesMapper {
             }
         }
         
-        struct Portion: Decodable {
+        struct DecodablePortion: Decodable {
             let id: Int
             let resource: String
             let duration: Double?
             let type: String
             
-            var local: LocalPortion {
-                .init(
+            var model: Portion {
+                Portion(
                     id: id,
                     resourceURL: Bundle.main.url(forResource: resource, withExtension: type == "video" ? "mp4" : "jpg"),
                     duration: duration ?? .defaultStoryDuration,
@@ -56,7 +56,7 @@ enum LocalStoriesMapper {
         }
     }
     
-    static func map(_ data: Data) throws -> [LocalStory] {
-        try JSONDecoder().decode([DecodableStory].self, from: data).map(\.local)
+    static func map(_ data: Data) throws -> [Story] {
+        try JSONDecoder().decode([DecodableStory].self, from: data).map(\.model)
     }
 }

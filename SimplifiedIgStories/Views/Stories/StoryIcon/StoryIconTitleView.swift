@@ -10,12 +10,12 @@ import SwiftUI
 struct StoryIconTitleView: View {
     @Environment(\.colorScheme) var colorScheme
     
-    let story: Story
+    let story: StoryDTO
     let showPlusIcon: Bool
     let showStroke: Bool
-    let onTapAction: ((Story) -> Void)?
+    let onTapAction: ((StoryDTO) -> Void)?
     
-    init(story: Story, showPlusIcon: Bool = false, showStroke: Bool = true, onTapAction: ((Story) -> Void)? = nil) {
+    init(story: StoryDTO, showPlusIcon: Bool = false, showStroke: Bool = true, onTapAction: ((StoryDTO) -> Void)? = nil) {
         self.story = story
         self.showPlusIcon = showPlusIcon
         self.showStroke = showStroke

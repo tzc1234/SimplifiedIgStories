@@ -10,7 +10,7 @@ import Combine
 
 protocol StoriesHolder {
     var objectWillChange: ObservableObjectPublisher { get }
-    var stories: [Story] { get }
+    var stories: [StoryDTO] { get }
 }
 
 final class StoriesAnimationHandler: ObservableObject, CurrentStoryAnimationHandler {
@@ -33,7 +33,7 @@ final class StoriesAnimationHandler: ObservableObject, CurrentStoryAnimationHand
 }
 
 extension StoriesAnimationHandler {
-    var stories: [Story] {
+    var stories: [StoryDTO] {
         storiesHolder.stories
     }
     
@@ -41,7 +41,7 @@ extension StoriesAnimationHandler {
         stories.first(where: { $0.user.isCurrentUser })?.id
     }
     
-    var currentStories: [Story] {
+    var currentStories: [StoryDTO] {
         if currentStoryId == yourStoryId {
             return stories.filter { $0.user.isCurrentUser }
         } else {

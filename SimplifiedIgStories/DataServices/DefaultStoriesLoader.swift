@@ -1,5 +1,5 @@
 //
-//  LocalStoriesLoader.swift
+//  DefaultStoriesLoader.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 08/02/2024.
@@ -7,19 +7,19 @@
 
 import Foundation
 
-final class LocalStoriesLoader: StoriesLoader {
+final class DefaultStoriesLoader: StoriesLoader {
     private let client: DataClient
     
     init(client: DataClient) {
         self.client = client
     }
     
-    func load() async throws -> [LocalStory] {
+    func load() async throws -> [Story] {
         guard let data = try? await client.fetch() else {
             throw StoriesLoaderError.notFound
         }
         
-        guard let stories = try? LocalStoriesMapper.map(data) else {
+        guard let stories = try? StoriesMapper.map(data) else {
             throw StoriesLoaderError.invalidData
         }
         

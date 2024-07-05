@@ -8,7 +8,7 @@
 import Foundation
 
 protocol StoriesLoader {
-    func load() async throws -> [LocalStory]
+    func load() async throws -> [Story]
 }
 
 enum StoriesLoaderError: Error {
