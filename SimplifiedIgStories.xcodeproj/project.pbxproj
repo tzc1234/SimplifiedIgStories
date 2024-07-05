@@ -15,6 +15,8 @@
 		BE0BD7392C3685CE00B35B19 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2FA2C35578F006381A6 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift */; };
 		BE0BD73B2C369AE400B35B19 /* StoryPreviewViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0BD73A2C369AE400B35B19 /* StoryPreviewViewModelTests.swift */; };
 		BE0BD73D2C369B4C00B35B19 /* MediaSaverSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0BD73C2C369B4C00B35B19 /* MediaSaverSpy.swift */; };
+		BE0E39BB2C37EB7B00B445B2 /* LocalUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0E39BA2C37EB7B00B445B2 /* LocalUser.swift */; };
+		BE0E39BD2C37EB9C00B445B2 /* LocalPortion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0E39BC2C37EB9C00B445B2 /* LocalPortion.swift */; };
 		BE0EA2F92C354C2A006381A6 /* StoryCameraViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2F82C354C2A006381A6 /* StoryCameraViewModelTests.swift */; };
 		BE0EA2FD2C3561EC006381A6 /* AuthorizationTrackerSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2FC2C3561EC006381A6 /* AuthorizationTrackerSpy.swift */; };
 		BE0EA2FF2C356C8A006381A6 /* CameraSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2FE2C356C8A006381A6 /* CameraSpy.swift */; };
@@ -163,6 +165,8 @@
 		BE09DD58288C758000F4278C /* HomeUIActionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeUIActionHandler.swift; sourceTree = "<group>"; };
 		BE0BD73A2C369AE400B35B19 /* StoryPreviewViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPreviewViewModelTests.swift; sourceTree = "<group>"; };
 		BE0BD73C2C369B4C00B35B19 /* MediaSaverSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSaverSpy.swift; sourceTree = "<group>"; };
+		BE0E39BA2C37EB7B00B445B2 /* LocalUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalUser.swift; sourceTree = "<group>"; };
+		BE0E39BC2C37EB9C00B445B2 /* LocalPortion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPortion.swift; sourceTree = "<group>"; };
 		BE0EA2F82C354C2A006381A6 /* StoryCameraViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCameraViewModelTests.swift; sourceTree = "<group>"; };
 		BE0EA2FA2C35578F006381A6 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DispatchQueue+ImmediateDispatchOnMainQueue.swift"; sourceTree = "<group>"; };
 		BE0EA2FC2C3561EC006381A6 /* AuthorizationTrackerSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationTrackerSpy.swift; sourceTree = "<group>"; };
@@ -338,6 +342,7 @@
 				BE8B71B02B765EAE0055C354 /* MediaSaver */,
 				BE2D7790285F761F00DBD924 /* Camera */,
 				BE9336C827D24468009E5370 /* FileManager */,
+				BE0E39B92C37EB4E00B445B2 /* Models */,
 				BE8F580827D668C700F9DB92 /* ViewModels */,
 				BE090B6527B9566D00B6F906 /* Views */,
 				BEA1D95627C3C71B00D0A67A /* Extensions */,
@@ -381,6 +386,16 @@
 				BE8A758027BC106F00E9F745 /* HomeView.swift */,
 			);
 			path = Home;
+			sourceTree = "<group>";
+		};
+		BE0E39B92C37EB4E00B445B2 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				BEBF32372B7512BF00DCD624 /* LocalStory.swift */,
+				BE0E39BA2C37EB7B00B445B2 /* LocalUser.swift */,
+				BE0E39BC2C37EB9C00B445B2 /* LocalPortion.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		BE0EA3002C357DA2006381A6 /* Collaborators */ = {
@@ -602,7 +617,6 @@
 			isa = PBXGroup;
 			children = (
 				BEBF32392B7512EF00DCD624 /* DataClient.swift */,
-				BEBF32372B7512BF00DCD624 /* LocalStory.swift */,
 				BEBF323D2B75149300DCD624 /* LocalStoriesMapper.swift */,
 				BEBF323B2B75133700DCD624 /* LocalStoriesLoader.swift */,
 				BEEEBBF32B75357500EC85C7 /* FileDataClient.swift */,
@@ -936,6 +950,7 @@
 				BE8AEF9327DBDE8100D7EAA1 /* CubicTransitionModifier.swift in Sources */,
 				BE09DD59288C758000F4278C /* HomeUIActionHandler.swift in Sources */,
 				BEA901D427BC716E00E3362D /* ProgressBarPortion.swift in Sources */,
+				BE0E39BB2C37EB7B00B445B2 /* LocalUser.swift in Sources */,
 				BE7BA11B2C3312A1005DB88C /* DummyCamera.swift in Sources */,
 				BE84C2CA27C78E5400C42165 /* AnyTransition+Additions.swift in Sources */,
 				BE8B71B22B765ED80055C354 /* MediaStore.swift in Sources */,
@@ -944,6 +959,7 @@
 				BEC053842C309B0A00752932 /* CameraFlashMode.swift in Sources */,
 				BEC3B4C427DE585F00B44BDF /* StoryCameraViewModel.swift in Sources */,
 				BE8D954527C44CA200D9D6DB /* StoryDTO.swift in Sources */,
+				BE0E39BD2C37EB9C00B445B2 /* LocalPortion.swift in Sources */,
 				BEBF323E2B75149300DCD624 /* LocalStoriesMapper.swift in Sources */,
 				BE8C498D27C62B3C000541E0 /* StoryIconTitleView.swift in Sources */,
 				BE2C557227BFFE9D0087EE7F /* StoryView.swift in Sources */,
