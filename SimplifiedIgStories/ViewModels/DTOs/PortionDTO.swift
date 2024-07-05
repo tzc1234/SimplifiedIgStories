@@ -11,7 +11,7 @@ struct PortionDTO: Identifiable, Equatable {
     var id: Int
     var duration: Double
     var resourceURL: URL?
-    var type: ResourceTypeDTO
+    var type: ResourceType
     
     var imageURL: URL? {
         type == .image ? resourceURL : nil
@@ -20,9 +20,4 @@ struct PortionDTO: Identifiable, Equatable {
     var videoURL: URL? {
         type == .video ? resourceURL : nil
     }
-}
-
-enum ResourceTypeDTO: String {
-    case image
-    case video
 }
