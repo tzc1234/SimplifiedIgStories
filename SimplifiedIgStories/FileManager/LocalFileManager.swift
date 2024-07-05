@@ -18,7 +18,7 @@ final class LocalFileManager: FileManageable {
     
     func saveImage(_ image: UIImage, fileName: String) throws -> URL {
         guard let data = image.jpegData(compressionQuality: 0.8) else {
-            throw FileManageableError.jpegConversionFailed
+            throw FileManageableError.imageDataConversionFailed
         }
         
         let url = directory.appendingPathComponent("\(fileName)").appendingPathExtension(fileExtension)

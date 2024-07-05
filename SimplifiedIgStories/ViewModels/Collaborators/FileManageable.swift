@@ -15,7 +15,7 @@ protocol FileManageable {
 
 enum FileManageableError: Error {
     case saveFailed
-    case jpegConversionFailed
+    case imageDataConversionFailed
     case fileForDeletionNotFound
     case deleteFailed
 }

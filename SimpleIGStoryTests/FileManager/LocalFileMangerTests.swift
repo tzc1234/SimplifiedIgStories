@@ -55,7 +55,7 @@ final class LocalFileMangerTests: XCTestCase {
         let emptyImage = UIImage()
         
         XCTAssertThrowsError(try sut.saveImage(emptyImage, fileName: imageFileName())) { error in
-            XCTAssertEqual(error as? FileManageableError, .jpegConversionFailed)
+            XCTAssertEqual(error as? FileManageableError, .imageDataConversionFailed)
         }
     }
     
