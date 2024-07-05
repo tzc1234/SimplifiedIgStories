@@ -14,14 +14,14 @@ final class StoryPortionViewModel: ObservableObject {
     
     let storyId: Int
     let isCurrentUser: Bool
-    let portion: Portion
+    let portion: PortionDTO
     private let fileManager: FileManageable
     private let mediaSaver: MediaSaver
     private let performAfterPointOneSecond: (@escaping () -> Void) -> Void
     private let performAfterOnePointFiveSecond: (@escaping () -> Void) -> Void
     
-    init(story: Story,
-         portion: Portion,
+    init(story: StoryDTO,
+         portion: PortionDTO,
          fileManager: FileManageable,
          mediaSaver: MediaSaver,
          performAfterPointOneSecond: @escaping (@escaping () -> Void) -> Void = { action in

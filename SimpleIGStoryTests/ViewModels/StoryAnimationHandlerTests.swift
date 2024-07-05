@@ -295,7 +295,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
     // MARK: - Helpers
     
     private func makeSUT(storyId: Int = 0,
-                         stories: [Story] = [],
+                         stories: [StoryDTO] = [],
                          file: StaticString = #filePath,
                          line: UInt = #line) -> (sut: StoryAnimationHandler, spy: ParentStoryViewModelSpy) {
         let spy = ParentStoryViewModelSpy()
@@ -323,7 +323,7 @@ final class StoryAnimationHandlerTests: XCTestCase {
         var isAtFirstStory = false
         var isAtLastStory = false
         var currentStoryId = 0
-        var stories = [Story]()
+        var stories = [StoryDTO]()
         var isSameStoryAfterDragging = false
         
         private let isDraggingPublisher = CurrentValueSubject<Bool, Never>(false)

@@ -8,7 +8,7 @@
 import AVKit
 
 final class StoriesViewModel: ObservableObject, StoriesHolder {
-    @Published private(set) var stories: [Story] = []
+    @Published private(set) var stories: [StoryDTO] = []
     
     private let storiesLoader: StoriesLoader
     private let fileManager: FileManageable
@@ -32,7 +32,7 @@ extension StoriesViewModel {
         stories.flatMap(\.portions).map(\.id).max() ?? -1
     }
     
-    private var currentUserPortions: [Portion] {
+    private var currentUserPortions: [PortionDTO] {
         stories.first(where: { $0.id == yourStoryId })?.portions ?? []
     }
 }
@@ -64,7 +64,7 @@ extension StoriesViewModel {
         var portions = stories[yourStoryIdx].portions
         // Just append a new Portion instance to current user's potion array.
         portions.append(
-            Portion(id: lastPortionId+1, duration: .defaultStoryDuration, resourceURL: imageURL, type: .image)
+            PortionDTO(id: lastPortionId+1, duration: .defaultStoryDuration, resourceURL: imageURL, type: .image)
         )
         stories[yourStoryIdx].portions = portions
         stories[yourStoryIdx].lastUpdate = .now
@@ -79,7 +79,7 @@ extension StoriesViewModel {
         let durationSeconds = CMTimeGetSeconds(duration)
 
         // Similar to image case.
-        portions.append(Portion(id: lastPortionId+1, duration: durationSeconds, resourceURL: videoUrl, type: .video))
+        portions.append(PortionDTO(id: lastPortionId+1, duration: durationSeconds, resourceURL: videoUrl, type: .video))
         stories[yourStoryIdx].portions = portions
         stories[yourStoryIdx].lastUpdate = .now
     }
@@ -107,9 +107,9 @@ extension StoriesViewModel {
 // MARK: - Local models conversion
 
 private extension [LocalStory] {
-    func toStories() -> [Story] {
+    func toStories() -> [StoryDTO] {
         map { local in
-            Story(
+            StoryDTO(
                 id: local.id,
                 lastUpdate: local.lastUpdate,
                 user: local.user.toUser(),
@@ -120,18 +120,18 @@ private extension [LocalStory] {
 }
 
 private extension [LocalPortion] {
-    func toPortions() -> [Portion] {
+    func toPortions() -> [PortionDTO] {
         map { local in
             switch local.type {
             case .image:
-                return Portion(
+                return PortionDTO(
                     id: local.id, 
                     duration: local.duration,
                     resourceURL: local.resourceURL,
                     type: .init(rawValue: local.type.rawValue) ?? .image
                 )
             case .video:
-                return Portion(
+                return PortionDTO(
                     id: local.id, 
                     duration: local.duration,
                     resourceURL: local.resourceURL,
@@ -143,7 +143,7 @@ private extension [LocalPortion] {
 }
 
 private extension LocalUser {
-    func toUser() -> User {
-        User(id: id, name: name, avatarURL: avatarURL, isCurrentUser: isCurrentUser)
+    func toUser() -> UserDTO {
+        UserDTO(id: id, name: name, avatarURL: avatarURL, isCurrentUser: isCurrentUser)
     }
 }

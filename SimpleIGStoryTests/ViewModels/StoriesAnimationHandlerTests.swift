@@ -10,7 +10,7 @@ import XCTest
 
 final class StoriesAnimationHandlerTests: XCTestCase {
     func test_init_deliversEmptyStoriesWhenNoStoriesHolderStories() {
-        let emptyStories = [Story]()
+        let emptyStories = [StoryDTO]()
         let sut = makeSUT(stories: emptyStories)
         
         XCTAssertEqual(sut.stories, emptyStories)
@@ -329,7 +329,7 @@ final class StoriesAnimationHandlerTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func makeSUT(stories: [Story] = [], 
+    private func makeSUT(stories: [StoryDTO] = [], 
                          file: StaticString = #filePath,
                          line: UInt = #line) -> StoriesAnimationHandler {
         let storiesHolder = StoriesHolderStub(stories: stories)
@@ -340,13 +340,13 @@ final class StoriesAnimationHandlerTests: XCTestCase {
     }
     
     private class StoriesHolderStub: ObservableObject, StoriesHolder {
-        private let stub: [Story]
+        private let stub: [StoryDTO]
         
-        init(stories: [Story]) {
+        init(stories: [StoryDTO]) {
             self.stub = stories
         }
         
-        var stories: [Story] {
+        var stories: [StoryDTO] {
             stub
         }
     }

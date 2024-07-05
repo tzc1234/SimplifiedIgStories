@@ -58,7 +58,7 @@ class StoriesViewModelTests: XCTestCase {
         
         sut.postStoryPortion(image: anyUIImage())
         
-        let expectedPortion = Portion(
+        let expectedPortion = PortionDTO(
             id: lastPortionId()+1,
             duration: .defaultStoryDuration,
             resourceURL: appendedImageURL,
@@ -85,7 +85,7 @@ class StoriesViewModelTests: XCTestCase {
         
         sut.postStoryPortion(videoUrl: video.url)
         
-        let expectedPortion = Portion(
+        let expectedPortion = PortionDTO(
             id: lastPortionId()+1,
             duration: video.duration,
             resourceURL: video.url,
@@ -193,7 +193,7 @@ class StoriesViewModelTests: XCTestCase {
         return makeStory(id: 0, user: user, portions: [portion0, portion1]).local
     }
     
-    private func storiesForTest() -> (local: [LocalStory], model: [Story]) {
+    private func storiesForTest() -> (local: [LocalStory], model: [StoryDTO]) {
         let currentUser = makeUser(id: 0, name: "Current User", isCurrentUser: true)
         let user1 = makeUser(id: 1, name: "User1")
         let user2 = makeUser(id: 2, name: "User2")
@@ -211,19 +211,19 @@ class StoriesViewModelTests: XCTestCase {
     
     private func makeStory(id: Int,
                            lastUpdate: Date = .now,
-                           user: (local: LocalUser, user: User),
-                           portions: [(local: LocalPortion, portion: Portion)]) -> (local: LocalStory, model: Story) {
+                           user: (local: LocalUser, user: UserDTO),
+                           portions: [(local: LocalPortion, portion: PortionDTO)]) -> (local: LocalStory, model: StoryDTO) {
         let local = LocalStory(id: id, lastUpdate: lastUpdate, user: user.local, portions: portions.map(\.local))
-        let model = Story(id: id, lastUpdate: lastUpdate, user: user.user, portions: portions.map(\.portion))
+        let model = StoryDTO(id: id, lastUpdate: lastUpdate, user: user.user, portions: portions.map(\.portion))
         return (local, model)
     }
     
     private func makePortion(id: Int,
                              resourceURL: URL? = nil,
                              duration: Double = .defaultStoryDuration,
-                             type: LocalResourceType = .image) -> (local: LocalPortion, portion: Portion) {
+                             type: LocalResourceType = .image) -> (local: LocalPortion, portion: PortionDTO) {
         let local = LocalPortion(id: id, resourceURL: resourceURL, duration: duration, type: type)
-        let portion = Portion(
+        let portion = PortionDTO(
             id: id,
             duration: duration,
             resourceURL: resourceURL,
@@ -235,23 +235,23 @@ class StoriesViewModelTests: XCTestCase {
     private func makeUser(id: Int,
                           name: String = "user",
                           avatarURL: URL? = nil,
-                          isCurrentUser: Bool = false) -> (local: LocalUser, user: User) {
+                          isCurrentUser: Bool = false) -> (local: LocalUser, user: UserDTO) {
         let local = LocalUser(id: id, name: name, avatarURL: avatarURL, isCurrentUser: isCurrentUser)
-        let user = User(id: id, name: name, avatarURL: avatarURL, isCurrentUser: isCurrentUser)
+        let user = UserDTO(id: id, name: name, avatarURL: avatarURL, isCurrentUser: isCurrentUser)
         return (local, user)
     }
 }
 
 private extension StoriesViewModel {
-    var storiesForCurrentUser: [Story] {
+    var storiesForCurrentUser: [StoryDTO] {
         stories.filter { $0.user.isCurrentUser }
     }
     
-    var lastCurrentUserPortion: Portion? {
+    var lastCurrentUserPortion: PortionDTO? {
         storiesForCurrentUser.first?.portions.last
     }
     
-    var allPortions: [Portion] {
+    var allPortions: [PortionDTO] {
         stories.flatMap(\.portions)
     }
     

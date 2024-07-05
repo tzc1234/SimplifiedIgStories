@@ -51,9 +51,9 @@ extension StoriesAnimationHandler {
 }
 
 final class StoriesHolderStub: ObservableObject, StoriesHolder {
-    let stories: [Story]
+    let stories: [StoryDTO]
     
-    init(stories: [Story]) {
+    init(stories: [StoryDTO]) {
         self.stories = stories
     }
 }

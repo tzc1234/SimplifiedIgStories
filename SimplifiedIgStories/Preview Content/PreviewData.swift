@@ -8,24 +8,24 @@
 import Foundation
 
 struct PreviewData {
-    static let stories: [Story] = [
-        Story(
+    static let stories: [StoryDTO] = [
+        StoryDTO(
             id: 0,
             lastUpdate: .now,
-            user: User(
+            user: UserDTO(
                 id: 0,
                 name: "User 0",
                 avatarURL: Bundle.main.url(forResource: "sea1", withExtension: "jpg"),
                 isCurrentUser: false
             ),
             portions: [
-                Portion(
+                PortionDTO(
                     id: 0,
                     duration: .defaultStoryDuration,
                     resourceURL: Bundle.main.url(forResource: "sea1", withExtension: "jpg"),
                     type: .image
                 ),
-                Portion(
+                PortionDTO(
                     id: 1,
                     duration: .defaultStoryDuration,
                     resourceURL: Bundle.main.url(forResource: "sea2", withExtension: "jpg"),

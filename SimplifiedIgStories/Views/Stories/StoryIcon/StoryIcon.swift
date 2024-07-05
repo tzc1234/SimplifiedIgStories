@@ -17,17 +17,17 @@ struct StoryIcon: View {
     
     private let animationDuration = 1.0
     
-    let story: Story
+    let story: StoryDTO
     let showPlusIcon: Bool
     let plusIconBgColor: Color
     let showStroke: Bool
-    let onTapAction: ((Story) -> Void)?
+    let onTapAction: ((StoryDTO) -> Void)?
     
-    init(story: Story,
+    init(story: StoryDTO,
          showPlusIcon: Bool = false,
          plusIconBgColor: Color = .background,
          showStroke: Bool = true,
-         onTapAction: ((Story) -> Void)? = nil) {
+         onTapAction: ((StoryDTO) -> Void)? = nil) {
         self.story = story
         self.showPlusIcon = showPlusIcon
         self.plusIconBgColor = plusIconBgColor

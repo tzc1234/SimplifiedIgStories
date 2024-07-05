@@ -146,7 +146,7 @@ final class StoryPortionViewModelTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func makeSUT(portion: Portion, 
+    private func makeSUT(portion: PortionDTO, 
                          fileManager: FileManageable = FileManagerSpy(getImageStub: { _ in nil }),
                          mediaSaver: MediaSaver = MediaSaverSpy(),
                          skipPerformNoticeMessageReset: Bool = false) -> StoryPortionViewModel {

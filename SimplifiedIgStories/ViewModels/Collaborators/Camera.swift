@@ -8,6 +8,11 @@
 import UIKit
 import Combine
 
+enum Media {
+    case photo(UIImage)
+    case video(URL)
+}
+
 enum CameraStatus {
     case sessionStarted
     case sessionStopped

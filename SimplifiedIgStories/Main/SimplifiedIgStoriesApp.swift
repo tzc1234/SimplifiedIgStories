@@ -79,8 +79,8 @@ struct SimplifiedIgStoriesApp: App {
         }
     }
     
-    private func getStoryPortionViewModel(for story: Story, 
-                                          portion: Portion) -> StoryPortionViewModel {
+    private func getStoryPortionViewModel(for story: StoryDTO, 
+                                          portion: PortionDTO) -> StoryPortionViewModel {
         let portionViewModel = if let viewModel = portionViewModelCache.getComponent(for: portion.id) {
             viewModel
         } else {

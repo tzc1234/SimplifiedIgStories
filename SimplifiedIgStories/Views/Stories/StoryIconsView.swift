@@ -32,7 +32,7 @@ struct StoryIconsView: View {
         }
     }
     
-    private func tapIconAction(story: Story) {
+    private func tapIconAction(story: StoryDTO) {
         if story.hasPortion {
             animationHandler.setCurrentStoryId(story.id)
             homeUIActionHandler.showStoryContainer(storyId: story.id)
