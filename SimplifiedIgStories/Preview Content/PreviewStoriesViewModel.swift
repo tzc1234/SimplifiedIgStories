@@ -17,19 +17,19 @@ extension StoriesViewModel {
 }
 
 final class PreviewStoriesLoader: StoriesLoader {
-    func load() async throws -> [LocalStory] {
+    func load() async throws -> [Story] {
         [
-            LocalStory(
+            Story(
                 id: 0,
                 lastUpdate: nil,
-                user: LocalUser(
+                user: User(
                     id: 0,
                     name: "CurrentUser",
                     avatarURL: nil,
                     isCurrentUser: true
                 ),
                 portions: [
-                    LocalPortion(
+                    Portion(
                         id: 0,
                         resourceURL: nil,
                         duration: .defaultStoryDuration,
@@ -37,17 +37,17 @@ final class PreviewStoriesLoader: StoriesLoader {
                     )
                 ]
             ),
-            LocalStory(
+            Story(
                 id: 1,
                 lastUpdate: .now,
-                user: LocalUser(
+                user: User(
                     id: 1,
                     name: "User1",
                     avatarURL: nil,
                     isCurrentUser: false
                 ),
                 portions: [
-                    LocalPortion(
+                    Portion(
                         id: 1,
                         resourceURL: nil,
                         duration: .defaultStoryDuration,

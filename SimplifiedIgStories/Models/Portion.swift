@@ -1,5 +1,5 @@
 //
-//  LocalPortion.swift
+//  Portion.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 05/07/2024.
@@ -7,14 +7,14 @@
 
 import Foundation
 
-struct LocalPortion: Equatable {
+struct Portion: Equatable {
     let id: Int
     let resourceURL: URL?
     let duration: Double
-    let type: LocalResourceType
+    let type: ResourceType
 }
 
-enum LocalResourceType: String {
+enum ResourceType: String {
     case image
     case video
 }

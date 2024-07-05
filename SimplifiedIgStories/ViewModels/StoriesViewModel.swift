@@ -106,7 +106,7 @@ extension StoriesViewModel {
 
 // MARK: - Local models conversion
 
-private extension [LocalStory] {
+private extension [Story] {
     func toStories() -> [StoryDTO] {
         map { local in
             StoryDTO(
@@ -119,7 +119,7 @@ private extension [LocalStory] {
     }
 }
 
-private extension [LocalPortion] {
+private extension [Portion] {
     func toPortions() -> [PortionDTO] {
         map { local in
             switch local.type {
@@ -142,7 +142,7 @@ private extension [LocalPortion] {
     }
 }
 
-private extension LocalUser {
+private extension User {
     func toUser() -> UserDTO {
         UserDTO(id: id, name: name, avatarURL: avatarURL, isCurrentUser: isCurrentUser)
     }

@@ -14,12 +14,12 @@ final class LocalStoriesLoader: StoriesLoader {
         self.client = client
     }
     
-    func load() async throws -> [LocalStory] {
+    func load() async throws -> [Story] {
         guard let data = try? await client.fetch() else {
             throw StoriesLoaderError.notFound
         }
         
-        guard let stories = try? LocalStoriesMapper.map(data) else {
+        guard let stories = try? StoriesMapper.map(data) else {
             throw StoriesLoaderError.invalidData
         }
         

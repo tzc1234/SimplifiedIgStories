@@ -15,8 +15,8 @@
 		BE0BD7392C3685CE00B35B19 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2FA2C35578F006381A6 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift */; };
 		BE0BD73B2C369AE400B35B19 /* StoryPreviewViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0BD73A2C369AE400B35B19 /* StoryPreviewViewModelTests.swift */; };
 		BE0BD73D2C369B4C00B35B19 /* MediaSaverSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0BD73C2C369B4C00B35B19 /* MediaSaverSpy.swift */; };
-		BE0E39BB2C37EB7B00B445B2 /* LocalUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0E39BA2C37EB7B00B445B2 /* LocalUser.swift */; };
-		BE0E39BD2C37EB9C00B445B2 /* LocalPortion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0E39BC2C37EB9C00B445B2 /* LocalPortion.swift */; };
+		BE0E39BB2C37EB7B00B445B2 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0E39BA2C37EB7B00B445B2 /* User.swift */; };
+		BE0E39BD2C37EB9C00B445B2 /* Portion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0E39BC2C37EB9C00B445B2 /* Portion.swift */; };
 		BE0EA2F92C354C2A006381A6 /* StoryCameraViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2F82C354C2A006381A6 /* StoryCameraViewModelTests.swift */; };
 		BE0EA2FD2C3561EC006381A6 /* AuthorizationTrackerSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2FC2C3561EC006381A6 /* AuthorizationTrackerSpy.swift */; };
 		BE0EA2FF2C356C8A006381A6 /* CameraSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0EA2FE2C356C8A006381A6 /* CameraSpy.swift */; };
@@ -125,10 +125,10 @@
 		BEBE9C382BA059AF00C9C093 /* LocalFileMangerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBE9C372BA059AF00C9C093 /* LocalFileMangerTests.swift */; };
 		BEBF322F2B74D5DD00DCD624 /* LocalStoriesLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF322E2B74D5DD00DCD624 /* LocalStoriesLoaderTests.swift */; };
 		BEBF32322B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF32312B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift */; };
-		BEBF32382B7512BF00DCD624 /* LocalStory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF32372B7512BF00DCD624 /* LocalStory.swift */; };
+		BEBF32382B7512BF00DCD624 /* Story.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF32372B7512BF00DCD624 /* Story.swift */; };
 		BEBF323A2B7512EF00DCD624 /* DataClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF32392B7512EF00DCD624 /* DataClient.swift */; };
 		BEBF323C2B75133700DCD624 /* LocalStoriesLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF323B2B75133700DCD624 /* LocalStoriesLoader.swift */; };
-		BEBF323E2B75149300DCD624 /* LocalStoriesMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF323D2B75149300DCD624 /* LocalStoriesMapper.swift */; };
+		BEBF323E2B75149300DCD624 /* StoriesMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBF323D2B75149300DCD624 /* StoriesMapper.swift */; };
 		BEC053842C309B0A00752932 /* CameraFlashMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC053832C309B0A00752932 /* CameraFlashMode.swift */; };
 		BEC3B4C427DE585F00B44BDF /* StoryCameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEC3B4C327DE585F00B44BDF /* StoryCameraViewModel.swift */; };
 		BED0F60D27BBF64B00D93F15 /* StoryIconsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */; };
@@ -165,8 +165,8 @@
 		BE09DD58288C758000F4278C /* HomeUIActionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeUIActionHandler.swift; sourceTree = "<group>"; };
 		BE0BD73A2C369AE400B35B19 /* StoryPreviewViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPreviewViewModelTests.swift; sourceTree = "<group>"; };
 		BE0BD73C2C369B4C00B35B19 /* MediaSaverSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSaverSpy.swift; sourceTree = "<group>"; };
-		BE0E39BA2C37EB7B00B445B2 /* LocalUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalUser.swift; sourceTree = "<group>"; };
-		BE0E39BC2C37EB9C00B445B2 /* LocalPortion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPortion.swift; sourceTree = "<group>"; };
+		BE0E39BA2C37EB7B00B445B2 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		BE0E39BC2C37EB9C00B445B2 /* Portion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Portion.swift; sourceTree = "<group>"; };
 		BE0EA2F82C354C2A006381A6 /* StoryCameraViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCameraViewModelTests.swift; sourceTree = "<group>"; };
 		BE0EA2FA2C35578F006381A6 /* DispatchQueue+ImmediateDispatchOnMainQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DispatchQueue+ImmediateDispatchOnMainQueue.swift"; sourceTree = "<group>"; };
 		BE0EA2FC2C3561EC006381A6 /* AuthorizationTrackerSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationTrackerSpy.swift; sourceTree = "<group>"; };
@@ -277,10 +277,10 @@
 		BEBE9C372BA059AF00C9C093 /* LocalFileMangerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileMangerTests.swift; sourceTree = "<group>"; };
 		BEBF322E2B74D5DD00DCD624 /* LocalStoriesLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStoriesLoaderTests.swift; sourceTree = "<group>"; };
 		BEBF32312B74D88A00DCD624 /* XCTestCase+MemoryLeakTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+MemoryLeakTracking.swift"; sourceTree = "<group>"; };
-		BEBF32372B7512BF00DCD624 /* LocalStory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStory.swift; sourceTree = "<group>"; };
+		BEBF32372B7512BF00DCD624 /* Story.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Story.swift; sourceTree = "<group>"; };
 		BEBF32392B7512EF00DCD624 /* DataClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataClient.swift; sourceTree = "<group>"; };
 		BEBF323B2B75133700DCD624 /* LocalStoriesLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStoriesLoader.swift; sourceTree = "<group>"; };
-		BEBF323D2B75149300DCD624 /* LocalStoriesMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStoriesMapper.swift; sourceTree = "<group>"; };
+		BEBF323D2B75149300DCD624 /* StoriesMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesMapper.swift; sourceTree = "<group>"; };
 		BEC053832C309B0A00752932 /* CameraFlashMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraFlashMode.swift; sourceTree = "<group>"; };
 		BEC3B4C327DE585F00B44BDF /* StoryCameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCameraViewModel.swift; sourceTree = "<group>"; };
 		BED0F60C27BBF64B00D93F15 /* StoryIconsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryIconsView.swift; sourceTree = "<group>"; };
@@ -391,9 +391,9 @@
 		BE0E39B92C37EB4E00B445B2 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				BEBF32372B7512BF00DCD624 /* LocalStory.swift */,
-				BE0E39BA2C37EB7B00B445B2 /* LocalUser.swift */,
-				BE0E39BC2C37EB9C00B445B2 /* LocalPortion.swift */,
+				BEBF32372B7512BF00DCD624 /* Story.swift */,
+				BE0E39BA2C37EB7B00B445B2 /* User.swift */,
+				BE0E39BC2C37EB9C00B445B2 /* Portion.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -617,7 +617,7 @@
 			isa = PBXGroup;
 			children = (
 				BEBF32392B7512EF00DCD624 /* DataClient.swift */,
-				BEBF323D2B75149300DCD624 /* LocalStoriesMapper.swift */,
+				BEBF323D2B75149300DCD624 /* StoriesMapper.swift */,
 				BEBF323B2B75133700DCD624 /* LocalStoriesLoader.swift */,
 				BEEEBBF32B75357500EC85C7 /* FileDataClient.swift */,
 			);
@@ -950,7 +950,7 @@
 				BE8AEF9327DBDE8100D7EAA1 /* CubicTransitionModifier.swift in Sources */,
 				BE09DD59288C758000F4278C /* HomeUIActionHandler.swift in Sources */,
 				BEA901D427BC716E00E3362D /* ProgressBarPortion.swift in Sources */,
-				BE0E39BB2C37EB7B00B445B2 /* LocalUser.swift in Sources */,
+				BE0E39BB2C37EB7B00B445B2 /* User.swift in Sources */,
 				BE7BA11B2C3312A1005DB88C /* DummyCamera.swift in Sources */,
 				BE84C2CA27C78E5400C42165 /* AnyTransition+Additions.swift in Sources */,
 				BE8B71B22B765ED80055C354 /* MediaStore.swift in Sources */,
@@ -959,12 +959,12 @@
 				BEC053842C309B0A00752932 /* CameraFlashMode.swift in Sources */,
 				BEC3B4C427DE585F00B44BDF /* StoryCameraViewModel.swift in Sources */,
 				BE8D954527C44CA200D9D6DB /* StoryDTO.swift in Sources */,
-				BE0E39BD2C37EB9C00B445B2 /* LocalPortion.swift in Sources */,
-				BEBF323E2B75149300DCD624 /* LocalStoriesMapper.swift in Sources */,
+				BE0E39BD2C37EB9C00B445B2 /* Portion.swift in Sources */,
+				BEBF323E2B75149300DCD624 /* StoriesMapper.swift in Sources */,
 				BE8C498D27C62B3C000541E0 /* StoryIconTitleView.swift in Sources */,
 				BE2C557227BFFE9D0087EE7F /* StoryView.swift in Sources */,
 				BEA93F9427D7511000964226 /* VideoRecordButton.swift in Sources */,
-				BEBF32382B7512BF00DCD624 /* LocalStory.swift in Sources */,
+				BEBF32382B7512BF00DCD624 /* Story.swift in Sources */,
 				BE720F7C27BD111800E862A5 /* ProgressBar.swift in Sources */,
 				BE9336C727D22628009E5370 /* Color+Additions.swift in Sources */,
 				BE2D7796285FB1C600DBD924 /* AVCaptureVideoPreviewRepresentable.swift in Sources */,

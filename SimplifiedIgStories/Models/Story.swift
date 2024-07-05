@@ -1,5 +1,5 @@
 //
-//  LocalStory.swift
+//  Story.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 08/02/2024.
@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct LocalStory: Equatable {
+struct Story: Equatable {
     let id: Int
     let lastUpdate: Date?
-    let user: LocalUser
-    let portions: [LocalPortion]
+    let user: User
+    let portions: [Portion]
 }

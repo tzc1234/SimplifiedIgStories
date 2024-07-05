@@ -9,13 +9,13 @@ import Foundation
 @testable import Simple_IG_Story
 
 final class StoriesLoaderStub: StoriesLoader {
-    private let stories: [LocalStory]
+    private let stories: [Story]
     
-    init(stories: [LocalStory]) {
+    init(stories: [Story]) {
         self.stories = stories
     }
     
-    func load() async throws -> [LocalStory] {
+    func load() async throws -> [Story] {
         stories
     }
 }

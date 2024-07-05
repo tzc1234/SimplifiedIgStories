@@ -11,7 +11,7 @@ import AVKit
 
 class StoriesViewModelTests: XCTestCase {
     func test_stories_deliversEmptyStoriesWhenNoStoriesAfterFetch() async {
-        let emptyStories = [LocalStory]()
+        let emptyStories = [Story]()
         let sut = await makeSUT(stories: emptyStories)
         
         XCTAssertTrue(sut.stories.isEmpty)
@@ -156,7 +156,7 @@ class StoriesViewModelTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func makeSUT(stories: [LocalStory] = [],
+    private func makeSUT(stories: [Story] = [],
                          imageURLStub: @escaping () throws -> URL = { URL(string: "file://any-image.jpg")! },
                          file: StaticString = #filePath,
                          line: UInt = #line) async -> StoriesViewModel {
@@ -180,20 +180,20 @@ class StoriesViewModelTests: XCTestCase {
         storiesForTest().model.flatMap(\.portions).max(by: { $1.id > $0.id })!.id
     }
     
-    private func noNextPortionStory(isCurrentUser: Bool) -> LocalStory {
+    private func noNextPortionStory(isCurrentUser: Bool) -> Story {
         let user = makeUser(id: 0, name: "User", isCurrentUser: isCurrentUser)
         let portion = makePortion(id: 0, resourceURL: anyImageURL())
         return makeStory(id: 0, user: user, portions: [portion]).local
     }
     
-    private func hasNextPortionStory(isCurrentUser: Bool) -> LocalStory {
+    private func hasNextPortionStory(isCurrentUser: Bool) -> Story {
         let user = makeUser(id: 0, name: "User", isCurrentUser: isCurrentUser)
         let portion0 = makePortion(id: 0, resourceURL: anyImageURL())
         let portion1 = makePortion(id: 1, resourceURL: anyVideoURL(), duration: 9, type: .video)
         return makeStory(id: 0, user: user, portions: [portion0, portion1]).local
     }
     
-    private func storiesForTest() -> (local: [LocalStory], model: [StoryDTO]) {
+    private func storiesForTest() -> (local: [Story], model: [StoryDTO]) {
         let currentUser = makeUser(id: 0, name: "Current User", isCurrentUser: true)
         let user1 = makeUser(id: 1, name: "User1")
         let user2 = makeUser(id: 2, name: "User2")
@@ -211,9 +211,9 @@ class StoriesViewModelTests: XCTestCase {
     
     private func makeStory(id: Int,
                            lastUpdate: Date = .now,
-                           user: (local: LocalUser, user: UserDTO),
-                           portions: [(local: LocalPortion, portion: PortionDTO)]) -> (local: LocalStory, model: StoryDTO) {
-        let local = LocalStory(id: id, lastUpdate: lastUpdate, user: user.local, portions: portions.map(\.local))
+                           user: (local: User, user: UserDTO),
+                           portions: [(local: Portion, portion: PortionDTO)]) -> (local: Story, model: StoryDTO) {
+        let local = Story(id: id, lastUpdate: lastUpdate, user: user.local, portions: portions.map(\.local))
         let model = StoryDTO(id: id, lastUpdate: lastUpdate, user: user.user, portions: portions.map(\.portion))
         return (local, model)
     }
@@ -221,8 +221,8 @@ class StoriesViewModelTests: XCTestCase {
     private func makePortion(id: Int,
                              resourceURL: URL? = nil,
                              duration: Double = .defaultStoryDuration,
-                             type: LocalResourceType = .image) -> (local: LocalPortion, portion: PortionDTO) {
-        let local = LocalPortion(id: id, resourceURL: resourceURL, duration: duration, type: type)
+                             type: ResourceType = .image) -> (local: Portion, portion: PortionDTO) {
+        let local = Portion(id: id, resourceURL: resourceURL, duration: duration, type: type)
         let portion = PortionDTO(
             id: id,
             duration: duration,
@@ -235,8 +235,8 @@ class StoriesViewModelTests: XCTestCase {
     private func makeUser(id: Int,
                           name: String = "user",
                           avatarURL: URL? = nil,
-                          isCurrentUser: Bool = false) -> (local: LocalUser, user: UserDTO) {
-        let local = LocalUser(id: id, name: name, avatarURL: avatarURL, isCurrentUser: isCurrentUser)
+                          isCurrentUser: Bool = false) -> (local: User, user: UserDTO) {
+        let local = User(id: id, name: name, avatarURL: avatarURL, isCurrentUser: isCurrentUser)
         let user = UserDTO(id: id, name: name, avatarURL: avatarURL, isCurrentUser: isCurrentUser)
         return (local, user)
     }
