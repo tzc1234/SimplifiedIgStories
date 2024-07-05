@@ -8,7 +8,7 @@
 import UIKit
 @testable import Simple_IG_Story
 
-func makePortion(id: Int = 0, resourceURL: URL? = nil, type: ResourceType = .image) -> PortionDTO {
+func makePortion(id: Int = 0, resourceURL: URL? = nil, type: ResourceTypeDTO = .image) -> PortionDTO {
     PortionDTO(id: id, duration: 1, resourceURL: resourceURL, type: type)
 }
 
