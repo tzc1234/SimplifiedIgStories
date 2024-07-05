@@ -1,5 +1,5 @@
 //
-//  LocalStoriesLoaderIntegrationTests.swift
+//  DefaultStoriesLoaderIntegrationTests.swift
 //  SimpleIGStoryTests
 //
 //  Created by Tsz-Lung on 08/02/2024.
@@ -8,10 +8,10 @@
 import XCTest
 @testable import Simple_IG_Story
 
-final class LocalStoriesLoaderIntegrationTests: XCTestCase {
+final class DefaultStoriesLoaderIntegrationTests: XCTestCase {
     func test_load_deliversDataCorrectly() async throws {
         let client = FileDataClient(url: validJsonURL(currentClass: Self.self))
-        let sut = LocalStoriesLoader(client: client)
+        let sut = DefaultStoriesLoader(client: client)
         
         let receivedStories = try await sut.load()
         

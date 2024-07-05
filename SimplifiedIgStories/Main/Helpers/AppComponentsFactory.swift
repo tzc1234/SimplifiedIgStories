@@ -16,7 +16,7 @@ final class AppComponentsFactory {
     // storiesDataURL should not be nil, since storiesData.json is already embedded in Resource directory.
     private let storiesDataURL = Bundle.main.url(forResource: "storiesData.json", withExtension: nil)!
     private lazy var dataClient = FileDataClient(url: storiesDataURL)
-    private lazy var storiesLoader = LocalStoriesLoader(client: dataClient)
+    private lazy var storiesLoader = DefaultStoriesLoader(client: dataClient)
     
     private(set) lazy var storiesViewModel = StoriesViewModel(
         storiesLoader: storiesLoader,

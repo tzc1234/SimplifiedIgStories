@@ -1,5 +1,5 @@
 //
-//  LocalStoriesLoader.swift
+//  DefaultStoriesLoader.swift
 //  SimplifiedIgStories
 //
 //  Created by Tsz-Lung on 08/02/2024.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class LocalStoriesLoader: StoriesLoader {
+final class DefaultStoriesLoader: StoriesLoader {
     private let client: DataClient
     
     init(client: DataClient) {

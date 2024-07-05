@@ -1,5 +1,5 @@
 //
-//  LocalStoriesLoaderTests.swift
+//  DefaultStoriesLoaderTests.swift
 //  SimpleIGStoryTests
 //
 //  Created by Tsz-Lung on 08/02/2024.
@@ -8,7 +8,7 @@
 import XCTest
 @testable import Simple_IG_Story
 
-final class LocalStoriesLoaderTests: XCTestCase {
+final class DefaultStoriesLoaderTests: XCTestCase {
     func test_load_deliversNotFoundErrorOnClientError() async {
         let sut = makeSUT(stub: .failure(anyNSError()))
         
@@ -81,9 +81,9 @@ final class LocalStoriesLoaderTests: XCTestCase {
     
     private func makeSUT(stub: DataClientStub.Stub,
                          file: StaticString = #filePath,
-                         line: UInt = #line) -> LocalStoriesLoader {
+                         line: UInt = #line) -> DefaultStoriesLoader {
         let client = DataClientStub(stub: stub)
-        let sut = LocalStoriesLoader(client: client)
+        let sut = DefaultStoriesLoader(client: client)
         trackForMemoryLeaks(client, file: file, line: line)
         trackForMemoryLeaks(sut, file: file, line: line)
         return sut
