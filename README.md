@@ -1,4 +1,4 @@
-# Simple IG Story
+# Simple IG Story [![ios-ci](https://github.com/tzc1234/SimplifiedIgStories/actions/workflows/ios-ci.yaml/badge.svg?branch=main)](https://github.com/tzc1234/SimplifiedIgStories/actions/workflows/ios-ci.yaml)
 A simple version of IG story, this demo app is my SwiftUI study record.
 
 ## Screenshots
