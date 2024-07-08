@@ -1,0 +1,10 @@
+platform :ios do
+	desc "Test on iOS simulator"
+	lane :test do
+		scan(
+			scheme: "SimplifiedIgStories",
+			device: "iPhone 15",
+			clean: true
+		)
+	end		
+end
