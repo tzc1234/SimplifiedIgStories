@@ -18,7 +18,7 @@ final class MethodSwizzlingStub {
     private let instanceMethodPairs: [MethodPair]
     private let classMethodPairs: [MethodPair]
     
-    init(instanceMethodPairs: [MethodPair], classMethodPairs: [MethodPair]) {
+    init(instanceMethodPairs: [MethodPair] = [], classMethodPairs: [MethodPair] = []) {
         self.instanceMethodPairs = instanceMethodPairs
         self.classMethodPairs = classMethodPairs
     }
